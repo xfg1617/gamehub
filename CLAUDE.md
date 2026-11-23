@@ -16,6 +16,10 @@ output: say what changed and what it does, not how clever the implementation is.
 
 * Live at **https://gamehub.us.com** (domain at Porkbun, hosted on Netlify by drag-and-drop, Supabase backend,
   Google sign-in configured). Discord: https://discord.gg/BE5xR57DHm.
+* **The code lives on GitHub: https://github.com/xfg1617/gamehub (branch `main`)**, pushed Nov 23 2026. Work in a
+  clone of it; after a change: `python3 build.py`, run the tests, commit (including the built `dist/site/`) and push
+  `main`. Once Inna links the repo in Netlify (GITHUB-DEPLOY.md step 3), every push to `main` goes live by itself.
+  `tools/tailwind/node_modules` is not in git: `cd tools/tailwind && npm install` in a fresh clone.
 * **Deploys (Nov 2026): moving to GitHub → Netlify** (`backend/GITHUB-DEPLOY.md`). Netlify publishes `dist/site/`
   (`netlify.toml`): index.html + `og/*.png` banners + favicon + `_redirects` (`/r/*` → index.html), and runs
   `netlify/edge-functions/room-preview.js` (made by build.py) for link previews. **Commit the built `dist/site/`**

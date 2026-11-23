@@ -1,0 +1,25 @@
+    /* ===== HOW TO PLAY: title grid + step-by-step guides ===== */
+    .ht-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+    .ht-tile { display: flex; align-items: center; gap: 10px; padding: 12px; background: #0F2A44; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); text-align: left; color: #F7F4EC; transition: transform .08s; }
+    .ht-tile:hover { transform: translateY(-2px); background: #12304C; }
+    .ht-tile:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+    .ht-ico { width: 36px; height: 36px; flex: none; display: block; }
+    .ht-ico.big { width: 56px; height: 56px; }
+    .ht-ico svg { width: 100%; height: 100%; display: block; }
+    .ht-name { font-weight: 800; font-size: .95rem; line-height: 1.15; }
+    .ht-steps { display: grid; gap: 12px; }
+    .ht-steps li { display: flex; gap: 12px; align-items: flex-start; }
+    .ht-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+    .ht-item { display: flex; align-items: center; gap: 10px; padding: 8px; background: #0A1624; border: 2px solid #1A3856; min-width: 0; }
+    .ht-art { flex: none; display: flex; gap: 3px; align-items: center; justify-content: center; min-width: 52px; }
+    .ht-art .kk-card, .ht-art .cc-card { transform: scale(.72); transform-origin: center; margin: -14px -10px; }
+    .ht-art .pcard { width: 38px; height: 54px; }
+    .ht-lab { font-weight: 800; color: #F7F4EC; font-size: .85rem; }
+    .ht-txt { font-size: .78rem; color: #9DB4CC; line-height: 1.3; }
+    .ht-small { font-size: .7rem; color: #9DB4CC; line-height: 1.3; max-width: 120px; display: block; }
+    .ht-sq { display: inline-flex; width: 28px; height: 28px; border: 2px solid var(--ink); align-items: center; justify-content: center; font-size: 14px; }
+    .ht-mark { font-size: 1.8rem; font-weight: 900; line-height: 1; color: #F7F4EC; }
+    .ht-piece { display: block; width: 40px; height: 40px; }
+    .ht-piece svg { width: 100%; height: 100%; }
+    .ht-ball { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--ink); display: inline-flex; align-items: center; justify-content: center; }
+    .ht-ball i { font-style: normal; font-size: .65rem; font-weight: 900; background: #F7F4EC; color: #050E18; border-radius: 50%; width: 15px; height: 15px; display: inline-flex; align-items: center; justify-content: center; }

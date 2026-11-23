@@ -1,0 +1,73 @@
+    /* ---- Property Tycoon board: cream picture tiles, colour headers, checkered centre ---- */
+    .ty-board { --tyc: 1.42fr; display: grid; grid-template-columns: var(--tyc) repeat(9, 1fr) var(--tyc); grid-template-rows: var(--tyc) repeat(9, 1fr) var(--tyc); width: 100%; aspect-ratio: 1/1; background: #F3EEDF; border: 4px solid var(--ink); box-shadow: 0 5px 0 var(--ink); gap: 0; position: relative; container-type: inline-size; }
+    .ty-board.tall { --tyc: 1.32fr; grid-template-columns: var(--tyc) repeat(6, 1fr) var(--tyc); grid-template-rows: var(--tyc) repeat(12, 1fr) var(--tyc); aspect-ratio: 8 / 13.4; }
+    .ty-t { position: relative; box-sizing: border-box; border: 1px solid var(--ink); background: #F3EEDF; color: #050E18; display: flex; flex-direction: column; overflow: hidden; min-width: 0; min-height: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    /* every square: colour band on the side facing the centre, owner strip on the outer edge */
+    .ty-t.s-t { flex-direction: column-reverse; } .ty-t.s-l { flex-direction: row-reverse; } .ty-t.s-r { flex-direction: row; }
+    .ty-t .band { flex: 0 0 19%; min-height: 6px; display: flex; justify-content: center; align-items: center; gap: 1px; }
+    .ty-t.s-b .band { border-bottom: 2px solid var(--ink); } .ty-t.s-t .band { border-top: 2px solid var(--ink); }
+    .ty-t.s-l .band { border-left: 2px solid var(--ink); flex-direction: column; min-height: 0; min-width: 6px; } .ty-t.s-r .band { border-right: 2px solid var(--ink); flex-direction: column; min-height: 0; min-width: 6px; }
+    .ty-t .band i { display: block; width: 5px; height: 5px; background: #34D399; border: 1px solid var(--ink); }
+    .ty-t .band i.h { background: #FB7185; width: 10px; } .ty-t.s-l .band i.h, .ty-t.s-r .band i.h { width: 5px; height: 10px; }
+    .ty-t .bd { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 1px 1px 2px; }
+    .ty-t .nm { font-size: clamp(5.5px, 1.45cqi, 10px); line-height: 1.02; font-weight: 800; text-align: center; overflow: hidden; word-break: break-word; max-width: 100%; }
+    .ty-t .art { flex: 1; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; padding: 1px 0; }
+    .ty-t .art svg { height: 100%; max-height: 26px; width: auto; max-width: 78%; }
+    .ty-t .pr { font-size: clamp(6px, 1.45cqi, 10px); line-height: 1; text-align: center; font-family: 'Arcade Pixel', sans-serif; color: #050E18; }
+    .ty-t .pr.neg { color: #D13B55; }
+    .ty-t .os { flex: 0 0 21%; min-height: 6px; min-width: 6px; display: flex; align-items: center; justify-content: center; font-size: clamp(7px, 1.7cqi, 12px); line-height: 1; overflow: hidden; }
+    .ty-t.s-b .os { border-top: 2px solid var(--ink); } .ty-t.s-t .os { border-bottom: 2px solid var(--ink); }
+    .ty-t.s-l .os { border-right: 2px solid var(--ink); } .ty-t.s-r .os { border-left: 2px solid var(--ink); }
+    .ty-t .os.new { animation: tyClaim .5s ease-out; }
+    @keyframes tyClaim { from { filter: brightness(2.2); } to { filter: none; } }
+    .ty-t.mort { filter: grayscale(1) brightness(.7); }
+    .ty-t.corner { background: #E4DCC5; justify-content: center; }
+    .ty-t.corner .bd { justify-content: center; gap: 2px; }
+    .ty-t.corner .art svg { max-height: 40%; height: auto; width: 46%; max-width: none; }
+    .ty-t.corner .nm { font-family: 'Arcade Pixel', sans-serif; font-weight: 400; font-size: clamp(7px, 1.8cqi, 13px); letter-spacing: .03em; }
+    .ty-t.k-chance { background: #FDE3E3; } .ty-t.k-chest { background: #DDEBFB; }
+    .ty-t.here { box-shadow: inset 0 0 0 3px #F5B041; }
+    .ty-board.tall .ty-t .nm { font-size: clamp(5.5px, 2.05cqi, 9px); }
+    .ty-board.tall .ty-t .pr { font-size: clamp(5.5px, 2.05cqi, 9px); }
+    .ty-board.tall .ty-t.corner .nm { font-size: clamp(7px, 2.6cqi, 11px); }
+    .ty-center { grid-column: 2 / 11; grid-row: 2 / 11; position: relative; box-sizing: border-box; border: 1px solid var(--ink); background-color: #1E7A57; background-image: repeating-conic-gradient(#1E7A57 0 25%, #23895F 0 50%); background-size: var(--cell, 11.2cqi) var(--cell, 11.2cqi); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .55rem; padding: .6rem; text-align: center; min-width: 0; }
+    .ty-board.tall .ty-center { grid-column: 2 / 8; grid-row: 2 / 14; }
+    .ty-title { font-family: 'Arcade Pixel', sans-serif; font-size: clamp(14px, 4cqi, 26px); color: #F7F4EC; text-shadow: 2px 2px 0 #050E18; letter-spacing: .04em; line-height: 1; }
+    .ty-mid { display: flex; align-items: center; justify-content: center; gap: clamp(10px, 4cqi, 30px); }
+    .ty-deck { width: clamp(46px, 13cqi, 84px); aspect-ratio: 5 / 7; border: 3px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-family: 'Arcade Pixel', sans-serif; font-size: clamp(8px, 1.9cqi, 12px); color: #F7F4EC; line-height: 1; }
+    .ty-deck svg { width: 52%; height: auto; }
+    .ty-deck.ch { background: #D13B55; rotate: -9deg; } .ty-deck.mb { background: #2563EB; rotate: 9deg; }
+    .ty-dice { display: flex; gap: clamp(12px, 3cqi, 22px); padding: 6px 0 10px; cursor: grab; touch-action: none; user-select: none; }
+    /* 3D dice: a real cube that tumbles and lands on the rolled number */
+    /* dice are flat (no 3D): some browsers flash dark rectangles around fast-spinning 3D objects */
+    .ty-dw { --ds: clamp(36px, 9cqi, 54px); width: var(--ds); height: var(--ds); position: relative; }
+    .ty-die2 { width: 100%; height: 100%; background: #F7F4EC; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink), inset 0 -3px 0 #DCD3BC; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); padding: 13%; gap: 4%; }
+    .ty-die2 i { border-radius: 50% !important; } .ty-die2 i.on { background: #050E18; } .ty-die2.v1 i.on { background: #D13B55; }
+    .ty-dice.shake .ty-dw { animation: tyShake .16s steps(2, jump-none) infinite; }
+    .ty-dice.shake .ty-dw:nth-child(2) { animation-delay: -.08s; }
+    @keyframes tyShake { 0% { translate: -3px 1px; rotate: -7deg; } 50% { translate: 3px -3px; rotate: 6deg; } 100% { translate: -1px 2px; rotate: -3deg; } }
+    .ty-dice.dbl .ty-die2 { border-color: #F5B041; box-shadow: 0 4px 0 var(--ink), inset 0 0 0 2px #F5B041; }
+    .ty-bill { display: inline-flex; align-items: center; justify-content: center; min-width: 46px; height: 24px; padding: 0 6px; background: #86EFAC; color: #064E3B; border: 2px solid var(--ink); box-shadow: 2px 2px 0 var(--ink), inset 0 0 0 2px #F0FDF4; font-family: 'Arcade Pixel', sans-serif; font-size: 15px; line-height: 1; }
+    .ty-float { position: fixed; z-index: 75; pointer-events: none; font-family: 'Arcade Pixel', sans-serif; font-size: 22px; line-height: 1; text-shadow: 2px 2px 0 #050E18; white-space: nowrap; }
+    .ty-pl.gain { box-shadow: inset 0 0 0 3px #34D399; } .ty-pl.loss { box-shadow: inset 0 0 0 3px #FB7185; }
+    .ty-pl.gain .ty-cash { color: #34D399; } .ty-pl.loss .ty-cash { color: #FB7185; }
+    .ty-auc { width: 100%; background: #0F2A44; border: 3px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); padding: 8px 10px; }
+    .ty-power { height: 8px; background: #0A1624; border: 2px solid var(--ink); margin-top: 6px; overflow: hidden; }
+    .ty-power span { display: block; height: 100%; width: 0; background: #F5B041; }
+    .ty-card { display: none; width: min(92%, 280px); background: #F7F4EC; color: #050E18; border: 3px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); text-align: left; }
+    .ty-card.on { display: block; }
+    .ty-card .hd { font-family: 'Arcade Pixel', sans-serif; font-size: 15px; color: #F7F4EC; padding: 3px 8px; border-bottom: 3px solid var(--ink); }
+    .ty-card .bd { padding: 8px 10px; font-weight: 700; font-size: 13px; line-height: 1.3; }
+    .ty-pawns { position: absolute; inset: 0; pointer-events: none; z-index: 5; contain: layout; }
+    .ty-pawn { position: absolute; left: 0; top: 0; width: clamp(15px, 3.3cqi, 24px); height: clamp(15px, 3.3cqi, 24px); transition: translate .26s cubic-bezier(.3,.7,.25,1); }
+    .ty-pawn.warp { transition-duration: .85s; }
+    .ty-pawn b { display: flex; width: 100%; height: 100%; align-items: center; justify-content: center; border: 2px solid var(--ink); border-radius: 50% !important; box-shadow: 0 2px 0 var(--ink); font-size: clamp(8px, 1.9cqi, 13px); line-height: 1; }
+    .ty-die { width: clamp(34px, 8.5cqi, 50px); height: clamp(34px, 8.5cqi, 50px); background: #F7F4EC; border: 3px solid var(--ink); box-shadow: 0 3px 0 var(--ink); display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); padding: 5px; gap: 1px; }
+    .ty-die i { border-radius: 50% !important; } .ty-die i.on { background: #050E18; }
+    .ty-die.roll { animation: tyRoll .2s infinite; }
+    @keyframes tyRoll { 50% { transform: rotate(14deg) translateY(-3px); } }
+    .ty-pl { background: #0F2A44; border: 3px solid var(--ink); padding: .4rem .6rem; }
+    .ty-pl.turn { box-shadow: inset 0 0 0 3px #F5B041; } .ty-pl.out { opacity: .4; }
+    .ty-dot { display: inline-block; width: 10px; height: 10px; border: 1.5px solid var(--ink); margin-right: 2px; }
+    .ty-dot.m { opacity: .35; }
+

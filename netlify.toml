@@ -1,0 +1,8 @@
+# Netlify settings for GameHub (used when the site is deployed from GitHub).
+# Nothing to build on Netlify: build.py already made the finished site in dist/site.
+[build]
+  publish = "dist/site"
+  command = "echo 'GameHub is already built (dist/site)'"
+
+# The link-preview program for room links (gamehub.us.com/r/CODE) is netlify/edge-functions/room-preview.js;
+# Netlify finds it there by itself.

@@ -1,0 +1,51 @@
+    /* ===== manor mystery ===== */
+    .mm-map { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 6px; background: var(--ink); border: 4px solid var(--ink); box-shadow: 0 5px 0 var(--ink); }
+    .mm-room { position: relative; min-height: 128px; background-color: var(--rc); background-image: linear-gradient(rgba(255,255,255,.05) 2px, transparent 2px), linear-gradient(90deg, rgba(255,255,255,.05) 2px, transparent 2px); background-size: 18px 18px; box-shadow: inset 0 0 0 3px rgba(255,255,255,.08); padding: 6px; display: flex; flex-direction: column; gap: 4px; }
+    .mm-room.here { box-shadow: inset 0 0 0 3px #F5B041; }
+    .mm-room.go { cursor: pointer; box-shadow: inset 0 0 0 3px #2DD4BF; animation: fiGlow 1s steps(2, jump-none) infinite; }
+    .mm-room.go:hover { filter: brightness(1.15); animation: none; }
+    .mm-rn { font-family: 'Arcade Pixel', sans-serif; font-size: .95rem; color: #F7F4EC; text-shadow: 2px 2px 0 #050E18; line-height: 1; }
+    .mm-pass { position: absolute; right: 6px; top: 4px; color: #9DB4CC; font-size: .8rem; }
+    .mm-toks { display: flex; flex-wrap: wrap; gap: 3px; margin-top: auto; }
+    .mm-tok { width: 26px; height: 26px; border: 2px solid var(--ink); border-radius: 50% !important; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; box-shadow: 0 2px 0 var(--ink); }
+    .mm-tok.out { opacity: .4; }
+    .mm-sus { display: flex; gap: 2px; flex-wrap: wrap; }
+    .mm-st { width: 16px; height: 16px; border: 2px solid var(--ink); font-family: 'Arcade Pixel', sans-serif; font-size: .7rem; color: #050E18; display: inline-flex; align-items: center; justify-content: center; line-height: 1; }
+    .mm-card { width: 92px; min-height: 64px; background: #F7F4EC; color: #050E18; border: 3px solid var(--ink); box-shadow: 0 3px 0 var(--ink), inset 0 4px 0 var(--cc, #2DD4BF); padding: 7px 6px 5px; display: flex; flex-direction: column; gap: 2px; position: relative; cursor: default; }
+    .mm-card[data-show] { cursor: pointer; } .mm-card[data-show]:hover { translate: 0 -4px; }
+    .mm-card.back { background: #6B2D3F; align-items: center; justify-content: center; color: #F5B041; font-family: 'Arcade Pixel', sans-serif; font-size: 1.6rem; }
+    .mm-cat { font-family: 'Arcade Pixel', sans-serif; font-size: .62rem; color: #5C7A99; line-height: 1; }
+    .mm-cn { font-weight: 800; font-size: .78rem; line-height: 1.1; overflow-wrap: anywhere; hyphens: auto; }
+    .mm-dot { position: absolute; right: 5px; bottom: 5px; width: 9px; height: 9px; border: 2px solid var(--ink); }
+    .mm-seat { background: #0F2A44; border: 3px solid var(--ink); padding: .35rem .55rem; font-size: .8rem; display: flex; align-items: center; gap: 5px; }
+    .mm-seat.turn { box-shadow: inset 0 0 0 3px #F5B041; } .mm-seat.out { opacity: .45; }
+    .mm-sw { display: inline-block; width: 10px; height: 10px; border: 2px solid var(--ink); flex: none; }
+    .mm-note { max-height: 520px; overflow-y: auto; }
+    .mm-note table { width: 100%; border-collapse: collapse; font-size: .78rem; }
+    .mm-note th { position: sticky; top: 0; background: #0F2A44; padding: 5px 2px; }
+    .mm-note td { border-bottom: 1px solid #1A3856; padding: 3px 2px; text-align: center; cursor: pointer; min-width: 26px; height: 24px; }
+    .mm-note td.mm-cname { text-align: left; cursor: default; padding-left: 8px; color: #F7F4EC; white-space: nowrap; }
+    .mm-note tr.ruled td.mm-cname { color: #5C7A99; text-decoration: line-through; }
+    .mm-note .mm-sec td { font-family: 'Arcade Pixel', sans-serif; text-align: left; color: #F5B041; padding: 6px 8px 2px; cursor: default; background: #0A1624; }
+    .mm-yes { color: #34D399; } .mm-no { color: #FB7185; } .mm-m { color: #9DB4CC; font-weight: 700; }
+    .mm-sel { background: #050E18; color: #F7F4EC; border: 2px solid #27496B; padding: 4px 6px; font-size: .85rem; }
+    @media (max-width: 640px) { .mm-room { min-height: 96px; } .mm-rn { font-size: .78rem; } .mm-card { width: 80px; } }
+
+    /* the manor seen from above: roof, rooms with floors + furniture, doorways, lawn */
+    .mm-house { background: #2E7D4F; border: 4px solid var(--ink); box-shadow: 0 5px 0 var(--ink); padding: 0 10px 10px; }
+    .mm-roof { height: 64px; margin: 0 -6px; }
+    .mm-roof svg { width: 100%; height: 100%; display: block; }
+    .mm-house .mm-map { border: 4px solid #3A2333; box-shadow: none; background: #3A2333; gap: 7px; padding: 0; }
+    .mm-lawn { height: 10px; background: repeating-linear-gradient(90deg, #2E7D4F 0 8px, #34895A 8px 16px); }
+    .mm-room { overflow: visible; background: none !important; isolation: isolate; }
+    .mm-art { position: absolute; inset: 0; z-index: -1; overflow: hidden; }
+    .mm-art svg { width: 100%; height: 100%; display: block; }
+    .mm-room.here .mm-art, .mm-room.go .mm-art { filter: brightness(1.08); }
+    .mm-rn { background: rgba(5, 14, 24, .72); padding: 2px 5px 1px; align-self: flex-start; }
+    .mm-toks { position: relative; }
+    .mm-door { position: absolute; background: #C9853F; border: 2px solid var(--ink); z-index: 2; }
+    .mm-door.r { right: -9px; top: calc(50% - 12px); width: 11px; height: 24px; }
+    .mm-door.b { bottom: -9px; left: calc(50% - 12px); width: 24px; height: 11px; }
+    .mm-pass { right: 5px; top: 5px; width: 18px; height: 18px; background: #7A4A21; border: 2px solid var(--ink); box-shadow: inset 0 0 0 3px #9C6A3A; }
+    .mm-pass::after { content: ''; position: absolute; left: 4px; top: 4px; width: 6px; height: 6px; border: 2px solid #F5B041; border-radius: 50%; }
+    @media (max-width: 640px) { .mm-roof { height: 44px; } .mm-house { padding: 0 6px 6px; } }

@@ -1,0 +1,2 @@
+# short room links: gamehub.us.com/r/CODE opens the site (the edge function adds the preview)
+/r/*  /index.html  200

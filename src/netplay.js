@@ -1,0 +1,441 @@
+    /* =========================================================================
+       NETPLAY: one shared way to run a game table, on this device or online.
+       A game plugs in with  mod.online = { seats(sel), min, bots, ranked, start(body, sel, S) }.
+       Every change to the game goes through one ordered list of "actions":
+         S.act(a)       a decision (a player's tap, or a computer player's choice) -> sent to the table
+         S.on(apply, drive)
+             apply(a)   changes the game for EVERY screen, in the same order (return ms to wait for an animation)
+             drive()    runs only on the table's host after the screen is idle: computer players think here,
+                        and timed steps ("next round") are scheduled with S.later(fn, ms)
+         S.rng          the shared dice/shuffle (same seed on every screen) - use it inside apply only
+       Online, the host's browser puts the actions in order and passes them to everyone (live channel,
+       no database rows). If a player leaves, a computer player takes their seat (2-player games: the
+       other player wins). If the host leaves, the next player becomes host.
+       ========================================================================= */
+    const NP = { S: null };
+    function seeded(seed) {
+      let a = seed >>> 0;
+      const random = () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+      const rn = (n) => Math.floor(random() * n);
+      return { random, rnd: rn, pick: (arr) => arr[rn(arr.length)], shuffle: (arr) => { arr = arr.slice(); for (let i = arr.length - 1; i > 0; i--) { const j = rn(i + 1); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; } };
+    }
+    const NP_BOTS = [['Robo Rita', '🤖'], ['Captain Chip', '🦾'], ['Pixel Pete', '👾'], ['Nova', '🛰️'], ['Gizmo', '⚙️'], ['Sprocket', '🔩'], ['Bolt', '⚡'], ['Widget', '🧩']];
+
+    /* ---------- the session object a game talks to ---------- */
+    function npSession(o) {
+      const S = {
+        online: !!o.online, code: o.code || null, seats: o.seats, me: o.me, n: o.seats.length, sel: o.sel || {},
+        ranked: !!o.ranked, isHost: o.online ? o.me === 0 : true, rng: seeded(o.seed >>> 0), seed: o.seed >>> 0,
+        version: 0, over: false, tok: GT.cur,
+      };
+      S.bot = (i) => !!(S.seats[i] && S.seats[i].bot);
+      S.human = (i) => !S.bot(i);
+      // "mine": this screen may play for that seat (online: only your own seat; on one device: every human seat)
+      S.mine = (i) => (S.online ? i === S.me : S.human(i));
+      S.name = (i) => (S.seats[i] ? S.seats[i].name : '?');
+      S.avatar = (i) => (S.seats[i] ? S.seats[i].avatar : '🙂');
+      let apply = () => 0, drive = () => {};
+      S.on = (ap, dr) => { apply = ap; drive = dr || (() => {}); S.tok = GT.cur; };
+      S.track = () => { S.tok = GT.cur; S.script = true; };   // script games call this after their ++GT.cur
+      const q = []; let busy = false;
+      // "script" games (an async loop) read the actions one by one with S.ask instead of apply/drive
+      const inbox = []; let waiter = null;
+      const alive = () => GT.cur === S.tok && NP.S === S;
+      function drain() {
+        while (q.length && !busy && alive()) {
+          const a = q.shift(); S.version++;
+          if (a.t === '_left' || a.t === '_gone') { const st = S.seats[a.s]; if (st && !st.bot) { st.bot = true; st.left = true; } }
+          if (S.script) { if (waiter) { const f = waiter; waiter = null; f(a); } else inbox.push(a); continue; }
+          let w = 0; try { w = +apply(a) || 0; } catch (e) { console.error('game action failed', a, e); }
+          if (w > 0) { busy = true; gTimeout(() => { busy = false; drain(); }, w); return; }
+        }
+        if (!q.length && !busy && alive() && S.isHost && !S.over) { try { drive(); } catch (e) { console.error(e); } }
+      }
+      S._push = (a) => { q.push(a); drain(); };
+      S._kick = () => drain();
+      // later(fn, ms): run fn after ms, unless the game moved on in the meantime (or this screen stopped being host)
+      S.later = (fn, ms) => { const v = S.version; gTimeout(() => { if (alive() && S.version === v && S.isHost && !busy && !q.length && !S.over) fn(); }, ms); };
+      // script games: wait for the next decision of one seat. The table's host plays for computer seats
+      // (botFn returns the action, after `ms`). Players who leave become computer seats.
+      S.ask = async (seat, botFn, ms, filter) => {
+        S.script = true;
+        for (;;) {
+          const w = { seat, botFn, ms: window.__fast && !S.online ? 5 : ms === undefined ? 800 : ms, sent: false };
+          S._wait = w; S._maybeBot();
+          const a = inbox.length ? inbox.shift() : await new Promise((res) => { waiter = res; });
+          if (a.t === '_left' || a.t === '_gone') { if (S.onLeft) S.onLeft(a); if (S.over) return new Promise(() => {}); continue; }
+          if (filter ? !filter(a) : a.s !== seat) continue;
+          S._wait = null; return a;
+        }
+      };
+      // everyone decides at the same time (bets, votes...): returns { seat: action } once every seat in `seats` has
+      // answered. The host answers for computer seats right away, and for slow people after `secs` (autoFn).
+      S.collect = async (key, seats, botFn, autoFn, secs) => {
+        const got = {}, t0 = Date.now(), left = () => seats.filter((i) => !(i in got));
+        while (left().length) {
+          const bots = left().filter((i) => S.bot(i));
+          const ms = bots.length ? 350 + Math.floor(Math.random() * 400) : Math.max(250, secs * 1000 - (Date.now() - t0));
+          const a = await S.ask(-1, () => { const b = left().filter((i) => S.bot(i)); const k = b.length ? b[0] : left()[0]; return Object.assign((b.length ? botFn : autoFn)(k), { s: k, key, auto: !b.length }); }, ms,
+            (x) => x.key === key && seats.includes(x.s) && !(x.s in got));
+          got[a.s] = a;
+          if (S.onCollect) S.onCollect(key, got);
+        }
+        return got;
+      };
+      S._maybeBot = () => {
+        const w = S._wait;
+        if (!w || w.sent || !S.isHost || !w.botFn || !(w.seat === -1 || S.bot(w.seat))) return;   // seat -1 = the table itself (timeouts)
+        w.sent = true;
+        gTimeout(() => { if (alive() && S._wait === w && S.isHost) { let a = null; try { a = w.botFn(); } catch (e) { console.error(e); } if (a) S.act(Object.assign({ s: w.seat }, a)); } else w.sent = false; }, w.ms);
+      };
+      S.script = false;
+      S.act = (a) => { if (a.s === undefined) a.s = S.me; if (o.send) o.send(a); else S._push(a); };
+      S.finish = async () => null;   // ranked Elo (online only), replaced below
+      S.leave = () => {};
+      return S;
+    }
+    // a table on this device: seat 0 is you, the others are computer players (or friends on the same screen)
+    function npLocal(seats, sel) { const S = npSession({ online: false, seats, me: 0, sel, seed: Math.floor(Math.random() * 2 ** 31) }); NP.S = S; return S; }
+    const npBotSeat = (i) => ({ bot: true, name: NP_BOTS[i % NP_BOTS.length][0], avatar: NP_BOTS[i % NP_BOTS.length][1] });
+
+    /* ---------- computer players in a private room ---------- */
+    // games whose online table has no computer players, but which can play ONE computer opponent on this device
+    const NP_LOCAL_VS = { wordduel: 1 };
+    // the "how good are the computer players" choice for a game's room
+    function npLevelOption(m) {
+      if (m.id === 'navalnet') return { key: 'ai', label: 'COMPUTER LEVEL', def: 'smart', choices: [['easy', 'Rookie'], ['smart', 'Smart']] };
+      if (m.id === 'bowling') return { key: 'mode', label: 'COMPUTER LEVEL', def: 'bot1', choices: [['bot1', 'Casual'], ['bot2', 'Pro']] };
+      const k = botLevelKey(m.id), o = k && (m._opts || []).find((x) => x.key === k);
+      return o ? { key: k, label: /SPEED|STYLE/.test(o.label) ? o.label.replace('BOT ', 'COMPUTER ') : 'COMPUTER LEVEL', def: o.def, choices: o.choices } : null;
+    }
+    // can "just you + nb computer players" run as the game's own on-this-device version?
+    function npCanLocal(m, nb) {
+      if (['navalnet', 'tictactoe', 'c4', 'checkers', 'pool', 'wordduel', 'bowling'].includes(m.id)) return nb === 1;
+      if (m.id === 'poker') return nb === 3;
+      const sk = tableSizeKey(m.id), so = sk && (m._opts || []).find((o) => o.key === sk);
+      return !!(so && so.choices.some((c) => +c[0] === nb + 1));
+    }
+    // the settings that version needs
+    function npLocalSel(m, sel, nb, lvl) {
+      const s = Object.assign({}, sel, { net: 'here' }), lk = botLevelKey(m.id), sk = tableSizeKey(m.id);
+      delete s.room; delete s.rematch; delete s.rmRanked; delete s.rmBots;
+      if (lk && lvl != null) s[lk] = lvl;
+      if (sk) s[sk] = nb + 1;
+      if (m.id === 'tictactoe') { s.mode = 'ai'; s.first = s.first || 'alt'; }
+      if (m.id === 'c4') { s.mode = 'ai'; s.first = s.first || 'me'; }
+      if (m.id === 'bowling') s.mode = lvl || 'bot1';
+      return s;
+    }
+    // Naval Grid vs the computer (the offline version) with the room's settings
+    function npNavalVsComputer(s) {
+      GT.started = false; GT.over = true;
+      BASE_SETUP.naval.go({ where: 'here', ai: s.ai || 'smart', clock: s.clock || 20, touch: s.touch === undefined ? 1 : s.touch });
+    }
+
+    /* ---------- the online lobby: find or open a table, wait for players, then start ---------- */
+    async function npLobby(body, m, sel) {
+      const O = m.online, minH = O.min || 2, quick = sel.net === 'quick', me = NET.me.id;
+      const reopen = () => { if (activeGame === m.id) m.open(document.getElementById('game-root')); };
+      let room = null, ch = null, gone = false, started = false, pingT = null, autoT = null, autoAt = 0;
+      const wait = (title, html) => {
+        body.innerHTML = `<div class="win max-w-lg mx-auto overflow-hidden"><div class="winbar ${m.tone || 'teal'}"><span>${title}</span><span class="pix text-xs">${esc(m.name.toUpperCase())} ONLINE</span></div>
+          <div class="p-6 space-y-4 text-center" id="np-lob">${html}</div></div>`;
+      };
+      // a running clock while you wait
+      const qt0 = Date.now(), qClock = () => { const t = Math.floor((Date.now() - qt0) / 1000); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`; };
+      const qTick = gInterval(() => { const el = document.getElementById('np-qt'); if (el) el.textContent = qClock(); if (started || gone) gClearInt(qTick); }, 1000);
+      const cancel = () => { gone = true; if (ch) ch.close(); if (pingT) gClearInt(pingT); if (room && room.host === me && !started) NET.leave(room.code); reopen(); };
+      wait(quick ? 'FINDING A TABLE' : 'OPENING YOUR ROOM', '<div class="ch-wait"><i></i><i></i><i></i></div><p class="text-sm text-muted">Connecting...</p><button id="np-cancel" class="btn-game btn-graphite py-2 px-6 text-sm">Cancel</button>');
+      document.getElementById('np-cancel').onclick = cancel;
+      const settings = Object.assign({}, sel); delete settings.room; delete settings.net; delete settings.rematch; delete settings.rmRanked; delete settings.rmBots;
+      // joining someone's room: their settings (table size...) come from the room, not from this screen
+      let max = O.seats(sel);
+      const sizeOf = (r) => { const st = Object.assign({}, sel, (r && r.settings) || {}); return O.seats(st); };
+      try {
+        if (quick && max === 2) room = await NET.quickMatch(m.id, settings);
+        else if (quick) {
+          const open = (await NET.openRooms()).filter((r) => r.game === m.id);
+          for (const r of open) { const x = await NET.getRoom(r.code).catch(() => null); if (x && x.status === 'waiting' && sizeOf(x) === max) { room = x; break; } }
+          if (!room) room = await NET.createRoom(m.id, settings, true, null);
+        } else {
+          const r = await NET.getRoom(sel.room);
+          if (r && r.game === m.id) max = sizeOf(r);
+          if (r && r.status !== 'done' && !(r.status === 'playing' && max > 2)) {
+            if (r.game !== m.id) throw new Error('That code is for a different game.');
+            if (r.host === me) throw new Error('That room is yours: this browser is already that player. To play yourself, open the second copy in another browser or a private window.');
+            room = max === 2 ? await NET.joinRoom(r.code) : r;
+          } else {
+            const sk = tableSizeKey(m.id), so = sk && (m._opts || []).find((o) => o.key === sk);
+            if (so && !sel.rematch) { const big = Math.max(...so.choices.map((c) => +c[0])); settings[sk] = big; sel[sk] = big; max = O.seats(sel); }
+            room = await NET.createRoom(m.id, settings, !!sel.rmRanked && max === 2, sel.room);
+          }
+        }
+      } catch (e) { showToast(e.message || 'Could not connect.', 'error'); return reopen(); }
+      if (gone || activeGame !== m.id) return;
+      const code = room.code, isHost = room.host === me, ranked = !!room.is_public && max === 2 && O.ranked !== false;
+      const meta = { name: NET.me.name, avatar: NET.me.avatar, at: Date.now() };
+      ch = NET.channel(code, meta);
+      let seats = isHost ? [{ uid: me, name: meta.name, avatar: meta.avatar }] : [], hostSel = isHost ? settings : null, present = [];
+      const link = inviteLink(m.id, code, Object.assign({}, settings, { net: 'room' }));
+      // computer players (private room, host): how many and how good. Games without online bots can still
+      // play one computer opponent when you are alone (that game then runs on this device).
+      const lvOpt = npLevelOption(m), sk = tableSizeKey(m.id), so = sk && (m._opts || []).find((o) => o.key === sk);
+      const minTable = so ? Math.min(...so.choices.map((c) => +c[0])) : Math.max(2, O.min || 2);
+      let nb = +sel.rmBots || 0, lvl = lvOpt ? (lvOpt.key in sel && lvOpt.choices.some((c) => String(c[0]) === String(sel[lvOpt.key])) ? sel[lvOpt.key] : lvOpt.def) : null, nbSeen = 0, lvSeen = null;
+      const botsCap = () => (quick || !isHost ? 0 : O.bots === false ? (NP_LOCAL_VS[m.id] && seats.length === 1 ? 1 : 0) : max - seats.length);
+      const fixBots = () => { nb = Math.max(0, Math.min(nb, botsCap())); };
+      const paint = () => {
+        if (gone || started) return;
+        fixBots();
+        const nbV = isHost ? nb : nbSeen, lvV = isHost ? lvl : lvSeen;
+        const botRow = (i) => `<div class="np-seat on bot"><span class="text-lg">🤖</span><span class="font-bold truncate">Computer ${i + 1}</span><span class="pix text-xs text-muted">${lvOpt ? esc((lvOpt.choices.find((c) => String(c[0]) === String(lvV)) || [0, 'CPU'])[1]).toUpperCase() : 'CPU'}</span></div>`;
+        const _rows = Array.from({ length: max }, (_, i) => seats[i]
+          ? `<div class="np-seat on"><span class="text-lg">${esc(seats[i].avatar)}</span><span class="font-bold truncate">${esc(seats[i].name)}</span>${i === 0 ? '<span class="pix text-xs text-amber">HOST</span>' : ''}${seats[i].uid === me ? '<span class="pix text-xs text-teal">YOU</span>' : ''}</div>`
+          : i - seats.length < nbV ? botRow(i - seats.length)
+          : `<div class="np-seat"><span class="text-lg">·</span><span class="text-muted">${quick && O.bots !== false ? 'Open seat · a computer player fills it if nobody joins' : 'Open seat'}</span></div>`).join('');
+        const humans = seats.length, total = humans + nbV;
+        const canStart = isHost && (quick ? humans >= minH : total >= Math.max(2, minTable));
+        const cap = botsCap();
+        const botsUI = !quick && isHost && (cap > 0 || nb > 0) ? `<div class="np-bots"><div class="flex items-center justify-between gap-3"><span class="pix text-xs tracking-wider text-muted">${max === 2 ? 'COMPUTER OPPONENT' : 'COMPUTER PLAYERS'}</span>
+            <span class="np-step"><button id="np-bm" class="btn-game btn-graphite" ${nb <= 0 ? 'disabled' : ''} aria-label="One less computer player">−</button><b id="np-bn">${nb}</b><button id="np-bp" class="btn-game btn-graphite" ${nb >= cap ? 'disabled' : ''} aria-label="One more computer player">+</button></span></div>
+            ${lvOpt && nb > 0 ? `<div class="pix text-xs tracking-wider text-muted mt-3 mb-1.5 text-left">${esc(lvOpt.label)}</div><div class="seg w-full">${lvOpt.choices.map((c) => `<button data-lv="${esc(c[0])}" class="seg-btn flex-1 ${String(c[0]) === String(lvl) ? 'on' : ''}">${esc(c[1])}</button>`).join('')}</div>` : ''}</div>` : '';
+        const auto = autoAt ? Math.max(0, Math.ceil((autoAt - Date.now()) / 1000)) : 0;
+        const needMsg = total < Math.max(2, minTable) ? (cap > 0 ? `Invite friends or add computer players (at least ${Math.max(2, minTable)} players).` : `Waiting for friends to join (at least ${Math.max(2, minTable)} players)...`) : '';
+        document.getElementById('np-lob').innerHTML = `<div class="flex items-center justify-center gap-2"><span class="pix text-xs text-muted">${quick ? 'SEARCHING' : 'WAITING'}</span><span id="np-qt" class="pix text-xl text-teal">${qClock()}</span></div>
+          ${quick ? '' : `<p class="text-sm text-muted">${isHost ? 'Your room is open. Send the link to your friends.' : 'You are in the room. The host starts the game.'}</p>
+            <div class="room-code mx-auto" style="max-width:220px">${esc(code)}</div>
+            <div class="flex flex-wrap justify-center gap-2"><button id="np-copy" class="btn-game btn-amber py-2 px-5 text-sm">Copy invite link</button>${navigator.share ? '<button id="np-share" class="btn-game btn-teal py-2 px-5 text-sm">Share…</button>' : ''}</div>
+            <div class="np-linkline pix text-xs text-muted">${esc(link.replace(/^https?:\/\//, ''))}</div>`}
+          ${quick && max === 2 ? '<p class="text-sm text-muted">You are in the queue. The next player who looks for a game is matched with you.</p><p class="text-xs text-muted">Testing on one computer? Two tabs of the same browser are the same player. Use a second browser, or a private window, for the other side.</p>' : ''}
+          <div class="np-seats text-left">${_rows}</div>
+          ${botsUI}
+          ${isHost && (!quick || max > 2) ? `<button id="np-start" class="btn-game btn-${m.btn || 'amber'} w-full py-2.5 text-sm" ${canStart ? '' : 'disabled'}>${canStart ? (quick && humans < max && O.bots !== false ? 'Start game (computer players fill the empty seats)' : 'Start game') : esc(needMsg || 'Waiting for at least one more player...')}</button>` : ''}
+          ${max > 2 && !isHost ? '<p class="text-sm text-muted">Waiting for the host to start...</p>' : ''}
+          ${auto ? `<p class="pix text-xs text-teal">STARTING IN ${auto}s</p>` : ''}
+          <button id="np-cancel" class="btn-game btn-graphite py-2 px-6 text-sm">Leave room</button>`;
+        const cp = document.getElementById('np-copy'); if (cp) cp.onclick = (e) => copyText(link, e.currentTarget);
+        const sh = document.getElementById('np-share'); if (sh) sh.onclick = () => navigator.share({ title: `Play ${m.name.replace(' Online', '')} on GameHub`, text: `Play ${m.name.replace(' Online', '')} with me on GameHub!`, url: link }).catch(() => {});
+        const st = document.getElementById('np-start'); if (st) st.onclick = () => startNow();
+        const bm = document.getElementById('np-bm'); if (bm) bm.onclick = () => { nb--; SFX.play('click'); tellLobby(); paint(); };
+        const bp = document.getElementById('np-bp'); if (bp) bp.onclick = () => { nb++; SFX.play('click'); tellLobby(); paint(); };
+        document.querySelectorAll('#np-lob [data-lv]').forEach((b) => { b.onclick = () => { lvl = (lvOpt.choices.find((c) => String(c[0]) === b.dataset.lv) || [lvl])[0]; SFX.play('click'); tellLobby(); paint(); }; });
+        document.getElementById('np-cancel').onclick = cancel;
+      };
+      const tellLobby = () => { if (isHost && !started) ch.send('lobby', { seats, sel: hostSel, max, nb, lvl }); };
+      // the host keeps the seat list: people present on the channel, in the order they arrived
+      ch.presence((list) => {
+        present = list.map((x) => x.uid);
+        if (!isHost || started) return;
+        const before = JSON.stringify(seats);
+        seats = seats.filter((x) => x.uid === me || present.includes(x.uid));
+        list.slice().sort((a, b) => (a.at || 0) - (b.at || 0)).forEach((x) => { if (seats.length < max && !seats.some((y) => y.uid === x.uid)) seats.push({ uid: x.uid, name: x.name || 'Player', avatar: x.avatar || '🙂' }); });
+        if (JSON.stringify(seats) !== before) {
+          SFX.play('pop'); tellLobby(); paint();
+          if (max === 2 && seats.length === 2) return begin();
+          if (sel.rematch && seats.length >= sel.rematch) return begin();   // a rematch starts as soon as everyone is back
+          if (seats.length >= max) return begin();
+          if (quick && seats.length >= minH && !autoAt) { autoAt = Date.now() + 20000; autoT = gInterval(() => { paint(); if (Date.now() >= autoAt) { gClearInt(autoT); begin(); } }, 1000); }
+        }
+      });
+      ch.on('hi', () => { tellLobby(); if (started && startMsg) ch.send('start', startMsg); });
+      ch.on('lobby', (d) => {
+        if (isHost || started) return;
+        seats = d.seats; hostSel = d.sel; nbSeen = d.nb || 0; lvSeen = d.lvl;
+        if (!seats.some((x) => x.uid === me) && seats.length >= d.max) { showToast('That table is full.', 'error'); return cancel(); }
+        paint();
+      });
+      let startMsg = null, S = null;
+      ch.on('start', (d) => { if (!isHost && !started) launch(d); });
+      function startNow() {
+        if (started || !isHost) return;
+        fixBots();
+        if (!quick && seats.length === 1 && nb > 0 && npCanLocal(m, nb)) return playLocal();
+        begin();
+      }
+      // just you and computer players: close the room and play the game's own vs-computer version on this device
+      function playLocal() {
+        started = true; gone = true; if (autoT) gClearInt(autoT); if (pingT) gClearInt(pingT);
+        try { ch.close(); } catch (e) {} NET.leave(code);
+        const ls = npLocalSel(m, Object.assign({}, hostSel || settings), nb, lvl);
+        if (m.id === 'navalnet') { GT.started = false; return npNavalVsComputer(ls); }
+        if (m._onStart) m._onStart(ls);
+      }
+      function begin() {
+        if (started || !isHost) return; if (autoT) gClearInt(autoT);
+        fixBots();
+        const all = seats.slice();
+        if (quick) { if (O.bots !== false) while (all.length < max) all.push(npBotSeat(all.length)); }
+        else for (let k = 0; k < nb && all.length < max; k++) all.push(npBotSeat(all.length));
+        const fin = Object.assign({}, hostSel);
+        if (!quick) { const lk = botLevelKey(m.id); if (lk && lvl != null) fin[lk] = lvl; if (sk) fin[sk] = all.length; }
+        startMsg = { seed: Math.floor(Math.random() * 2 ** 31), seats: all, sel: fin };
+        ch.send('start', startMsg); NET.leave(code); launch(startMsg);
+      }
+      function launch(d) {
+        const myIdx = d.seats.findIndex((x) => x.uid === me);
+        if (myIdx < 0) { showToast('That game started without you.', 'error'); return cancel(); }
+        started = true; if (autoT) gClearInt(autoT);
+        S = npOnline({ code, ch, seats: d.seats, me: myIdx, seed: d.seed, sel: d.sel, ranked, room });
+        NP.table = code; CHAT.mode = 'table'; if (typeof chatOnView === 'function') chatOnView('game');
+        NP.last = { code, game: m.id, sel: Object.assign({}, d.sel), ranked, bots: d.seats.filter((x) => x.bot).length, uids: d.seats.filter((x) => x.uid).map((x) => x.uid), names: Object.fromEntries(d.seats.filter((x) => x.uid).map((x) => [x.uid, x.name])) };
+        if (ranked && pingT == null) { NET.ping(code); pingT = gInterval(() => NET.ping(code), 10000); }
+        SFX.play('reveal');
+        O.start(body, Object.assign({}, d.sel, { net: sel.net, room: code }), S);
+        if (m.id === activeGame) { GT.started = true; GT.over = false; }
+      }
+      await ch.ready;
+      if (gone) return;
+      const tb = body.querySelector('.winbar span'); if (tb) tb.textContent = quick ? (max === 2 ? 'FINDING AN OPPONENT' : 'FINDING A TABLE') : isHost ? `YOUR ROOM · ${code}` : `ROOM ${code}`;
+      if (isHost) { paint(); NET.ping(code); pingT = gInterval(() => { if (!started) NET.ping(code); }, 10000); }
+      else { paint(); ch.send('hi', {}); gTimeout(() => { if (!started && !gone && !seats.length) ch.send('hi', {}); }, 2500); }
+    }
+
+    /* ---------- an online session: ordering actions, watching who is still here ---------- */
+    function npOnline(o) {
+      const ch = o.ch, me = NET.me.id;
+      let host = 0; const log = []; let next = 0; const buf = {}; let asked = 0;
+      const S = npSession({ online: true, code: o.code, seats: o.seats, me: o.me, seed: o.seed, sel: o.sel, ranked: o.ranked, send: (a) => { if (S.isHost) seq(a); else ch.send('req', a); } });
+      NP.S = S;
+      const humanUp = (i) => S.seats[i] && !S.seats[i].bot && !S.seats[i].left;
+      const pickHost = () => { for (let i = 0; i < S.n; i++) if (humanUp(i)) return i; return -1; };
+      function seq(a) { a._n = log.length; log.push(a); next = log.length; ch.send('act', a); S._push(a); }
+      function take(a) {
+        if (a._n < next) return;
+        if (a._n > next) { buf[a._n] = a; if (Date.now() - asked > 1500) { asked = Date.now(); ch.send('sync', { from: next }); } return; }
+        log.push(a); next++; S._push(a);
+        while (buf[next]) { const b = buf[next]; delete buf[next]; log.push(b); next++; S._push(b); }
+      }
+      ch.on('act', (a) => { if (!S.isHost) take(a); });
+      ch.on('acts', (d) => { if (!S.isHost) (d.list || []).forEach(take); });
+      ch.on('sync', (d) => { if (S.isHost) ch.send('acts', { list: log.slice(d.from || 0) }); });
+      ch.on('req', (a, from) => {
+        if (!S.isHost || !a) return;
+        const st = S.seats[a.s]; if (!st || st.uid !== from) return;          // you can only act for your own seat
+        if (a.t === '_gone') { const w = S.seats[a.who]; if (w && !w.bot) seq({ t: '_gone', s: a.who }); return; }
+        if (st.bot && a.t !== '_left') return;
+        seq(a);
+      });
+      ch.on('hi', () => {});   // late lobby messages
+      // after every action: re-check who the host is (the first player still at the table)
+      const origPush = S._push;
+      S._push = (a) => { origPush(a); const h = pickHost(); if (h !== host) { host = h; const was = S.isHost; S.isHost = h === S.me; if (S.isHost && !was) { next = log.length; showToast('You are now hosting this table.', 'info'); S._kick(); } } if (S.script) S._maybeBot(); };
+      // who is still here: a player missing for 20 s gets a warning, after 45 s a computer player takes the seat
+      const missing = {};
+      let present = S.seats.map((x) => x.uid);
+      ch.presence((list) => { present = list.map((x) => x.uid); });
+      const watch = gInterval(() => {
+        if (S.over) return;
+        const now = Date.now(); let warn = '';
+        for (let i = 0; i < S.n; i++) {
+          if (!humanUp(i) || i === S.me) continue;
+          if (present.includes(S.seats[i].uid)) { if (missing[i]) { delete missing[i]; showToast(`${S.name(i)} is back.`, 'success'); } continue; }
+          missing[i] = missing[i] || now;
+          const t = now - missing[i];
+          if (t > 15000) warn = `${S.name(i)} disconnected. ${S.n === 2 ? 'You win' : 'A computer player takes over'} in ${Math.max(0, Math.ceil((45000 - t) / 1000))}s if they don't come back.`;
+          if (t > 45000) {
+            // the first player still here sends it (so only one screen does)
+            const first = [...Array(S.n).keys()].find((k) => humanUp(k) && (k === S.me || present.includes(S.seats[k].uid)));
+            if (first === S.me) { const a = { t: '_gone', s: i }; if (S.isHost || host === i) { S.isHost = true; host = S.me; seq(a); } else ch.send('req', Object.assign(a, { s: S.me, who: i })); }
+            missing[i] = now + 1e9;
+          }
+        }
+        npBar(warn);
+      }, 1000);
+      // leaving: tell the table, then the seat becomes a computer player (2 players: the other one wins)
+      S.leave = () => {
+        if (S._left) return; S._left = true;
+        gClearInt(watch);
+        if (!S.over) { ch.send(S.isHost ? 'act' : 'req', S.isHost ? { t: '_left', s: S.me, _n: log.length } : { t: '_left', s: S.me }); if (S.ranked) NET.reportResult(S.code, 'loss').catch(() => {}); }
+        setTimeout(() => ch.close(), 400);
+        if (NP.S === S) NP.S = null;
+      };
+      // ranked result (2 players, quick match): both report, the service changes Elo once
+      S.finish = async (res) => {
+        S.over = true;
+        if (!S.ranked) return null;
+        let r = null;
+        for (let k = 0; k < 30 && NP.S === S; k++) {
+          try { r = await NET.reportResult(S.code, res); } catch (e) { r = null; }
+          if (r && r.final) break;
+          await new Promise((ok) => setTimeout(ok, k < 3 ? 1500 : 4000));
+        }
+        if (!r || !r.final) return ['Ranked Elo', 'Waiting for your opponent...', 'text-muted'];
+        if (r.disputed) return ['Ranked Elo', 'Results did not match: no change', 'text-coral'];
+        const isHost = o.room.host === me, elo = isHost ? r.host_elo : r.guest_elo, d = isHost ? r.delta_host : -r.delta_host;
+        return ['Ranked Elo', `${elo} (${d >= 0 ? '+' : ''}${d})`, d >= 0 ? 'text-emerald' : 'text-coral'];
+      };
+      return S;
+    }
+    // a thin bar above an online game: the table, and warnings like "X disconnected"
+    function npBar(warn) {
+      const S = NP.S, root = document.getElementById('game-root'); if (!S || !S.online || !root) return;
+      let bar = document.getElementById('np-bar');
+      if (!bar) { const body = document.getElementById('gs-body'); if (!body) return; bar = document.createElement('div'); bar.id = 'np-bar'; bar.className = 'np-bar'; body.insertAdjacentElement('beforebegin', bar); }
+      const seats = S.seats.map((x, i) => `<span class="np-chip ${x.left ? 'gone' : ''} ${i === S.me ? 'me' : ''}" title="${esc(x.name)}">${esc(x.avatar)} ${esc(x.name)}${x.bot && !x.left ? ' <i>CPU</i>' : ''}${x.left ? ' <i>LEFT</i>' : ''}</span>`).join('');
+      const html = `<span class="pix text-xs text-teal">● ONLINE${S.ranked ? ' · RANKED' : ''} · ${esc(S.code)}</span><span class="np-chips">${seats}</span>${warn ? `<span class="np-warn">${esc(warn)}</span>` : ''}`;
+      if (bar.innerHTML !== html) bar.innerHTML = html;
+    }
+    // for games: the "Leave" button of an online table asks first, then leaves
+    function npConfirmLeave(then) {
+      const S = NP.S;
+      if (!S || !S.online || S.over) return then();
+      askConfirm({ title: 'LEAVE THIS GAME?', sub: S.n === 2 ? 'Leaving an online game counts as a loss, and your opponent wins.' : 'A computer player takes your seat and the others keep playing.' }).then((yes) => { if (yes) { S.leave(); then(); } });
+    }
+
+    /* ---------- REMATCH: after an online game, the same people can go again with one tap ----------
+       Everyone still here meets on a small channel ('rm:' + the old room code). When all of them have said yes,
+       the first of them opens a new room and the others join it; the table starts by itself. */
+    function npRematchSlot(slot) {
+      if (NP.rm) { try { NP.rm.close(); } catch (e) {} NP.rm = null; }
+      const L = NP.last;
+      if (!slot || !L || !L.uids || L.uids.length < 2 || typeof NET === 'undefined' || !NET.on || !GAME_MODS[L.game]) return;
+      const me = NET.me.id;
+      if (!L.uids.includes(me)) return;
+      const ch = NET.channel('rm:' + L.code, { name: NET.me.name, avatar: NET.me.avatar, at: Date.now() });
+      NP.rm = ch;
+      const wants = new Set(); let present = [me], gone = false;
+      const others = () => L.uids.filter((u) => u !== me && present.includes(u));
+      const paint = () => {
+        if (gone || !document.body.contains(slot)) return;
+        const o = others(), they = o.filter((u) => wants.has(u)), iWant = wants.has(me);
+        if (!o.length) { slot.innerHTML = '<div class="text-xs text-muted pt-2">The other players have left the table.</div>'; return; }
+        const nm = (u) => esc(L.names[u] || 'Player');
+        slot.innerHTML = `<div class="pt-3 space-y-2">${they.length && !iWant ? `<div class="text-sm text-emerald font-bold">${they.map(nm).join(', ')} want${they.length === 1 ? 's' : ''} a rematch!</div>` : ''}
+          <button id="np-rm" class="btn-game btn-teal w-full py-2.5 text-sm" ${iWant ? 'disabled style="opacity:.6"' : ''}>${iWant ? `Waiting for ${o.filter((u) => !wants.has(u)).map(nm).join(', ') || 'everyone'}...` : they.length ? '🔁 Accept rematch' : '🔁 Rematch'}</button></div>`;
+        const b = document.getElementById('np-rm'); if (b) b.onclick = () => { wants.add(me); ch.send('want', {}); SFX.play('click'); paint(); check(); };
+      };
+      const check = () => {
+        const o = others(); if (gone || !o.length || !wants.has(me) || !o.every((u) => wants.has(u))) return;
+        const group = [me].concat(o), leader = L.uids.find((u) => group.includes(u));
+        if (leader !== me) return;
+        const code = generateRoomCode();
+        ch.send('go', { code, n: group.length }); go(code, true, group.length);
+      };
+      const go = (code, host, n) => {
+        if (gone) return; gone = true;
+        setTimeout(() => ch.close(), 500); NP.rm = null;
+        const gm = document.getElementById('g-modal'); if (gm) gm.classList.add('hidden');
+        showToast('Rematch! Setting up the table...', 'success');
+        const id = L.game;
+        SETUP_PRESET = { id, sel: id === 'chess' ? Object.assign({}, L.sel, { opp: 'friend', room: code }) : Object.assign({}, L.sel, { net: 'room', room: code, rematch: n, rmRanked: L.ranked, rmBots: L.bots || 0 }), code, host };
+        const start = () => { openGame(id); const g = document.querySelector('#game-root #su-go'); if (g) g.click(); };
+        if (host) return start();
+        // joiners wait until the new room exists, so they join it instead of opening their own
+        let k = 0; const tryJoin = () => NET.getRoom(code).then((r) => { if (r) start(); else if (++k < 20) setTimeout(tryJoin, 500); else showToast('The rematch room did not open.', 'error'); }).catch(() => setTimeout(tryJoin, 800));
+        setTimeout(tryJoin, 400);
+      };
+      ch.on('want', (d, from) => { wants.add(from); SFX.play('pop'); paint(); check(); });
+      ch.on('go', (d) => { if (d && d.code) go(d.code, false, d.n); });
+      ch.presence((list) => { present = list.map((x) => x.uid); if (!present.includes(me)) present.push(me); paint(); check(); });
+      paint();
+    }
+
+    // after the password-reset email link: ask for the new password
+    NET.onRecovery = () => {
+      setTimeout(async () => {
+        const pw = prompt('Choose a new password (at least 8 characters):');
+        if (!pw || pw.length < 8) return showToast('Password not changed: it needs at least 8 characters.', 'error');
+        const r = await NET.setPassword(pw);
+        showToast(r && r.error ? r.error : 'Password changed!', r && r.error ? 'error' : 'success');
+      }, 300);
+    };

@@ -1,0 +1,11 @@
+    .wc-wheel { position: relative; width: 290px; height: 290px; margin: 0 auto; background: #0F2A44; border: 4px solid var(--ink); box-shadow: 0 5px 0 var(--ink); border-radius: 50% !important; touch-action: none; user-select: none; }
+    .wc-let { position: absolute; width: 58px; height: 58px; margin: -29px 0 0 -29px; background: #F7F4EC; color: #050E18; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); border-radius: 50% !important; display: flex; align-items: center; justify-content: center; font-family: 'Arcade Pixel', sans-serif; font-size: 1.9rem; font-weight: 700; cursor: pointer; z-index: 2; transition: transform .06s; }
+    .wc-let.on { background: #F5B041; transform: scale(1.08); }
+    .wc-line { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+    .wc-cur { min-height: 54px; display: flex; gap: 6px; justify-content: center; align-items: center; flex-wrap: wrap; }
+    .wc-cur span { min-width: 34px; height: 44px; padding: 0 6px; background: #F5B041; color: #050E18; border: 3px solid var(--ink); box-shadow: 0 3px 0 var(--ink); display: flex; align-items: center; justify-content: center; font-family: 'Arcade Pixel', sans-serif; font-size: 1.5rem; font-weight: 700; }
+    .wc-slot { font-family: 'Arcade Pixel', sans-serif; font-size: .95rem; letter-spacing: .08em; border: 2px solid var(--ink); background: #0A1624; color: #36506D; padding: 1px 6px; text-align: center; line-height: 1.35rem; }
+    .wc-slot.f { background: #34D399; color: #050E18; } .wc-slot.pg { background: #F5B041; color: #050E18; } .wc-slot.miss { background: #4A2733; color: #FB7185; } .wc-slot.hint { color: #F5B041; }
+    @keyframes wcShake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-7px); } 75% { transform: translateX(7px); } }
+    .wc-shake { animation: wcShake .28s; }
+

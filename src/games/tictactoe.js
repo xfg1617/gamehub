@@ -88,7 +88,7 @@
       function drive() {
         if (!G || G.over) return;
         const S = G.S;
-        if (G.done) { if (!G.matchDone) S.later(() => S.act({ t: 'next', g: G.game, s: -1 }), 1600); return; }
+        if (G.done) { if (!G.matchDone) S.later(() => S.act({ t: 'next', g: G.game, s: -1 }), 2600); return; }
         const seat = seatOf(G.turn);
         if (S.bot(seat)) S.later(() => S.act({ t: 'place', s: seat, i: aiMove(G.b.slice(), G.turn, G.lvl) }), 650 + rnd(450));
       }

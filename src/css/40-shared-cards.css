@@ -39,15 +39,26 @@
     .range-arcade::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 26px; background: #F5B041; border: 3px solid var(--ink); cursor: pointer; }
     .range-arcade::-moz-range-thumb { width: 14px; height: 22px; background: #F5B041; border: 3px solid var(--ink); border-radius: 0; cursor: pointer; }
 
-    .kk-card { width: 84px; height: 112px; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink), inset 0 0 0 2px rgba(255,255,255,.55); display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 6px 3px; cursor: pointer; user-select: none; transition: transform .08s; color: #050E18; text-align: center; flex-shrink: 0; }
+    /* Hot Potato Cats cards: a coloured frame per card type, title band, pixel picture, rule text */
+    .kk-card { width: 92px; height: 128px; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); display: flex; flex-direction: column; align-items: stretch; padding: 0; cursor: pointer; user-select: none; transition: transform .08s; color: #050E18; text-align: center; flex-shrink: 0; background: var(--kc, #F3E3C3); overflow: hidden; }
     .kk-card:hover { transform: translateY(-6px); }
-    .kk-card .em { font-size: 2.1rem; line-height: 1; margin-top: 6px; }
-    .kk-card .nm { font-family: 'Arcade Pixel', sans-serif; font-size: 0.82rem; line-height: 0.95rem; font-weight: 700; }
-    .kk-card .ds { font-size: 0.58rem; line-height: 0.7rem; font-weight: 700; opacity: .8; }
-    .kk-card.dim { opacity: .45; filter: grayscale(.4); }
-    .kk-card.sm { width: 62px; height: 82px; } .kk-card.sm .em { font-size: 1.5rem; } .kk-card.sm .ds { display: none; }
-    .kk-bomb { background: #FB7185; } .kk-defuse { background: #34D399; } .kk-action { background: #F5B041; } .kk-nope { background: #E8EEF5; } .kk-cat { background: #9AD7F5; }
-    .kk-back { background: #1A3856; color: #F5B041; cursor: default; } .kk-back:hover { transform: none; }
+    .kk-card .nm { display: block; background: #050E18; color: var(--kc, #F3E3C3); font-family: 'Arcade Pixel', sans-serif; font-size: .74rem; line-height: 1; letter-spacing: .04em; padding: 4px 2px 3px; white-space: nowrap; overflow: hidden; }
+    .kk-card .art { flex: 1; display: grid; place-items: center; margin: 4px 6px 0; background: #FFFDF6; border: 2px solid #050E18; min-height: 0; }
+    .kk-card .art svg { width: 46px; height: 46px; }
+    .kk-card .ds { display: block; font-size: .52rem; line-height: .62rem; font-weight: 800; padding: 3px 3px 4px; min-height: 2.2em; }
+    .kk-card.dim { opacity: .55; filter: grayscale(.3); }
+    .kk-card.sm { width: 64px; height: 88px; } .kk-card.sm .art svg { width: 34px; height: 34px; } .kk-card.sm .ds { display: none; } .kk-card.sm .nm { font-size: .62rem; }
+    .kk-bomb { --kc: #F07A5A; } .kk-defuse { --kc: #34D399; } .kk-attack { --kc: #F5A23B; } .kk-skip { --kc: #7CC4F0; } .kk-shuffle { --kc: #D9B27A; }
+    .kk-peek { --kc: #F7A8C4; } .kk-favor { --kc: #C3B5E6; } .kk-nope { --kc: #FB7185; } .kk-cat { --kc: #F3E3C3; }
+    .kk-back { --kc: #F5B041; background: #1A3856; cursor: default; } .kk-back:hover { transform: none; } .kk-back .art { background: #12304C; }
+    .kk-back.kk-pickable { cursor: pointer; } .kk-back.kk-pickable:hover { transform: translateY(-8px); box-shadow: 0 6px 0 var(--ink), 0 0 0 3px #F5B041; }
+    @keyframes kkWobble { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-2deg); } 75% { transform: rotate(2deg); } }
+    .kk-wobble { animation: kkWobble .5s ease-in-out 4; }
     @keyframes kkShake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-5px) rotate(-2deg); } 75% { transform: translateX(5px) rotate(2deg); } }
     .kk-boom { animation: kkShake .35s 3; }
 
+
+    /* poker showdown: the winning five cards light up, the rest dim; a banner says who won and with what */
+    .pcard.pk-win { outline: 3px solid #F5B041; outline-offset: 2px; transform: translateY(-6px); box-shadow: 0 6px 0 #050E18, 0 0 0 6px rgba(245, 176, 65, .25); }
+    .pcard.pk-lose { opacity: .45; filter: grayscale(.35); }
+    .pk-banner { display: inline-block; margin: 2px auto 0; padding: 6px 14px; background: #F5B041; color: #231505; border: 3px solid #050E18; box-shadow: 0 4px 0 #050E18; font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 1rem; }

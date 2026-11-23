@@ -10,7 +10,7 @@ with sync_playwright() as p:
     A, B = players(p, 2, REAL)
     A.evaluate("openSetup('naval')"); A.wait_for_timeout(600)
     check(A.evaluate("activeGame") == 'navalnet' and not A.evaluate("!!document.querySelector('#bs-modal:not(.hidden)')"), 'Naval Grid opens ONE setup screen (no pop-up first)')
-    check(A.evaluate("[...document.querySelectorAll('[data-k=net]')].map(b => b.textContent).join(',')") == 'Online,Private room', 'its PLAY choices are Online / Private room')
+    check(A.evaluate("[...document.querySelectorAll('[data-mode]')].map(b => b.dataset.mode).join(',')") == 'quick,room', 'step 1 offers Online match / Private room')
     code = open_table(A, 'naval', 'room')
     join(B, code); A.wait_for_timeout(3000)
     check(A.query_selector('#game-root #ng-setup-grid') and B.query_selector('#game-root #ng-setup-grid'), 'both see the offline fleet setup board')

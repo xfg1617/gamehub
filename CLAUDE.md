@@ -433,6 +433,43 @@ One shared way to run a game table, used on this device AND online, so a game ha
   (or fills the room) and presses Start. `t_invite_link.py` covers short links. Checked: SQL on PostgreSQL 16 (twice,
   anon can call it), the edge function with mock rooms (account / guest / naval / closed).
 
+## 5i. Nov 2026 round 4 (friends, new room flow, Hot Potato Cats rules, Tycoon cards)
+
+* **Room flow (Inna: "1. choose online match or private 2. lobby with code/link, settings and chat")**: online,
+  `setupScreen` first shows `pickMode()` = HOW DO YOU WANT TO PLAY? (Solo where it exists / Online match / Private
+  room). Online → matchmaking; Private → the room opens at once. Presets (invite, rematch, Create Room, Ranked Match)
+  skip the picker. Solo shows the old settings screen. **The room (`npLobby`)**: code + link + Invite friends + Share,
+  seats + computer players, **GAME SETTINGS** the host can change while people wait (`m._roomOpts`; joiners see them
+  read-only and get a toast on change), **? How to play**, Leave; the **room chat** (`t:<code>`) sits beside it
+  (`.np-room`). **Private rooms never start by themselves**: the host presses Start (quick matches still auto-start).
+  Chess has the same picker and room (move timer setting, room chat, Start; `ch.on('go')` starts the guest).
+  Tests: `nplib.open_table` clicks `[data-mode]` and saves picks with `setupSave` first; `join()` presses the host's
+  Start for 2-seat rooms; `start(pg)` for bigger tables.
+* **Guide in game/room**: `openGuide(id)` (zz_howto, `guideHTML`) = pop-up; "? Guide" in every game header, "? How
+  to play" in the picker and the room.
+* **Chat pop-ups** (`chatPopup` in core): a new message in the current game/table chat pops up bottom-left for 4.5 s
+  (and counts on the CHAT button), unless that chat is already on screen. Friend messages pop up anywhere.
+* **Friends** (`src/games/zz_friends.js`, `backend/friends.sql`): Friends page (sidebar + phone header icon, badge),
+  FIND A PLAYER (`search_players`), player cards (`player_card`: name, avatar, since, rankings, friend state; never an
+  email), requests (Accept/Decline/Cancel), friends list with online dots (`NET.onlineIds` from presence), 1-to-1
+  chat (`dms`, only friends can message, rate limit + swear filter + emails/phones hidden), Invite friends from a room
+  (sends the room link; it shows a Join button → `joinRoomCode`). Tapping a name in any chat opens the card.
+  Guests can use friends too (tip to make an account). `t_friends.py`.
+* **Privacy**: emails never leave the account (masked on your own profile with SHOW; names can't be emails/phone
+  numbers, client + SQL check; `NET.clean` and `hide_private()` hide emails/phone numbers in every chat).
+* **Hot Potato Cats** closer to the familiar original, still original: generic action names (Attack, Skip, Favor,
+  Shuffle, Peek, No Way), original cats (Sock, Box, Loaf, Yarn, Toast; the old Taco/Beard/Melon/Rainbow were too
+  close), pixel-art cards (`kittens_art.js`, `kkArtSVG`; no emoji art). Combos: pair = **live pick** (their hand is
+  shuffled with the shared rng and laid face down; you pick, they watch), three of a kind = name a card, five
+  different cats = take any card from the discard pile. Favor = the target chooses. `t_kk_combos.py`.
+* **Tycoon property cards** (`deedHTML` / `openDeed`, `window.tyDeed`): tap any property/rail/utility square, the
+  "See the card" link when buying, or a name in your properties list. Rent by houses/hotel, set bonus, house and
+  hotel cost, mortgage value; the current rent row is highlighted.
+* **Slower result moments**: poker showdown holds 7.5 s (`SHOWDOWN_MS`) with a banner ("Luna wins 340 with a full
+  house"), the winning five cards lit (`best5`), the rest dimmed, and a NEXT HAND IN countdown. Dominoes round end
+  ~5 s, Blackjack table results 4.4 s, Tic-Tac-Toe between games 2.6 s.
+* Supabase: run `backend/friends.sql` (plus `backend/link-preview.sql` from before).
+
 ## 5d. Game setup screens, room codes, leaving a game
 
 * Every game opens on a setup screen (`setupScreen` in `core.js`). Options are `{ key, label, def,

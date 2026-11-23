@@ -71,3 +71,18 @@
     .ty-dot { display: inline-block; width: 10px; height: 10px; border: 1.5px solid var(--ink); margin-right: 2px; }
     .ty-dot.m { opacity: .35; }
 
+
+    /* property cards: tap any property square (or "See the card" when buying) */
+    .ty-t.k-prop, .ty-t.k-rail, .ty-t.k-util { cursor: pointer; }
+    .ty-deed { background: #FFFDF6; color: #050E18; border: 4px solid #050E18; box-shadow: 0 6px 0 #050E18; }
+    .ty-dhead { padding: 10px 12px 9px; border-bottom: 4px solid #050E18; text-align: center; color: #050E18; }
+    .ty-dhead .pix { display: block; opacity: .75; letter-spacing: .12em; }
+    .ty-dhead b { display: block; font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 1.25rem; line-height: 1.1; }
+    .ty-dbody { padding: 10px 12px 12px; display: grid; gap: 3px; }
+    .ty-dprice { text-align: center; font-size: .9rem; margin-bottom: 4px; }
+    .ty-dr { display: flex; justify-content: space-between; gap: 10px; font-size: .84rem; padding: 2px 6px; }
+    .ty-dr b { font-family: 'Arcade Pixel', sans-serif; font-size: 1rem; }
+    .ty-dr.on { background: #F5B041; outline: 2px solid #050E18; }
+    .ty-dsep { height: 2px; background: #050E18; opacity: .25; margin: 5px 0; }
+    .ty-down { margin-top: 6px; font-size: .78rem; text-align: center; color: #3B4A5C; }
+    .ty-cardlink { display: block; width: 100%; margin-bottom: 8px; font-size: .78rem; font-weight: 800; color: #F5B041; text-decoration: underline; text-decoration-style: dotted; }

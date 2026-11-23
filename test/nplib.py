@@ -40,12 +40,12 @@ def players(p, n=2, real=False):
     else:
         ctx = _ctx(br, False)
         A = _watch(ctx.new_page()); A.goto('http://gamehub.test/gamehub.html'); out.append(A)
-        A.wait_for_function('NET.on && NET.me && NET.me.name', timeout=15000)
+        A.wait_for_function("typeof NET !== 'undefined' && NET.on && NET.me && NET.me.name", timeout=20000)
         for i in range(1, n):
             with ctx.expect_page() as pi: A.evaluate("window.open(location.href, '_blank')")
             pg = _watch(pi.value); pg.wait_for_load_state()
             pg.evaluate("sessionStorage.removeItem('psnet_uid'); location.reload()")
-            pg.wait_for_load_state(); pg.wait_for_function('NET.on && NET.me && NET.me.name', timeout=15000)
+            pg.wait_for_load_state(); pg.wait_for_function("typeof NET !== 'undefined' && NET.on && NET.me && NET.me.name", timeout=20000)
             out.append(pg)
     for pg in out:
         pg.wait_for_function("typeof NET !== 'undefined' && NET.on && NET.me && NET.me.name", timeout=30000)
@@ -55,24 +55,24 @@ def players(p, n=2, real=False):
     return out
 
 WANT = {}
+HOST = {}
 def open_table(pg, game, net='room', picks=None):
-    """Open a table the new way (Nov 2026): setup screen -> Online / Private room -> the room is created, and the
-    code + invite link appear IN the room. A table size pick ('n' / 'seats') is remembered: in a private room the
-    host adds computer players up to that size when start() is pressed."""
+    """Open a table the new way (Nov 2026): step 1 picks Online match / Private room, then the room opens straight
+    away (code + invite link + settings + chat IN the room). Setting picks are saved first (the room/match uses the
+    player's saved settings; the host can still change them in the room). A table size pick ('n' / 'seats') is
+    remembered: in a private room the host adds computer players up to that size when start() is pressed."""
     picks = dict(picks or {})
     want = picks.pop('n', None) or (picks.pop('seats', None) if net == 'room' else picks.get('seats'))
-    WANT[id(pg)] = want
-    pg.evaluate(f"openSetup('{game}')"); pg.wait_for_timeout(400)
-    pg.click(f'[data-k="net"][data-v="{net}"]')
+    WANT[id(pg)] = want; HOST['pg'] = pg
     if net == 'quick' and want: picks['n' if game != 'bowling' else 'seats'] = want
-    for k, v in picks.items():
-        sel = f'[data-k="{k}"][data-v="{v}"]'
-        if pg.query_selector(sel): pg.click(sel)
-    pg.click('#su-go'); pg.wait_for_timeout(1200)
+    gid = 'navalnet' if game == 'naval' else game
+    pg.evaluate("([g, p]) => setupSave(g, Object.assign({}, setupLoad(g), p))", [gid, picks])
+    pg.evaluate(f"openSetup('{game}')"); pg.wait_for_timeout(500)
+    pg.click(f'[data-mode="{net}"]'); pg.wait_for_timeout(1200)
     if net == 'room':
-        try: pg.wait_for_function("document.querySelector('#np-lob .room-code, #game-root .room-code')", timeout=15000)
+        try: pg.wait_for_function("document.querySelector('#np-lob .room-code')", timeout=15000)
         except Exception: pass
-    return pg.evaluate("(document.querySelector('#np-lob .room-code, #game-root .room-code') || {}).textContent || ''").strip()
+    return pg.evaluate("(document.querySelector('#np-lob .room-code') || {}).textContent || ''").strip()
 
 def start(pg):
     """Host presses Start in a private room, first adding computer players up to the table size the test asked for
@@ -88,6 +88,13 @@ def start(pg):
 def join(pg, code):
     pg.evaluate("navigateTo('play', true)"); pg.wait_for_timeout(200)
     pg.fill('#quick-room-input', code); pg.click('.code-row button'); pg.wait_for_timeout(1500)
+    # a private 2-player room now waits for the host's Start (people agree on the settings first): press it
+    H = HOST.get('pg')
+    if H and H is not pg:
+        try: H.wait_for_function("document.querySelectorAll('#np-lob .np-seat').length === 2 ? document.querySelectorAll('#np-lob .np-seat.on').length === 2 : true", timeout=8000)
+        except Exception: pass
+        if H.evaluate("document.querySelectorAll('#np-lob .np-seat').length === 2 && document.querySelectorAll('#np-lob .np-seat.on').length === 2 && !!document.querySelector('#np-start:not([disabled])')"):
+            H.click('#np-start'); H.wait_for_timeout(1500)
 
 def modal_text(pg, t=30000):
     try: pg.wait_for_function("document.getElementById('g-modal') && !document.getElementById('g-modal').classList.contains('hidden')", timeout=t)

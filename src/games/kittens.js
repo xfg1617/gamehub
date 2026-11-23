@@ -2,22 +2,24 @@
        HOT POTATO CATS: a push-your-luck card game. Don't get stuck with the hot potato!
        ========================================================================= */
     (function kittensGame() {
+      // card names: familiar, generic game words (Attack, Skip, Favor, Shuffle) + our own potato, mitt and cats
       const T = {
-        bomb: { nm: 'HOT POTATO', em: '🔥', ds: 'Cool it down or you are out!', k: 'bomb' },
-        defuse: { nm: 'OVEN MITT', em: '🧤', ds: 'Saves you from a hot potato', k: 'defuse' },
-        pounce: { nm: 'POUNCE', em: '🐾', ds: 'End your turn. Next player takes 2 turns', k: 'action' },
-        nap: { nm: 'NAP', em: '💤', ds: 'Skip your draw', k: 'action' },
-        shake: { nm: 'SHAKE', em: '🔀', ds: 'Shuffle the draw pile', k: 'action' },
-        peek: { nm: 'PEEK', em: '👁️', ds: 'Look at the top 3 cards', k: 'action' },
-        beg: { nm: 'BEG', em: '🙏', ds: 'Make a player give you a card', k: 'action' },
-        nope: { nm: 'NO WAY', em: '✋', ds: 'Cancel any action', k: 'nope' },
-        c1: { nm: 'TACO', em: '🌮', ds: 'Play a pair to steal', k: 'cat' }, c2: { nm: 'BEARD', em: '🧔', ds: 'Play a pair to steal', k: 'cat' },
-        c3: { nm: 'MELON', em: '🍉', ds: 'Play a pair to steal', k: 'cat' }, c4: { nm: 'RAINBOW', em: '🌈', ds: 'Play a pair to steal', k: 'cat' },
-        c5: { nm: 'TOAST', em: '🍞', ds: 'Play a pair to steal', k: 'cat' },
+        bomb: { nm: 'HOT POTATO', ds: 'Draw it and you are out, unless you have an Oven Mitt', k: 'bomb' },
+        defuse: { nm: 'OVEN MITT', ds: 'Saves you from a Hot Potato. Hide the potato back in the pile', k: 'defuse' },
+        pounce: { nm: 'ATTACK', ds: 'End your turn without drawing. The next player takes 2 turns', k: 'attack' },
+        nap: { nm: 'SKIP', ds: 'End your turn without drawing', k: 'skip' },
+        shake: { nm: 'SHUFFLE', ds: 'Shuffle the draw pile', k: 'shuffle' },
+        peek: { nm: 'PEEK', ds: 'Look at the top 3 cards of the pile', k: 'peek' },
+        beg: { nm: 'FAVOR', ds: 'A player gives you a card of their choice', k: 'favor' },
+        nope: { nm: 'NO WAY', ds: 'Stop any action. Play it any time', k: 'nope' },
+        c1: { nm: 'SOCK CAT', ds: 'Pair: pick a card · Three: name a card', k: 'cat' }, c2: { nm: 'BOX CAT', ds: 'Pair: pick a card · Three: name a card', k: 'cat' },
+        c3: { nm: 'LOAF CAT', ds: 'Pair: pick a card · Three: name a card', k: 'cat' }, c4: { nm: 'YARN CAT', ds: 'Pair: pick a card · Three: name a card', k: 'cat' },
+        c5: { nm: 'TOAST CAT', ds: 'Pair: pick a card · Three: name a card', k: 'cat' },
       };
       const CATS = ['c1', 'c2', 'c3', 'c4', 'c5'];
-      const cardHTML = (t, o = {}) => `<div class="kk-card kk-${T[t].k} ${o.cls || ''}" data-t="${t}" ${o.id !== undefined ? `data-id="${o.id}"` : ''}><span class="em">${T[t].em}</span><span class="nm">${T[t].nm}</span><span class="ds">${T[t].ds}</span></div>`;
-      const backHTML = (cls = '') => `<div class="kk-card kk-back ${cls}"><span class="em">🐱</span><span class="nm">CATS</span><span class="ds"></span></div>`;
+      const cardHTML = (t, o = {}) => `<div class="kk-card kk-${T[t].k} ${o.cls || ''}" data-t="${t}" ${o.id !== undefined ? `data-id="${o.id}"` : ''}><span class="nm">${T[t].nm}</span><span class="art">${kkArtSVG(t)}</span><span class="ds">${T[t].ds}</span></div>`;
+      const backHTML = (cls = '', attrs = '') => `<div class="kk-card kk-back ${cls}" ${attrs}><span class="nm">HOT POTATO</span><span class="art">${kkArtSVG('back')}</span><span class="nm">CATS</span></div>`;
+      const lbl = (t) => T[t].nm.charAt(0) + T[t].nm.slice(1).toLowerCase();
       const NAMES = [['Mochi', '🐱'], ['Biscuit', '🐯'], ['Pepper', '🦁']];
 
       function buildDeck(n, sh = shuffle) {
@@ -52,7 +54,7 @@
       function start(body, sel, S) {
         const n = S.n, deal = setupDeal(n, +sel.hand || 7, sel.nope === undefined ? true : !!+sel.nope, S.rng.shuffle);
         const players = S.seats.map((x, i) => ({ seat: i, name: x.name, av: x.avatar, hand: deal.hands[i], knows: [], out: false }));
-        G = { S, me: S.online ? S.me : 0, step: 0, players, deck: deal.deck, discard: [], cur: 0, owed: 1, secs: +sel.clock, over: false, tok: ++GT.cur, log: [], stats: { defused: 0, nopes: 0, steals: 0, turns: 0 }, placed: [], banner: '' };
+        G = window.__kkG = { S, me: S.online ? S.me : 0, step: 0, players, deck: deal.deck, discard: [], cur: 0, owed: 1, secs: +sel.clock, over: false, tok: ++GT.cur, log: [], stats: { defused: 0, nopes: 0, steals: 0, turns: 0 }, placed: [], banner: '' };
         body.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_250px] gap-5 items-start">
           <div class="space-y-3 min-w-0"><div id="kk-opp" class="flex gap-3 flex-wrap justify-center"></div>
             <div class="felt p-4 flex items-center justify-center gap-6 flex-wrap" style="min-height:170px"><div id="kk-pile" class="text-center"></div><div id="kk-disc" class="text-center"></div></div>
@@ -71,7 +73,7 @@
         npBar('');
         let sure = false;
         document.getElementById('kk-quit').onclick = (e) => { if (S.online) return npConfirmLeave(() => open(document.getElementById('game-root'))); if (!sure) { sure = true; e.target.textContent = 'Really give up?'; gTimeout(() => { sure = false; e.target.textContent = 'Give up'; }, 3000); return; } if (!G.over) { G.tok++; endGame(false, true); } };
-        log(`Game on! Don't draw the <b>🔥 hot potato</b>. Everyone holds one 🧤 Oven Mitt.`);
+        log(`Game on! Don't draw the <b>Hot Potato</b>. Everyone starts with one <b>Oven Mitt</b>.`);
         draw();
         run().catch((e) => { if (e !== ABORT) throw e; });
       }
@@ -142,16 +144,29 @@
         return new Promise((res) => {
           let done = false;
           const fin = (a) => { if (done) return; done = true; G.clock.stop(); prompt(''); res(a); };
-          prompt(`<div class="flex items-center justify-center gap-3 flex-wrap"><span class="text-sm text-muted">Play cards, then</span><button id="kk-draw" class="btn-game btn-amber py-2 px-6">Draw a card</button></div>`);
+          const five = CATS.every((c) => p.hand.includes(c)) && G.discard.length;
+          prompt(`<div class="flex items-center justify-center gap-3 flex-wrap"><span class="text-sm text-muted">Play cards, then</span><button id="kk-draw" class="btn-game btn-amber py-2 px-6">Draw a card</button>${five ? '<button id="kk-five" class="btn-game btn-teal py-2 px-4 text-sm">Play 5 different cats</button>' : ''}</div>`);
           document.getElementById('kk-draw').onclick = () => fin({ type: 'draw' });
-          G.choose = (id) => {
+          const fv = document.getElementById('kk-five'); if (fv) fv.onclick = () => fin({ type: 'five' });
+          const choose = (id) => {
             const t = p.hand[id];
             if (t === 'bomb' || t === 'defuse') return showToast('Keep your Oven Mitt for a hot potato!', 'info');
             if (t === 'nope') return showToast('Use No Way when another player plays a card.', 'info');
-            if (CATS.includes(t)) { if (p.hand.filter((x) => x === t).length < 2) return showToast('Cat cards only work as a matching pair.', 'info'); return withTarget(p, { type: 'pair', t }, fin); }
+            if (CATS.includes(t)) {
+              const n = p.hand.filter((x) => x === t).length;
+              if (n < 2) return showToast('Cat cards work in combos: a pair (pick a hidden card), three of a kind (name a card), or five different cats.', 'info');
+              if (n === 2) return withTarget(p, { type: 'pair', t }, fin);
+              G.choose = null;
+              prompt(`<div class="space-y-2"><div class="text-sm">How do you play your ${lbl(t)}s?</div><div class="flex gap-2 justify-center flex-wrap">
+                <button class="btn-game btn-teal py-2 px-4 text-sm" data-cb="pair">Pair: pick a hidden card</button><button class="btn-game btn-amber py-2 px-4 text-sm" data-cb="triple">Three: name the card you want</button>
+                <button class="btn-game btn-graphite py-2 px-3 text-sm" data-cb="x">Cancel</button></div></div>`);
+              document.querySelectorAll('[data-cb]').forEach((b) => { b.onclick = () => { const v = b.dataset.cb; if (v === 'x') { prompt(''); G.choose = choose; return humanChoose(p).then(fin); } withTarget(p, { type: v, t }, fin); }; });
+              return;
+            }
             if (t === 'beg') return withTarget(p, { type: 'play', t }, fin);
             fin({ type: 'play', t });
           };
+          G.choose = choose;
           draw();
           if (G.secs) G.clock.start(G.secs, 'Your time', () => { if (!done) { showToast("Time's up! You draw a card.", 'error'); fin({ type: 'draw' }); } }, 6); else G.clock.idle('No timer', '∞');
         });
@@ -161,12 +176,19 @@
         const opts = alive().filter((q) => q !== p && q.hand.length);
         if (!opts.length) return showToast('Nobody has any cards!', 'error');
         G.choose = null;
-        pickTarget(p, a.type === 'pair' ? 'Steal a random card from...' : 'Make who give you a card?').then((q) => fin(Object.assign(a, { target: q.seat })));
+        pickTarget(p, a.type === 'pair' ? 'Pick a hidden card from...' : a.type === 'triple' ? 'Name a card and take it from...' : 'Who has to give you a card?').then((q) => {
+          if (a.type !== 'triple') return fin(Object.assign(a, { target: q.seat }));
+          const names = Object.keys(T);
+          prompt(`<div class="space-y-2"><div class="text-sm">Name the card you want from <b>${esc(q.name)}</b>:</div><div class="flex gap-1.5 justify-center flex-wrap">${names.map((t) => `<button class="btn-game btn-graphite py-1 px-2 text-xs" data-nm="${t}">${T[t].nm}</button>`).join('')}</div></div>`);
+          document.querySelectorAll('[data-nm]').forEach((b) => { b.onclick = () => { prompt(''); fin(Object.assign(a, { target: q.seat, name: b.dataset.nm })); }; });
+        });
       }
       function validPlay(p, a) {
+        if (a.type === 'five') return CATS.every((c) => p.hand.includes(c)) && G.discard.length > 0;
         if (!T[a.t] || !p.hand.includes(a.t) || a.t === 'bomb' || a.t === 'defuse' || a.t === 'nope') return false;
         if (a.type === 'pair' && p.hand.filter((x) => x === a.t).length < 2) return false;
-        if (a.type === 'pair' || a.t === 'beg') { const q = G.players[a.target]; if (!q || q === p || q.out || !q.hand.length) return false; }
+        if (a.type === 'triple' && (p.hand.filter((x) => x === a.t).length < 3 || !T[a.name])) return false;
+        if (a.type === 'pair' || a.type === 'triple' || a.t === 'beg') { const q = G.players[a.target]; if (!q || q === p || q.out || !q.hand.length) return false; }
         return true;
       }
       function pickTarget(p, label) {
@@ -182,10 +204,11 @@
       function bombOdds() { const b = G.deck.filter((c) => c === 'bomb').length; return b / G.deck.length; }
       function botChoose(p, plays) {
         const a = botPick(p, plays);
-        if (a.type === 'pair' || a.t === 'beg') {
+        if (a.type === 'pair' || a.type === 'triple' || a.t === 'beg') {
           const opts = alive().filter((q) => q !== p && q.hand.length);
           if (!opts.length) return { type: 'draw' };
           a.target = pick(opts.sort((x, y) => y.hand.length - x.hand.length).slice(0, 2)).seat;
+          if (a.type === 'triple') a.name = Math.random() < 0.7 ? 'defuse' : 'nope';
         }
         return a;
       }
@@ -195,6 +218,8 @@
         const safeDefuse = has('defuse');
         if (plays < 3) {
           if (odds > (safeDefuse ? 0.4 : 0.22)) { if (has('nap')) return { type: 'play', t: 'nap' }; if (has('pounce')) return { type: 'play', t: 'pounce' }; if (has('shake') && p.knows && p.knows[0] === 'bomb') return { type: 'play', t: 'shake' }; }
+          if (CATS.every((c) => has(c)) && G.discard.includes('defuse') && !safeDefuse) return { type: 'five' };
+          for (const c of CATS) if (p.hand.filter((x) => x === c).length >= 3 && Math.random() < 0.6) return { type: 'triple', t: c };
           for (const c of CATS) if (p.hand.filter((x) => x === c).length >= 2 && Math.random() < 0.55) return { type: 'pair', t: c };
           if (has('peek') && (!p.knows || !p.knows.length) && Math.random() < 0.5) return { type: 'play', t: 'peek' };
           if (has('beg') && Math.random() < 0.4) return { type: 'play', t: 'beg' };
@@ -206,16 +231,16 @@
 
       /* ----- playing a card ----- */
       async function doPlay(p, act) {
-        const cards = act.type === 'pair' ? [act.t, act.t] : [act.t];
+        const cards = act.type === 'five' ? CATS.slice() : act.type === 'triple' ? [act.t, act.t, act.t] : act.type === 'pair' ? [act.t, act.t] : [act.t];
         let target = null;
-        if (act.type === 'pair' || act.t === 'beg') target = G.players[act.target];
+        if (act.type === 'pair' || act.type === 'triple' || act.t === 'beg') target = G.players[act.target];
         SFX.play('card');
         await Promise.all(cards.map((c, k) => flyCard(handCardEl(p, c), discEl(), cardHTML(c), k * 140)));
         cards.forEach((c) => { p.hand.splice(p.hand.indexOf(c), 1); G.discard.push(c); });
-        const label = act.type === 'pair' ? `a pair of ${T[act.t].em} ${T[act.t].nm}${target ? ' on ' + nm(target) : ''}` : `${T[act.t].em} ${T[act.t].nm}${target ? ' on ' + nm(target) : ''}`;
+        const label = act.type === 'five' ? '<b>5 different cats</b>' : act.type === 'triple' ? `<b>three ${T[act.t].nm}s</b> on ${nm(target)}, asking for <b>${T[act.name].nm}</b>` : act.type === 'pair' ? `<b>a pair of ${T[act.t].nm}s</b> on ${nm(target)}` : `<b>${T[act.t].nm}</b>${target ? ' on ' + nm(target) : ''}`;
         log(`${nm(p)} plays ${label}.`);
         draw();
-        const cancelled = await nopeWindow(p, target, act.t);
+        const cancelled = await nopeWindow(p, target, act.type === 'five' ? 'c1' : act.t);
         if (cancelled) { log('...but somebody said <b>NO WAY</b>!'); draw(); return 'continue'; }
         switch (act.t) {
           case 'pounce': return 'attack';
@@ -238,16 +263,57 @@
           const given = target.hand.includes(g.c) ? g.c : target.hand[0];
           await flyCard(handCardEl(target, given), spot(p), isMe(target) || isMe(p) ? cardHTML(given) : backHTML());
           target.hand.splice(target.hand.indexOf(given), 1); p.hand.push(given); SFX.play('coin');
-          log(`${nm(target)} gives ${isMe(p) || isMe(target) ? T[given].em + ' ' + T[given].nm : 'a card'} to ${nm(p)}.`);
+          log(`${nm(target)} gives ${isMe(p) || isMe(target) ? T[given].nm : 'a card'} to ${nm(p)}.`);
         }
-        if (act.type === 'pair') {
-          const ci = G.S.rng.rnd(target.hand.length), c = target.hand[ci];
+        if (act.type === 'pair' && target.hand.length) {
+          // live pick: their cards are laid face down (in a shuffled order) and the player picks one
+          target.hand = G.S.rng.shuffle(target.hand); draw();
+          const k = ++G.step;
+          if (!G.S.mine(p.seat)) prompt(isMe(target) ? `<span class="text-sm"><b>${esc(p.name)}</b> is picking one of your cards...</span>` : `<span class="text-muted">${esc(p.name)} is picking a card from ${esc(target.name)}...</span>`);
+          if (isMe(target)) document.querySelectorAll('#kk-hand .kk-card').forEach((el) => el.classList.add('kk-wobble'));
+          const pk = await decide(p.seat, () => humanPickHidden(target).then((i) => G && G.S.act({ t: 'pickc', s: p.seat, k, i })), () => ({ t: 'pickc', k, i: Math.floor(Math.random() * target.hand.length) }), 900, (x) => x.s === p.seat && x.t === 'pickc' && x.k === k);
+          prompt('');
+          const ci = Math.max(0, Math.min(target.hand.length - 1, +pk.i || 0)), c = target.hand[ci];
           await flyCard(isMe(target) ? (document.querySelectorAll('#kk-hand .kk-card')[ci] || spot(target)) : spot(target), spot(p), isMe(target) || isMe(p) ? cardHTML(c) : backHTML());
           target.hand.splice(ci, 1); p.hand.push(c); SFX.play('coin'); if (isMe(p)) G.stats.steals++;
-          log(`${nm(p)} steals ${isMe(p) || isMe(target) ? T[c].em + ' ' + T[c].nm : 'a card'} from ${nm(target)}.`);
+          log(`${nm(p)} steals ${isMe(p) || isMe(target) ? T[c].nm : 'a card'} from ${nm(target)}.`);
+        }
+        if (act.type === 'triple') {
+          const has = target.hand.indexOf(act.name);
+          if (has < 0) { log(`${nm(target)} has no <b>${T[act.name].nm}</b>. Unlucky!`); SFX.play('nope'); }
+          else {
+            await flyCard(isMe(target) ? (document.querySelectorAll('#kk-hand .kk-card')[has] || spot(target)) : spot(target), spot(p), cardHTML(act.name));
+            target.hand.splice(has, 1); p.hand.push(act.name); SFX.play('coin'); if (isMe(p)) G.stats.steals++;
+            log(`${nm(target)} hands over the <b>${T[act.name].nm}</b> to ${nm(p)}!`);
+          }
+        }
+        if (act.type === 'five') {
+          const k = ++G.step, kinds = [...new Set(G.discard)];
+          if (!G.S.mine(p.seat)) prompt(`<span class="text-muted">${esc(p.name)} is digging through the discard pile...</span>`);
+          const dg = await decide(p.seat, () => humanDig(kinds).then((c) => G && G.S.act({ t: 'dig', s: p.seat, k, c })), () => ({ t: 'dig', k, c: ['defuse', 'nope', 'pounce', 'nap', 'peek', 'beg', 'shake'].find((x) => kinds.includes(x)) || kinds[0] }), 900, (x) => x.s === p.seat && x.t === 'dig' && x.k === k);
+          prompt('');
+          const c = G.discard.includes(dg.c) ? dg.c : G.discard[G.discard.length - 1];
+          G.discard.splice(G.discard.lastIndexOf(c), 1);
+          await flyCard(discEl(), spot(p), cardHTML(c)); p.hand.push(c); SFX.play('coin');
+          log(`${nm(p)} takes <b>${T[c].nm}</b> from the discard pile.`);
         }
         draw();
         return 'continue';
+      }
+      function humanPickHidden(target) {
+        return new Promise((res) => {
+          let done = false;
+          const fin = (i) => { if (done) return; done = true; prompt(''); res(i); };
+          prompt(`<div class="space-y-2"><div class="text-sm">Pick one of <b>${esc(target.name)}</b>'s cards:</div><div class="flex gap-1.5 justify-center flex-wrap">${target.hand.map((_, i) => backHTML('sm kk-pickable', `data-pi="${i}"`)).join('')}</div></div>`);
+          document.querySelectorAll('[data-pi]').forEach((b) => { b.onclick = () => { SFX.play('card'); fin(+b.dataset.pi); }; });
+          gTimeout(() => { if (!done && G && !G.over) { showToast('Too slow! A card was picked for you.', 'error'); fin(Math.floor(Math.random() * target.hand.length)); } }, 15000);
+        });
+      }
+      function humanDig(kinds) {
+        return new Promise((res) => {
+          prompt(`<div class="space-y-2"><div class="text-sm">Take any card from the discard pile:</div><div class="flex gap-1.5 justify-center flex-wrap">${kinds.map((t) => `<span data-dg="${t}">${cardHTML(t, { cls: 'sm' })}</span>`).join('')}</div></div>`);
+          document.querySelectorAll('[data-dg]').forEach((b) => { b.onclick = () => { prompt(''); res(b.dataset.dg); }; });
+        });
       }
       function botGive(q) { const pri = [...CATS, 'peek', 'shake', 'beg', 'nap', 'pounce', 'nope', 'defuse']; for (const t of pri) if (q.hand.includes(t)) return t; return q.hand[0]; }
       function humanGive(to) {
@@ -291,7 +357,7 @@
         if (cands.includes(me) && S.mine(me.seat)) {
           let left = 3.2, tm = null, done = false;
           const fin = (v) => { if (done) return; done = true; if (tm) gClearInt(tm); prompt(''); if (v && G) S.act({ t: 'nope', s: me.seat, k }); };
-          prompt(`<div class="flex items-center justify-center gap-3 flex-wrap"><span class="text-sm">${esc(last.name)} played <b>${T[kind] ? T[kind].em + ' ' + T[kind].nm : 'a pair'}</b>.</span><button id="kk-nope" class="btn-game btn-graphite py-2 px-5">✋ NOPE! (${Math.ceil(left)})</button></div>`);
+          prompt(`<div class="flex items-center justify-center gap-3 flex-wrap"><span class="text-sm">${esc(last.name)} played <b>${T[kind] ? T[kind].nm : 'a pair'}</b>.</span><button id="kk-nope" class="btn-game btn-graphite py-2 px-5">✋ NOPE! (${Math.ceil(left)})</button></div>`);
           document.getElementById('kk-nope').onclick = () => fin(true);
           tm = gInterval(() => { left -= 0.2; if (left <= 0) fin(false); else { const b = document.getElementById('kk-nope'); if (b) b.textContent = `✋ NO WAY! (${Math.ceil(left)})`; } }, 200);
         }
@@ -316,7 +382,7 @@
         if (p.knows && p.knows.length) p.knows.shift();
         G.players.forEach((q) => { if (q !== p && q.knows && q.knows.length) q.knows.shift(); });
         SFX.play('draw');
-        if (c !== 'bomb') { await flyCard(pileEl(), spot(p), isMe(p) ? cardHTML(c) : backHTML()); p.hand.push(c); log(`${nm(p)} draws ${isMe(p) ? T[c].em + ' ' + T[c].nm : 'a card'}.`); draw(); await W(650); return; }
+        if (c !== 'bomb') { await flyCard(pileEl(), spot(p), isMe(p) ? cardHTML(c) : backHTML()); p.hand.push(c); log(`${nm(p)} draws ${isMe(p) ? T[c].nm : 'a card'}.`); draw(); await W(650); return; }
         await flyCard(pileEl(), spot(p), cardHTML('bomb'));
         log(`${nm(p)} draws the <b>🔥 HOT POTATO</b>!`); SFX.play('meow'); draw();
         const pile = document.getElementById('kk-pile'); if (pile) pile.classList.add('kk-boom');
@@ -384,10 +450,10 @@
         id: 'kittens', name: 'Hot Potato Cats', icon: 'kittens', cats: ['card', 'party'], sub: '2-4 PLAYERS · ~6 MIN', color: '#FB7185', tone: 'coral', btn: 'coral',
         blurb: 'A push-your-luck card game. Draw cards, dodge the hot potatoes and use sneaky tricks on your rivals. Last cat standing wins!',
         rules: { tag: '2-4 PLAYERS', steps: [
-          '<strong class="text-bone">Your turn:</strong> Play as many cards as you like, then draw one card to end your turn. If you draw the <span class="text-coral font-bold">🔥 hot potato</span> you are out, unless you have an <span class="text-emerald font-bold">🧤 Oven Mitt</span>.',
-          '<strong class="text-bone">Action cards:</strong> <b>Pounce</b> ends your turn and makes the next player take 2 turns. <b>Nap</b> skips your draw. <b>Shake</b> shuffles the pile. <b>Peek</b> shows the top 3. <b>Beg</b> makes a player give you a card.',
-          '<strong class="text-bone">No Way &amp; pairs:</strong> Anyone can play <b>✋ No Way</b> to cancel an action, and you can No Way a No Way. Two matching cat cards steal a random card from a player.',
-        ], tip: 'Use Peek before you draw. If the hot potato is next, play Nap or Pounce to skip the draw!' },
+          '<strong class="text-bone">Your turn:</strong> Play as many cards as you like, then draw one card to end your turn. If you draw the <span class="text-coral font-bold">Hot Potato</span> you are out, unless you have an <span class="text-emerald font-bold">Oven Mitt</span>: then you hide the potato back in the pile, anywhere you like.',
+          '<strong class="text-bone">Action cards:</strong> <b>Attack</b> ends your turn and the next player takes 2 turns. <b>Skip</b> ends your turn without drawing. <b>Shuffle</b> mixes the pile. <b>Peek</b> shows the top 3. <b>Favor</b> makes a player give you a card of their choice. <b>No Way</b> stops any card, any time.',
+          '<strong class="text-bone">Cat combos:</strong> a pair lets you pick one of a player’s face-down cards; three of a kind lets you name a card and take it if they have it; five different cats take any card from the discard pile.',
+        ], tip: 'Use Peek before you draw. If the Hot Potato is next, play Skip or Attack!' },
         profileTiles: (s) => [['WINS', s.wins, 'text-amber'], ['GAMES', s.played, 'text-bone'], ['MITTS USED', s.defused || 0, 'text-emerald'], ['NO WAYS', s.nopes || 0, 'text-teal']],
         extraRows: (s) => srow('Cards stolen', s.steals || 0),
         engine: { buildDeck, setupDeal }, open, close() { G = null; },

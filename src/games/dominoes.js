@@ -103,7 +103,7 @@
           if (G.over) return;
           const best = Math.max(...G.players.map((p) => p.score));
           if (!G.to || best >= G.to) return endGame(false);
-          await W(1600);
+          await W(1800);
         }
       }
       async function playRound() {
@@ -209,7 +209,7 @@
         if (w) { w.score += pts; G.starter = G.players.indexOf(w); SFX.play(w.seat === G.me ? 'win' : 'coin'); }
         prompt(w ? `<b>${esc(w.name)}</b> wins the round: <span class="text-amber font-bold">+${pts}</span>` : 'Round tied.');
         draw(true);
-        await W(1400);
+        await W(3400);   // time to see everyone's leftover tiles and the points
       }
       async function endGame(gaveUp, left) {
         if (G.over) return; G.over = true; G.S.over = true;

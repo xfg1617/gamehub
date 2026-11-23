@@ -29,6 +29,7 @@ with sync_playwright() as p:
     check(link.endswith('/r/' + code), 'the invite link is short: site/r/CODE')
     print('   link:', link)
     open_link(B, link)
+    A.click('#np-start'); A.wait_for_timeout(2500)   # private rooms start when the host presses Start
     barA = A.evaluate("(document.querySelector('.np-bar') || {}).textContent || ''"); barB = B.evaluate("(document.querySelector('.np-bar') || {}).textContent || ''")
     print('   A:', barA[:70], '| B:', barB[:70])
     check(code in barB and code in barA and B.evaluate("NET.me.name") in barA, 'Tic-Tac-Toe: the friend lands in the host\'s room and the game starts')
@@ -42,9 +43,10 @@ with sync_playwright() as p:
     A.evaluate("closeActiveGame()"); B.evaluate("closeActiveGame()")
     # 3. Chess
     A.evaluate("navigateTo('play', true); openGame('chess')"); A.wait_for_timeout(600)
-    A.click('[data-k="opp"][data-v="friend"]'); A.click('#su-go'); A.wait_for_timeout(2500)
+    A.click('[data-mode="friend"]'); A.wait_for_timeout(2500)
     link = room_link(A)
     open_link(B, link)
+    A.click('#np-start'); A.wait_for_timeout(3000)
     chB = B.evaluate("(document.getElementById('ch-lvl') || {}).textContent || ''"); chA = A.evaluate("(document.getElementById('ch-lvl') || {}).textContent || ''")
     print('   chess A:', chA, '| B:', chB)
     check('ROOM' in chB and 'ROOM' in chA, 'Chess: the friend lands in the host\'s game')
@@ -52,6 +54,7 @@ with sync_playwright() as p:
     # 4. Naval Grid (online version)
     code = open_table(A, 'naval', 'room'); link = room_link(A)
     open_link(B, link)
+    A.click('#np-start'); A.wait_for_timeout(2500)
     check(A.query_selector('#game-root #ng-setup-grid') and B.query_selector('#game-root #ng-setup-grid'), 'Naval Grid: both players are on the fleet setup board together')
     A.evaluate("closeActiveGame()"); B.evaluate("closeActiveGame()")
     # 5. an old link whose room is gone

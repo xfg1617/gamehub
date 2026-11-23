@@ -68,7 +68,7 @@
       return CHAT.rooms[k];
     }
     const chatTime = (at) => new Date(at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-    const chatMsgHTML = (m, isNew) => `<div class="chat-msg ${m.me ? 'me' : ''} ${isNew ? 'new' : ''}"><span class="av">${esc(m.a)}</span><div class="min-w-0 flex-1"><div><span class="who">${esc(m.n)}</span><span class="tm">${chatTime(m.at)}</span>${m.id && !m.me ? `<button class="chat-rep" data-rep="${m.id}" title="Report this message" aria-label="Report this message">⚑</button>` : ''}</div><div class="tx">${esc(m.t)}</div></div></div>`;
+    const chatMsgHTML = (m, isNew) => `<div class="chat-msg ${m.me ? 'me' : ''} ${isNew ? 'new' : ''}"><span class="av">${esc(m.a)}</span><div class="min-w-0 flex-1"><div>${m.uid && !m.me ? `<button class="who" data-uid="${esc(m.uid)}" title="See ${esc(m.n)}'s player card">${esc(m.n)}</button>` : `<span class="who">${esc(m.n)}</span>`}<span class="tm">${chatTime(m.at)}</span>${m.id && !m.me ? `<button class="chat-rep" data-rep="${m.id}" title="Report this message" aria-label="Report this message">⚑</button>` : ''}</div><div class="tx">${esc(m.t)}</div></div></div>`;
     // build a chat box (list + typing line + quick phrases + input) inside host, for room k
     function chatMount(host, k) {
       if (!host) return;
@@ -82,6 +82,7 @@
       ['keydown', 'keyup', 'keypress'].forEach((t) => input.addEventListener(t, (e) => e.stopPropagation())); // typing here never moves a game piece
       // report a message (online only): 3 reports hide it for everyone
       box.querySelector('.chat-list').onclick = (e) => {
+        const who = e.target.closest('[data-uid]'); if (who && typeof openPlayerCard === 'function') return openPlayerCard(who.dataset.uid);
         const b = e.target.closest('[data-rep]'); if (!b || !NET.on) return;
         askConfirm({ title: 'REPORT MESSAGE?', sub: 'Report this message as rude or unsafe? Messages reported by several players are hidden.', yes: 'Report', no: 'Cancel' })
           .then((ok) => { if (ok) NET.report(+b.dataset.rep, 'reported').then(() => showToast('Thanks, the message was reported.', 'success')).catch(() => showToast('Already reported.', 'info')); });
@@ -103,7 +104,21 @@
       const ms = chatMsgs(k); ms.push(m); if (ms.length > 60) ms.splice(0, ms.length - 60);
       if (!NET.on) chatSave();
       chatBoxes(k).forEach((b) => chatPaint(b, m));
-      if (k !== 'global' && k === CHAT.room && !CHAT.open && !m.me) { CHAT.unread++; chatBadge(); }
+      const shown = chatBoxes(k).some((b) => !b.closest('#chat-panel') && b.offsetParent);   // e.g. the room's own chat is on screen
+      if (k !== 'global' && k === CHAT.room && !CHAT.open && !m.me && !shown) { CHAT.unread++; chatBadge(); chatPopup(m, () => chatToggle(true)); }
+    }
+    // a new message pops up for a few seconds (near the chat button), then fades; the button keeps the unread count
+    function chatPopup(m, onOpen) {
+      let box = document.getElementById('chat-pops');
+      if (!box) { box = document.createElement('div'); box.id = 'chat-pops'; box.setAttribute('aria-live', 'polite'); document.body.appendChild(box); }
+      const el = document.createElement('button');
+      el.className = 'chat-pop';
+      el.innerHTML = `<span class="av">${esc(m.a || '🙂')}</span><span class="min-w-0"><span class="who">${esc(m.n || 'Player')}${m.tag ? ` <i>${esc(m.tag)}</i>` : ''}</span><span class="tx">${esc(String(m.t || '').slice(0, 140))}</span></span>`;
+      el.onclick = () => { el.remove(); if (onOpen) onOpen(); };
+      box.appendChild(el);
+      while (box.childElementCount > 3) box.firstElementChild.remove();
+      if (window.SFX) SFX.play('pop');
+      setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 400); }, 4500);
     }
     function chatSend(k, text) {
       text = String(text || '').trim().slice(0, 200); if (!text) return;
@@ -172,7 +187,7 @@
     // follow a chat room on the service: load its recent messages, then add new ones as they arrive
     function netChatRoom(k) {
       if (!NET.on || CHAT.subs[k]) return;
-      const toMsg = (m) => ({ id: m.id, n: m.name, a: m.avatar, t: m.text, at: m.at, me: m.uid === NET.me.id });
+      const toMsg = (m) => ({ id: m.id, uid: m.uid, n: m.name, a: m.avatar, t: m.text, at: m.at, me: m.uid === NET.me.id });
       CHAT.net[k] = [];
       CHAT.subs[k] = NET.chatSub(k, (m) => { if (!CHAT.net[k].some((x) => x.id === m.id)) chatPost(k, toMsg(m)); });
       NET.chatHistory(k).then((ms) => { CHAT.net[k] = ms.map(toMsg); chatBoxes(k).forEach((b) => chatPaint(b)); }).catch(() => {});
@@ -188,6 +203,17 @@
         grid.querySelectorAll('[data-join]').forEach((b) => { b.onclick = () => netJoin(b.dataset.join, b.dataset.game, 'online'); });
       }).catch(() => {});
     }
+    // join a room by its code: look it up, then open the right game straight into it
+    function joinRoomCode(code) {
+      code = String(code || '').toUpperCase();
+      if (!NET.on) return showToast('Joining rooms needs the online service.', 'error');
+      NET.getRoom(code).then((r) => {
+        if (!r || r.status === 'done') return showToast(`Room ${code} isn't open right now.`, 'error');
+        const go = () => { navigateTo('play', true); netJoin(code, r.game, r.game === 'chess' ? 'friend' : 'room'); };
+        if (gameInProgress()) askConfirm({ title: 'JOIN THIS ROOM?', sub: 'Leaving will end the game you are playing.', yes: 'Join room', no: 'Stay here' }).then((ok) => ok && go()); else go();
+      }).catch(() => showToast('Could not reach the online service.', 'error'));
+    }
+    window.joinRoomCode = joinRoomCode;
     // open a game straight into an online room
     function netJoin(code, game, kind) {
       if (!GAME_MODS[game]) return showToast('That game is not online yet.', 'error');
@@ -413,7 +439,7 @@
             <span class="spr w-8 h-8">${GICONS[m.icon]}</span>
             <h2 class="text-lg font-extrabold text-bone">${m.name}</h2>
           </div>
-          <div class="flex items-center gap-2.5 flex-wrap" id="gs-tools">${toolsHTML}</div>
+          <div class="flex items-center gap-2.5 flex-wrap" id="gs-tools">${toolsHTML}<button class="btn-game btn-graphite px-3 py-2 text-xs" onclick="openGuide('${m.id}')" title="How to play ${esc(m.name)}">? Guide</button></div>
         </div>
         <div id="gs-body"></div></div>`;
       return document.getElementById('gs-body');
@@ -486,11 +512,12 @@
       const segHTML = (o) => `<div class="seg ${o.toggle ? '' : 'w-full'}">${o.choices.map((c) => `<button data-k="${o.key}" data-v="${c[0]}" class="seg-btn ${o.toggle ? '' : 'flex-1'} ${String(sel[o.key]) === String(c[0]) ? 'on' : ''}">${c[1]}</button>`).join('')}</div>`;
       const draw = () => {
         const vis = opts.filter((o) => !o.when || o.when(sel));
-        const main = vis.filter((o) => !o.toggle), toggles = vis.filter((o) => o.toggle);
+        const main = vis.filter((o) => !o.toggle && !(netOn && o.key === 'net')), toggles = vis.filter((o) => o.toggle);
         const link = inviteLink(m.id, code, netOn ? Object.assign({}, sel, { net: 'room' }) : sel);
         body.innerHTML = `<div class="win max-w-xl mx-auto overflow-hidden">
           <div class="winbar ${m.tone || 'amber'}"><span>${m.name.toUpperCase()}</span><span class="spr w-5 h-5">${GICONS[m.icon]}</span></div>
           <div class="p-6 space-y-5">
+            ${netOn ? '<button id="su-back" class="pix text-xs text-amber hover:text-bone">← CHOOSE HOW TO PLAY</button>' : ''}
             <div class="flex items-center gap-4"><span class="gart" style="--c:${m.color}"><span style="display:contents">${GICONS[m.icon]}</span></span>
               <p class="text-sm text-muted leading-relaxed">${blurb || m.blurb || ''}</p></div>
             ${preset ? (preset.host ? `<div class="tip text-sm"><span class="tip-tag bg-amber">ROOM</span>Pick the settings, then press Create room. You get the invite link in the room.</div>` : `<div class="tip text-sm"><span class="tip-tag bg-emerald">JOINED</span>You joined room <b class="text-amber">${esc(code)}</b>. The host's settings are already picked.</div>`) : ''}
@@ -511,9 +538,34 @@
         const cl = body.querySelector('[data-copy="link"]'); if (cl) cl.onclick = (e) => copyText(link, e.currentTarget);
         const sh = body.querySelector('[data-share]'); if (sh) sh.onclick = () => navigator.share({ title: `GameHub · ${m.name}`, text: `Play ${m.name} with me on GameHub! Room ${code}`, url: link }).catch(() => {});
         const li = body.querySelector('#su-link'); if (li) li.onfocus = () => li.select();
+        const bk = body.querySelector('#su-back'); if (bk) bk.onclick = () => { SFX.play('click'); pickMode(); };
         body.querySelector('#su-go').onclick = () => { setupSave(m.id, sel); if (m.id === activeGame) { GT.started = true; GT.over = false; } const go = Object.assign({}, sel, { room: code }); if (netOn && sel.net && sel.net !== 'here') return npLobby(body, m, go); onStart(go); };
       };
-      draw();
+      // the room settings: everything a private room can change while people wait (not the computer level or
+      // table size: the room has its own controls for those)
+      m._roomOpts = opts.filter((o) => o.key !== 'net' && !o.local && o.key !== lvKey && o.key !== sizeKey);
+      const goRoom = (net) => { sel.net = net; setupSave(m.id, sel); if (m.id === activeGame) { GT.started = true; GT.over = false; } npLobby(body, m, Object.assign({}, sel, { net, room: code })); };
+      // step 1 (Inna, Nov 2026): choose Solo / Online match / Private room. Online goes straight to matchmaking and
+      // Private room straight into your new room, where the settings, chat and invite link are.
+      function pickMode() {
+        sel.net = undefined;
+        const modes = (solo ? [['here', 'Solo', 'Just you. Pick your settings and play.', 'emerald']] : [])
+          .concat([['quick', 'Online match', m.online.seats({}) === 2 && m.online.ranked !== false ? 'Get paired with a real player at your level. Ranked.' : 'Join a table with real players.', 'teal'],
+            ['room', 'Private room', `Your own room: invite friends with a link${m.online.bots === false ? '' : ', add computer players'}, choose the settings together and chat.`, 'amber']]);
+        body.innerHTML = `<div class="win max-w-xl mx-auto overflow-hidden">
+          <div class="winbar ${m.tone || 'amber'}"><span>${m.name.toUpperCase()}</span><span class="spr w-5 h-5">${GICONS[m.icon]}</span></div>
+          <div class="p-6 space-y-5">
+            <div class="flex items-center gap-4"><span class="gart" style="--c:${m.color}"><span style="display:contents">${GICONS[m.icon]}</span></span>
+              <p class="text-sm text-muted leading-relaxed">${blurb || m.blurb || ''}</p></div>
+            <div class="pix text-xs tracking-wider text-muted">HOW DO YOU WANT TO PLAY?</div>
+            <div class="su-modes">${modes.map(([v, t, d, c]) => `<button class="su-mode" data-mode="${v}" style="--c:${({ emerald: '#34D399', teal: '#2DD4BF', amber: '#F5B041' })[c]}"><span class="su-mode-t">${t}</span><span class="su-mode-d">${d}</span><span class="su-mode-go">▶</span></button>`).join('')}</div>
+            <button class="btn-game btn-graphite w-full py-2.5 text-sm" onclick="openGuide('${m.id}')">? How to play ${esc(m.name)}</button>
+          </div></div>`;
+        body.querySelectorAll('[data-mode]').forEach((b) => { b.onclick = () => { SFX.play('click'); const v = b.dataset.mode; if (v === 'here') { sel.net = 'here'; draw(); } else goRoom(v); }; });
+      }
+      if (!netOn) return draw();
+      if (preset && (preset.sel.net === 'room' || preset.sel.net === 'quick')) return goRoom(preset.sel.net);
+      pickMode();
     }
 
     // the older games (Naval Grid, Four-in-a-Row, Daily Word) get the same setup screen, in a pop-up

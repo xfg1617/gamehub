@@ -257,7 +257,7 @@
             const me = O.seats[O.me]; O.phase = 'done';
             O.msg = playing.includes(O.me) ? me.res : 'You are out of chips. Watching...';
             SFX.play(me.res.startsWith('+') && !me.res.startsWith('+0') ? 'win' : me.res.startsWith('-') ? 'lose' : 'pop');
-            oPaint(); await W(2600);
+            oPaint(); await W(4400);   // time to read every hand's result
           }
           oFinish();
         } catch (e) { if (e !== 'stop') throw e; }

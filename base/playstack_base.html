@@ -897,6 +897,10 @@
         <svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="3" width="6" height="10"/><rect x="9" y="3" width="6" height="10"/><g class="cut"><rect x="2" y="5" width="4" height="1"/><rect x="2" y="7" width="4" height="1"/><rect x="2" y="9" width="3" height="1"/><rect x="10" y="5" width="4" height="1"/><rect x="10" y="7" width="4" height="1"/><rect x="10" y="9" width="3" height="1"/></g></svg>
         How to Play
       </button>
+      <button id="nav-friends" onclick="navigateTo('friends')" class="side-link">
+        <svg viewBox="0 0 16 16" fill="currentColor"><rect x="2" y="2" width="4" height="4"/><rect x="10" y="2" width="4" height="4"/><rect x="1" y="7" width="6" height="6"/><rect x="9" y="7" width="6" height="6"/></svg>
+        Friends <span id="nav-friends-badge" class="fr-navbadge hidden">0</span>
+      </button>
       <button id="nav-discord" onclick="openDiscord()" class="side-link" title="Join the GameHub Discord server">
         <svg class="dc-ico" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><rect width="16" height="16" fill="#5865F2"/><g fill="#F7F4EC"><rect x="4" y="4" width="8" height="1"/><rect x="3" y="5" width="10" height="5"/><rect x="2" y="7" width="12" height="4"/><rect x="3" y="11" width="3" height="1"/><rect x="10" y="11" width="3" height="1"/></g><g fill="#5865F2"><rect x="5" y="7" width="2" height="2"/><rect x="9" y="7" width="2" height="2"/></g></svg>
         Discord
@@ -937,6 +941,7 @@
       </button>
       <div class="flex items-center gap-3">
         <button id="snd-btn-m" onclick="toggleSound()" class="pix text-xs text-muted" title="Turn sound effects on or off">♪ ON</button>
+        <button id="mnav-friends" onclick="navigateTo('friends')" class="relative w-9 h-9 grid place-items-center text-bone" title="Friends" aria-label="Friends"><svg class="w-6 h-6" viewBox="0 0 16 16" fill="currentColor" shape-rendering="crispEdges"><rect x="2" y="2" width="4" height="4"/><rect x="10" y="2" width="4" height="4"/><rect x="1" y="7" width="6" height="6"/><rect x="9" y="7" width="6" height="6"/></svg><span id="mnav-friends-badge" class="fr-navbadge hidden absolute -top-1 -right-1">0</span></button>
         <button onclick="navigateTo('profile')" class="flex items-center gap-2">
           <span class="pix text-xs text-muted">Lv <span id="mnav-level">4</span></span>
           <span id="mnav-avatar" class="avatar-tile w-9 h-9 text-xl">🦊</span>
@@ -1261,6 +1266,10 @@
       </div>
     </section>
 
+    <section id="view-friends" class="hidden space-y-7">
+      <div><h1 class="hero-title text-bone" style="font-size:clamp(1.8rem,4vw,2.6rem)">Friends</h1><p class="text-sm text-muted mt-1.5">Look players up, add friends, see who's online, chat and invite them to your room.</p></div>
+      <div id="friends-root"></div>
+    </section>
     <section id="view-profile" class="hidden"><div id="profile-root"></div></section>
     <section id="view-game" class="hidden"><div id="game-root"></div></section>
 
@@ -1369,6 +1378,7 @@
         <div id="auth-name-wrap" class="space-y-1.5">
           <label class="block pix text-xs tracking-wider text-muted" for="auth-name">DISPLAY NAME</label>
           <input id="auth-name" type="text" maxlength="16" autocomplete="nickname" onkeydown="if(event.key==='Enter')submitAuth()" class="well w-full h-11 px-4 text-sm font-bold text-bone focus:outline-none focus:border-amber" />
+          <div class="set-hint">Other players see this name. Your email is never shown to anyone.</div>
         </div>
         <div class="space-y-1.5">
           <label class="block pix text-xs tracking-wider text-muted" for="auth-email">EMAIL</label>
@@ -1799,13 +1809,13 @@
       if (view !== 'game' && typeof GT !== 'undefined') GT.started = false;
       if (view !== 'naval' && typeof stopNgTimer === 'function') stopNgTimer();
       if (view !== 'connect4' && typeof stopC4Timer === 'function') stopC4Timer();
-      ['play', 'leaderboard', 'rules', 'naval', 'daily', 'connect4', 'profile', 'game'].forEach((v) => {
+      ['play', 'leaderboard', 'rules', 'naval', 'daily', 'connect4', 'profile', 'game', 'friends'].forEach((v) => {
         const el = document.getElementById(`view-${v}`);
         if (el) el.classList.toggle('hidden', v !== view);
       });
 
       const navKey = view === 'daily' ? 'daily' : ['naval', 'connect4', 'game'].includes(view) ? 'play' : view;
-      ['play', 'daily', 'leaderboard', 'rules', 'profile'].forEach((k) => {
+      ['play', 'daily', 'leaderboard', 'rules', 'profile', 'friends'].forEach((k) => {
         const active = k === navKey;
         const d = document.getElementById(`nav-${k}`);
         const m = document.getElementById(`mnav-${k}`);
@@ -1815,6 +1825,7 @@
 
       if (view === 'leaderboard') renderLeaderboard(currentLbTab);
       if (view === 'profile') renderProfilePage();
+      if (view === 'friends' && typeof renderFriends === 'function') renderFriends();
       if (view === 'rules' && typeof renderHowTo === 'function') renderHowTo();
       if (typeof chatOnView === 'function') chatOnView(view);
       window.scrollTo({ top: 0, behavior: 'instant' });
@@ -1968,12 +1979,19 @@
       });
     }
 
+    // your email is private: it is never shown to other players, and on your own profile it is masked
+    // (in case you share your screen) until you press SHOW
+    function maskEmail(e) { const [u, d] = String(e || '').split('@'); return d ? `${u.slice(0, 2)}•••@${d}` : '•••'; }
+    function toggleEmail(btn) { const el = document.getElementById('prof-email'); if (!el) return; const show = btn.textContent === 'SHOW'; el.textContent = show ? el.dataset.full : maskEmail(el.dataset.full); btn.textContent = show ? 'HIDE' : 'SHOW'; }
+    // a player name can't be an email address or a phone number (names are public)
+    function namePrivacyProblem(n) { return /@|\.(com|net|org|edu)\b/i.test(n) ? 'Your player name is public, so it can\'t be an email address.' : /\d{7,}/.test(n.replace(/[\s().-]/g, '')) ? 'Your player name is public, so it can\'t be a phone number.' : ''; }
     function saveProfile() {
       const name = document.getElementById('prof-username-input').value.trim();
       if (!name) {
         showToast('Please enter a display name', 'error');
         return;
       }
+      if (namePrivacyProblem(name)) { showToast(namePrivacyProblem(name), 'error'); return; }
       profile.username = name;
       profile.avatar = draftAvatar;
       saveProfileToStorage();
@@ -3845,6 +3863,7 @@
       try {
         if (authTab === 'signup') {
           if (name.length < 2) return authError('Pick a display name (at least 2 characters).');
+          if (namePrivacyProblem(name)) return authError(namePrivacyProblem(name));
           if (!document.getElementById('auth-age').checked) return authError('Please confirm you are 13 or older and agree to the Terms.');
           const r = await NET.upgrade(email, pw, name.slice(0, 16));
           if (r.error) return authError(r.error);
@@ -4017,7 +4036,7 @@
             </div>
             <div class="xp-track block w-full"><span class="xp-fill block" style="width:${xpInto}%"></span></div>
             <div class="text-left pt-1">
-              ${srow('Account', isAcct ? esc(p.account.email) : 'Guest (not saved)')}
+              ${srow('Account', isAcct ? `<span id="prof-email" data-full="${esc(p.account.email)}">${esc(maskEmail(p.account.email))}</span> <button class="pix text-xs text-amber underline ml-1" onclick="toggleEmail(this)">SHOW</button>` : 'Guest (not saved)')}
               ${isAcct ? srow('Member since', esc(p.account.since)) : ''}
               ${srow('Overall Elo', p.elo)}
             </div>

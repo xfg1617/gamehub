@@ -24,7 +24,10 @@
       const newCode = () => Array.from({ length: 4 }, () => CHARS[Math.floor(Math.random() * CHARS.length)]).join('');
       // the chat word filter (the service runs the same filter, this one just saves a round trip)
       const BAD = ['fuck', 'shit', 'bitch', 'cunt', 'nigg', 'fag', 'retard', 'whore', 'slut', 'dick', 'pussy', 'kys'];
-      NET.clean = (t) => BAD.reduce((s, w) => s.replace(new RegExp(w + '\\w*', 'gi'), (m) => '*'.repeat(m.length)), String(t));
+      // swear filter + privacy: email addresses and phone numbers typed into chat are hidden from everyone
+      NET.clean = (t) => BAD.reduce((s, w) => s.replace(new RegExp(w + '\\w*', 'gi'), (m) => '*'.repeat(m.length)), String(t))
+        .replace(/[^\s@<>]+@[^\s@<>]+\.[a-z]{2,}/gi, '[email hidden]')
+        .replace(/\+?\d[\d\s().-]{8,}\d/g, (m) => (m.replace(/\D/g, '').length >= 9 ? '[number hidden]' : m));
       NET.onOnline = (fn) => { NET._cbs.push(fn); fn(NET.count); };
       const setCount = (n) => { NET.count = n; NET._cbs.forEach((f) => { try { f(n); } catch (e) {} }); };
 
@@ -72,7 +75,7 @@
           },
           async report() {},
           presence() {
-            const beat = () => { try { const p = JSON.parse(localStorage.getItem('psnet_pres') || '{}'); p[uid] = now(); Object.keys(p).forEach((k) => { if (now() - p[k] > 20000) delete p[k]; }); localStorage.setItem('psnet_pres', JSON.stringify(p)); setCount(Object.keys(p).length); } catch (e) {} };
+            const beat = () => { try { const p = JSON.parse(localStorage.getItem('psnet_pres') || '{}'); p[uid] = now(); Object.keys(p).forEach((k) => { if (now() - p[k] > 20000) delete p[k]; }); localStorage.setItem('psnet_pres', JSON.stringify(p)); NET.onlineIds = new Set(Object.keys(p)); setCount(Object.keys(p).length); } catch (e) {} };
             beat(); setInterval(beat, 5000);
           },
           async create(game, settings, pub, code) {
@@ -148,6 +151,35 @@
           async leaderboard(game) { const d = db(); return Object.entries(d.ratings).filter(([k]) => k.endsWith(':' + game)).map(([k, v]) => ({ id: k.split(':')[0], ...v, name: (d.profiles[k.split(':')[0]] || {}).name || '?', avatar: (d.profiles[k.split(':')[0]] || {}).avatar || '🙂' })).sort((a, b) => b.elo - a.elo).slice(0, 50); },
           async rating(game) { return (db().ratings[uid + ':' + game] || { elo: 1200, games: 0 }); },
           async profileOf(id) { const p = db().profiles[id]; return p || { name: 'Player', avatar: '🙂' }; },
+          /* friends (stand-in) */
+          async searchPlayers(q) { q = String(q || '').trim().toLowerCase(); if (q.length < 2) return []; const d = db(); return Object.entries(d.profiles).filter(([, p]) => p.name.toLowerCase().includes(q)).slice(0, 20).map(([id, p]) => ({ id, name: p.name, avatar: p.avatar })); },
+          async playerCard(id) {
+            const d = db(), p = d.profiles[id]; if (!p) return null; const fr = d.friends || [];
+            const rel = id === uid ? 'me' : fr.some((f) => f.status === 'accepted' && ((f.from === uid && f.to === id) || (f.from === id && f.to === uid))) ? 'friends' : fr.some((f) => f.from === uid && f.to === id) ? 'sent' : fr.some((f) => f.from === id && f.to === uid) ? 'asked' : 'none';
+            const ratings = Object.entries(d.ratings).filter(([k, v]) => k.startsWith(id + ':') && v.games > 0).map(([k, v]) => ({ game: k.split(':')[1], elo: v.elo, games: v.games, wins: v.wins })).sort((a, b) => b.elo - a.elo);
+            return { id, name: p.name, avatar: p.avatar, since: 'Nov 2026', ratings, friend: rel };
+          },
+          async friends() {
+            const d = db(), fr = d.friends || [], pr = (id) => ({ id, name: (d.profiles[id] || {}).name || 'Player', avatar: (d.profiles[id] || {}).avatar || '🙂' });
+            return { friends: fr.filter((f) => f.status === 'accepted' && (f.from === uid || f.to === uid)).map((f) => pr(f.from === uid ? f.to : f.from)),
+              incoming: fr.filter((f) => f.status === 'pending' && f.to === uid).map((f) => pr(f.from)), outgoing: fr.filter((f) => f.status === 'pending' && f.from === uid).map((f) => pr(f.to)) };
+          },
+          async addFriend(id) { const d = db(); d.friends = d.friends || []; const back = d.friends.find((f) => f.from === id && f.to === uid); if (back) back.status = 'accepted'; else if (!d.friends.some((f) => f.from === uid && f.to === id)) d.friends.push({ from: uid, to: id, status: 'pending', at: now() }); save(d, { k: 'fr' }); },
+          async acceptFriend(id) { const d = db(); (d.friends || []).forEach((f) => { if (f.from === id && f.to === uid) f.status = 'accepted'; }); save(d, { k: 'fr' }); },
+          async removeFriend(id) { const d = db(); d.friends = (d.friends || []).filter((f) => !((f.from === uid && f.to === id) || (f.from === id && f.to === uid))); save(d, { k: 'fr' }); },
+          async dmHistory(id) { const d = db(); return (d.dms || []).filter((m) => (m.from === uid && m.to === id) || (m.from === id && m.to === uid)).slice(-60); },
+          async dmSend(id, text) {
+            const d = db(), ok2 = (d.friends || []).some((f) => f.status === 'accepted' && ((f.from === uid && f.to === id) || (f.from === id && f.to === uid)));
+            if (!ok2) throw new Error('You can only message friends.');
+            d.dms = d.dms || []; d.seq = (d.seq || 0) + 1; d.dms.push({ id: d.seq, from: uid, to: id, text: NET.clean(text).slice(0, 300), at: now() }); save(d, { k: 'dm' });
+          },
+          onSocial(fn) {
+            let last = ((db().dms || []).slice(-1)[0] || { id: 0 }).id, frKey = JSON.stringify(db().friends || []);
+            const f = (n) => { if (n.k && !['dm', 'fr'].includes(n.k)) return; const d = db();
+              (d.dms || []).filter((m) => m.id > last).forEach((m) => { last = m.id; if (m.to === uid) fn({ type: 'dm', id: m.id, from: m.from, text: m.text, at: m.at }); });
+              const k = JSON.stringify(d.friends || []); if (k !== frKey) { frKey = k; fn({ type: 'fr' }); } };
+            subs.add(f); return () => subs.delete(f);
+          },
         };
         return B;
       }
@@ -214,7 +246,7 @@
           async report(id, reason) { ok(await sb.from('reports').insert({ message_id: id, reason })); },
           presence() {
             const ch = sb.channel('lobby', { config: { presence: { key: uid } } });
-            ch.on('presence', { event: 'sync' }, () => setCount(Object.keys(ch.presenceState()).length)).subscribe((st) => { if (st === 'SUBSCRIBED') ch.track({ at: Date.now() }); });
+            ch.on('presence', { event: 'sync' }, () => { const ids = Object.keys(ch.presenceState()); NET.onlineIds = new Set(ids); setCount(ids.length); }).subscribe((st) => { if (st === 'SUBSCRIBED') ch.track({ at: Date.now() }); });
           },
           async create(game, settings, pub, code) { return ok(await sb.rpc('create_room', { p_game: game, p_settings: settings || {}, p_public: !!pub, p_code: code || null })); },
           async join(code) { return ok(await sb.rpc('join_room', { p_code: code.toUpperCase() })); },
@@ -245,6 +277,37 @@
           async leaderboard(game) { return (ok(await sb.from('ratings').select('user_id,elo,games,wins,losses,draws,profiles(name,avatar)').eq('game', game).gt('games', 0).order('elo', { ascending: false }).limit(50)) || []).map((r) => ({ id: r.user_id, elo: r.elo, games: r.games, wins: r.wins, losses: r.losses, draws: r.draws, name: (r.profiles || {}).name || '?', avatar: (r.profiles || {}).avatar || '🙂' })); },
           async rating(game) { return ok(await sb.from('ratings').select('elo,games').eq('user_id', uid).eq('game', game).maybeSingle()) || { elo: 1200, games: 0 }; },
           async profileOf(id) { if (pcache[id]) return pcache[id]; const p = ok(await sb.from('profiles').select('name,avatar').eq('id', id).maybeSingle()) || { name: 'Player', avatar: '🙂' }; pcache[id] = p; return p; },
+          /* friends (backend/friends.sql) */
+          async searchPlayers(q) { if (String(q || '').trim().length < 2) return []; return ok(await sb.rpc('search_players', { q: String(q).trim() })) || []; },
+          async playerCard(id) { return ok(await sb.rpc('player_card', { p_id: id })); },
+          async friends() {
+            const rows = ok(await sb.from('friend_requests').select('from_id,to_id,status')) || [];
+            const pr = async (id) => Object.assign({ id }, await B.profileOf(id));
+            const pick = async (list) => Promise.all(list.map(pr));
+            return { friends: await pick(rows.filter((f) => f.status === 'accepted').map((f) => (f.from_id === uid ? f.to_id : f.from_id))),
+              incoming: await pick(rows.filter((f) => f.status === 'pending' && f.to_id === uid).map((f) => f.from_id)),
+              outgoing: await pick(rows.filter((f) => f.status === 'pending' && f.from_id === uid).map((f) => f.to_id)) };
+          },
+          async addFriend(id) {
+            const back = ok(await sb.from('friend_requests').select('status').eq('from_id', id).eq('to_id', uid).maybeSingle());
+            if (back) { ok(await sb.from('friend_requests').update({ status: 'accepted' }).eq('from_id', id).eq('to_id', uid)); return; }
+            const r = await sb.from('friend_requests').insert({ from_id: uid, to_id: id }); if (r.error && !/duplicate/i.test(r.error.message)) throw err(r.error);
+          },
+          async acceptFriend(id) { ok(await sb.from('friend_requests').update({ status: 'accepted' }).eq('from_id', id).eq('to_id', uid)); },
+          async removeFriend(id) { ok(await sb.from('friend_requests').delete().or(`and(from_id.eq.${uid},to_id.eq.${id}),and(from_id.eq.${id},to_id.eq.${uid})`)); },
+          async dmHistory(id) {
+            const rows = ok(await sb.from('dms').select('id,from_id,to_id,text,created_at').or(`and(from_id.eq.${uid},to_id.eq.${id}),and(from_id.eq.${id},to_id.eq.${uid})`).order('id', { ascending: false }).limit(60)) || [];
+            return rows.reverse().map((m) => ({ id: m.id, from: m.from_id, to: m.to_id, text: m.text, at: Date.parse(m.created_at) }));
+          },
+          async dmSend(id, text) { const r = await sb.from('dms').insert({ from_id: uid, to_id: id, text }); if (r.error) throw new Error(/row-level|policy/i.test(r.error.message) ? 'You can only message friends.' : /slow/i.test(r.error.message) ? 'Slow down a little!' : r.error.message); },
+          onSocial(fn) {
+            const ch = sb.channel('social:' + uid)
+              .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dms', filter: `to_id=eq.${uid}` }, (p) => fn({ type: 'dm', id: p.new.id, from: p.new.from_id, text: p.new.text, at: Date.parse(p.new.created_at) }))
+              .on('postgres_changes', { event: '*', schema: 'public', table: 'friend_requests', filter: `to_id=eq.${uid}` }, () => fn({ type: 'fr' }))
+              .on('postgres_changes', { event: '*', schema: 'public', table: 'friend_requests', filter: `from_id=eq.${uid}` }, () => fn({ type: 'fr' }))
+              .subscribe();
+            return () => sb.removeChannel(ch);
+          },
         };
         return B;
       }
@@ -312,6 +375,16 @@
       NET.setPassword = (pw) => B.setPassword(pw);
       NET.signOut = async () => { await NET.syncUp(true); const r = await B.signOut(); profile = freshProfile(); lsSet(STORAGE_KEY, JSON.stringify(profile)); return r; };
       NET.setName = async (name, avatar) => { if (!NET.on) return { error: 'offline' }; const r = await B.setName(name, avatar); if (!r.error) { NET.me.name = name; NET.me.avatar = avatar; } return r; };
+      NET.searchPlayers = (q) => B.searchPlayers(q);
+      NET.playerCard = (id) => B.playerCard(id);
+      NET.friends = () => B.friends();
+      NET.addFriend = (id) => B.addFriend(id);
+      NET.acceptFriend = (id) => B.acceptFriend(id);
+      NET.removeFriend = (id) => B.removeFriend(id);
+      NET.dmHistory = (id) => B.dmHistory(id);
+      NET.dmSend = (id, text) => B.dmSend(id, NET.clean(text).slice(0, 300));
+      NET.onSocial = (fn) => B.onSocial(fn);
+      NET.isOnline = (id) => !!(NET.onlineIds && NET.onlineIds.has(id));
       NET.chatHistory = (room) => B.history(room);
       NET.chatSend = (room, text) => B.send(room, NET.clean(text).slice(0, 200));
       NET.chatSub = (room, fn) => B.sub(room, fn);

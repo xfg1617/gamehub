@@ -54,6 +54,36 @@
         if (h > 0) return t.r[h];
         return owns(S, o, t.g) ? t.r[0] * 2 : t.r[0];
       }
+      /* ---------- property cards (Inna): what a plot earns, what building costs ---------- */
+      function deedHTML(i) {
+        const t = BOARD[i], S = G && (G.S || null), o = S ? S.own[i] : undefined;
+        const owner = o !== undefined && o !== null && G ? G.players[o] : null, h = S ? S.houses[i] || 0 : 0, mort = S && S.mort[i];
+        const row = (a, b, on) => `<div class="ty-dr ${on ? 'on' : ''}"><span>${a}</span><b>${b}</b></div>`;
+        let body = '';
+        if (t.k === 'prop') {
+          const full = owner && owns(S, o, t.g);
+          body = row('Rent', money(t.r[0]), owner && !h && !full) + row('Rent with the whole colour set', money(t.r[0] * 2), owner && !h && full)
+            + [1, 2, 3, 4].map((n) => row(`With ${n} house${n > 1 ? 's' : ''}`, money(t.r[n]), h === n)).join('') + row('With a hotel', money(t.r[5]), h === 5)
+            + `<div class="ty-dsep"></div>` + row('Each house costs', money(t.hc)) + row('Hotel costs', `${money(t.hc)} + 4 houses`) + row('Mortgage value', money(t.pr / 2));
+        } else if (t.k === 'rail') {
+          const n = owner ? GROUPS.rail.filter((x) => S.own[x] === o).length : 0;
+          body = [1, 2, 3, 4].map((k) => row(`Owner has ${k} railroad${k > 1 ? 's' : ''}`, money(25 * Math.pow(2, k - 1)), n === k)).join('') + `<div class="ty-dsep"></div>` + row('Mortgage value', money(t.pr / 2));
+        } else if (t.k === 'util') {
+          const n = owner ? GROUPS.ut.filter((x) => S.own[x] === o).length : 0;
+          body = row('Owner has 1 utility', '4 × the dice', n === 1) + row('Owner has both utilities', '10 × the dice', n === 2) + `<div class="ty-dsep"></div>` + row('Mortgage value', money(t.pr / 2));
+        } else return '';
+        return `<div class="ty-deed"><div class="ty-dhead" style="background:${GR[t.g] || '#94A3B8'}"><span class="pix text-xs">${t.k === 'prop' ? 'PROPERTY CARD' : t.k === 'rail' ? 'RAILROAD' : 'UTILITY'}</span><b>${esc(t.n)}</b></div>
+          <div class="ty-dbody"><div class="ty-dprice">Price <b>${money(t.pr)}</b></div>${body}
+          <div class="ty-down">${owner ? `Owned by <b>${esc(owner.name)}</b>${t.k === 'prop' ? ` · ${h === 5 ? 'hotel' : h + ' house' + (h === 1 ? '' : 's')}` : ''}${mort ? ' · <span class="text-coral">mortgaged</span>' : ''}${!mort ? ` · rent now <b>${t.k === 'util' ? (GROUPS.ut.filter((x) => S.own[x] === o).length === 2 ? '10' : '4') + ' × dice' : money(rentFor(S, i, 7))}</b>` : ''}` : 'Not owned yet: buy it when you land on it'}</div></div></div>`;
+      }
+      function openDeed(i) {
+        const t = BOARD[i]; if (!t || !['prop', 'rail', 'util'].includes(t.k)) return;
+        let el = document.getElementById('ty-deed-modal');
+        if (!el) { el = document.createElement('div'); el.id = 'ty-deed-modal'; el.className = 'hidden fixed inset-0 z-[64] bg-black/70 overflow-y-auto p-4'; document.body.appendChild(el); el.onclick = () => el.classList.add('hidden'); }
+        el.innerHTML = `<div class="max-w-[300px] mx-auto my-8 sm:my-16">${deedHTML(i)}<div class="text-center pix text-xs text-muted mt-3">TAP ANYWHERE TO CLOSE</div></div>`;
+        el.classList.remove('hidden'); SFX.play('card');
+      }
+      window.tyDeed = openDeed;
       function netWorth(S, pi) {
         let w = S.cash[pi];
         BOARD.forEach((t, i) => { if (S.own[i] === pi) { w += S.mort[i] ? t.pr / 2 : t.pr; w += (S.houses[i] || 0) * (t.hc || 0) / 2; } });
@@ -330,7 +360,7 @@
         let buy = await decide(p, 'buy', () => {
           const canAfford = cash >= t.pr;
           setBanner('');
-          return ask(`${canAfford ? `<button id="by-yes" class="btn-game btn-amber py-2 px-6">Buy for ${money(t.pr)}</button>` : ''}<button id="by-no" class="btn-game btn-graphite py-2 px-6">${canAfford ? 'Skip' : 'Can\'t afford'}</button>`, { 'by-yes': true, 'by-no': false }, `${t.n} is for sale (${money(t.pr)}). You have ${money(cash)}.`, false);
+          return ask(`<button class="ty-cardlink" onclick="tyDeed(${t.i})">📄 See the ${esc(t.n)} card: rents & building costs</button>${canAfford ? `<button id="by-yes" class="btn-game btn-amber py-2 px-6">Buy for ${money(t.pr)}</button>` : ''}<button id="by-no" class="btn-game btn-graphite py-2 px-6">${canAfford ? 'Skip' : 'Can\'t afford'}</button>`, { 'by-yes': true, 'by-no': false }, `${t.n} is for sale (${money(t.pr)}). You have ${money(cash)}.`, false);
         }, () => {
           const groupMine = t.g && GROUPS[t.g].filter((x) => S.own[x] === p.i).length;
           const needs = t.g && GROUPS[t.g].length - groupMine === 1 && GROUPS[t.g].every((x) => S.own[x] === p.i || S.own[x] === undefined);
@@ -642,6 +672,7 @@
             <div id="ty-prompt" class="w-full max-w-[420px]">${G.prompt || ''}</div></div>
           <div id="ty-pawns" class="ty-pawns">${G.players.map((p) => `<div id="ty-pawn-${p.i}" class="ty-pawn"><b style="background:${p.col}">${p.av}</b></div>`).join('')}</div>`;
         if (G._rebind) G._rebind();
+        bd.onclick = (e) => { if (e.target.closest('#ty-prompt, button')) return; const tl = e.target.closest('.ty-t'); if (tl) openDeed(+tl.id.slice(5)); };
         setCube(0, G.dice[0]); setCube(1, G.dice[1]);
       }
       // put every pawn on its square; players sharing a square stand side by side
@@ -753,7 +784,7 @@
         const S = G.S;
         const me = G.me, mineP = BOARD.filter((t) => S.own[t.i] === me);
         el.innerHTML = `<div class="win overflow-hidden"><div class="winbar teal"><span>YOUR PROPERTIES · ${money(S.cash[me])}</span><button id="pn-close" class="btn-game btn-amber py-0.5 px-3 text-xs">Done</button></div>
-          <div class="p-3 grid grid-cols-1 sm:grid-cols-2 gap-2">${mineP.map((t) => `<div class="ty-pl flex items-center justify-between gap-2"><span class="text-sm"><span class="ty-dot" style="background:${GR[t.g]}"></span><b>${t.n}</b>${S.mort[t.i] ? ' <span class="text-coral">(mortgaged)</span>' : ''}<br><span class="text-xs text-muted">${t.k === 'prop' ? (S.houses[t.i] === 5 ? 'Hotel' : S.houses[t.i] + ' houses') + ` · house ${money(t.hc)}` : 'Value ' + money(t.pr)}</span></span>
+          <div class="p-3 grid grid-cols-1 sm:grid-cols-2 gap-2">${mineP.map((t) => `<div class="ty-pl flex items-center justify-between gap-2"><span class="text-sm"><span class="ty-dot" style="background:${GR[t.g]}"></span><button class="font-bold underline decoration-dotted" onclick="tyDeed(${t.i})" title="See the property card">${t.n}</button>${S.mort[t.i] ? ' <span class="text-coral">(mortgaged)</span>' : ''}<br><span class="text-xs text-muted">${t.k === 'prop' ? (S.houses[t.i] === 5 ? 'Hotel' : S.houses[t.i] + ' houses') + ` · house ${money(t.hc)}` : 'Value ' + money(t.pr)}</span></span>
             <span class="flex gap-1 flex-wrap justify-end">${t.k === 'prop' ? `<button data-pa="build" data-i="${t.i}" class="btn-game btn-emerald py-1 px-2 text-xs" ${canBuild(S, me, t.i) ? '' : 'style="opacity:.4"'}>+🏠</button><button data-pa="sell" data-i="${t.i}" class="btn-game btn-graphite py-1 px-2 text-xs" ${canSell(S, me, t.i) ? '' : 'style="opacity:.4"'}>-🏠</button>` : ''}${S.mort[t.i] ? `<button data-pa="unmort" data-i="${t.i}" class="btn-game btn-teal py-1 px-2 text-xs">Unmortgage ${money(Math.round(t.pr * 0.55))}</button>` : `<button data-pa="mort" data-i="${t.i}" class="btn-game btn-graphite py-1 px-2 text-xs" ${S.houses[t.i] > 0 ? 'style="opacity:.4"' : ''}>Mortgage</button>`}</span></div>`).join('') || '<div class="text-sm text-muted">You do not own any properties yet.</div>'}</div></div>`;
         el.querySelectorAll('[data-pa]').forEach((b) => { b.onclick = () => panelClick(b.dataset.pa, +b.dataset.i); });
         $('pn-close').onclick = () => { G.panelOpen = false; renderMine(); };

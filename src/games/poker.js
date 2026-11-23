@@ -26,6 +26,17 @@
         if (pairs.length) return pack(1, [pairs[0], ...singles.slice(0, 3)]);
         return pack(0, singles.slice(0, 5));
       }
+      // the five cards that make the best hand (to light them up at the showdown)
+      function best5(cs) {
+        let best = -1, bestSet = cs.slice(0, 5);
+        const n = cs.length;
+        for (let a = 0; a < n; a++) for (let b = a + 1; b < n; b++) {
+          const five = cs.filter((_, k) => k !== a && k !== b);
+          if (five.length !== 5) continue;
+          const sc = eval7(five); if (sc > best) { best = sc; bestSet = five; }
+        }
+        return n <= 5 ? cs.slice() : bestSet;
+      }
       const catOf = (score) => Math.floor(score / Math.pow(15, 5));
       const handName = (score) => CATS[catOf(score)];
 
@@ -310,20 +321,25 @@
         G.players.forEach((p, i) => { p.chips += won[i]; if (won[i] > 0) winners.push(i); });
         winners.forEach((i) => log(`<b>${esc(G.players[i].name)}</b> wins <b>${won[i]}</b> with ${handName(sc[i])}.`));
         if (won[G.me] > 0) { G.handsWon++; G.bigPot = Math.max(G.bigPot, won[G.me]); }
-        G.result = { won, sc, text: winners.map((i) => `${G.players[i].name} wins ${won[i]}`).join(' · ') };
+        const winCards = new Set(); winners.forEach((i) => best5(G.players[i].hole.concat(G.board)).forEach((c) => winCards.add(gKey(c))));
+        G.result = { won, sc, winCards, text: winners.map((i) => `${G.players[i].name} wins ${won[i]}`).join(' · '),
+          banner: winners.map((i) => `${G.players[i].name} wins ${won[i]} with ${({ 'High card': 'high card', Pair: 'a pair', 'Two pair': 'two pair', 'Three of a kind': 'three of a kind', Straight: 'a straight', Flush: 'a flush', 'Full house': 'a full house', 'Four of a kind': 'four of a kind', 'Straight flush': 'a straight flush' })[handName(sc[i])] || handName(sc[i])}`).join(' · ') };
         SFX.play(won[G.me] > 0 ? 'win' : 'chip');
         const t = draw(); const tok = G.tok;
-        gTimeout(() => { if (G && G.tok === tok) payOut(winners.map((i) => [i, won[i]])); }, t + 500);
-        nextHandSoon(t);
+        gTimeout(() => { if (G && G.tok === tok) payOut(winners.map((i) => [i, won[i]])); }, t + 900);
+        nextHandSoon(t, SHOWDOWN_MS);   // a long look at the cards: who won, and with what
       }
-      function nextHandSoon(extra) {
-        const tok = G.tok;
+      const SHOWDOWN_MS = 7500;
+      function nextHandSoon(extra, wait) {
+        const tok = G.tok, total = (wait || 3400) + (extra || 0), t0 = Date.now();
+        // a countdown, so everyone knows the next hand is coming
+        const cd = gInterval(() => { if (!G || G.tok !== tok) return gClearInt(cd); const el = document.getElementById('pk-next'); const left = Math.ceil((total - (Date.now() - t0)) / 1000); if (el) el.textContent = left > 0 ? `NEXT HAND IN ${left}` : ''; if (left <= 0) gClearInt(cd); }, 250);
         gTimeout(() => {
           if (!G || G.tok !== tok) return;
           const t = document.getElementById('pk-table');
           if (t) t.querySelectorAll('[data-fk]').forEach((el, k) => gGhost(el, { delay: k * 30, scale: '0.85' }));
           gTimeout(() => { if (G && G.tok === tok) newHand(); }, 450);
-        }, 3400 + (extra || 0));
+        }, total);
       }
 
       function endTournament(quit) {
@@ -345,7 +361,8 @@
       /* ----- drawing ----- */
       function seatHTML(p, i) {
         const showCards = p.seat === G.me || (G.showdown && !p.folded);
-        const cards = p.hole.length ? p.hole.map((c) => playingCardHTML(c, { down: !showCards, cls: 'sm', fk: gKey(c) })).join('') : '';
+        const wc = G.showdown && G.result && G.result.winCards;
+        const cards = p.hole.length ? p.hole.map((c) => playingCardHTML(c, { down: !showCards, cls: 'sm' + (wc && showCards ? (wc.has(gKey(c)) ? ' pk-win' : ' pk-lose') : ''), fk: gKey(c) })).join('') : '';
         const sc = G.showdown && G.result && G.result.sc && !p.folded && G.result.sc[i] >= 0 ? handName(G.result.sc[i]) : '';
         const win = G.result && G.result.won && G.result.won[i] > 0;
         return `<div id="pk-seat-${i}" class="seat ${G.toAct === i && !G.showdown && !p.folded && !p.out && !G.over ? 'turn' : ''} ${p.folded ? 'fold' : ''} ${p.out ? 'out' : ''}">
@@ -363,8 +380,9 @@
         const rot = [1, 2, 3].map((k) => (G.me + k) % ps.length);
         t.innerHTML = `<div class="flex justify-center gap-3 flex-wrap">${rot.map((i) => `<div class="flex flex-col items-center gap-1">${seatHTML(ps[i], i)}${spot(i)}</div>`).join('')}</div>
           <div class="text-center space-y-2"><div class="flex items-end justify-center gap-4"><span id="pk-deck" class="g-deck">${playingCardHTML(null, { cls: 'sm' })}</span><div id="pk-pot" class="chip-spot" style="min-width:120px">${potInner()}</div></div>
-          <div class="flex justify-center gap-2 min-h-[94px] flex-wrap">${G.board.map((c) => playingCardHTML(c, { fk: gKey(c) })).join('')}</div>
-          <div class="pix text-xs text-bone/80 min-h-[16px]">${G.result ? esc(G.result.text) : ''}</div></div>
+          <div class="flex justify-center gap-2 min-h-[94px] flex-wrap">${G.board.map((c) => playingCardHTML(c, { fk: gKey(c), cls: G.showdown && G.result && G.result.winCards ? (G.result.winCards.has(gKey(c)) ? 'pk-win' : 'pk-lose') : '' })).join('')}</div>
+          ${G.showdown && G.result && G.result.banner ? `<div class="pk-banner">🏆 ${esc(G.result.banner)}</div>` : `<div class="pix text-xs text-bone/80 min-h-[16px]">${G.result ? esc(G.result.text) : ''}</div>`}
+          <div id="pk-next" class="pix text-xs text-muted min-h-[16px]"></div></div>
           <div class="flex flex-col items-center gap-1">${spot(G.me)}${seatHTML(ps[G.me], G.me)}</div>`;
         const bl = document.getElementById('pk-blinds'); if (bl) bl.textContent = `${G.sb}/${G.bb}`;
         const pl = document.getElementById('pk-place'); if (pl) pl.textContent = `Hand ${G.hand} · ${alive().length} players left · blinds rise every ${G.every} hands`;

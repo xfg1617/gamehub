@@ -4,6 +4,7 @@ ranked Elo moves +16 / -16, the leaderboard shows both, chat messages reach the 
 a private room code works, and resigning works."""
 import sys; sys.path.insert(0, 'test')
 from tlib import *
+from nplib import players
 def page(ctx):
     pg = ctx.new_page(); pg.errs = []
     pg.on('pageerror', lambda e: pg.errs.append(str(e)))
@@ -13,13 +14,11 @@ def page(ctx):
 fails = []
 def check(ok, what): print('OK  ' if ok else 'FAIL', what); fails.append(what) if not ok else None
 with sync_playwright() as p:
-    br = launch(p)
-    ctx = br.new_context(viewport={'width': 1280, 'height': 900})
-    stub = os.path.join(ROOT, 'test', 'tw_stub.js')
-    if os.path.exists(stub): ctx.route('https://cdn.tailwindcss.com/**', lambda r: r.fulfill(path=stub, content_type='application/javascript'))
-    ctx.add_init_script("try { localStorage.setItem('ps_net_local', '1'); } catch (e) {}")
-    A = page(ctx); A.wait_for_function('NET.on && NET.me && NET.me.name', timeout=15000); B = page(ctx)
-    B.wait_for_function('NET.on && NET.me && NET.me.name', timeout=15000); A.wait_for_timeout(1200)
+    # two separate players on the stand-in service (served from http://gamehub.test like the other online tests;
+    # plain file:// windows share storage with a lag and made this test flaky)
+    A, B = players(p, 2)
+    for pg in (A, B): pg.set_viewport_size({'width': 1280, 'height': 900})
+    A.wait_for_timeout(1200)
     print('   names:', A.evaluate('NET.me.name'), '/', B.evaluate('NET.me.name'), '| errors:', A.errs[:3], B.errs[:3])
     check(A.evaluate('NET.on') and B.evaluate('NET.on'), 'both windows are online')
     check(A.evaluate("NET.me.name") != B.evaluate("NET.me.name"), f"names are unique ({A.evaluate('NET.me.name')} / {B.evaluate('NET.me.name')})")
@@ -33,7 +32,7 @@ with sync_playwright() as p:
     # quick match
     for pg in (A, B):
         pg.evaluate("openGame('chess')"); pg.wait_for_timeout(300)
-        pg.click('[data-k="opp"][data-v="online"]'); pg.click('#su-go'); pg.wait_for_timeout(900)
+        pg.click('[data-mode="online"]'); pg.wait_for_timeout(900)
     A.wait_for_timeout(1500)
     check(A.query_selector('#ch-board') is not None and B.query_selector('#ch-board') is not None, 'quick match put both players on a board')
     A.screenshot(path='test/shots/online_A.png')
@@ -51,10 +50,11 @@ with sync_playwright() as p:
     check(len(lb) == 2, f'leaderboard lists both players {lb}')
     # a private room with a code, then a resignation
     for pg in (A, B): pg.evaluate("document.getElementById('g-modal').classList.add('hidden'); navigateTo('play', true)")
-    A.evaluate("openGame('chess')"); A.wait_for_timeout(300); A.click('[data-k="opp"][data-v="friend"]')
-    code = A.evaluate("document.getElementById('su-code').textContent"); A.click('#su-go'); A.wait_for_timeout(900)
+    A.evaluate("openGame('chess')"); A.wait_for_timeout(300); A.click('[data-mode="friend"]'); A.wait_for_timeout(2000)
+    code = A.evaluate("document.querySelector('#np-lob .room-code').textContent")
     check(code in A.evaluate("document.body.innerText"), f'host waits in room {code}')
-    B.fill('#quick-room-input', code); B.click('.code-row button'); B.wait_for_timeout(2500)
+    B.fill('#quick-room-input', code); B.click('.code-row button'); B.wait_for_timeout(3000)
+    A.click('#np-start'); A.wait_for_timeout(2500)   # the host starts once the friend is in
     check(B.query_selector('#ch-board') is not None and A.query_selector('#ch-board') is not None, 'friend joined with the room code from the main menu')
     B.click('#ch-resign'); B.click('#ch-resign'); A.wait_for_timeout(3500)
     check('resigned' in A.evaluate("document.getElementById('ch-msg').textContent"), 'resigning ends the game on the other screen')

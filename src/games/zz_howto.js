@@ -96,14 +96,16 @@
           ['Results', 'Closer to 21 than the dealer wins your bet back doubled. Over 21 is a bust and loses. An Ace + a 10 card on the first two cards is a <b>blackjack</b> and pays 3 to 2.']],
           items: () => row([[`${card(14, 's')}${card(13, 'd')}`, 'Blackjack!', 'Ace + a 10-value card'], [`${card(10, 'c')}${card(6, 'h')}`, '16', 'A tough hand: hit or stand?'], [`${typeof chipSVG === 'function' ? chipSVG(25, 36) : ''}`, 'Chips', 'Your bet']]),
           tip: 'Always stand on 17 or more. Double on 11 when the dealer shows a small card.', online: 'Online is a shared table: everyone starts with 1,000 table chips and plays the same dealer for a set number of hands. Most chips at the end wins.' },
-        kittens: { tag: '2-4 PLAYERS · PUSH YOUR LUCK', goal: 'Don’t get stuck with the hot potato. The last cat standing wins!', steps: [
-          ['Your turn', 'Play as many cards from your hand as you like, then draw one card from the pile to end your turn.'],
-          ['The hot potato', 'Hidden in the pile are hot potatoes. Draw one and you are out, unless you have an Oven Mitt.'],
-          ['Saved!', 'With an Oven Mitt, you survive and secretly slide the hot potato back into the pile anywhere you like.'],
-          ['No Way!', 'Anyone can play a No Way card to cancel another player’s card. You can even No Way a No Way!'],
-          ['Pairs', 'Two matching food cards steal a random card from another player.']],
-          items: () => { const c = A('kittens').card; return c ? row([[c('bomb'), 'Hot Potato', 'Draw it and you are out'], [c('defuse'), 'Oven Mitt', 'Saves you once'], [c('nope'), 'No Way', 'Cancel any card'], [c('peek'), 'Peek', 'See the top 3 cards'], [c('nap'), 'Nap', 'End your turn without drawing'], [c('pounce'), 'Pounce', 'Next player takes 2 turns'], [c('c1'), 'Food pairs', 'Two the same: steal a card']]) : ''; },
-          tip: 'Use Peek before you draw. If the hot potato is next, play Nap or Pounce so you don’t have to draw it!', online: NET_TABLE },
+        kittens: { tag: '2-4 PLAYERS · PUSH YOUR LUCK', goal: 'Don’t get stuck with the Hot Potato. The last cat standing wins!', steps: [
+          ['Your turn', 'Play as many cards from your hand as you like (or none), then draw one card from the pile to end your turn.'],
+          ['The Hot Potato', 'Hot Potatoes are hidden in the pile. Draw one and you are out, unless you have an Oven Mitt.'],
+          ['Saved!', 'With an Oven Mitt you survive, and you secretly slide the Hot Potato back into the pile anywhere you like: right on top for the next player, or deep down.'],
+          ['Skip & Attack', 'Skip ends your turn without drawing. Attack does too, and the next player has to take 2 turns in a row.'],
+          ['Peek, Shuffle, Favor', 'Peek shows the top 3 cards. Shuffle mixes the pile. Favor makes a player give you a card of their choice.'],
+          ['No Way!', 'Anyone can play No Way at any time to stop a card. You can even No Way a No Way!'],
+          ['Cat combos', 'Cat cards do nothing alone. A pair: pick one of a player’s face-down cards. Three of a kind: name a card, and if they have it they must hand it over. Five different cats: take any card from the discard pile.']],
+          items: () => { const c = A('kittens').card; return c ? row([[c('bomb'), 'Hot Potato', 'Draw it and you are out'], [c('defuse'), 'Oven Mitt', 'Saves you once'], [c('nope'), 'No Way', 'Stop any card'], [c('peek'), 'Peek', 'See the top 3 cards'], [c('nap'), 'Skip', 'End your turn without drawing'], [c('pounce'), 'Attack', 'Next player takes 2 turns'], [c('beg'), 'Favor', 'They give you a card'], [c('c3'), 'Cat cards', 'Pairs, threes, five different']]) : ''; },
+          tip: 'Peek before you draw. If the Hot Potato is next, play Skip or Attack so you don’t have to draw it. Save your Oven Mitt: when someone asks with three cats, they usually name it!', online: NET_TABLE },
         colorclash: { tag: '2-4 PLAYERS · MATCH COLOURS', goal: 'Be the first to play all of your cards.', steps: [
           ['Match', 'Play a card that matches the top card by <b>colour</b> or by <b>number/symbol</b>.'],
           ['Can’t play?', 'Draw a card from the pile. If it fits, you can play it right away.'],
@@ -168,6 +170,30 @@
       };
       return G;
     })();
+    // one game's guide (used by the How to Play page and by the pop-up inside a game or room)
+    function guideHTML(id) {
+      const h = HOWTO[id]; if (!h) return '';
+      let items = ''; try { items = h.items ? h.items() : ''; } catch (e) { items = ''; }
+      const c = CATALOG.find((x) => x.id === id) || {};
+      return `<div class="flex items-center gap-4"><span class="ht-ico big">${GICONS[c.icon] || ''}</span><div><div class="pix text-xs text-muted">THE GOAL</div><div class="text-lg font-extrabold text-bone leading-snug">${h.goal}</div></div></div>
+            <ol class="ht-steps">${h.steps.map(([t, x], i) => `<li><span class="step-n">${i + 1}</span><div><div class="font-bold text-bone">${t}</div><div class="text-sm text-muted leading-relaxed">${x}</div></div></li>`).join('')}</ol>
+            ${items ? `<div><div class="pix text-xs text-muted mb-2">WHAT THINGS MEAN</div>${items}</div>` : ''}
+            <div class="tip text-sm text-muted"><span class="tip-tag bg-amber">TIP</span>${h.tip}</div>
+            <div class="tip text-sm text-muted"><span class="tip-tag bg-teal">ONLINE</span>${h.online}</div>`;
+    }
+    // the guide as a pop-up, so players can read it in a room or mid-game without leaving
+    function openGuide(id) {
+      id = { navalnet: 'naval', wordduel: HOWTO.wordduel ? 'wordduel' : 'daily' }[id] || id;
+      if (!HOWTO[id]) return showToast('No guide for this game yet.', 'info');
+      const c = CATALOG.find((x) => x.id === id) || { name: 'Game' };
+      let el = document.getElementById('guide-modal');
+      if (!el) { el = document.createElement('div'); el.id = 'guide-modal'; el.className = 'hidden fixed inset-0 z-[65] bg-black/80 overflow-y-auto p-4'; document.body.appendChild(el); el.onclick = (e) => { if (e.target === el) el.classList.add('hidden'); }; }
+      el.innerHTML = `<div class="win max-w-2xl mx-auto my-4 sm:my-10 overflow-hidden"><div class="winbar amber"><span>HOW TO PLAY · ${esc(c.name.toUpperCase())}</span><button class="pix text-sm" id="guide-x" aria-label="Close">✕</button></div>
+        <div class="p-5 space-y-5">${guideHTML(id)}<button class="btn-game btn-graphite w-full py-2.5" id="guide-ok">Got it</button></div></div>`;
+      el.classList.remove('hidden');
+      el.querySelector('#guide-x').onclick = el.querySelector('#guide-ok').onclick = () => el.classList.add('hidden');
+    }
+    window.openGuide = openGuide;
     function renderHowTo(openId) {
       const host = document.getElementById('howto'); if (!host) return;
       const live = CATALOG.filter((c) => c.live && HOWTO[c.id]);
@@ -178,16 +204,11 @@
         return;
       }
       const c = list.find((x) => x.id === openId), h = HOWTO[openId]; if (!c || !h) return renderHowTo();
-      let items = ''; try { items = h.items ? h.items() : ''; } catch (e) { items = ''; }
       host.innerHTML = `<div class="space-y-4">
         <button class="btn-game btn-graphite py-1.5 px-4 text-sm" id="ht-back">← All games</button>
         <div class="win overflow-hidden"><div class="winbar amber"><span>${esc(c.name.toUpperCase())}</span><span class="pix text-xs">${h.tag}</span></div>
           <div class="p-5 space-y-5">
-            <div class="flex items-center gap-4"><span class="ht-ico big">${GICONS[c.icon] || ''}</span><div><div class="pix text-xs text-muted">THE GOAL</div><div class="text-lg font-extrabold text-bone leading-snug">${h.goal}</div></div></div>
-            <ol class="ht-steps">${h.steps.map(([t, x], i) => `<li><span class="step-n">${i + 1}</span><div><div class="font-bold text-bone">${t}</div><div class="text-sm text-muted leading-relaxed">${x}</div></div></li>`).join('')}</ol>
-            ${items ? `<div><div class="pix text-xs text-muted mb-2">WHAT THINGS MEAN</div>${items}</div>` : ''}
-            <div class="tip text-sm text-muted"><span class="tip-tag bg-amber">TIP</span>${h.tip}</div>
-            <div class="tip text-sm text-muted"><span class="tip-tag bg-teal">ONLINE</span>${h.online}</div>
+            ${guideHTML(openId)}
             <button class="btn-game btn-amber w-full py-3" id="ht-play">Play ${esc(c.name)}</button>
           </div></div></div>`;
       document.getElementById('ht-back').onclick = () => { renderHowTo(); };

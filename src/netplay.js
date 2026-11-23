@@ -137,14 +137,20 @@
       const O = m.online, minH = O.min || 2, quick = sel.net === 'quick', me = NET.me.id;
       const reopen = () => { if (activeGame === m.id) m.open(document.getElementById('game-root')); };
       let room = null, ch = null, gone = false, started = false, pingT = null, autoT = null, autoAt = 0;
+      let lobEl = null;
       const wait = (title, html) => {
-        body.innerHTML = `<div class="win max-w-lg mx-auto overflow-hidden"><div class="winbar ${m.tone || 'teal'}"><span>${title}</span><span class="pix text-xs">${esc(m.name.toUpperCase())} ONLINE</span></div>
-          <div class="p-6 space-y-4 text-center" id="np-lob">${html}</div></div>`;
+        body.innerHTML = `<div class="np-room"><div class="win overflow-hidden np-room-main"><div class="winbar ${m.tone || 'teal'}"><span>${title}</span><span class="pix text-xs">${esc(m.name.toUpperCase())} ONLINE</span></div>
+          <div class="p-6 space-y-4 text-center" id="np-lob">${html}</div></div>
+          <div class="win overflow-hidden np-room-chat hidden" id="np-chatwin"><div class="winbar teal"><span>ROOM CHAT</span><span class="pix text-xs" id="np-chat-n"></span></div><div id="np-chat"></div></div></div>`;
+        lobEl = body.querySelector('#np-lob');
       };
       // a running clock while you wait
       const qt0 = Date.now(), qClock = () => { const t = Math.floor((Date.now() - qt0) / 1000); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`; };
       const qTick = gInterval(() => { const el = document.getElementById('np-qt'); if (el) el.textContent = qClock(); if (started || gone) gClearInt(qTick); }, 1000);
-      const cancel = () => { gone = true; if (ch) ch.close(); if (pingT) gClearInt(pingT); if (room && room.host === me && !started) NET.leave(room.code); reopen(); };
+      const shut = () => { if (gone) return; gone = true; if (ch) ch.close(); if (pingT) gClearInt(pingT); if (room && room.host === me && !started) NET.leave(room.code); };
+      const cancel = () => { shut(); reopen(); };
+      // left the room some other way (Lobby button, sidebar, another game): close it quietly
+      const watchdog = setInterval(() => { if (started || gone) return clearInterval(watchdog); if (lobEl && !lobEl.isConnected) { clearInterval(watchdog); shut(); } }, 1500);
       wait(quick ? 'FINDING A TABLE' : 'OPENING YOUR ROOM', '<div class="ch-wait"><i></i><i></i><i></i></div><p class="text-sm text-muted">Connecting...</p><button id="np-cancel" class="btn-game btn-graphite py-2 px-6 text-sm">Cancel</button>');
       document.getElementById('np-cancel').onclick = cancel;
       const settings = Object.assign({}, sel); delete settings.room; delete settings.net; delete settings.rematch; delete settings.rmRanked; delete settings.rmBots;
@@ -199,26 +205,43 @@
         const botsUI = !quick && isHost && (cap > 0 || nb > 0) ? `<div class="np-bots"><div class="flex items-center justify-between gap-3"><span class="pix text-xs tracking-wider text-muted">${max === 2 ? 'COMPUTER OPPONENT' : 'COMPUTER PLAYERS'}</span>
             <span class="np-step"><button id="np-bm" class="btn-game btn-graphite" ${nb <= 0 ? 'disabled' : ''} aria-label="One less computer player">−</button><b id="np-bn">${nb}</b><button id="np-bp" class="btn-game btn-graphite" ${nb >= cap ? 'disabled' : ''} aria-label="One more computer player">+</button></span></div>
             ${lvOpt && nb > 0 ? `<div class="pix text-xs tracking-wider text-muted mt-3 mb-1.5 text-left">${esc(lvOpt.label)}</div><div class="seg w-full">${lvOpt.choices.map((c) => `<button data-lv="${esc(c[0])}" class="seg-btn flex-1 ${String(c[0]) === String(lvl) ? 'on' : ''}">${esc(c[1])}</button>`).join('')}</div>` : ''}</div>` : '';
+        // the game's settings: the host can change them while everyone is in the room (talk it over in the chat)
+        const cur = hostSel || settings, rsel = Object.assign({}, cur, { net: sel.net });
+        const ropts = !(quick && max === 2) ? (m._roomOpts || []).filter((o) => !o.when || o.when(rsel)) : [];
+        const valTxt = (o) => esc((o.choices.find((c) => String(c[0]) === String(cur[o.key])) || o.choices.find((c) => String(c[0]) === String(o.def)) || ['', '?'])[1]);
+        const setsUI = ropts.length ? `<div class="np-sets"><div class="flex items-center justify-between gap-2 mb-1"><span class="pix text-xs tracking-wider text-muted">GAME SETTINGS</span><span class="pix text-xs ${isHost ? 'text-amber' : 'text-muted'}">${isHost ? 'TAP TO CHANGE' : 'THE HOST CHOOSES'}</span></div>
+          ${ropts.map((o) => `<div class="np-set"><div class="np-set-l">${esc(o.label)}</div>${isHost
+            ? `<div class="seg w-full">${o.choices.map((c) => `<button data-sk="${esc(o.key)}" data-sv="${esc(c[0])}" class="seg-btn flex-1 ${String(c[0]) === String(cur[o.key] !== undefined ? cur[o.key] : o.def) ? 'on' : ''}">${esc(c[1])}</button>`).join('')}</div>`
+            : `<div class="np-set-v">${valTxt(o)}</div>`}</div>`).join('')}</div>` : '';
         const auto = autoAt ? Math.max(0, Math.ceil((autoAt - Date.now()) / 1000)) : 0;
         const needMsg = total < Math.max(2, minTable) ? (cap > 0 ? `Invite friends or add computer players (at least ${Math.max(2, minTable)} players).` : `Waiting for friends to join (at least ${Math.max(2, minTable)} players)...`) : '';
-        document.getElementById('np-lob').innerHTML = `<div class="flex items-center justify-center gap-2"><span class="pix text-xs text-muted">${quick ? 'SEARCHING' : 'WAITING'}</span><span id="np-qt" class="pix text-xl text-teal">${qClock()}</span></div>
+        if (!lobEl || !lobEl.isConnected) return shut();
+        lobEl.innerHTML = `<div class="flex items-center justify-center gap-2"><span class="pix text-xs text-muted">${quick ? 'SEARCHING' : 'WAITING'}</span><span id="np-qt" class="pix text-xl text-teal">${qClock()}</span></div>
           ${quick ? '' : `<p class="text-sm text-muted">${isHost ? 'Your room is open. Send the link to your friends.' : 'You are in the room. The host starts the game.'}</p>
             <div class="room-code mx-auto" style="max-width:220px">${esc(code)}</div>
-            <div class="flex flex-wrap justify-center gap-2"><button id="np-copy" class="btn-game btn-amber py-2 px-5 text-sm">Copy invite link</button>${navigator.share ? '<button id="np-share" class="btn-game btn-teal py-2 px-5 text-sm">Share…</button>' : ''}</div>
+            <div class="flex flex-wrap justify-center gap-2"><button id="np-copy" class="btn-game btn-amber py-2 px-5 text-sm">Copy invite link</button><button id="np-finv" class="btn-game btn-teal py-2 px-5 text-sm">Invite friends</button>${navigator.share ? '<button id="np-share" class="btn-game btn-teal py-2 px-5 text-sm">Share…</button>' : ''}</div>
             <div class="np-linkline pix text-xs text-muted">${esc(link.replace(/^https?:\/\//, ''))}</div>`}
           ${quick && max === 2 ? '<p class="text-sm text-muted">You are in the queue. The next player who looks for a game is matched with you.</p><p class="text-xs text-muted">Testing on one computer? Two tabs of the same browser are the same player. Use a second browser, or a private window, for the other side.</p>' : ''}
           <div class="np-seats text-left">${_rows}</div>
           ${botsUI}
+          ${setsUI}
           ${isHost && (!quick || max > 2) ? `<button id="np-start" class="btn-game btn-${m.btn || 'amber'} w-full py-2.5 text-sm" ${canStart ? '' : 'disabled'}>${canStart ? (quick && humans < max && O.bots !== false ? 'Start game (computer players fill the empty seats)' : 'Start game') : esc(needMsg || 'Waiting for at least one more player...')}</button>` : ''}
           ${max > 2 && !isHost ? '<p class="text-sm text-muted">Waiting for the host to start...</p>' : ''}
           ${auto ? `<p class="pix text-xs text-teal">STARTING IN ${auto}s</p>` : ''}
-          <button id="np-cancel" class="btn-game btn-graphite py-2 px-6 text-sm">Leave room</button>`;
+          <div class="flex flex-wrap justify-center gap-2"><button class="btn-game btn-graphite py-2 px-5 text-sm" onclick="openGuide('${m.id}')">? How to play</button><button id="np-cancel" class="btn-game btn-graphite py-2 px-6 text-sm">Leave room</button></div>`;
         const cp = document.getElementById('np-copy'); if (cp) cp.onclick = (e) => copyText(link, e.currentTarget);
+        const fi = document.getElementById('np-finv'); if (fi) fi.onclick = () => inviteFriends(link, m.name);
         const sh = document.getElementById('np-share'); if (sh) sh.onclick = () => navigator.share({ title: `Play ${m.name.replace(' Online', '')} on GameHub`, text: `Play ${m.name.replace(' Online', '')} with me on GameHub!`, url: link }).catch(() => {});
         const st = document.getElementById('np-start'); if (st) st.onclick = () => startNow();
         const bm = document.getElementById('np-bm'); if (bm) bm.onclick = () => { nb--; SFX.play('click'); tellLobby(); paint(); };
         const bp = document.getElementById('np-bp'); if (bp) bp.onclick = () => { nb++; SFX.play('click'); tellLobby(); paint(); };
-        document.querySelectorAll('#np-lob [data-lv]').forEach((b) => { b.onclick = () => { lvl = (lvOpt.choices.find((c) => String(c[0]) === b.dataset.lv) || [lvl])[0]; SFX.play('click'); tellLobby(); paint(); }; });
+        lobEl.querySelectorAll('[data-sk]').forEach((b) => { b.onclick = () => {
+          const o = ropts.find((x) => x.key === b.dataset.sk); if (!o) return;
+          const v = (o.choices.find((c) => String(c[0]) === b.dataset.sv) || [cur[o.key]])[0];
+          hostSel = Object.assign({}, hostSel || settings, { [o.key]: v }); Object.assign(settings, { [o.key]: v });
+          setupSave(m.id, Object.assign({}, setupLoad(m.id), { [o.key]: v })); SFX.play('click'); tellLobby(); paint();
+        }; });
+        lobEl.querySelectorAll('[data-lv]').forEach((b) => { b.onclick = () => { lvl = (lvOpt.choices.find((c) => String(c[0]) === b.dataset.lv) || [lvl])[0]; SFX.play('click'); tellLobby(); paint(); }; });
         document.getElementById('np-cancel').onclick = cancel;
       };
       const tellLobby = () => { if (isHost && !started) ch.send('lobby', { seats, sel: hostSel, max, nb, lvl }); };
@@ -231,15 +254,16 @@
         list.slice().sort((a, b) => (a.at || 0) - (b.at || 0)).forEach((x) => { if (seats.length < max && !seats.some((y) => y.uid === x.uid)) seats.push({ uid: x.uid, name: x.name || 'Player', avatar: x.avatar || '🙂' }); });
         if (JSON.stringify(seats) !== before) {
           SFX.play('pop'); tellLobby(); paint();
-          if (max === 2 && seats.length === 2) return begin();
+          if (quick && max === 2 && seats.length === 2) return begin();
           if (sel.rematch && seats.length >= sel.rematch) return begin();   // a rematch starts as soon as everyone is back
-          if (seats.length >= max) return begin();
+          if (quick && seats.length >= max) return begin();
           if (quick && seats.length >= minH && !autoAt) { autoAt = Date.now() + 20000; autoT = gInterval(() => { paint(); if (Date.now() >= autoAt) { gClearInt(autoT); begin(); } }, 1000); }
         }
       });
       ch.on('hi', () => { tellLobby(); if (started && startMsg) ch.send('start', startMsg); });
       ch.on('lobby', (d) => {
         if (isHost || started) return;
+        if (hostSel && JSON.stringify(hostSel) !== JSON.stringify(d.sel)) showToast('The host changed the game settings.', 'info');
         seats = d.seats; hostSel = d.sel; nbSeen = d.nb || 0; lvSeen = d.lvl;
         if (!seats.some((x) => x.uid === me) && seats.length >= d.max) { showToast('That table is full.', 'error'); return cancel(); }
         paint();
@@ -285,6 +309,11 @@
       }
       await ch.ready;
       if (gone) return;
+      if (!(quick && max === 2)) {   // the room's chat (same chat as during the game)
+        NP.table = code; CHAT.mode = 'table'; if (typeof chatOnView === 'function') chatOnView('game');
+        const cw = document.getElementById('np-chatwin'), cbox = document.getElementById('np-chat');
+        if (cw && cbox) { cw.classList.remove('hidden'); netChatRoom('t:' + code); chatMount(cbox, 't:' + code); }
+      }
       const tb = body.querySelector('.winbar span'); if (tb) tb.textContent = quick ? (max === 2 ? 'FINDING AN OPPONENT' : 'FINDING A TABLE') : isHost ? `YOUR ROOM · ${code}` : `ROOM ${code}`;
       if (isHost) { paint(); NET.ping(code); pingT = gInterval(() => { if (!started) NET.ping(code); }, 10000); }
       else { paint(); ch.send('hi', {}); gTimeout(() => { if (!started && !gone && !seats.length) ch.send('hi', {}); }, 2500); }

@@ -125,7 +125,7 @@
       let el = document.getElementById('pcard-modal');
       if (!el) { el = document.createElement('div'); el.id = 'pcard-modal'; el.className = 'hidden fixed inset-0 z-[66] bg-black/80 overflow-y-auto p-4'; document.body.appendChild(el); el.onclick = (e) => { if (e.target === el) el.classList.add('hidden'); }; }
       el.innerHTML = '<div class="win max-w-sm mx-auto my-10 p-6 text-center text-sm text-muted">Loading...</div>'; el.classList.remove('hidden');
-      const c = await NET.playerCard(id).catch(() => null);
+      const [c, st] = await Promise.all([NET.playerCard(id).catch(() => null), NET.playerStats ? NET.playerStats(id).catch(() => null) : null]);
       if (!c) { el.innerHTML = '<div class="win max-w-sm mx-auto my-10 p-6 text-center text-sm text-muted">That player could not be found.</div>'; return; }
       const on = NET.isOnline(id);
       const btn = { me: '', friends: `<button class="btn-game btn-teal w-full py-2.5 text-sm" data-act="chat">Chat</button>`, sent: '<button class="btn-game btn-graphite w-full py-2.5 text-sm" disabled>Friend request sent</button>',
@@ -134,18 +134,75 @@
         <div class="p-6 space-y-4 text-center">
           <div class="avatar-tile w-24 h-24 text-5xl mx-auto">${esc(c.avatar)}</div>
           <div><div class="text-2xl font-extrabold text-bone">${esc(c.name)}</div><div class="pix text-xs mt-1 ${on ? 'text-emerald' : 'text-muted'}">${on ? '● ONLINE' : 'OFFLINE'} · PLAYING SINCE ${esc(String(c.since || '').toUpperCase())}${c.friend === 'friends' ? ' · FRIEND' : ''}</div></div>
+          ${psTiles(st)}${psHere(st)}
           <div class="text-left"><div class="pix text-xs tracking-wider text-muted mb-1.5">RANKINGS</div>${(c.ratings || []).length ? c.ratings.map((r) => srow(esc(frGameName(r.game)), `${r.elo} Elo · ${r.wins}/${r.games} won`)).join('') : '<div class="text-sm text-muted">No ranked games yet.</div>'}</div>
           ${btn}
+          <button class="btn-game btn-graphite w-full py-2.5 text-sm" data-act="full">View full profile ▶</button>
           ${c.friend === 'friends' ? '<button class="pix text-xs text-muted hover:text-coral" data-act="rm">Remove friend</button>' : ''}
         </div></div>`;
       el.querySelectorAll('[data-act]').forEach((b) => { b.onclick = async () => {
         const a = b.dataset.act;
         if (a === 'x') return el.classList.add('hidden');
         if (a === 'chat') { el.classList.add('hidden'); return openFriendChat(id); }
+        if (a === 'full') { el.classList.add('hidden'); return openPlayerProfile(c, st); }
         if (a === 'add') { b.disabled = true; try { await NET.addFriend(id); SFX.play('pop'); showToast(c.friend === 'asked' ? 'You are now friends!' : `Friend request sent to ${c.name}.`, 'success'); } catch (e) { showToast(e.message || 'Could not send the request.', 'error'); } frLoad(); return openPlayerCard(id); }
         if (a === 'rm') { await NET.removeFriend(id).catch(() => {}); frLoad(); return openPlayerCard(id); }
       }; });
     }
+    /* ---------- public stats (backend/player-stats.sql): your browser publishes a small summary, others read it ---------- */
+    const psWr = (w, n) => (n ? Math.round((w / n) * 100) + '%' : '-');
+    function psTiles(st) {
+      if (!st) return '<div class="text-xs text-muted">No games played yet.</div>';
+      const t = (lab, val, c) => `<div class="ps-tile"><small>${lab}</small><b class="${c}">${val}</b></div>`;
+      return `<div class="ps-tiles">${t('LEVEL', 'Lv ' + (st.lv || 1), 'text-amber')}${t('GAMES', st.played || 0, 'text-bone')}${t('WIN %', psWr(st.wins || 0, st.played || 0), 'text-teal')}</div>`;
+    }
+    function psHere(st) {
+      const g = typeof activeGame !== 'undefined' && activeGame;
+      if (!st || !g || !st.games) return '';
+      const r = st.games[g] || [0, 0, 0, 0];
+      return `<div class="ps-here"><span>IN ${esc(frGameName(g).toUpperCase())}</span><b>${r[0]} played · ${psWr(r[1], r[0])} won</b></div>`;
+    }
+    function openPlayerProfile(c, st) {
+      let el = document.getElementById('pprof-modal');
+      if (!el) { el = document.createElement('div'); el.id = 'pprof-modal'; el.className = 'fixed inset-0 z-[67] bg-black/80 overflow-y-auto p-3 sm:p-6'; document.body.appendChild(el); el.onclick = (e) => { if (e.target === el) el.remove(); }; }
+      st = st || {};
+      const games = Object.entries(st.games || {}).filter(([, r]) => r[0] > 0).sort((a, b) => b[1][0] - a[1][0]);
+      const elo = {}; (c.ratings || []).forEach((r) => { elo[r.game] = r.elo; });
+      const B = (window.REWARDS && REWARDS.BADGES) || [], have = new Set(st.badges || []);
+      const ago = (t) => { const m = Math.max(1, Math.round((Date.now() - t) / 60000)); return m < 60 ? m + 'm ago' : m < 1440 ? Math.round(m / 60) + 'h ago' : Math.round(m / 1440) + 'd ago'; };
+      const resC = { win: 'text-emerald', loss: 'text-coral', draw: 'text-muted' };
+      el.innerHTML = `<div class="win max-w-3xl mx-auto overflow-hidden"><div class="winbar amber"><span>PLAYER PROFILE</span><button class="pix text-sm" data-x aria-label="Close">✕</button></div>
+        <div class="pp-top"><div class="avatar-tile w-20 h-20 text-4xl">${esc(c.avatar)}</div>
+          <div class="min-w-0"><div class="text-2xl font-extrabold text-bone truncate">${esc(c.name)}</div>
+          <div class="pix text-xs text-muted mt-1">${NET.isOnline(c.id) ? '<span class="text-emerald">● ONLINE</span> · ' : ''}PLAYING SINCE ${esc(String(c.since || '').toUpperCase())}${c.friend === 'friends' ? ' · FRIEND' : ''}</div></div></div>
+        <div class="p-4 sm:p-5 space-y-5">
+          <div><div class="pp-h">OVERVIEW</div><div class="ps-tiles four">
+            <div class="ps-tile"><small>LEVEL</small><b class="text-amber">Lv ${st.lv || 1}</b></div><div class="ps-tile"><small>GAMES</small><b class="text-bone">${st.played || 0}</b></div>
+            <div class="ps-tile"><small>WINS</small><b class="text-emerald">${st.wins || 0}</b></div><div class="ps-tile"><small>WIN %</small><b class="text-teal">${psWr(st.wins || 0, st.played || 0)}</b></div></div></div>
+          ${B.length ? `<div><div class="pp-h">BADGES · ${have.size} / ${B.length}</div><div class="pp-badges">${B.map((b) => `<span class="${have.has(b.id) ? 'on' : ''}" title="${esc(b.name)}: ${esc(b.why)}">${b.icon}<small>${esc(b.name)}</small></span>`).join('')}</div></div>` : ''}
+          <div><div class="pp-h">GAMES PLAYED</div>${games.length ? `<div class="pp-table"><div class="pp-row hd"><span>GAME</span><span>PLAYED</span><span>WON</span><span>WIN %</span><span>RATING</span></div>
+            ${games.map(([g, r]) => `<div class="pp-row"><span>${esc(frGameName(g))}</span><span>${r[0]}</span><span>${r[1]}</span><span>${psWr(r[1], r[0])}</span><span>${elo[g] || '-'}</span></div>`).join('')}</div>` : '<div class="text-sm text-muted">No games played yet.</div>'}</div>
+          <div><div class="pp-h">RECENT GAMES</div>${(st.hist || []).length ? `<div class="pp-hist">${st.hist.map((h) => `<div><span>${esc(frGameName(h[0]))}</span><b class="${resC[h[1]] || 'text-muted'}">${esc(String(h[1] || '').toUpperCase())}</b><small>${h[2] ? ago(h[2]) : ''}</small></div>`).join('')}</div>` : '<div class="text-sm text-muted">No recent games.</div>'}</div>
+        </div></div>`;
+      el.querySelector('[data-x]').onclick = () => el.remove();
+    }
+    function myPublicStats() {
+      const s = profile.stats || {}, games = {}; let pl = 0, w = 0;
+      Object.entries(s).forEach(([g, o]) => {
+        if (!o || typeof o !== 'object' || !(o.played > 0)) return;
+        const won = g === 'daily' ? (o.solved || o.wins || 0) : (o.wins || 0);
+        games[g] = [o.played | 0, won | 0, (o.losses || 0) | 0, (o.draws || 0) | 0]; pl += o.played | 0; w += won | 0;
+      });
+      return { lv: Math.floor((profile.xp || 0) / 100) + 1, played: pl, wins: w, games, badges: (profile.badges || []).slice(0, 30),
+        hist: (profile.history || []).slice(0, 12).map((h) => [h.game, h.result, h.at || 0]) };
+    }
+    let psLast = '';
+    setInterval(() => {
+      if (typeof NET === 'undefined' || !NET.on || !NET.me || !NET.publishStats || document.hidden) return;
+      const o = myPublicStats(), j = JSON.stringify(o); if (j === psLast) return;
+      psLast = j; NET.publishStats(o).catch(() => { psLast = ''; });
+    }, 15000);
+    window.openPlayerProfile = openPlayerProfile; window.myPublicStats = myPublicStats;
     window.openPlayerCard = openPlayerCard; window.renderFriends = renderFriends; window.openFriendChat = openFriendChat;
 
     /* ---------- invite friends to your room (from the room screen) ---------- */

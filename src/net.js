@@ -159,6 +159,8 @@
             const ratings = Object.entries(d.ratings).filter(([k, v]) => k.startsWith(id + ':') && v.games > 0).map(([k, v]) => ({ game: k.split(':')[1], elo: v.elo, games: v.games, wins: v.wins })).sort((a, b) => b.elo - a.elo);
             return { id, name: p.name, avatar: p.avatar, since: 'Nov 2026', ratings, friend: rel };
           },
+          async publishStats(o) { const d = db(); d.pstats = d.pstats || {}; d.pstats[uid] = o; save(d, { k: 'ps' }); },
+          async playerStats(id) { return (db().pstats || {})[id] || null; },
           async friends() {
             const d = db(), fr = d.friends || [], pr = (id) => ({ id, name: (d.profiles[id] || {}).name || 'Player', avatar: (d.profiles[id] || {}).avatar || '🙂' });
             return { friends: fr.filter((f) => f.status === 'accepted' && (f.from === uid || f.to === uid)).map((f) => pr(f.from === uid ? f.to : f.from)),
@@ -307,6 +309,8 @@
           /* friends (backend/friends.sql) */
           async searchPlayers(q) { if (String(q || '').trim().length < 2) return []; return ok(await rpc('search_players', { q: String(q).trim() })) || []; },
           async playerCard(id) { return ok(await rpc('player_card', { p_id: id })); },
+          async publishStats(o) { await rpc('publish_stats', { p: o }); },
+          async playerStats(id) { try { return ok(await rpc('player_stats', { p_id: id })); } catch (e) { return null; } },
           async friends() {
             const rows = ok(await sb.from('friend_requests').select('from_id,to_id,status')) || [];
             const pr = async (id) => Object.assign({ id }, await B.profileOf(id));
@@ -404,6 +408,8 @@
       NET.setName = async (name, avatar) => { if (!NET.on) return { error: 'offline' }; const r = await B.setName(name, avatar); if (!r.error) { NET.me.name = name; NET.me.avatar = avatar; } return r; };
       NET.searchPlayers = (q) => B.searchPlayers(q);
       NET.playerCard = (id) => B.playerCard(id);
+      NET.publishStats = (o) => B.publishStats(o);
+      NET.playerStats = (id) => B.playerStats(id);
       NET.friends = () => B.friends();
       NET.addFriend = (id) => B.addFriend(id);
       NET.acceptFriend = (id) => B.acceptFriend(id);

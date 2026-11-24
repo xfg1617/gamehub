@@ -567,6 +567,11 @@ One shared way to run a game table, used on this device AND online, so a game ha
   Card games (poker, kittens, colorclash, dominoes, blackjack) paint the felt over the whole page (body background) and
   their `.felt` boxes go transparent, with a faint dashed oval for the table; their panels are dark, slightly
   see-through. Phones keep the header at the top.
+* **Name tags (Nov 2026, Inna's reference picture)**: `nameTag({av, name, sub, badge, turn, dealer, me})` in core + `.tg-*` CSS
+  (40-shared-cards.css). Poker, Hot Potato Cats, Color Clash and Dominoes draw players as `.tg-seat` (ids `pk-/kk-/cc-/dm-
+  seat-N` kept for emotes and card flights): cards on the table (opponents' face-down cards fanned in `.tg-fan`), a small
+  tag under them (picture, name, chips / cards, yellow count bubble, D = dealer, gold outline on their turn, teal = you).
+  `t_np_cc.py` clicks through `evaluate` (real mouse clicks hit cards mid-animation on the slow two-tab stand-in).
 * `test/shot_full.py [games] [d|l|m]` screenshots every game at 1690×903, 1280×720 and phone; check page height.
 
 ## 5d. Game setup screens, room codes, leaving a game

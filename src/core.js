@@ -903,6 +903,14 @@
     const RANK_LAB = { 11: 'J', 12: 'Q', 13: 'K', 14: 'A' };
     const rankLab = (r) => RANK_LAB[r] || String(r);
     // card = { r: 2..14, s: 's'|'h'|'d'|'c' }
+    /* ---------- name tags (Inna, Nov 2026, from her reference picture): instead of a big box per player, the cards lie on
+       the table and a small tag sits under them: picture, name, chips / cards, a yellow count bubble, D for the dealer.
+       The tag gets a gold outline on that player's turn. */
+    function nameTag(o) {
+      return `<div class="tg-tag ${o.turn ? 'turn' : ''} ${o.me ? 'me' : ''}">${o.dealer ? '<span class="tg-d" title="Dealer">D</span>' : ''}<span class="tg-av">${o.av || '🙂'}</span><span class="tg-txt"><b>${esc(o.name)}</b>${o.sub !== undefined ? `<small>${o.sub}</small>` : ''}</span>${o.badge !== undefined && o.badge !== null ? `<span class="tg-badge">${o.badge}</span>` : ''}</div>`;
+    }
+    window.nameTag = nameTag;
+
     /* ---------- seats around a card table (Inna, Nov 2026: "players at 4 sides of the table") ----------
        ringSlots(id) = the three seat places (left, across, right) for a .ring4 grid; ringFill(id, seats) puts the other
        players' seat HTML there in playing order: the next player sits on your left, then across, then right. */

@@ -8,12 +8,12 @@ STATE = "[document.getElementById('cc-top').innerText.replace(/\\s+/g, ' '), doc
 def act(pg):
     for sel in ('#cc-clash', '#cc-pl', '[data-col]', '#cc-catch'):
         b = pg.query_selector(sel)
-        if b and b.is_visible(): b.click(); return True
+        if b and b.is_visible(): b.evaluate('e => e.click()'); return True
     if pg.evaluate("document.getElementById('cc-status').textContent") != 'YOUR TURN': return False
     c = pg.query_selector('#cc-hand .cc-card.ok')
-    if c: c.click(); return True
+    if c: c.evaluate('e => e.click()'); return True
     d = pg.query_selector('#cc-draw')
-    if d and pg.query_selector('#cc-hand .cc-card.no'): d.click(); return True
+    if d and pg.query_selector('#cc-hand .cc-card.no'): d.evaluate('e => e.click()'); return True
     return False
 with sync_playwright() as p:
     A, B = players(p, 2, REAL)

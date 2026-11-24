@@ -106,3 +106,47 @@
       .bj-arc { grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: start; border-top: 3px dashed rgba(247, 244, 236, .25); padding-top: 14px; }
       .bj-arc > :nth-child(2), .bj-arc > :nth-child(3) { margin-top: 40px; }
     }
+
+    /* ---------- name tags (core nameTag): cards on the table, a small tag under them ---------- */
+    .tg-seat { display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; min-width: 0; }
+    .tg-seat.tg-fold, .tg-seat.tg-out { opacity: .45; }
+    .tg-cards { display: flex; justify-content: center; gap: 4px; min-height: 66px; align-items: flex-end; }
+    .tg-tag { display: inline-flex; align-items: center; gap: 8px; background: rgba(5, 14, 24, .8); border: 2px solid #050E18; padding: 3px 12px 3px 4px; position: relative; color: #F7F4EC; max-width: 100%; }
+    .tg-tag.me { border-color: #2DD4BF; }
+    .tg-tag.turn { border-color: #F5B041; box-shadow: 0 0 0 2px #F5B041; }
+    .tg-av { width: 30px; height: 30px; flex: none; display: grid; place-items: center; font-size: 19px; background: #12304D; border: 2px solid #050E18; }
+    .tg-txt { min-width: 0; text-align: left; }
+    .tg-txt b { display: block; font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 13px; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tg-txt small { display: block; font-family: 'Arcade Pixel', monospace; font-size: 12px; color: #F5B041; line-height: 1.1; white-space: nowrap; }
+    .tg-badge { position: absolute; right: -10px; top: -10px; min-width: 22px; height: 22px; padding: 0 5px; background: #F5D041; color: #050E18; border: 2px solid #050E18; font-family: 'Arcade Pixel', monospace; font-size: 13px; display: grid; place-items: center; }
+    .tg-d { position: absolute; left: -10px; top: -10px; width: 22px; height: 22px; background: #F7F4EC; color: #050E18; border: 2px solid #050E18; font-family: 'Arcade Pixel', monospace; font-size: 13px; display: grid; place-items: center; }
+    .tg-st { font-family: 'Arcade Pixel', monospace; font-size: 12px; color: rgba(247, 244, 236, .8); min-height: 14px; text-align: center; }
+    /* opponents' hidden cards fanned out, overlapping */
+    .tg-fan { display: flex; justify-content: center; min-height: 58px; align-items: flex-end; }
+    .tg-fan > * { margin-left: -26px; }
+    .tg-fan > *:first-child { margin-left: 0; }
+    .tg-fan .cc-card { width: 40px !important; height: 58px !important; border-width: 2px !important; box-shadow: -2px 0 3px rgba(0, 0, 0, .3) !important; cursor: default; }
+    .tg-fan .cc-back .big { font-size: .5rem !important; }
+    .tg-fan .kk-card.sm { width: 52px; height: 72px; margin-left: -38px; box-shadow: -2px 0 3px rgba(0, 0, 0, .3); }
+    .tg-fan .kk-card.sm:first-child { margin-left: 0; }
+    .tg-fan .kk-card.sm .art svg { width: 26px; height: 26px; }
+    .tg-fan .kk-card.sm .nm { font-size: .5rem; padding: 2px 1px; }
+    @media (min-width: 1024px) {
+      .tg-fan .cc-card { width: 54px !important; height: 78px !important; }
+      .tg-fan > * { margin-left: -36px; }
+      .tg-fan .kk-card.sm { width: 64px; height: 88px; margin-left: -48px; }
+      .tg-fan .kk-card.sm .art svg { width: 34px; height: 34px; }
+      .tg-fan .kk-card.sm .nm { font-size: .6rem; }
+      .tg-av { width: 34px; height: 34px; font-size: 21px; }
+      .tg-txt b { font-size: 14px; }
+    }
+    @media (max-width: 639px) {
+      .tg-tag { gap: 5px; padding: 2px 8px 2px 3px; }
+      .tg-av { width: 24px; height: 24px; font-size: 15px; }
+      .tg-txt b { font-size: 11px; max-width: 70px; }
+      .tg-txt small { font-size: 10px; }
+      .tg-fan > * { margin-left: -30px; }
+      .tg-fan .kk-card.sm { width: 40px; height: 56px; margin-left: -30px; }
+      .tg-fan .kk-card.sm .art svg { width: 20px; height: 20px; }
+      .tg-fan .kk-card.sm .nm { font-size: .4rem; }
+    }

@@ -97,9 +97,8 @@
       body.in-game[data-game="kittens"] #gs-body .kk-card.sm { width: 76px; height: 104px; }
       body.in-game[data-game="poker"] #gs-body .pcard { width: 80px; height: 114px; }
       body.in-game[data-game="poker"] #gs-body .pcard .pc-mid svg { width: 44px; height: 44px; }
-      body.in-game[data-game="poker"] #gs-body .pcard.sm { width: 58px; height: 82px; }
-      body.in-game[data-game="poker"] #gs-body .pcard.sm .pc-mid svg { width: 34px; height: 34px; }
-      body.in-game[data-game="poker"] #gs-body .seat { min-width: 160px; }
+      body.in-game[data-game="poker"] #gs-body .pcard.sm { width: 68px; height: 97px; }
+      body.in-game[data-game="poker"] #gs-body .pcard.sm .pc-mid svg { width: 38px; height: 38px; }
       body.in-game[data-game="dominoes"] #gs-body .dm-tile.big { width: 46px; height: 92px; }
       body.in-game[data-game="dominoes"] #gs-body .dm-line { --u: 32px; }
       body.in-game[data-game="wordconnect"] .wc-wheel { transform: scale(1.15); transform-origin: top center; margin-bottom: 44px; }
@@ -114,7 +113,7 @@
       body.in-game[data-game="kittens"] #gs-body .kk-card:not(.sm) .ds { font-size: .68rem; line-height: .82rem; }
       body.in-game[data-game="poker"] #gs-body .pcard { width: 96px; height: 136px; }
       body.in-game[data-game="poker"] #gs-body .pcard .pc-mid svg { width: 52px; height: 52px; }
-      body.in-game[data-game="poker"] #gs-body .pcard.sm { width: 72px; height: 104px; }
+      body.in-game[data-game="poker"] #gs-body .pcard.sm { width: 80px; height: 114px; }
       body.in-game[data-game="poker"] #gs-body .pcard.sm .pc-mid svg { width: 38px; height: 38px; }
       body.in-game[data-game="dominoes"] #gs-body .dm-tile.big { width: 52px; height: 104px; }
       body.in-game[data-game="dominoes"] #gs-body .dm-line { --u: 36px; }

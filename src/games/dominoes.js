@@ -240,8 +240,9 @@
         const before = gSnap(area);
         const cur = G.players[G.cur], myTurn = cur && cur.seat === G.me && G.choose;
         const others = G.players.map((_, k) => G.players[(G.me + k) % G.players.length]).slice(1);
-        $('dm-opp').innerHTML = others.map((q) => `<div id="dm-seat-${q.seat}" class="seat ${cur === q && !G.over ? 'turn' : ''}"><div class="text-sm font-display font-extrabold"><span class="text-lg">${q.av}</span> ${esc(q.name)}</div>
-          <div class="dm-backs">${(q.hand || []).map((t) => tileHTML(t, { down: !reveal, vertical: true, fk: t.id, cls: 'sm' })).join('')}</div><div class="pix text-xs text-amber">${(q.hand || []).length} tile${(q.hand || []).length === 1 ? "" : "s"}${reveal ? ' · ' + handPips(q.hand) + ' pips' : ''}</div></div>`).join('');
+        // name tag style: their tiles on the table, a small tag under them
+        $('dm-opp').innerHTML = others.map((q) => { const n = (q.hand || []).length; return `<div id="dm-seat-${q.seat}" class="tg-seat ${cur === q && !G.over ? 'turn' : ''}">
+          <div class="dm-backs">${(q.hand || []).map((t) => tileHTML(t, { down: !reveal, vertical: true, fk: t.id, cls: 'sm' })).join('')}</div>${nameTag({ av: q.av, name: q.name, sub: `${n} tile${n === 1 ? '' : 's'}${reveal ? ' · ' + handPips(q.hand) + ' pips' : ''}`, badge: n, turn: cur === q && !G.over })}</div>`; }).join('');
         const lineEl = $('dm-line');
         const unit = Math.max(18, Math.min(30, Math.floor((lineEl.clientWidth - 16) / 22)));
         lineEl.style.setProperty('--u', unit + 'px');

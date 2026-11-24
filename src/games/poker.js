@@ -365,11 +365,12 @@
         const cards = p.hole.length ? p.hole.map((c) => playingCardHTML(c, { down: !showCards, cls: 'sm' + (wc && showCards ? (wc.has(gKey(c)) ? ' pk-win' : ' pk-lose') : ''), fk: gKey(c) })).join('') : '';
         const sc = G.showdown && G.result && G.result.sc && !p.folded && G.result.sc[i] >= 0 ? handName(G.result.sc[i]) : '';
         const win = G.result && G.result.won && G.result.won[i] > 0;
-        return `<div id="pk-seat-${i}" class="seat ${G.toAct === i && !G.showdown && !p.folded && !p.out && !G.over ? 'turn' : ''} ${p.folded ? 'fold' : ''} ${p.out ? 'out' : ''}">
-          <div class="flex items-center justify-center gap-1.5 text-sm font-display font-extrabold"><span class="text-lg">${p.av}</span>${esc(p.name)}${G.dealer === i ? ' <span class="chip-tag" style="padding:0 .25rem">D</span>' : ''}</div>
-          <div class="pix text-sm text-amber flex items-center justify-center gap-1">${p.out ? 'OUT' : chipSVG(100, 14) + p.chips}</div>
-          <div class="flex gap-1 justify-center my-1 min-h-[66px]">${cards}</div>
-          <div class="pix text-xs ${win ? 'text-emerald' : 'text-bone/70'} min-h-[16px]">${win ? 'WINS ' + G.result.won[i] : sc || p.last || ''}</div></div>`;
+        const turn = G.toAct === i && !G.showdown && !p.folded && !p.out && !G.over;
+        // name tag style: the cards lie on the table, a small tag (picture, name, chips) sits under them
+        return `<div id="pk-seat-${i}" class="tg-seat ${turn ? 'turn' : ''} ${p.folded ? 'tg-fold' : ''} ${p.out ? 'tg-out' : ''}">
+          <div class="tg-cards">${cards}</div>
+          ${nameTag({ av: p.av, name: p.name, sub: p.out ? 'OUT' : `${p.chips} chips`, turn, dealer: G.dealer === i, me: p.seat === G.me })}
+          <div class="tg-st ${win ? 'text-emerald' : ''}">${win ? 'WINS ' + G.result.won[i] : sc || p.last || ''}</div></div>`;
       }
       // returns how long the card movement takes, so the game can wait for it
       function draw() {

@@ -436,7 +436,9 @@
         if (!document.getElementById('kk-opp')) return;
         const cur = G.players[G.cur];
         const others = G.players.map((_, k) => G.players[(G.me + k) % G.players.length]).slice(1);
-        ringFill('kk', others.map((q) => `<div id="kk-seat-${G.players.indexOf(q)}" class="seat ${cur === q && !q.out && !G.over ? 'turn' : ''} ${q.out ? 'out' : ''}"><div class="text-sm font-display font-extrabold"><span class="text-lg">${q.av}</span> ${esc(q.name)}</div><div class="flex justify-center my-1">${q.out ? '<span class="text-2xl">💥</span>' : backHTML('sm')}</div><div class="pix text-xs text-amber">${q.out ? 'OUT' : q.hand.length + ' cards'}</div></div>`));
+        ringFill('kk', others.map((q) => { const sid = G.players.indexOf(q), turn = cur === q && !q.out && !G.over, n = q.hand.length;
+          // name tag style: their cards fanned face down on the table, a small tag under them
+          return `<div id="kk-seat-${sid}" class="tg-seat ${turn ? 'turn' : ''} ${q.out ? 'tg-out' : ''}"><div class="tg-fan">${q.out ? '<span class="text-3xl">💥</span>' : Array.from({ length: Math.min(n, 7) }, () => backHTML('sm')).join('')}</div>${nameTag({ av: q.av, name: q.name, sub: q.out ? 'OUT' : `${n} card${n === 1 ? '' : 's'}`, badge: q.out ? null : n, turn })}</div>`; }));
         const bombs = G.deck.filter((c) => c === 'bomb').length;
         document.getElementById('kk-pile').innerHTML = `${backHTML()}<div class="pix text-xs text-bone mt-2">DRAW PILE · ${G.deck.length}</div><div class="pix text-xs text-coral">${alive().length - 1} hot potato${alive().length - 1 === 1 ? '' : 'es'} hidden</div>`;
         const top = G.discard[G.discard.length - 1];

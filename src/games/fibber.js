@@ -99,7 +99,7 @@
         cards = [...new Set(cards)].slice(0, 4);
         if (!cards.length) cards = [p.hand[0]];
         cards.forEach((c) => p.hand.splice(p.hand.indexOf(c), 1));
-        G.pile.push(...cards);
+        G.pile.push(...cards); noDoubles();
         G.last = { p, cards, need: G.need };
         SFX.play('card');
         log(`${nm(p)} puts down ${cards.length} card${cards.length === 1 ? '' : 's'}: "<b>${plural(G.need, cards.length)}</b>".`);
@@ -199,8 +199,11 @@
         else mid = `<span class="fb-face"><b>${rankLab(c.r)}</b>${suitSVG(c.s, 14)}</span>`;
         return `<div class="pcard sm fb-pc" style="color:${col}">${corner}${mid}</div>`;
       }
+      // a deck has 52 cards and each card is in exactly one place (a player saw six Eights once): checked after every
+      // move. The pile counts first, then the hands; any second copy is removed.
       function noDoubles() {
         const seen = new Set();
+        G.pile = G.pile.filter((c) => { if (!c) return false; const k = c.r + c.s; if (seen.has(k)) { console.warn('Bullshit: a card was in two places', k); return false; } seen.add(k); return true; });
         for (const q of G.players) q.hand = q.hand.filter((c) => { if (!c) return false; const k = c.r + c.s; if (seen.has(k)) { console.warn('Bullshit: a card was in two places', k); return false; } seen.add(k); return true; });
       }
       function draw() {

@@ -29,4 +29,17 @@ with sync_playwright() as p:
         print(f'   {g}: {looks} looks, cards {first}, problem {bad}', pg.errs[:2])
         check(bad is None and looks > 20, f'{g}: no card in two places, none lost')
         pg.context.close()
-    done()
+# the guard: a card sneaked into a hand twice on purpose is removed at the next move
+with sync_playwright() as p:
+    br = launch(p); pg = open_page(br, 1440, 900)
+    pg.evaluate("window.__fast = 1; setupSave('fibber', { n: 4 }); openGame('fibber')"); pg.wait_for_timeout(400)
+    if pg.query_selector('[data-mode]'): pg.click('[data-mode]'); pg.wait_for_timeout(300)
+    pg.click('#su-go'); pg.wait_for_timeout(800)
+    pg.evaluate("(() => { const G = GAME_MODS.fibber.engine.G; const c = G.players[1].hand[0]; G.players[2].hand.push({ r: c.r, s: c.s }); G.players[3].hand.push({ r: c.r, s: c.s }); NP.S.seats[0].bot = true; NP.S._maybeBot(); })()")
+    n0 = pg.evaluate("(() => { const G = GAME_MODS.fibber.engine.G; return [...G.pile, ...G.players.flatMap(q => q.hand)].length; })()")
+    pg.wait_for_timeout(4000)
+    r = pg.evaluate("(() => { const G = GAME_MODS.fibber.engine.G; const all = [...G.pile, ...G.players.flatMap(q => q.hand)].map(c => c.r + c.s); return [all.length, new Set(all).size]; })()")
+    print('   with two extra copies:', n0, 'cards; after the next moves:', r)
+    check(n0 == 54 and r[0] == 52 and r[1] == 52, 'Bullshit: extra copies of a card are removed, back to exactly 52')
+    br.close()
+done()

@@ -961,7 +961,7 @@
     <section id="view-play" class="space-y-9">
 
       <!-- Title -->
-      <div class="text-center space-y-4 pt-1">
+      <div class="hp-top">
         <h1 class="hero-title text-bone">Ready to play, <span id="home-greeting-name" class="text-amber">Player</span>?</h1>
         <div class="statline">
           <button onclick="openDailyWord(false)" title="Open Daily Word">
@@ -976,6 +976,7 @@
       </div>
 
       <!-- Main banner: play with friends (create a room / join with a code). Ranked lives in the right column. -->
+      <div class="hp-row">
       <div class="banner banner-friends" id="friends-banner">
         <span class="flex items-center gap-4 px-5 py-4 sm:px-6 min-w-0">
           <svg class="w-12 h-12 shrink-0" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><g fill="#050E18"><rect x="2" y="2" width="4" height="4"/><rect x="10" y="2" width="4" height="4"/><rect x="1" y="7" width="6" height="6"/><rect x="9" y="7" width="6" height="6"/><rect x="7" y="9" width="2" height="2"/></g><rect x="3" y="3" width="2" height="2" fill="#F7F4EC"/><rect x="11" y="3" width="2" height="2" fill="#F7F4EC"/><rect x="2" y="8" width="4" height="4" fill="#2DD4BF"/><rect x="10" y="8" width="4" height="4" fill="#FB7185"/></svg>
@@ -994,15 +995,7 @@
         </span>
       </div>
 
-      <!-- Two columns: game shelves (left) + join / open rooms (right) -->
-      <div class="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-9 items-start">
-
-        <!-- LEFT: shelves (built from the game catalogue) -->
-        <div id="shelves" class="space-y-9 order-2 lg:order-1 min-w-0"></div>
-
-        <!-- RIGHT: join with a code + open rooms -->
-        <div class="space-y-7 order-1 lg:order-2">
-
+      <div class="hp-side">
           <!-- Ranked match: pick a game, get paired with a stranger at your level -->
           <div class="win overflow-hidden">
             <div class="winbar teal"><span>RANKED MATCH</span><span class="pix text-xs"><span id="screen-score">11 GAMES</span></span></div>
@@ -1019,11 +1012,20 @@
             <div class="p-4 space-y-3">
               <div class="flex items-center gap-3">
                 <span class="dc-badge"><svg class="dc-ico" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><rect width="16" height="16" fill="#5865F2"/><g fill="#F7F4EC"><rect x="4" y="4" width="8" height="1"/><rect x="3" y="5" width="10" height="5"/><rect x="2" y="7" width="12" height="4"/><rect x="3" y="11" width="3" height="1"/><rect x="10" y="11" width="3" height="1"/></g><g fill="#5865F2"><rect x="5" y="7" width="2" height="2"/><rect x="9" y="7" width="2" height="2"/></g></svg></span>
-                <p class="text-sm text-muted leading-snug"><b class="text-bone">Join our Discord!</b> Suggest ideas, find people to play with, or just hang out.</p>
+                <p class="text-sm text-muted leading-snug"><b class="text-bone">Join our Discord!</b> Ideas, find players, hang out.</p>
               </div>
               <button onclick="openDiscord()" class="btn-game btn-dc w-full py-2.5 text-sm">Join the Discord ▶</button>
             </div>
           </div>
+
+      </div>
+      </div>
+
+      <!-- All games in one grid with category buttons (built from the game catalogue) -->
+      <div id="shelves" class="min-w-0"></div>
+
+      <!-- Open rooms + the global chat -->
+      <div class="hp-bottom">
 
           <div class="win">
             <div class="winbar">
@@ -1047,7 +1049,6 @@
             <div class="winbar teal"><span class="flex items-center gap-2"><span class="w-2 h-2 bg-emerald" style="border:2px solid #050E18;box-sizing:content-box"></span>GLOBAL CHAT</span><span id="gchat-count" class="pix text-xs"></span></div>
             <div id="chat-global"></div>
           </div>
-        </div>
       </div>
     </section>
 

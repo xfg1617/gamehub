@@ -186,3 +186,35 @@
     .m-item:active, .m-item:hover { background: #12304D; border-color: var(--ink); }
     .m-item svg { width: 20px; height: 20px; flex: none; }
     .m-foot { margin-top: auto; font-size: 12px; color: #9DB4CC; } .m-foot a { text-decoration: underline; }
+
+    /* ---------- home page (Inna, Nov 2026): wide, one row to join games, every game in one grid ---------- */
+    #view-play { max-width: none; }
+    .hp-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .hp-top .hero-title { font-size: clamp(24px, 2.4vw, 36px) !important; text-align: left; }
+    .hp-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .hp-row > .banner { margin: 0 !important; }
+    .hp-side { display: flex; flex-direction: column; gap: 10px; }
+    .hp-side #discord-box .winbar, .hp-side #discord-box p, .hp-side #discord-box .dc-badge { display: none !important; }
+    .hp-side #discord-box > div { padding: 0 !important; }
+    .hp-side #discord-box { border: 0; box-shadow: none; background: none; }
+    .hp-tabs { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+    .hp-all { font-size: 18px; color: #F7F4EC; margin-right: 6px; }
+    .hp-tabs button { font-family: 'Arcade Pixel', monospace; font-size: 14px; padding: 4px 12px; border: 2px solid var(--ink); background: #12304D; color: #9DB4CC; box-shadow: 0 2px 0 var(--ink); }
+    .hp-tabs button.on { background: #F5B041; color: var(--ink); }
+    .hp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px 12px; }
+    .hp-grid .gtile { width: 100% !important; }
+    .hp-grid .gart { width: 100% !important; }
+    .hp-bottom { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    @media (min-width: 1024px) {
+      body:not(.in-game) main.flex-1 { max-width: none !important; padding: 18px 28px 28px !important; }
+      #view-play > * + * { margin-top: 18px !important; }
+      .hp-row { grid-template-columns: minmax(0, 1fr) 360px; align-items: stretch; }
+      .hp-row > .banner { height: 100%; }
+      .hp-side .rank-screen { display: none !important; }
+      .hp-side > .win:first-child { flex: 1; }
+      .hp-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+      .hp-grid .gart { height: 104px !important; }
+      .hp-grid .gart svg { width: 64px !important; height: 64px !important; }
+      .hp-bottom { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+    }
+    .hp-side .btn-dc { background: #5865F2 !important; color: #F7F4EC !important; }

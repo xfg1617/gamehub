@@ -857,28 +857,34 @@
       });
     }
 
+    // the home page shows every game once, in one grid, with category buttons above it (Inna, Nov 2026)
+    let shelfCat = 'ALL';
     function renderShelves() {
       const host = document.getElementById('shelves');
       if (!host) return;
       const byId = {};
       CATALOG.forEach((c) => { byId[c.id] = c; });
+      const hot = new Set(SHELVES[0].ids);
+      const cats = [['ALL', null]].concat(SHELVES.slice(1).map((sh) => [sh.title.split(' ')[0].replace('&', '').trim(), sh]));
+      const order = []; SHELVES.forEach((sh) => sh.ids.forEach((id) => { if (byId[id] && !order.includes(id)) order.push(id); }));
+      CATALOG.forEach((c) => { if (!order.includes(c.id)) order.push(c.id); });
+      const sel = cats.find((c) => c[0] === shelfCat) || cats[0];
+      const ids = sel[1] ? sel[1].ids.filter((id) => byId[id]) : order;
       let seenBadge = false;
-      host.innerHTML = SHELVES.map((sh) => {
-        const items = sh.ids.map((id) => byId[id]).filter(Boolean);
-        return `<div class="space-y-5"><h2 class="shelf-h"><span class="sq" style="background:${sh.color}"></span>${sh.title}<span class="count">${items.length}</span></h2>
-          <div class="flex flex-wrap gap-x-5 gap-y-7 pl-1">${items.map((c) => {
-            let flag = '';
-            if (!c.live) flag = '<span class="flag flag-soon">SOON</span>';
-            else if (sh.title === 'NEW & HOT' || c.id === 'daily') {
-              const idAttr = c.badgeId && !seenBadge ? ` id="${c.badgeId}"` : '';
-              if (c.badgeId) seenBadge = true;
-              if (c.flag) flag = `<span${idAttr} class="flag ${c.flag === 'HOT' ? 'flag-hot' : ''}">${c.flag}</span>`;
-            }
-            return `<button class="gtile ${c.live ? '' : 'soon'}" onclick="${c.open}">
-              <span class="gart">${flag}${GICONS[c.icon]}</span>
-              <span><span class="gname block">${c.name}</span><span class="gsub block">${c.sub}</span></span></button>`;
-          }).join('')}</div></div>`;
-      }).join('');
+      host.innerHTML = `<div class="hp-tabs"><span class="hp-all pix">ALL GAMES <span class="text-muted">${order.length}</span></span>${cats.map(([k]) => `<button data-cat="${k}" class="${k === sel[0] ? 'on' : ''}">${k}</button>`).join('')}</div>
+        <div class="hp-grid">${ids.map((id) => {
+          const c = byId[id]; let flag = '';
+          if (!c.live) flag = '<span class="flag flag-soon">SOON</span>';
+          else if (hot.has(id)) {
+            const idAttr = c.badgeId && !seenBadge ? ` id="${c.badgeId}"` : '';
+            if (c.badgeId) seenBadge = true;
+            if (c.flag) flag = `<span${idAttr} class="flag ${c.flag === 'HOT' ? 'flag-hot' : ''}">${c.flag}</span>`;
+          }
+          return `<button class="gtile ${c.live ? '' : 'soon'}" onclick="${c.open}">
+            <span class="gart">${flag}${GICONS[c.icon]}</span>
+            <span><span class="gname block">${c.name}</span><span class="gsub block">${c.sub}</span></span></button>`;
+        }).join('')}</div>`;
+      host.querySelectorAll('[data-cat]').forEach((b) => { b.onclick = () => { shelfCat = b.dataset.cat; renderShelves(); }; });
     }
 
     function renderExtraRules() {

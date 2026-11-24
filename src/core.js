@@ -1037,11 +1037,14 @@
         : c.r === 14 ? `<span class="pc-mid">${suitSVG(c.s, 34)}</span>` : `<span class="pc-face"><b>${rankLab(c.r)}</b><i>${suitSVG(c.s, 14)}</i></span>`;
       return `<div class="pcard pc-real ${o.cls || ''}"${fk} style="color:${col}"><span class="pc-corner">${rankLab(c.r)}<i>${suitSVG(c.s, 14)}</i></span>${mid}${P || c.r !== 14 ? `<span class="pc-one">${suitSVG(c.s, 34)}</span>` : ''}<span class="pc-corner br">${rankLab(c.r)}<i>${suitSVG(c.s, 14)}</i></span></div>`;
     }
-    const PC_PIPS = { 2: [[50, 22], [50, 78]], 3: [[50, 22], [50, 50], [50, 78]], 4: [[34, 22], [66, 22], [34, 78], [66, 78]],
-      5: [[34, 22], [66, 22], [50, 50], [34, 78], [66, 78]], 6: [[34, 22], [66, 22], [34, 50], [66, 50], [34, 78], [66, 78]],
-      7: [[34, 22], [66, 22], [50, 36], [34, 50], [66, 50], [34, 78], [66, 78]], 8: [[34, 22], [66, 22], [50, 36], [34, 50], [66, 50], [50, 64], [34, 78], [66, 78]],
-      9: [[34, 22], [66, 22], [34, 41], [66, 41], [50, 50], [34, 59], [66, 59], [34, 78], [66, 78]],
-      10: [[34, 22], [66, 22], [50, 31], [34, 41], [66, 41], [34, 59], [66, 59], [50, 69], [34, 78], [66, 78]] };
+    const PC_PIPS = (() => {   // pip spots inside a frame that keeps clear of the corner numbers
+      const L = 37, R = 63, M = 50, T = 25, B = 75, Y = (f) => T + (B - T) * f;
+      return { 2: [[M, T], [M, B]], 3: [[M, T], [M, 50], [M, B]], 4: [[L, T], [R, T], [L, B], [R, B]],
+        5: [[L, T], [R, T], [M, 50], [L, B], [R, B]], 6: [[L, T], [R, T], [L, 50], [R, 50], [L, B], [R, B]],
+        7: [[L, T], [R, T], [M, Y(0.25)], [L, 50], [R, 50], [L, B], [R, B]], 8: [[L, T], [R, T], [M, Y(0.25)], [L, 50], [R, 50], [M, Y(0.75)], [L, B], [R, B]],
+        9: [[L, T], [R, T], [L, Y(1 / 3)], [R, Y(1 / 3)], [M, 50], [L, Y(2 / 3)], [R, Y(2 / 3)], [L, B], [R, B]],
+        10: [[L, T], [R, T], [M, Y(1 / 6)], [L, Y(1 / 3)], [R, Y(1 / 3)], [L, Y(2 / 3)], [R, Y(2 / 3)], [M, Y(5 / 6)], [L, B], [R, B]] };
+    })();
     function newDeck(n = 1) {
       const d = [];
       for (let k = 0; k < n; k++) for (const s of SUITS) for (let r = 2; r <= 14; r++) d.push({ r, s });

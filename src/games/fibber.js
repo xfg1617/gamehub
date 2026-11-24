@@ -200,7 +200,9 @@
         7: [[33, 20], [67, 20], [50, 35], [33, 50], [67, 50], [33, 80], [67, 80]], 8: [[33, 20], [67, 20], [50, 35], [33, 50], [67, 50], [50, 65], [33, 80], [67, 80]],
         9: [[33, 20], [67, 20], [33, 40], [67, 40], [50, 50], [33, 60], [67, 60], [33, 80], [67, 80]],
         10: [[33, 20], [67, 20], [50, 30], [33, 40], [67, 40], [33, 60], [67, 60], [50, 70], [33, 80], [67, 80]] };
-      function pipCard(c) {
+      // since Nov 2026 every card game uses the shared card design (core playingCardHTML: real pips, small corner suit)
+      function pipCard(c) { return playingCardHTML(c, { cls: 'sm' }); }
+      function pipCardOld(c) {
         const col = SUIT_COL[c.s], corner = `<span class="pc-corner">${rankLab(c.r)}<i>${suitSVG(c.s, 14)}</i></span>`;
         let mid;
         if (PIPS[c.r]) mid = `<span class="fb-pips">${PIPS[c.r].map(([x, y]) => `<i style="left:${x}%;top:${y}%${y > 50 ? ';transform:translate(-50%,-50%) rotate(180deg)' : ''}">${suitSVG(c.s, 14)}</i>`).join('')}</span>`;

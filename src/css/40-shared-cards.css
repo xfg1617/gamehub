@@ -207,3 +207,15 @@
     .pcard .pc-one svg { width: 58% !important; height: auto !important; }
     .pcard.sm .pc-face b { font-size: 1.45em; }
     @media (min-width: 640px) { #gs-body .pcard:not(.sm) .pc-face b { font-size: 2.4em; } }
+    /* card proportions (Inna, Nov 2026): the little suit under the number is clearly smaller than the symbols in the
+       middle; the middle symbols are bigger; tiny cards show only the number in the corner and one symbol in the middle */
+    .pcard.pc-real .pc-corner i svg { width: 9px !important; height: 9px !important; }
+    .pcard.pc-real.sm .pc-corner i svg { width: 7px !important; height: 7px !important; }
+    @media (min-width: 640px) { #gs-body .pcard.pc-real:not(.sm) .pc-corner i svg { width: 12px !important; height: 12px !important; } }
+    .pcard .pc-pips i { width: 23%; }
+    .pcard .pc-face i { width: 26%; }
+    .pk-rc .pc-corner i, .ht-items .pc-corner i, .pcard.xs .pc-corner i { display: none !important; }
+    .pk-rc .pc-one, .ht-items .pc-one, .pcard.xs .pc-one { padding-top: 26% !important; padding-left: 12%; }
+    .pk-rc .pc-one svg, .ht-items .pc-one svg, .pcard.xs .pc-one svg { width: 52% !important; }
+    .pcard .pc-pips i { width: 20%; }
+    .pcard.pc-real .pc-corner { letter-spacing: -.05em; }

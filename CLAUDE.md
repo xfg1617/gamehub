@@ -555,6 +555,13 @@ One shared way to run a game table, used on this device AND online, so a game ha
   screen height (≥820, ≥1000 px): Color Clash, Hot Potato Cats, Poker, Dominoes, Word Connect wheel (transform scale),
   Daily Word (zoom). Checked at 1920×1080, 1690×903, 1366×768 (some games scroll a little) and 390 px phones.
   `test/shot_poker_turn.py` checks the Poker buttons never overlap CHAT/emote.
+* **Round 3, immersive (Inna's reference pictures: a full-screen table, small player tags, one compact control bar)**:
+  on computers (≥1024 px) the game header (`#gs-wrap > .panel:first-child`, and the first panel of the Naval / Daily /
+  Four-in-a-Row views) is a **fixed floating bar at the bottom centre**; CHAT and the emote button sit right beside it
+  (`placeChat()` / `place()` in zz_emotes.js, which also moves `#chat-panel` above CHAT). `--av = 100vh - 96px`.
+  Card games (poker, kittens, colorclash, dominoes, blackjack) paint the felt over the whole page (body background) and
+  their `.felt` boxes go transparent, with a faint dashed oval for the table; their panels are dark, slightly
+  see-through. Phones keep the header at the top.
 * `test/shot_full.py [games] [d|l|m]` screenshots every game at 1690×903, 1280×720 and phone; check page height.
 
 ## 5d. Game setup screens, room codes, leaving a game

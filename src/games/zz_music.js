@@ -157,7 +157,7 @@
         p = document.createElement('div'); p.id = 'mu-pop'; p.className = 'mu-pop'; p.innerHTML = panelHTML(); document.body.appendChild(p);
         const r = anchor.getBoundingClientRect();
         if (window.innerWidth >= 1024 && r.left < 300) { p.style.left = (r.right + 12) + 'px'; p.style.top = Math.max(10, Math.min(window.innerHeight - p.offsetHeight - 10, r.bottom - p.offsetHeight)) + 'px'; }
-        else if (window.innerWidth >= 700) { p.style.left = Math.max(10, r.right - p.offsetWidth) + 'px'; p.style.top = (r.bottom + 10) + 'px'; }
+        else if (window.innerWidth >= 700) { p.style.left = Math.max(10, Math.min(window.innerWidth - p.offsetWidth - 10, r.right - p.offsetWidth)) + 'px'; p.style.top = (r.top > window.innerHeight / 2 ? Math.max(10, r.top - p.offsetHeight - 10) : r.bottom + 10) + 'px'; }   // a button low on the screen (the game bar) opens it above
         else { p.style.left = '10px'; p.style.right = '10px'; p.style.width = 'auto'; p.style.top = Math.min(r.bottom + 10, window.innerHeight - p.offsetHeight - 10) + 'px'; }
         p.addEventListener('click', (e) => {
           e.stopPropagation();

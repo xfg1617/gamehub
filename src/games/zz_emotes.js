@@ -157,6 +157,7 @@
       }
       document.addEventListener('click', (ev) => { const m = document.getElementById('em-menu'); if (m && !m.contains(ev.target) && !ev.target.closest('#em-fab')) closeMenu(); });
       function syncFab() {
+        placeChat();
         const S = table();
         let f = document.getElementById('em-fab');
         if (!S) { if (f) f.remove(); closeMenu(); Object.values(bubbles).forEach((b) => b.el.classList.remove('on')); return; }
@@ -168,6 +169,20 @@
         place(f);
       }
       // the emote button sits right beside the CHAT button; the menu opens above both
+      // on computers, in a game, CHAT (and the emote button) sit right beside the floating control bar
+      function gameBar() {
+        if (!document.body.classList.contains('in-game') || window.innerWidth < 1024) return null;
+        const b = document.querySelector('#gs-wrap > .panel:first-child, #view-naval:not(.hidden) > .panel:first-child, #view-daily:not(.hidden) > .panel:first-child, #view-connect4:not(.hidden) > .panel:first-child');
+        return b && b.getBoundingClientRect().width ? b : null;
+      }
+      function placeChat() {
+        const c = document.getElementById('chat-fab'), p = document.getElementById('chat-panel'), bar = gameBar();
+        if (!c) return;
+        if (!bar) { c.style.left = c.style.bottom = ''; if (p) { p.style.left = p.style.bottom = ''; } return; }
+        const r = bar.getBoundingClientRect();
+        c.style.left = Math.round(r.right + 10) + 'px'; c.style.bottom = Math.round(window.innerHeight - r.bottom) + 'px';
+        if (p) { const cr = c.getBoundingClientRect(); p.style.left = Math.max(8, Math.min(window.innerWidth - 350, cr.left)) + 'px'; p.style.bottom = Math.round(window.innerHeight - cr.top + 10) + 'px'; }
+      }
       function place(f) {
         const c = document.getElementById('chat-fab'), r = c && c.getBoundingClientRect();
         if (r && r.width) { f.style.left = Math.round(r.right + 10) + 'px'; f.style.bottom = Math.round(window.innerHeight - r.bottom - (f.offsetHeight - r.height) / 2) + 'px'; }
@@ -175,7 +190,7 @@
         const m = document.getElementById('em-menu'), fr = f.getBoundingClientRect();
         if (m) { m.style.bottom = Math.round(window.innerHeight - fr.top + 10) + 'px'; if (window.innerWidth >= 1024) m.style.left = Math.max(16, Math.min(window.innerWidth - m.offsetWidth - 16, (r && r.width ? r.left : fr.left))) + 'px'; }
       }
-      window.addEventListener('resize', () => { const f = document.getElementById('em-fab'); if (f) place(f); });
+      window.addEventListener('resize', () => { placeChat(); const f = document.getElementById('em-fab'); if (f) place(f); });
       setInterval(syncFab, 500);
       window.EMOTE = { send, show, list: EMOTES.map((e) => e.id), chars: AVS, charFor, sync: syncFab };
     })();

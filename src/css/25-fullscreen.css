@@ -40,7 +40,7 @@
     body.in-game main.flex-1 { padding-bottom: 72px !important; }
     @media (max-width: 1023px) { body.in-game main.flex-1 { padding-bottom: 150px !important; } }
     @media (min-width: 1024px) {
-      body.in-game { --av: calc(100vh - 150px); --side: 340px; }
+      body.in-game { --av: calc(100vh - 96px); --side: 340px; }
       body.in-game #gs-body > .grid { justify-content: center; align-items: start; gap: 18px !important; }
       /* square boards with a side panel */
       body.in-game[data-game="chess"] #gs-body > .grid, body.in-game[data-game="checkers"] #gs-body > .grid { grid-template-columns: min(calc(var(--av) - 90px), calc(100vw - 460px)) var(--side) !important; }
@@ -120,4 +120,38 @@
       body.in-game[data-game="dominoes"] #gs-body .dm-line { --u: 36px; }
       body.in-game[data-game="wordconnect"] .wc-wheel { transform: scale(1.4); margin-bottom: 116px; }
       body.in-game #view-daily { zoom: 1.25; }
+    }
+
+    /* =========================================================================
+       IMMERSIVE LAYOUT (Inna, Nov 2026, from her reference pictures): on computers the game header becomes one
+       compact floating control bar at the bottom centre (← Lobby, game name, game tools, Moves, Guide, ♪) with the
+       CHAT and emote buttons right beside it (placed by zz_emotes.js), so the play area gets the whole screen.
+       Card games use the whole screen as the table: the felt covers the page, with a faint oval where the table is.
+       ========================================================================= */
+    @media (min-width: 1024px) {
+      body.in-game main.flex-1 { padding: 12px 16px 70px !important; min-height: 100vh; }
+      body.in-game #gs-wrap > .panel:first-child,
+      body.in-game #view-naval > .panel:first-child, body.in-game #view-daily > .panel:first-child, body.in-game #view-connect4 > .panel:first-child {
+        position: fixed; left: 50%; bottom: 10px; transform: translateX(-50%); z-index: 50; width: auto; max-width: calc(100vw - 360px);
+        flex-wrap: nowrap !important; gap: 10px !important; padding: 5px 8px !important; background: rgba(9, 24, 40, .94);
+      }
+      body.in-game #gs-wrap > .panel:first-child h2, body.in-game #view-naval > .panel:first-child h2, body.in-game #view-daily > .panel:first-child h2, body.in-game #view-connect4 > .panel:first-child h2 { font-size: .9rem; white-space: nowrap; }
+      body.in-game #gs-wrap > .panel:first-child .spr { width: 22px; height: 22px; }
+      body.in-game #gs-wrap > .panel:first-child > div { gap: 8px !important; flex-wrap: nowrap !important; }
+      body.in-game #gs-wrap > .panel:first-child .btn-game, body.in-game #view-naval > .panel:first-child .btn-game, body.in-game #view-daily > .panel:first-child .btn-game, body.in-game #view-connect4 > .panel:first-child .btn-game { padding: 6px 10px !important; white-space: nowrap; }
+      body.in-game #gs-wrap > *:nth-child(2) { margin-top: 0 !important; }
+      /* card games: the whole screen is the table */
+      body.in-game[data-game="poker"], body.in-game[data-game="kittens"], body.in-game[data-game="colorclash"], body.in-game[data-game="dominoes"], body.in-game[data-game="blackjack"] {
+        background-color: #1E7A57; background-image: radial-gradient(ellipse at 50% 45%, rgba(255, 255, 255, .06), rgba(0, 0, 0, .28) 75%), var(--felt-tile); background-size: 100% 100%, 240px 240px; background-attachment: fixed;
+      }
+      body.in-game[data-game="poker"] #gs-body .felt, body.in-game[data-game="kittens"] #gs-body .felt, body.in-game[data-game="colorclash"] #gs-body .felt, body.in-game[data-game="dominoes"] #gs-body .felt, body.in-game[data-game="blackjack"] #gs-body .felt {
+        background: none !important; border-color: transparent !important; box-shadow: none !important; position: relative;
+      }
+      /* the faint oval of the table */
+      body.in-game[data-game="poker"] #pk-table .r-mid::before, body.in-game[data-game="kittens"] #kk-opp > .r-mid::before, body.in-game[data-game="colorclash"] #cc-opp > .r-mid::before, body.in-game[data-game="dominoes"] #gs-body .felt::before {
+        content: ''; position: absolute; inset: 4% 3%; border: 2px dashed rgba(247, 244, 236, .16); border-radius: 50% !important; pointer-events: none;
+      }
+      body.in-game[data-game="poker"] #pk-table .r-mid { position: relative; align-self: stretch; display: flex; flex-direction: column; justify-content: center; }
+      /* side panels and prompts float on the felt as dark, slightly see-through panels */
+      body.in-game[data-game="poker"] #gs-body .win, body.in-game[data-game="kittens"] #gs-body .win, body.in-game[data-game="colorclash"] #gs-body .win, body.in-game[data-game="dominoes"] #gs-body .win { background: rgba(9, 24, 40, .82); }
     }

@@ -191,13 +191,14 @@
           ['Last chance', 'A caught impostor gets one guess at the group’s word. Guess right and they still win! A tied vote lets the impostor escape.']],
           items: () => row([[`<span class="ht-mark">🕵️</span>`, 'Impostor', 'Has a different word'], [`<span class="ht-mark">🗳️</span>`, 'Vote', 'Point at the odd one out']]),
           tip: 'If you think you might be the impostor, copy the style of the other hints.', online: 'Everyone types their hint on their own screen, then everyone votes at the same time. ' + NET_TABLE },
-        doodle: { tag: '3-6 PLAYERS · DRAW & GUESS', goal: 'Have fun watching a drawing go wonderfully wrong as it is passed around.', steps: [
-          ['Write', 'Everyone writes a silly thing to draw, like "a dragon afraid of fire".'],
-          ['Draw', 'You get someone else’s prompt. Draw it as well as you can.'],
-          ['Guess', 'Next, you see someone’s drawing (not the words) and write what you think it is.'],
-          ['Repeat and reveal', 'Drawing and guessing keep alternating until every chain is done. Then everyone watches each chain from start to finish.']],
-          items: () => row([[`<span class="ht-mark">✏️</span>`, 'Draw', 'Pick a colour and a pen size'], [`<span class="ht-mark">💬</span>`, 'Guess', 'Describe what you see']]),
-          tip: 'Simple drawings work best. Big shapes, few details.', online: 'Everyone plays at the same time, each on a different chain. It needs at least 3 real players. Solo mode lets you guess doodles by yourself.' },
+        doodle: { tag: '2-6 PLAYERS · DRAW & GUESS', goal: 'Guess other players’ drawings fast, and draw well so they can guess yours.', steps: [
+          ['Pick a word', 'When it’s your turn to draw, choose one of 3 words. Only you can see it.'],
+          ['Draw it', 'Draw on the white board. Pick a colour and a pen size; Undo and Clear help. No letters or numbers!'],
+          ['Everyone guesses', 'The others type guesses in the box on the right. A right guess gets points: the faster, the more. Wrong guesses show in the list for everyone.'],
+          ['Hints', 'When time runs low, some letters of the word appear at the top.'],
+          ['Winning', 'Everyone draws once per round. After the last round, the most points wins.']],
+          items: () => row([[`<span class="ht-mark">✏️</span>`, 'Drawer', 'Gets points when people guess'], [`<span class="ht-mark">💬</span>`, 'Guessers', 'Faster guesses score more'], [`<span class="pix" style="letter-spacing:3px">_ _ T _</span>`, 'Hint', 'Letters appear as time runs out']]),
+          tip: 'Draw the most important shape first, big and simple. Details can wait.', online: 'Everyone sees the drawing live as it’s made. ' + NET_TABLE + ' Computer players draw and guess too. Solo mode lets you guess doodles by yourself.' },
       };
       return G;
     })();

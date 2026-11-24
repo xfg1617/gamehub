@@ -125,6 +125,7 @@
       if (m.id === 'tictactoe') { s.mode = 'ai'; s.first = s.first || 'alt'; }
       if (m.id === 'c4') { s.mode = 'ai'; s.first = s.first || 'me'; }
       if (m.id === 'bowling') s.mode = lvl || 'bot1';
+      if (m.id === 'doodle') s.mode = 'live';
       return s;
     }
     // Naval Grid vs the computer (the offline version) with the room's settings

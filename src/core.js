@@ -543,7 +543,7 @@
     // which setup option is the computer players' level, and which one is the table size, per game
     const BOT_LEVEL = { hedge: 'lvl', checkers: 'lvl', c4: 'lvl', pool: 'lvl', tictactoe: 'lvl', wordduel: 'lvl', dominoes: 'lvl', isles: 'lvl', manor: 'lvl', poker: 'style', bowling: 'mode', chess: 'lvl', navalnet: 'ai' };
     const botLevelKey = (id) => BOT_LEVEL[id] || null;
-    const tableSizeKey = (id) => (id === 'bowling' ? 'seats' : ['dominoes', 'colorclash', 'kittens', 'tycoon', 'isles', 'manor', 'impostor', 'hedge', 'fibber', 'tunnel', 'guild'].includes(id) ? 'n' : null);
+    const tableSizeKey = (id) => (id === 'bowling' ? 'seats' : ['dominoes', 'colorclash', 'kittens', 'tycoon', 'isles', 'manor', 'impostor', 'hedge', 'fibber', 'tunnel', 'guild', 'doodle'].includes(id) ? 'n' : null);
     // the screen before a game starts: its settings, plus a room code and invite link to share
     // an option is { key, label, def, choices: [[value, 'Text'], ...], toggle?: true, hint?: '...' }
     function setupScreen(body, m, opts, onStart, blurb) {

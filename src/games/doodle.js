@@ -36,10 +36,12 @@
       function open(root) {
         const body = gameShell(root, mod, '', 'max-w-[900px] mx-auto');
         setupScreen(body, mod, [
-          { key: 'mode', label: 'MODE', def: 'chain', local: true, choices: [['chain', 'Pass & Play'], ['solo', 'Solo: Guess the Doodle']] },
-          { key: 'n', label: 'PLAYERS (PASS & PLAY)', def: 4, local: true, when: (s) => s.mode === 'chain', choices: [[3, '3'], [4, '4'], [5, '5'], [6, '6']] },
-          { key: 'speed', label: 'TIME LIMITS', def: 60, choices: [[0, 'Off'], [90, 'Relaxed'], [60, 'Standard'], [40, 'Quick']] },
-        ], (sel) => (sel.mode === 'solo' ? solo(body) : names(body, sel)), 'Pass & Play: everyone writes a silly prompt, then the drawings and guesses get passed around, and the chain comes out wonderfully wrong. Solo: watch a doodle appear and guess what it is.');
+          { key: 'mode', label: 'MODE', def: 'live', local: true, choices: [['live', 'Draw & Guess'], ['solo', 'Solo: Guess the Doodle']] },
+          { key: 'n', label: 'PLAYERS', def: 4, when: (s) => s.mode !== 'solo', choices: [[2, '2'], [3, '3'], [4, '4'], [5, '5'], [6, '6']] },
+          { key: 'rounds', label: 'ROUNDS', def: 2, when: (s) => s.mode !== 'solo', choices: [[1, '1'], [2, '2'], [3, '3']], hint: 'In each round, everyone draws once.' },
+          { key: 'dtime', label: 'DRAWING TIME', def: 80, when: (s) => s.mode !== 'solo', choices: [[60, '60 sec'], [80, '80 sec'], [100, '100 sec']] },
+        ], (sel) => (sel.mode === 'solo' ? solo(body) : live(body, sel, npLocal([{ name: profile.username, avatar: profile.avatar }].concat(['Doodlebot', 'Sketchy', 'Pencil Pal', 'Crayon', 'Scribbles'].slice(0, (+sel.n || 4) - 1).map((name, i) => ({ bot: true, name, avatar: ['🤖', '🦊', '🐻', '🐙', '🦉'][i] }))), sel))),
+          'Draw & Guess: take turns drawing a word while everyone else races to guess it. Solo: watch a doodle appear and guess what it is.');
       }
 
       /* ====================== ONLINE: everyone plays at once, each on a different chain ====================== */
@@ -241,18 +243,185 @@
         gameResult({ title: G.right >= 5 ? 'Art critic!' : G.right >= 3 ? 'Nice eye!' : 'Keep guessing!', sub: `You guessed ${G.right} of ${ROUNDS} doodles.`, tone: 'amber', sprite: 'trophy', rows: [['Doodles guessed', `${G.right}/${ROUNDS}`, 'text-amber'], ['Score', G.score, 'text-emerald'], ['Best score', s.bestSolo, 'text-teal']], againLabel: 'Play again', again: () => open($('game-root')) });
       }
 
+      /* ====================== DRAW & GUESS (live, Nov 2026): one player draws, everyone else races to guess ======================
+         Works on this device (you + computer players) and online. A computer player draws one of the built-in doodles
+         stroke by stroke; a person draws on the canvas and every stroke is sent live (S.peek, not stored). Guesses go
+         through the table (S.act), so scores agree on every screen. The table's host ends each turn when time is up. */
+      const WORDS = ['apple', 'banana', 'rocket', 'castle', 'guitar', 'snowman', 'pizza', 'rainbow', 'spider', 'umbrella', 'robot', 'dragon', 'island', 'camera', 'balloon', 'penguin', 'volcano', 'sandwich', 'ladder', 'candle', 'glasses', 'trophy', 'whale', 'turtle', 'cactus', 'kite', 'anchor', 'crown', 'ghost', 'bridge', 'cookie', 'flower', 'pirate', 'rabbit', 'shoe', 'clock', 'moon', 'star', 'bicycle', 'giraffe'];
+      async function LW(ms) { const t = G && G.tok; await gSleep(window.__fast && !G.S.online ? Math.min(ms, 40) : ms); if (!G || G.tok !== t) throw ABORT; }
+      function live(body, sel, S) {
+        G = { mode: 'live', S, body, me: S.online ? S.me : 0, score: S.seats.map(() => 0), rounds: +sel.rounds || 2, time: +sel.dtime || 80, tok: ++GT.cur, over: false, step: 0, view: {} };
+        GT.started = true; GT.over = false;
+        S.track(); npBar('');
+        body.innerHTML = `<div class="dg-wrap grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-4 items-start">
+          <div class="space-y-3 min-w-0"><div class="win overflow-hidden"><div class="winbar teal"><span id="dg-who">DRAW & GUESS</span><span id="dg-hint" class="pix text-base tracking-widest"></span></div>
+            <div class="p-3 space-y-3"><div id="dd-clock"></div><div id="dg-stage" class="dg-stage"></div><div id="dg-tools"></div></div></div></div>
+          <div class="space-y-3 min-w-0"><div class="win overflow-hidden"><div class="winbar amber"><span>PLAYERS</span><span id="dg-round" class="pix text-xs"></span></div><div class="p-2 space-y-1.5" id="dg-board"></div></div>
+            <div class="win overflow-hidden"><div class="winbar"><span>GUESSES</span></div><div id="dg-feed" class="dg-feed"></div>
+              <form id="dg-form" class="chat-form" autocomplete="off"><input id="dg-in" maxlength="40" placeholder="Type your guess..." aria-label="Your guess"><button type="submit">Guess</button></form></div>
+            <button id="dg-quit" class="btn-game btn-coral w-full py-2 text-sm">${S.online ? 'Leave table' : 'Give up'}</button></div></div>`;
+        G.clock = makeClock($('dd-clock'));
+        $('dg-form').onsubmit = (e) => { e.preventDefault(); const v = $('dg-in').value.trim(); $('dg-in').value = ''; if (!v || !G.k || G.drawer === G.me || G.guessed.has(G.me)) return; S.act({ t: 'guess', s: G.me, k: G.k, txt: NET.clean ? NET.clean(v).slice(0, 40) : v.slice(0, 40) }); };
+        S.onLeft = (a) => { if (!G) return; feed(`<i>${esc(S.name(a.s))} ${a.t === '_gone' ? 'disconnected' : 'left'}. A computer player takes the seat.</i>`); board(); };
+        S.onPeek = (i, d) => { if (G && i === G.drawer && d.k === G.k) viewStroke(d); };
+        let sure = false;
+        $('dg-quit').onclick = (e) => { if (S.online) return npConfirmLeave(() => open($('game-root'))); if (!sure) { sure = true; e.target.textContent = 'Really give up?'; gTimeout(() => { sure = false; e.target.textContent = 'Give up'; }, 3000); return; } if (!G.over) { G.tok++; liveEnd(true); } };
+        board();
+        (async () => {
+          for (let r = 1; r <= G.rounds; r++) for (let d = 0; d < S.seats.length; d++) { G.round = r; await liveTurn(d); }
+          liveEnd(false);
+        })().catch((e) => { if (e !== ABORT) throw e; });
+      }
+      const feed = (h) => { const el = $('dg-feed'); if (!el) return; el.insertAdjacentHTML('beforeend', `<div>${h}</div>`); while (el.children.length > 60) el.firstChild.remove(); el.scrollTop = el.scrollHeight; };
+      function board() {
+        const S = G.S, el = $('dg-board'); if (!el) return;
+        const order = S.seats.map((_, i) => i).sort((a, b) => G.score[b] - G.score[a]);
+        el.innerHTML = order.map((i) => `<div class="pl-tag flex items-center gap-2.5 ${i === G.drawer ? 'turn' : ''} ${i === G.me ? 'me' : ''}" style="--pc:${G.guessed && G.guessed.has(i) ? '#34D399' : '#9DB4CC'}"><span class="tg-av">${esc(S.seats[i].avatar || '🙂')}</span><span class="min-w-0 flex-1"><b class="block truncate text-bone text-sm">${esc(S.name(i))}${S.bot(i) ? ' <small class="text-muted">CPU</small>' : ''}</b><small class="text-xs ${G.guessed && G.guessed.has(i) ? 'text-emerald' : 'text-muted'}">${i === G.drawer ? '✏️ drawing' : G.guessed && G.guessed.has(i) ? '✓ guessed it' : ''}</small></span><b class="pix text-amber text-lg">${G.score[i]}</b></div>`).join('');
+        $('dg-round').textContent = G.round ? `ROUND ${G.round}/${G.rounds}` : '';
+      }
+      const hintOf = (word, shown) => word.split('').map((ch, i) => (ch === ' ' ? ' ' : shown.includes(i) ? ch.toUpperCase() : '_')).join(' ');
+      async function liveTurn(d) {
+        const S = G.S, k = ++G.step, t = G.tok;
+        G.k = null; G.drawer = d; G.guessed = new Set(); G.view = { strokes: {} }; G.word = ''; board();
+        $('dg-who').textContent = S.mine(d) ? 'YOUR TURN TO DRAW' : `${S.name(d).toUpperCase()} IS CHOOSING A WORD...`;
+        $('dg-hint').textContent = ''; $('dg-tools').innerHTML = ''; G.clock.idle('Get ready', '...');
+        $('dg-stage').innerHTML = `<div class="dg-wait">${esc(S.seats[d].avatar || '🙂')}<b>${esc(S.name(d))}</b> ${S.mine(d) ? 'is you! Pick a word to draw.' : 'is picking a word...'}</div>`;
+        // 1. the drawer picks a word (a computer player picks one of the built-in doodles)
+        if (S.mine(d)) {
+          const opts = shuffle(WORDS.concat(DOODLES.map((x) => x.w[0]))).slice(0, 3);
+          $('dg-stage').innerHTML = `<div class="dg-wait"><b>Choose a word to draw:</b><div class="flex gap-2 flex-wrap justify-center mt-3">${opts.map((w) => `<button class="btn-game btn-amber py-2 px-5" data-w="${esc(w)}">${esc(w)}</button>`).join('')}</div></div>`;
+          document.querySelectorAll('#dg-stage [data-w]').forEach((b) => { b.onclick = () => { const di = DOODLES.findIndex((x) => x.w[0] === b.dataset.w); S.act(Object.assign({ t: 'word', s: d, k }, di >= 0 ? { di } : { w: b.dataset.w })); $('dg-stage').innerHTML = ''; }; });
+        }
+        const a = await S.ask(d, () => ({ t: 'word', k, di: Math.floor(Math.random() * DOODLES.length), bot: 1 }), 900 + rnd(600), (x) => x.s === d && x.t === 'word' && x.k === k);
+        if (!G || G.tok !== t) throw ABORT;
+        const doodle = a.di !== undefined && DOODLES[a.di] ? DOODLES[a.di] : null;
+        const word = (doodle ? doodle.w[0] : String(a.w || 'apple')).toLowerCase().slice(0, 24);
+        G.word = word; G.k = k; G.t0 = Date.now();
+        const letters = word.split('').map((_, i) => i).filter((i) => word[i] !== ' '), shown = [];
+        const paintHint = () => { const h = $('dg-hint'); if (h) h.textContent = S.mine(d) ? word.toUpperCase() : hintOf(word, shown); };
+        paintHint();
+        $('dg-who').textContent = S.mine(d) ? `DRAW: ${word.toUpperCase()}` : `${S.name(d).toUpperCase()} IS DRAWING`;
+        feed(`<i>${esc(S.name(d))} is drawing now.</i>`);
+        // 2. the drawing
+        if (S.mine(d)) drawPad(k);
+        else if (a.bot || !doodle || S.bot(d)) { if (doodle && (a.bot || S.bot(d))) botDraw(doodle); else viewPad(); }
+        else viewPad();
+        G.clock.start(G.time, 'Time left', () => {}, 10);
+        const hintT = gInterval(() => { const el = (Date.now() - G.t0) / 1000; const want = el > G.time * 0.75 ? 2 : el > G.time * 0.45 ? 1 : 0; while (shown.length < Math.min(want, letters.length - 1)) { const left = letters.filter((i) => !shown.includes(i)); shown.push(left[(word.length * 7 + shown.length * 3) % left.length]); } paintHint(); }, 500);
+        // 3. guesses until time is up or everyone has it (the host decides for computer players and the clock)
+        const others = S.seats.map((_, i) => i).filter((i) => i !== d);
+        const tick = () => {
+          const el = (Date.now() - G.t0) / 1000;
+          if (el >= G.time || others.every((i) => G.guessed.has(i))) return { t: 'end', k };
+          for (const b of shuffle(others.filter((i) => S.bot(i) && !G.guessed.has(i)))) {
+            const r = Math.random(), pr = Math.min(0.55, (el / G.time) * (S.mine(d) ? 0.5 : 0.9) + 0.03);
+            if (r < pr) return { t: 'guess', s: b, k, txt: word };
+            if (r < pr + 0.18) return { t: 'guess', s: b, k, txt: pick(WORDS.concat(DOODLES.map((x) => x.w[0])).filter((w) => w !== word)) };
+          }
+          return { t: 'tick', k };
+        };
+        for (;;) {
+          const g = await S.ask(-1, tick, window.__fast && !S.online ? 30 : 1500 + rnd(1800), (x) => x.k === k && (x.t === 'tick' || x.t === 'end' || (x.t === 'guess' && x.s !== d && !G.guessed.has(x.s))));
+          if (!G || G.tok !== t) { gClearInt(hintT); throw ABORT; }
+          if (g.t === 'end') break;
+          if (g.t !== 'guess') continue;
+          const right = doodle ? matches(g.txt, doodle) : matches(g.txt, { w: [word] });
+          if (right) {
+            G.guessed.add(g.s);
+            const left = Math.max(0, G.time - (Date.now() - G.t0) / 1000), pts = Math.max(20, Math.round(30 + 70 * left / G.time) - shown.length * 5);
+            G.score[g.s] += pts; G.score[d] += Math.round(pts / 3);
+            feed(`<b class="text-emerald">✓ ${esc(S.name(g.s))} guessed the word! +${pts}</b>`);
+            SFX.play(g.s === G.me ? 'win' : 'coin'); board();
+            if (g.s === G.me) { $('dg-in').disabled = true; $('dg-in').placeholder = 'You got it! Wait for the others...'; }
+            if (others.every((i) => G.guessed.has(i))) break;
+          } else feed(`<b>${esc(S.name(g.s))}:</b> ${esc(String(g.txt || '').slice(0, 40))}`);
+        }
+        gClearInt(hintT); G.clock.stop(); G.k = null;
+        if (G.pad) { G.pad.off(); G.pad = null; }
+        $('dg-in').disabled = false; $('dg-in').placeholder = 'Type your guess...';
+        $('dg-hint').textContent = word.toUpperCase();
+        $('dg-who').textContent = `THE WORD WAS: ${word.toUpperCase()}`;
+        feed(`<i>The word was <b class="text-amber">${esc(word)}</b>.</i>`);
+        if (doodle && (a.bot || S.bot(d))) botDraw(doodle, true);
+        SFX.play('reveal'); board();
+        await LW(3200);
+      }
+      // a computer player draws a built-in doodle, stroke by stroke (or all at once at the end)
+      function botDraw(d, now) {
+        const stage = $('dg-stage'); if (!stage) return;
+        if (!now || !stage.querySelector('svg')) stage.innerHTML = `<svg viewBox="0 0 100 100" class="dg-svg" fill="none" stroke="#16212E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">${d.s.map((p, i) => `<path id="dgp${i}" d="${p}" pathLength="1" style="stroke-dasharray:1;stroke-dashoffset:1"/>`).join('')}</svg>`;
+        const per = now ? 0 : Math.min(4, (G.time * 0.55) / d.s.length);
+        d.s.forEach((_, i) => { const el = $('dgp' + i); if (!el) return; el.style.transition = now ? 'none' : `stroke-dashoffset ${per}s linear ${i * per}s`; });
+        gTimeout(() => d.s.forEach((_, i) => { const el = $('dgp' + i); if (el) el.style.strokeDashoffset = 0; }), now ? 0 : 60);
+      }
+      // watching a person draw: strokes arrive in small pieces
+      function viewPad() {
+        $('dg-stage').innerHTML = `<canvas id="dg-cv" width="760" height="480" class="dg-cv"></canvas>`;
+        const cv = $('dg-cv'); G.view = { cv, ctx: cv.getContext('2d'), strokes: {} };
+        G.view.ctx.fillStyle = CANVAS_BG; G.view.ctx.fillRect(0, 0, 760, 480);
+      }
+      function viewStroke(d) {
+        const V = G.view; if (!V || !V.ctx) return;
+        const ctx = V.ctx, redraw = () => { ctx.fillStyle = CANVAS_BG; ctx.fillRect(0, 0, 760, 480); Object.keys(V.strokes).sort((a, b) => a - b).forEach((n) => seg(V.strokes[n], 0)); };
+        const seg = (st, from) => { ctx.strokeStyle = st.c === '#FFFFFF' ? CANVAS_BG : st.c; ctx.fillStyle = ctx.strokeStyle; ctx.lineWidth = st.s; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+          if (st.p.length === 1) { ctx.beginPath(); ctx.arc(st.p[0][0], st.p[0][1], st.s / 2, 0, 7); ctx.fill(); return; }
+          ctx.beginPath(); ctx.moveTo(st.p[Math.max(0, from - 1)][0], st.p[Math.max(0, from - 1)][1]); for (let i = Math.max(1, from); i < st.p.length; i++) ctx.lineTo(st.p[i][0], st.p[i][1]); ctx.stroke(); };
+        if (d.x) { V.strokes = {}; return redraw(); }
+        if (d.u !== undefined) { delete V.strokes[d.u]; return redraw(); }
+        const st = V.strokes[d.n] || (V.strokes[d.n] = { c: d.c, s: d.s, p: [] });
+        const from = st.p.length; st.p.push(...(d.p || [])); seg(st, from);
+      }
+      // my turn to draw: the canvas, colours, sizes, undo, clear; strokes go out about 15 times a second
+      function drawPad(k) {
+        $('dg-stage').innerHTML = `<canvas id="dg-cv" width="760" height="480" class="dg-cv draw"></canvas>`;
+        $('dg-tools').innerHTML = `<div class="flex flex-wrap items-center gap-2 justify-center"><div class="flex gap-1.5">${COLS.map((c, i) => `<button data-c="${c}" class="dg-col ${i === 0 ? 'on' : ''}" style="background:${c}" title="${c === '#FFFFFF' ? 'Eraser' : 'Colour'}"></button>`).join('')}</div>
+          <div class="seg"><button data-sz="4" class="seg-btn">Thin</button><button data-sz="9" class="seg-btn on">Medium</button><button data-sz="20" class="seg-btn">Fat</button></div>
+          <button id="dg-undo" class="btn-game btn-graphite py-1.5 px-3 text-sm">Undo</button><button id="dg-clr" class="btn-game btn-graphite py-1.5 px-3 text-sm">Clear</button></div>`;
+        const cv = $('dg-cv'), ctx = cv.getContext('2d'), S = G.S;
+        let col = COLS[0], size = 9, strokes = [], cur = null, n = 0, out = null, sent = 0;
+        const paint = (st) => { ctx.strokeStyle = st.c === '#FFFFFF' ? CANVAS_BG : st.c; ctx.fillStyle = ctx.strokeStyle; ctx.lineWidth = st.s; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; if (st.p.length === 1) { ctx.beginPath(); ctx.arc(st.p[0][0], st.p[0][1], st.s / 2, 0, 7); ctx.fill(); return; } ctx.beginPath(); ctx.moveTo(st.p[0][0], st.p[0][1]); for (let i = 1; i < st.p.length; i++) ctx.lineTo(st.p[i][0], st.p[i][1]); ctx.stroke(); };
+        const redraw = () => { ctx.fillStyle = CANVAS_BG; ctx.fillRect(0, 0, cv.width, cv.height); strokes.forEach(paint); };
+        const pt = (e) => { const r = cv.getBoundingClientRect(); return [Math.round((e.clientX - r.left) * cv.width / r.width), Math.round((e.clientY - r.top) * cv.height / r.height)]; };
+        const flush = () => { if (!cur || !out || cur.p.length <= sent) return; S.peek({ k, n: cur.n, c: cur.c, s: cur.s, p: cur.p.slice(sent) }); sent = cur.p.length; };
+        const timer = gInterval(flush, 70);
+        redraw();
+        cv.onpointerdown = (e) => { if (!G.k) return; cv.setPointerCapture(e.pointerId); cur = { n: n++, c: col, s: size, p: [pt(e)] }; strokes.push(cur); paint(cur); out = true; sent = 0; flush(); };
+        cv.onpointermove = (e) => { if (!cur) return; cur.p.push(pt(e)); const m = cur.p.length; ctx.strokeStyle = cur.c === '#FFFFFF' ? CANVAS_BG : cur.c; ctx.lineWidth = cur.s; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(cur.p[m - 2][0], cur.p[m - 2][1]); ctx.lineTo(cur.p[m - 1][0], cur.p[m - 1][1]); ctx.stroke(); };
+        cv.onpointerup = cv.onpointercancel = () => { flush(); cur = null; out = null; };
+        document.querySelectorAll('#dg-tools [data-c]').forEach((b) => { b.onclick = () => { col = b.dataset.c; document.querySelectorAll('#dg-tools [data-c]').forEach((x) => x.classList.toggle('on', x === b)); }; });
+        document.querySelectorAll('#dg-tools [data-sz]').forEach((b) => { b.onclick = () => { size = +b.dataset.sz; document.querySelectorAll('#dg-tools [data-sz]').forEach((x) => x.classList.toggle('on', x === b)); }; });
+        $('dg-undo').onclick = () => { const st = strokes.pop(); if (st) { redraw(); S.peek({ k, u: st.n }); } };
+        $('dg-clr').onclick = () => { strokes = []; redraw(); S.peek({ k, x: 1 }); };
+        G.pad = { off: () => { gClearInt(timer); cv.onpointerdown = null; cv.onpointermove = null; $('dg-tools').innerHTML = ''; } };
+      }
+      async function liveEnd(gaveUp) {
+        if (G.over) return; G.over = true; G.S.over = true;
+        const S = G.S, me = G.me, tok = G.tok;
+        const order = S.seats.map((_, i) => i).sort((a, b) => G.score[b] - G.score[a]);
+        const res = gaveUp ? 'loss' : order[0] === me ? 'win' : 'loss';
+        const eloRow = S.online ? await S.finish(res) : null;
+        if (!G || G.tok !== tok) return;
+        const s = gstat('doodle'); s.guessed = (s.guessed || 0); s.bestLive = Math.max(s.bestLive || 0, G.score[me]);
+        reportGame('doodle', res, { elo: 0, xp: 10 + Math.round(G.score[me] / 25), label: `Draw & Guess: ${G.score[me]} pts` });
+        gameResult({ title: gaveUp ? 'You gave up' : res === 'win' ? 'You win!' : `${S.name(order[0])} wins`, sub: 'Points for fast guesses, and for the drawer when people guess their drawing.',
+          tone: res === 'win' ? 'amber' : 'coral', sprite: res === 'win' ? 'trophy' : 'anchor',
+          rows: order.slice(0, 4).map((i) => [i === me ? 'You' : S.name(i), G.score[i], i === me ? 'text-amber' : 'text-bone']).concat(eloRow ? [eloRow] : []),
+          againLabel: S.online ? 'Back to setup' : 'Play again', again: () => open($('game-root')) });
+      }
+
       const mod = {
-        id: 'doodle', name: 'Doodle Chain', icon: 'doodle', cats: ['party'], sub: '3-6 PLAYERS · SOLO', color: '#F5B041', tone: 'amber', btn: 'amber', noScore: true, unit: 'ROUNDS',
-        blurb: 'The drawing telephone game. Write, draw and guess in a chain, then see how wrong it all went. Or play solo and guess what the bot is drawing.',
-        rules: { tag: 'PASS & PLAY · SOLO', steps: [
-          '<strong class="text-bone">Pass &amp; Play:</strong> Everyone writes a prompt. Then each device hand-off you <b>draw</b> the prompt you get, the next person <b>describes</b> your drawing, and so on. A hand-off screen hides every turn.',
-          '<strong class="text-bone">The reveal:</strong> At the end you see each chain from start to finish. The funniest part is how far it drifts from the first prompt!',
-          '<strong class="text-bone">Solo:</strong> A bot draws a doodle stroke by stroke. Type what it is as fast as you can. Faster guesses score more, and letters appear as hints.',
-        ], tip: 'Draw the most important thing first. A clear, simple drawing is easier to describe.' },
-        profileTiles: (s) => [['SESSIONS', s.played, 'text-bone'], ['CHAINS', s.chains || 0, 'text-amber'], ['GUESSED', s.guessed || 0, 'text-emerald'], ['BEST SOLO', s.bestSolo || 0, 'text-teal']],
+        id: 'doodle', name: 'Doodle Guess', icon: 'doodle', cats: ['party'], sub: '2-6 PLAYERS · SOLO', color: '#F5B041', tone: 'amber', btn: 'amber',
+        blurb: 'Take turns drawing a secret word while everyone races to guess it. The faster you guess, the more points you get.',
+        rules: { tag: 'DRAW & GUESS · 2-6 PLAYERS', steps: [
+          '<strong class="text-bone">Drawing:</strong> When it is your turn, pick one of 3 words and draw it. No letters or numbers! Everyone sees your drawing as you make it.',
+          '<strong class="text-bone">Guessing:</strong> Everyone else types guesses. The faster you guess right, the more points you get. Letters of the word show up as hints when time runs low.',
+          '<strong class="text-bone">Points:</strong> The drawer gets points too, for every player who guesses. After everyone has drawn (1, 2 or 3 rounds), the most points wins.',
+          '<strong class="text-bone">Solo:</strong> A computer player draws a doodle stroke by stroke. Type what it is as fast as you can.',
+        ], tip: 'Draw the most important shape first, big and simple. Details can wait.' },
+        profileTiles: (s) => [['GAMES', s.played, 'text-bone'], ['WINS', s.wins || 0, 'text-amber'], ['GUESSED', s.guessed || 0, 'text-emerald'], ['BEST SOLO', s.bestSolo || 0, 'text-teal']],
         extraRows: (s) => srow('Drawings made', s.drawings || 0),
-        online: { seats: (sel) => 6, min: 3, bots: false, ranked: false, start: (body, sel, S) => onlineChain(body, sel, S) },
-        engine: { DOODLES, matches }, open, close() { G = null; },
+        online: { seats: (sel) => +sel.n || 6, min: 2, ranked: false, start: (body, sel, S) => live(body, sel, S) },
+        engine: { DOODLES, matches, word: () => (G && G.word) || '' }, open, close() { G = null; },
       };
       registerGame(mod);
     })();

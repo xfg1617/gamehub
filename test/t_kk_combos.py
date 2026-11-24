@@ -40,7 +40,10 @@ with sync_playwright() as p:
     mine = pg.evaluate(f"{G}.players[0].hand"); theirs = pg.evaluate(f"{G}.players[1].hand")
     check('defuse' in mine and 'defuse' not in theirs, f'naming OVEN MITT took it (me {mine}, them {theirs})')
     # the game carries on: draw, the computer plays its turn
-    pg.click('#kk-draw'); pg.wait_for_timeout(6000)
+    pg.click('#kk-draw')
+    for _ in range(40):   # computer players think longer since Nov 2026
+        if pg.evaluate(f"{G}.cur") == 0 or pg.evaluate(f"{G}.over"): break
+        pg.wait_for_timeout(500)
     check(pg.evaluate(f"{G}.cur") == 0 or pg.evaluate(f"{G}.over"), 'the computer took its turn and it came back to me')
     errs = pg.errs[:3]
     check(not errs, f'no page errors {errs}')

@@ -309,7 +309,7 @@
           /* friends (backend/friends.sql) */
           async searchPlayers(q) { if (String(q || '').trim().length < 2) return []; return ok(await rpc('search_players', { q: String(q).trim() })) || []; },
           async playerCard(id) { return ok(await rpc('player_card', { p_id: id })); },
-          async publishStats(o) { await rpc('publish_stats', { p: o }); },
+          async publishStats(o) { ok(await rpc('publish_stats', { p: o })); },   // throws on failure, so the page tries again
           async playerStats(id) { try { return ok(await rpc('player_stats', { p_id: id })); } catch (e) { return null; } },
           async friends() {
             const rows = ok(await sb.from('friend_requests').select('from_id,to_id,status')) || [];

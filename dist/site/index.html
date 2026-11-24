@@ -6653,7 +6653,7 @@
           /* friends (backend/friends.sql) */
           async searchPlayers(q) { if (String(q || '').trim().length < 2) return []; return ok(await rpc('search_players', { q: String(q).trim() })) || []; },
           async playerCard(id) { return ok(await rpc('player_card', { p_id: id })); },
-          async publishStats(o) { await rpc('publish_stats', { p: o }); },
+          async publishStats(o) { ok(await rpc('publish_stats', { p: o })); },   // throws on failure, so the page tries again
           async playerStats(id) { try { return ok(await rpc('player_stats', { p_id: id })); } catch (e) { return null; } },
           async friends() {
             const rows = ok(await sb.from('friend_requests').select('from_id,to_id,status')) || [];
@@ -17218,7 +17218,7 @@
         if (/\/r\/|join=/i.test(location.pathname + location.hash)) { mark('first'); return; }   // came from an invite: let them play first
         setTimeout(() => { if (!NET.account && typeof activeView !== 'undefined' && activeView === 'play' && !seen().first) { mark('first'); welcome('first'); } }, 2000);
       }
-      window.addEventListener('ps-online', maybeWelcome);
+      document.addEventListener('ps-online', maybeWelcome);   // net.js announces the connection on document
       if (typeof NET !== 'undefined' && NET.on) maybeWelcome();
       // once more, after a guest's first win
       setInterval(() => {

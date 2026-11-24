@@ -82,7 +82,7 @@
         if (/\/r\/|join=/i.test(location.pathname + location.hash)) { mark('first'); return; }   // came from an invite: let them play first
         setTimeout(() => { if (!NET.account && typeof activeView !== 'undefined' && activeView === 'play' && !seen().first) { mark('first'); welcome('first'); } }, 2000);
       }
-      window.addEventListener('ps-online', maybeWelcome);
+      document.addEventListener('ps-online', maybeWelcome);   // net.js announces the connection on document
       if (typeof NET !== 'undefined' && NET.on) maybeWelcome();
       // once more, after a guest's first win
       setInterval(() => {

@@ -13006,9 +13006,19 @@
       function launch(ang, speed, a = 0, b = 0) {
         const c = G.balls[0]; applyStrike(c, ang, speed, a, b);
         G.ev = { t: 0 }; G.phase = 'moving'; G.cueVis = false; G.lastTs = 0;
+        G.follow = { t0: performance.now(), x: c.x, y: c.y, aim: ang, f: Math.min(1, speed / VMAX) };
         G.shotLegal = legalSet(G.balls, G.groups[G.turn]); G.shotOn8 = G.shotLegal.length === 1 && G.shotLegal[0] === 8 && !!G.groups[G.turn];
         G.isBreak = G.shots === 0;
-        SFX.play('ball'); panels();
+        poolSnd('cue', Math.min(1, speed / VMAX)); panels();
+      }
+      // pool sounds follow how hard things hit: a soft kiss is a quiet tick, a hard break is a loud crack
+      function poolSnd(kind, s) {
+        s = Math.max(0.08, Math.min(1, s)); const t = SFX.tone, n = SFX.noise;
+        if (!t || !n) return SFX.play(kind === 'cue' ? 'ball' : kind);
+        if (kind === 'ball') { t({ f1: 1500 + 900 * s, f2: 700, d: 0.03 + 0.03 * s, v: 0.08 + 0.5 * s }); n({ type: 'highpass', f1: 3200, d: 0.015 + 0.02 * s, v: 0.05 + 0.35 * s }); }
+        else if (kind === 'rail') { t({ type: 'triangle', f1: 170 + 80 * s, f2: 110, d: 0.06 + 0.04 * s, v: 0.08 + 0.4 * s }); n({ type: 'lowpass', f1: 600, d: 0.05, v: 0.05 + 0.2 * s }); }
+        else if (kind === 'pocket') { n({ type: 'bandpass', f1: 2200, q: 2, d: 0.05, v: 0.12 + 0.2 * s }); t({ f1: 170, f2: 60, t: 0.04, d: 0.22, v: 0.35 + 0.35 * s }); n({ type: 'lowpass', f1: 700, f2: 180, t: 0.04, d: 0.2, v: 0.2 + 0.25 * s }); }
+        else if (kind === 'cue') { t({ type: 'triangle', f1: 900 + 600 * s, f2: 400, d: 0.04, v: 0.12 + 0.4 * s }); n({ type: 'bandpass', f1: 2600, q: 1.2, d: 0.03, v: 0.08 + 0.3 * s }); }
       }
       function fire(ang, f, a = 0, b = 0) { launch(ang, speedOf(f), a, b); }
 
@@ -13053,7 +13063,7 @@
           for (const b of G.balls) if (b.on) spinBall(b, N * DT);
           if (ev.drops && ev.drops.length) { const now = performance.now(); ev.drops.forEach((d) => G.drops.push({ ...d, t0: now })); ev.drops = []; }
           const now = performance.now();
-          if ((ev.snd || ev.pocketSound) && now - G.lastSnd > 55) { SFX.play(ev.pocketSound ? 'pocket' : ev.ballHit ? 'ball' : 'rail'); G.lastSnd = now; ev.snd = 0; ev.pocketSound = false; ev.ballHit = false; }
+          if ((ev.snd || ev.pocketSound) && now - G.lastSnd > 45) { poolSnd(ev.pocketSound ? 'pocket' : ev.ballHit ? 'ball' : 'rail', ev.snd || 0.5); G.lastSnd = now; ev.snd = 0; ev.pocketSound = false; ev.ballHit = false; }
           if (!moving(G.balls)) settle();
         } else if (G.phase === 'aim' && myTurn() && !G.placing) {
           // online: the other screens watch you aim and pull back live (about 12 times a second)
@@ -13260,6 +13270,19 @@
           ctx.strokeStyle = '#8B5A2B'; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(tx - dx * (d0 + 200), ty - dy * (d0 + 200)); ctx.lineTo(tx - dx * (d0 + 330), ty - dy * (d0 + 330)); ctx.stroke();
           ctx.strokeStyle = '#F7F4EC'; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(tx - dx * (d0 + 2), ty - dy * (d0 + 2)); ctx.lineTo(tx - dx * (d0 + 8), ty - dy * (d0 + 8)); ctx.stroke();
           ctx.strokeStyle = '#2B6CB0'; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(tx - dx * d0, ty - dy * d0); ctx.lineTo(tx - dx * (d0 + 3), ty - dy * (d0 + 3)); ctx.stroke(); ctx.lineCap = 'butt';
+        }
+        if (G.follow && G.phase === 'moving') {
+          const t = (now - G.follow.t0) / 420;
+          if (t >= 1) G.follow = null;
+          else {
+            const f = G.follow, dx = Math.cos(f.aim), dy = Math.sin(f.aim), push = (6 + 34 * f.f) * Math.min(1, t * 5), d0 = BR + 4 - push;
+            ctx.globalAlpha = 1 - t; ctx.lineCap = 'round';
+            ctx.strokeStyle = '#050E18'; ctx.lineWidth = 10; ctx.beginPath(); ctx.moveTo(f.x - dx * d0, f.y - dy * d0); ctx.lineTo(f.x - dx * (d0 + 330), f.y - dy * (d0 + 330)); ctx.stroke();
+            ctx.strokeStyle = '#E7C48F'; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(f.x - dx * (d0 + 6), f.y - dy * (d0 + 6)); ctx.lineTo(f.x - dx * (d0 + 330), f.y - dy * (d0 + 330)); ctx.stroke();
+            ctx.strokeStyle = '#8B5A2B'; ctx.beginPath(); ctx.moveTo(f.x - dx * (d0 + 200), f.y - dy * (d0 + 200)); ctx.lineTo(f.x - dx * (d0 + 330), f.y - dy * (d0 + 330)); ctx.stroke();
+            ctx.strokeStyle = '#2B6CB0'; ctx.beginPath(); ctx.moveTo(f.x - dx * d0, f.y - dy * d0); ctx.lineTo(f.x - dx * (d0 + 3), f.y - dy * (d0 + 3)); ctx.stroke();
+            ctx.lineCap = 'butt'; ctx.globalAlpha = 1;
+          }
         }
         if (G.placing && !G.ghost) { ctx.fillStyle = 'rgba(245,176,65,.95)'; ctx.font = 'bold 22px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('Click anywhere to place the cue ball', W / 2, H / 2); }
         const bar = $('pl-bar'); if (bar) bar.classList.toggle('off', !canShoot() || G.placing);

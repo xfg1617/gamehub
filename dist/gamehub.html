@@ -7284,8 +7284,8 @@
         else if (t === 21) gTimeout(() => { G.busy = false; nextHand(); }, ms + 600);
         else gTimeout(() => { G.busy = false; table(true); }, ms); }
       function stand() { if (!G.busy) nextHand(); }
-      function dbl() { if (G.busy) return; const h = G.hands[G.cur]; gFly('#bj-bankbox', '#bj-spot-' + G.cur, stackSVG(h.bet), { ms: 480 }); setChips(chips() - h.bet); h.bet *= 2; h.doubled = true; h.cards.push(draw()); SFX.play('chip'); G.busy = true; const ms = table(true); gTimeout(() => { G.busy = false; nextHand(); }, ms + 750); }
-      function split() { if (G.busy) return; const h = G.hands[G.cur]; gFly('#bj-bankbox', '#bj-spot-' + G.cur, stackSVG(h.bet), { ms: 480 }); setChips(chips() - h.bet); const c2 = h.cards.pop(); G.hands.splice(G.cur + 1, 0, { cards: [c2], bet: h.bet, done: false, split: true }); h.split = true; h.cards.push(draw()); SFX.play('chip'); G.splitUsed = true; G.busy = true; const ms = table(true); if (total(h.cards).t === 21) gTimeout(() => { G.busy = false; nextHand(); }, ms + 600); else gTimeout(() => { G.busy = false; table(true); }, ms); }
+      function dbl() { if (G.busy) return; const h = G.hands[G.cur]; chipStream('#bj-bankbox', '#bj-spot-' + G.cur, h.bet, { ms: 440 }); setChips(chips() - h.bet); h.bet *= 2; h.doubled = true; h.cards.push(draw()); SFX.play('chip'); G.busy = true; const ms = table(true); gTimeout(() => { G.busy = false; nextHand(); }, ms + 750); }
+      function split() { if (G.busy) return; const h = G.hands[G.cur]; chipStream('#bj-bankbox', '#bj-spot-' + G.cur, h.bet, { ms: 440 }); setChips(chips() - h.bet); const c2 = h.cards.pop(); G.hands.splice(G.cur + 1, 0, { cards: [c2], bet: h.bet, done: false, split: true }); h.split = true; h.cards.push(draw()); SFX.play('chip'); G.splitUsed = true; G.busy = true; const ms = table(true); if (total(h.cards).t === 21) gTimeout(() => { G.busy = false; nextHand(); }, ms + 600); else gTimeout(() => { G.busy = false; table(true); }, ms); }
 
       function dealerPlay() {
         G.busy = true; G.dealerRevealed = true; table(true); SFX.play('deal');
@@ -7330,15 +7330,15 @@
         G.hands.forEach((h, k) => {
           const pay = h.net + h.bet, d0 = 350 + k * 300;
           if (pay > h.bet) { // dealer pays the winnings into your circle, then you collect it all
-            gTimeout(() => { gFly('#bj-dealer', spot(k), stackSVG(pay - h.bet), { ms: 520 }); SFX.play('chip'); }, d0);
+            gTimeout(() => { chipStream('#bj-dealer', spot(k), pay - h.bet, { ms: 480 }); }, d0);
             gTimeout(() => setSpot(k, pay), d0 + 520);
-            gTimeout(() => { gFly(spot(k), '#bj-bankbox', stackSVG(pay), { ms: 560 }); setSpot(k, 0); SFX.play('coin'); }, d0 + 1000);
+            gTimeout(() => { chipStream(spot(k), '#bj-bankbox', pay, { ms: 520, max: 9 }); setSpot(k, 0); SFX.play('coin'); }, d0 + 1000);
             last = Math.max(last, d0 + 1560);
           } else if (pay === h.bet) { // push: your bet comes back
-            gTimeout(() => { gFly(spot(k), '#bj-bankbox', stackSVG(pay), { ms: 560 }); setSpot(k, 0); }, d0 + 200);
+            gTimeout(() => { chipStream(spot(k), '#bj-bankbox', pay, { ms: 520 }); setSpot(k, 0); }, d0 + 200);
             last = Math.max(last, d0 + 760);
           } else { // the dealer takes the bet
-            gTimeout(() => { gFly(spot(k), '#bj-dealer', stackSVG(h.bet), { ms: 560 }); setSpot(k, 0); SFX.play('chip'); }, d0 + 200);
+            gTimeout(() => { chipStream(spot(k), '#bj-dealer', h.bet, { ms: 520 }); setSpot(k, 0); }, d0 + 200);
             last = Math.max(last, d0 + 760);
           }
         });

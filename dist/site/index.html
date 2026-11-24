@@ -1516,15 +1516,8 @@
       body.in-game[data-game="manor"] .mm-card { min-height: 52px; padding-top: 5px; padding-bottom: 4px; }
     }
     @media (min-width: 1024px) and (max-height: 820px) {
-      body.in-game[data-game="poker"] #pk-table { min-height: calc(100vh - 82px) !important; padding-top: 0 !important; padding-bottom: 14px !important; }
+      body.in-game[data-game="poker"] #pk-table { min-height: calc(100vh - 82px) !important; padding-top: 0 !important; }
       body.in-game[data-game="poker"] #pk-table .ring4 { row-gap: 0 !important; }
-    }
-    @media (min-width: 1024px) and (max-height: 950px) {
-      /* short screens: Poker's Fold / Call / Raise sit in the empty space on the left, so they never cover your seat */
-      body.in-game[data-game="poker"] #pk-ctl { left: 16px; top: 258px; bottom: auto; transform: none; width: 238px; }
-      body.in-game[data-game="poker"] #pk-ctl .win { flex-direction: column; align-items: stretch; gap: 10px; }
-      body.in-game[data-game="poker"] #pk-ctl .win > div { flex-wrap: wrap !important; }
-      body.in-game[data-game="poker"] #pk-ctl .win > div:first-child > * { flex: 1 1 0; }
     }
     /* "what just happened" notice: a pill at the top of the game screen */
     #gm-note { position: fixed; left: 50%; top: 74px; transform: translate(-50%, -8px); z-index: 60; max-width: min(620px, calc(100vw - 24px)); padding: 8px 16px;
@@ -1548,8 +1541,21 @@
       body.in-game[data-game="poker"] #pk-table .ring4 { column-gap: 48px !important; }
       body.in-game[data-game="poker"] .pk-board { flex-wrap: nowrap !important; }
     }
+    /* Poker: Fold / Call / Raise always at the bottom (Inna); the table keeps room for it so it never covers your seat */
+    @media (min-width: 1024px) {
+      body.in-game[data-game="poker"] #pk-table { padding-bottom: 104px !important; }
+    }
     @media (min-width: 1024px) and (max-height: 950px) {
-      body.in-game[data-game="poker"] #pk-table { padding: 0 40px 14px 270px !important; }
+      body.in-game[data-game="poker"] #pk-table { min-height: 0 !important; height: calc(100vh - 80px) !important; padding-top: 0 !important; padding-bottom: 92px !important; }
+      body.in-game[data-game="poker"] main.flex-1 { padding-bottom: 0 !important; }
+      body.in-game[data-game="poker"] #pk-table .ring4 { row-gap: 0 !important; }
+      body.in-game[data-game="poker"] #gs-body .pcard:not(.sm) { width: 60px !important; height: 86px !important; }
+    }
+    @media (min-width: 1024px) and (max-height: 780px) {
+      body.in-game[data-game="poker"] #gs-body .pcard:not(.sm) { width: 50px !important; height: 72px !important; }
+      body.in-game[data-game="poker"] #gs-body .pcard .pc-corner { font-size: 1rem !important; }
+      body.in-game[data-game="poker"] #pk-table .tg-fan .pcard, body.in-game[data-game="poker"] #pk-table .pcard.sm { width: 40px !important; height: 58px !important; }
+      body.in-game[data-game="poker"] .chip-spot { min-height: 34px !important; }
     }
     /* ---------- home page top (Nov 2026): one slim bar to create / join a room, two slim links ---------- */
     .nh { min-width: 0; max-width: 100%; box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); border: 4px solid #050E18; box-shadow: 0 6px 0 #050E18; margin-bottom: 14px; }
@@ -2150,10 +2156,9 @@
     .pcard .pc-corner, .fb-pc .fb-face b { font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif !important; font-weight: 800 !important; letter-spacing: -.02em; }
     .cc-card .big, .cc-card .cn { font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif !important; font-weight: 900 !important; }
     .cc-card .big.u69 { text-decoration: underline; text-decoration-thickness: 4px; text-underline-offset: 3px; }
-    .chip-amt { font-size: 1.05rem; }
-    .tg-st { font-size: 15px; color: #F7F4EC; }
+    .chip-amt { font-size: .95rem; }
+    .tg-st { font-size: 13.5px; color: #F7F4EC; }
     .tg-st:is(.allin), .tg-st.allin { color: #FB7185; }
-    @media (min-width: 1024px) { .chip-amt { font-size: 1.25rem; } .tg-st { font-size: 17px; } }
     /* the timer ring never hides the little badges on a tag (dealer D, card count) */
     .tg-tag .tg-d, .tg-tag .tg-n, .tg-tag .tg-badge { z-index: 4; }
     /* the prompt above your cards (Uno, Kaboom Cats, Bullshit): a small label as wide as its text instead of a full-width
@@ -2201,6 +2206,15 @@
     .pk-rc .pcard.sm .pc-corner { font-size: .8rem; }
     .pcard .pc-court svg { width: 56% !important; margin-top: 0; }
     .pcard.sm .pc-court svg { width: 56% !important; }
+    /* every number on the card tables in a clear font (6 and 8 look alike in the pixel font, Inna Nov 2026) */
+    .tg-txt small, .tg-badge, .tg-st, .chip-amt, .fb-count, #pk-pot .pix, #pk-blinds, #bj-bank, #bj-bankbox, .chip-tag, #cc-pile .pix, #kk-pile .pix, #fb-center .pix,
+    #dm-boneyard, [id^="dm-"] .pix, .bj-total, #bj-hands .pix, #bj-dealer .pix {
+      font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif !important; font-weight: 800 !important; letter-spacing: 0 !important; }
+    .tg-txt small { font-size: 13px; }
+    @media (min-width: 640px) { #gs-body .pcard.pc-real:not(.sm) .pc-corner { font-size: 1.35rem !important; } }
+    /* the bet number in Blackjack: a little bigger, clear font */
+    #bj-bet { font-family: 'Outfit', sans-serif; font-weight: 800; }
+    @media (min-width: 1024px) { .chip-amt { font-size: 1.05rem; } .tg-st { font-size: 14.5px; } }
     /* ---------- Pool: pull-back power bar ---------- */
     .pl-bar { position: relative; height: 58px; background: #0A1624; border: 3px solid var(--ink); box-shadow: inset 0 3px 0 rgba(0,0,0,.4); touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; overflow: hidden; }
     .pl-bar.dragging { cursor: grabbing; }

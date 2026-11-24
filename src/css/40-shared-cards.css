@@ -180,10 +180,9 @@
     .pcard .pc-corner, .fb-pc .fb-face b { font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif !important; font-weight: 800 !important; letter-spacing: -.02em; }
     .cc-card .big, .cc-card .cn { font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif !important; font-weight: 900 !important; }
     .cc-card .big.u69 { text-decoration: underline; text-decoration-thickness: 4px; text-underline-offset: 3px; }
-    .chip-amt { font-size: 1.05rem; }
-    .tg-st { font-size: 15px; color: #F7F4EC; }
+    .chip-amt { font-size: .95rem; }
+    .tg-st { font-size: 13.5px; color: #F7F4EC; }
     .tg-st:is(.allin), .tg-st.allin { color: #FB7185; }
-    @media (min-width: 1024px) { .chip-amt { font-size: 1.25rem; } .tg-st { font-size: 17px; } }
     /* the timer ring never hides the little badges on a tag (dealer D, card count) */
     .tg-tag .tg-d, .tg-tag .tg-n, .tg-tag .tg-badge { z-index: 4; }
     /* the prompt above your cards (Uno, Kaboom Cats, Bullshit): a small label as wide as its text instead of a full-width
@@ -231,3 +230,12 @@
     .pk-rc .pcard.sm .pc-corner { font-size: .8rem; }
     .pcard .pc-court svg { width: 56% !important; margin-top: 0; }
     .pcard.sm .pc-court svg { width: 56% !important; }
+    /* every number on the card tables in a clear font (6 and 8 look alike in the pixel font, Inna Nov 2026) */
+    .tg-txt small, .tg-badge, .tg-st, .chip-amt, .fb-count, #pk-pot .pix, #pk-blinds, #bj-bank, #bj-bankbox, .chip-tag, #cc-pile .pix, #kk-pile .pix, #fb-center .pix,
+    #dm-boneyard, [id^="dm-"] .pix, .bj-total, #bj-hands .pix, #bj-dealer .pix {
+      font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif !important; font-weight: 800 !important; letter-spacing: 0 !important; }
+    .tg-txt small { font-size: 13px; }
+    @media (min-width: 640px) { #gs-body .pcard.pc-real:not(.sm) .pc-corner { font-size: 1.35rem !important; } }
+    /* the bet number in Blackjack: a little bigger, clear font */
+    #bj-bet { font-family: 'Outfit', sans-serif; font-weight: 800; }
+    @media (min-width: 1024px) { .chip-amt { font-size: 1.05rem; } .tg-st { font-size: 14.5px; } }

@@ -60,7 +60,10 @@
       S.ask = async (seat, botFn, ms, filter) => {
         S.script = true;
         for (;;) {
-          const w = { seat, botFn, ms: window.__fast && !S.online ? 5 : ms === undefined ? 800 : ms, sent: false };
+          // computer players take their time so people can follow (Inna, Nov 2026): short waits x1.8, up to 2.4 s;
+          // table timers (seat -1: shout windows, time-outs) keep their real length
+          const base = ms === undefined ? 800 : ms, paced = seat >= 0 && S.bot(seat) && base < 2000 ? Math.min(Math.max(base * 1.8, base), 2400) : base;
+          const w = { seat, botFn, ms: window.__fast && !S.online ? 5 : paced, sent: false };
           S._wait = w; S._maybeBot();
           const a = inbox.length ? inbox.shift() : await new Promise((res) => { waiter = res; });
           if (a.t === '_left' || a.t === '_gone') { if (S.onLeft) S.onLeft(a); if (S.over) return new Promise(() => {}); continue; }
@@ -137,7 +140,7 @@
     async function npLobby(body, m, sel) {
       const O = m.online, minH = O.min || 2, quick = sel.net === 'quick', me = NET.me.id;
       const reopen = () => { if (activeGame === m.id) m.open(document.getElementById('game-root')); };
-      let room = null, ch = null, gone = false, started = false, pingT = null, autoT = null, autoAt = 0;
+      let room = null, ch = null, gone = false, started = false, pingT = null, autoT = null, autoAt = 0, locked = false;   // locked: the host closed the room to new players
       let lobEl = null;
       const wait = (title, html) => {
         body.innerHTML = `<div class="np-room"><div class="win overflow-hidden np-room-main"><div class="winbar ${m.tone || 'teal'}"><span>${title}</span><span class="pix text-xs">${esc(m.name.toUpperCase())} ONLINE</span></div>
@@ -221,7 +224,7 @@
         lobEl.innerHTML = `<div class="flex items-center justify-center gap-2"><span class="pix text-xs text-muted">${quick ? 'SEARCHING' : 'WAITING'}</span><span id="np-qt" class="pix text-xl text-teal">${qClock()}</span></div>
           ${quick ? '' : `<p class="text-sm text-muted">${isHost ? 'Your room is open. Send the link to your friends.' : 'You are in the room. The host starts the game.'}</p>
             <div class="room-code mx-auto" style="max-width:220px">${esc(code)}</div>
-            <div class="flex flex-wrap justify-center gap-2"><button id="np-copy" class="btn-game btn-amber py-2 px-5 text-sm">Copy invite link</button><button id="np-finv" class="btn-game btn-teal py-2 px-5 text-sm">Invite friends</button>${navigator.share ? '<button id="np-share" class="btn-game btn-teal py-2 px-5 text-sm">Share…</button>' : ''}</div>
+            <div class="flex flex-wrap justify-center gap-2"><button id="np-copy" class="btn-game btn-amber py-2 px-5 text-sm">Copy invite link</button><button id="np-finv" class="btn-game btn-teal py-2 px-5 text-sm">Invite friends</button>${isHost && !quick ? `<button id="np-lock" class="btn-game ${locked ? 'btn-coral' : 'btn-graphite'} py-2 px-4 text-sm" title="A locked room lets nobody new in">${locked ? '🔒 Room locked' : '🔓 Lock room'}</button>` : !isHost && locked ? '<span class="pix text-xs text-coral self-center">🔒 LOCKED</span>' : ''}${navigator.share ? '<button id="np-share" class="btn-game btn-teal py-2 px-5 text-sm">Share…</button>' : ''}</div>
             <div class="np-linkline pix text-xs text-muted">${esc(link.replace(/^https?:\/\//, ''))}</div>`}
           ${quick && max === 2 ? '<p class="text-sm text-muted">You are in the queue. The next player who looks for a game is matched with you.</p><p class="text-xs text-muted">Testing on one computer? Two tabs of the same browser are the same player. Use a second browser, or a private window, for the other side.</p>' : ''}
           <div class="np-seats text-left">${_rows}</div>
@@ -235,6 +238,7 @@
         const fi = document.getElementById('np-finv'); if (fi) fi.onclick = () => inviteFriends(link, m.name);
         const sh = document.getElementById('np-share'); if (sh) sh.onclick = () => navigator.share({ title: `Play ${m.name.replace(' Online', '')} on GameHub`, text: `Play ${m.name.replace(' Online', '')} with me on GameHub!`, url: link }).catch(() => {});
         const st = document.getElementById('np-start'); if (st) st.onclick = () => startNow();
+        const lk = document.getElementById('np-lock'); if (lk) lk.onclick = () => { locked = !locked; SFX.play('click'); showToast(locked ? 'Room locked: nobody new can join.' : 'Room open again: friends can join with the code or link.', 'info'); tellLobby(); paint(); };
         const bm = document.getElementById('np-bm'); if (bm) bm.onclick = () => { nb--; SFX.play('click'); tellLobby(); paint(); };
         const bp = document.getElementById('np-bp'); if (bp) bp.onclick = () => { nb++; SFX.play('click'); tellLobby(); paint(); };
         lobEl.querySelectorAll('[data-sk]').forEach((b) => { b.onclick = () => {
@@ -246,14 +250,14 @@
         lobEl.querySelectorAll('[data-lv]').forEach((b) => { b.onclick = () => { lvl = (lvOpt.choices.find((c) => String(c[0]) === b.dataset.lv) || [lvl])[0]; SFX.play('click'); tellLobby(); paint(); }; });
         document.getElementById('np-cancel').onclick = cancel;
       };
-      const tellLobby = () => { if (isHost && !started) ch.send('lobby', { seats, sel: hostSel, max, nb, lvl }); };
+      const tellLobby = () => { if (isHost && !started) ch.send('lobby', { seats, sel: hostSel, max, nb, lvl, locked }); };
       // the host keeps the seat list: people present on the channel, in the order they arrived
       ch.presence((list) => {
         present = list.map((x) => x.uid);
         if (!isHost || started) return;
         const before = JSON.stringify(seats);
         seats = seats.filter((x) => x.uid === me || present.includes(x.uid));
-        list.slice().sort((a, b) => (a.at || 0) - (b.at || 0)).forEach((x) => { if (seats.length < max && !seats.some((y) => y.uid === x.uid)) seats.push({ uid: x.uid, name: x.name || 'Player', avatar: x.avatar || '🙂' }); });
+        list.slice().sort((a, b) => (a.at || 0) - (b.at || 0)).forEach((x) => { if (!locked && seats.length < max && !seats.some((y) => y.uid === x.uid)) seats.push({ uid: x.uid, name: x.name || 'Player', avatar: x.avatar || '🙂' }); });
         if (JSON.stringify(seats) !== before) {
           SFX.play('pop'); tellLobby(); paint();
           if (quick && max === 2 && seats.length === 2) return begin();
@@ -266,7 +270,8 @@
       ch.on('lobby', (d) => {
         if (isHost || started) return;
         if (hostSel && JSON.stringify(hostSel) !== JSON.stringify(d.sel)) showToast('The host changed the game settings.', 'info');
-        seats = d.seats; hostSel = d.sel; nbSeen = d.nb || 0; lvSeen = d.lvl;
+        seats = d.seats; hostSel = d.sel; nbSeen = d.nb || 0; lvSeen = d.lvl; locked = !!d.locked;
+        if (!seats.some((x) => x.uid === me) && locked) { showToast('This room is locked by the host.', 'error'); return cancel(); }
         if (!seats.some((x) => x.uid === me) && seats.length >= d.max) { showToast('That table is full.', 'error'); return cancel(); }
         paint();
       });

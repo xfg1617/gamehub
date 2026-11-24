@@ -184,7 +184,7 @@
       function drive() {
         if (!G || G.over) return;
         const seat = seatOf(G.turn);
-        if (G.S.bot(seat)) G.S.later(() => { const m = bestMove(G.b, G.turn, G.lvl); if (m) G.S.act({ t: 'mv', s: seat, path: m.path }); }, 650);
+        if (G.S.bot(seat)) G.S.later(() => { const m = bestMove(G.b, G.turn, G.lvl); if (m) G.S.act({ t: 'mv', s: seat, path: m.path }); }, window.__fast ? 50 : 1400 + rnd(500));
       }
       function turn() {
         if (G.over) return;

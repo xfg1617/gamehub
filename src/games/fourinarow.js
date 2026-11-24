@@ -98,7 +98,7 @@
       function drive() {
         if (!G || G.over || G.done) return;
         const seat = seatOf(G.turn);
-        if (G.S.bot(seat)) G.S.later(() => G.S.act({ t: 'drop', s: seat, c: aiCol(G.b.map((r) => r.slice()), G.turn, G.lvl) }), 850);
+        if (G.S.bot(seat)) G.S.later(() => G.S.act({ t: 'drop', s: seat, c: aiCol(G.b.map((r) => r.slice()), G.turn, G.lvl) }), window.__fast ? 50 : 1400 + rnd(500));
       }
       function turnUI() {
         const S = G.S, seat = seatOf(G.turn), mine = S.mine(seat);

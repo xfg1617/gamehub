@@ -12,7 +12,7 @@
 - src/dict.json             the Word Connect word list
 - src/games/*.js            one file per game; a new file here is picked up automatically
 """
-import glob, json, os, re, sys
+import glob, json, os, re, subprocess, sys, tempfile
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(ROOT, 'src')
@@ -214,6 +214,37 @@ def write_site(page, online):
     with open(os.path.join(ROOT, 'functions', 'r', '[code].js'), 'w', encoding='utf-8') as f: f.write(cf)
 
 
+# ---------- the live copy (dist/site) is scrambled + locked to our own web address (Inna, Nov 2026: copy protection) ----------
+# A web page's code always reaches the visitor's browser, so this can't stop a determined copier; it makes the code hard to
+# read and reuse, and a copy put up on another website shows a "play at gamehub.us.com" message instead of the games.
+LOCK_JS = """(function () {
+  var h = location.hostname;
+  var ok = !h || h === 'localhost' || h === '127.0.0.1' || h === 'gamehub.test' || h === 'gamehub.us.com' || /\\.gamehub\\.us\\.com$/.test(h) || h === 'gamehub-8w2.pages.dev' || /\\.gamehub-8w2\\.pages\\.dev$/.test(h);
+  if (ok) return;
+  document.addEventListener('DOMContentLoaded', function () { document.body.innerHTML = '<div style="font:700 20px sans-serif;color:#F7F4EC;background:#0B1B2B;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px">This is not the official GameHub.<br><br>Play at <a style="color:#F5B041" href="https://gamehub.us.com">gamehub.us.com</a></div>'; });
+  throw new Error('GameHub: not the official site');
+})();
+"""
+def protect(page):
+    """Minify the main script with terser (tools/tailwind/node_modules) and put the address lock in front of it."""
+    blocks = list(re.finditer(r'(<script(?![^>]*src)[^>]*>)(.*?)(</script>)', page, re.S))
+    if not blocks: return page
+    big = max(blocks, key=lambda m: len(m.group(2)))
+    code = LOCK_JS + big.group(2)
+    terser = os.path.join(TW_DIR, 'node_modules', '.bin', 'terser')
+    if os.path.exists(terser):
+        with tempfile.TemporaryDirectory() as tmp:
+            src, out = os.path.join(tmp, 'in.js'), os.path.join(tmp, 'out.js')
+            with open(src, 'w', encoding='utf-8') as fh: fh.write(code)
+            r = subprocess.run([terser, src, '-c', 'passes=1', '-m', '--ecma', '2020', '--format', 'inline_script=true,ascii_only=false', '-o', out], capture_output=True, text=True)
+            if r.returncode == 0:
+                code = open(out, encoding='utf-8').read()
+            else:
+                print('note: terser failed, the live copy keeps readable code:', r.stderr[:300])
+    else:
+        print('note: terser not found (cd tools/tailwind && npm install) - the live copy keeps readable code')
+    return page[:big.start(2)] + code + page[big.end(2):]
+
 if __name__ == '__main__':
     order = json.loads(sys.argv[2]) if len(sys.argv) > 2 and sys.argv[1] == '--order' else None
     page = build(order)
@@ -225,7 +256,7 @@ if __name__ == '__main__':
         f.write(page)
     if not order:
         online = json.load(open(os.path.join(SRC, 'online.json'), encoding='utf-8')) if os.path.exists(os.path.join(SRC, 'online.json')) else {}
-        write_site(page, online)
+        write_site(page if '--readable' in sys.argv else protect(page), online)
     # the big script block, for a syntax check:  node --check dist/_check.js
     sc = re.findall(r'<script(?![^>]*src)[^>]*>(.*?)</script>', page, re.S)
     with open(os.path.join(ROOT, 'dist', '_check.js'), 'w', encoding='utf-8') as f:

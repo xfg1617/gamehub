@@ -90,7 +90,7 @@
         const S = G.S;
         if (G.done) { if (!G.matchDone) S.later(() => S.act({ t: 'next', g: G.game, s: -1 }), 2600); return; }
         const seat = seatOf(G.turn);
-        if (S.bot(seat)) S.later(() => S.act({ t: 'place', s: seat, i: aiMove(G.b.slice(), G.turn, G.lvl) }), 650 + rnd(450));
+        if (S.bot(seat)) S.later(() => S.act({ t: 'place', s: seat, i: aiMove(G.b.slice(), G.turn, G.lvl) }), window.__fast ? 50 : 1300 + rnd(700));
       }
       function newGame() {
         G.b = Array(9).fill(null); G.done = false; G.game++;

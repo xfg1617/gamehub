@@ -761,3 +761,27 @@ folder that was handed over, so they do not exist here.)
   See card / Not now); tapping a player's name tag at an online table opens their player card (Add friend); the chat's
   👥 Friends view lists AT THIS TABLE with + Add friend / Accept; "Chat" on a card during a game opens the chat window.
   Fixed: the first friend request after opening the site never popped up. `test/t_friends_ingame.py`.
+
+## 5u. Nov 25 2026 round 2 (Inna's "update these" list)
+
+* **Computer players are slower** so people can follow: in `S.ask` (netplay) a bot seat's wait under 2 s is x1.8 (max
+  2.4 s; table timers, seat -1, keep their length); Tic-Tac-Toe, Checkers, Four-in-a-Row, Wall Maze and Chess wait
+  ~1.3-2.1 s. `window.__fast` still makes tests quick.
+* **Game log**: "📜 Log" in the game header opens/closes it (stays open until pressed again or Esc).
+* **Room lock**: the host of a private room has 🔓 Lock room (`locked` in `npLobby`): nobody new is seated, a newcomer
+  gets "This room is locked by the host." and leaves; players inside see 🔒 LOCKED. `test/t_np_lock.py`.
+* **Chess emotes**: online chess opens a small channel `ce:<code>` and sets a minimal `NP.S` (seats, `emote`, `leave`)
+  so the emote button works; the other player's emote shows at the top of the board. `test/t_chess_emotes.py`.
+  Games without seat boxes show the other player's emote at the top of `#gs-body`.
+* **Copy protection** (`protect()` in build.py): the LIVE copy `dist/site/index.html` has its main script minified with
+  terser (tools/tailwind: `npm install` now also installs terser 5.31.0) and starts with an address lock (gamehub.us.com,
+  *.gamehub.us.com, gamehub-8w2.pages.dev + previews, localhost, file://, gamehub.test). Elsewhere it shows "This is not
+  the official GameHub". `dist/gamehub.html` stays readable for tests; `python3 build.py --readable` skips it.
+  `test/t_protect.py`. Can't stop a determined copier (the code always reaches the browser); it deters casual copies.
+* **Small laptops (≤820 px tall)**: Whodunit rooms are shorter, Pool's Resign/New game row is hidden, Poker's
+  Fold/Call/Raise move to the left under the table panel; Poker, Pool and Whodunit fit 1280x720 without scrolling.
+* **Vietnamese part 2** (`src/games/zz_i18n_vi2.js`, `VI_MORE2`): result screens, profile numbers, pop-up notes, common
+  prompts, today's new lines (friends, places, Landlord turns, Sea Battle, room lock) + patterns in `PAT`; CSS labels
+  (FIRE!, USE ME) switch via `html[lang="vi"]`. Move logs and chat stay untranslated.
+* Not done (need Inna): CAPTCHA (needs a Cloudflare Turnstile site key + Supabase setting, in that order) and truly
+  secret hidden cards (needs a server-side dealer per game).

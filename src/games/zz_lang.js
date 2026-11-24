@@ -42,7 +42,7 @@
         'Mine Saboteurs': 'Phá Hoại Hầm Mỏ', 'Wall Maze': 'Mê Cung Tường', 'Bullshit': 'Nói Xạo', 'Trivia Rush': 'Đố Vui Nhanh', 'Sea Battle': 'Hải Chiến',
         'CHESS': 'CỜ VUA', 'POKER': 'POKER', 'UNO': 'UNO', 'BULLSHIT': 'NÓI XẠO',
         // game header, setup screen, rooms
-        '← Lobby': '← Sảnh', '? Guide': '? Hướng dẫn', '📜 Moves': '📜 Nước đi', 'HOW DO YOU WANT TO PLAY?': 'BẠN MUỐN CHƠI THẾ NÀO?',
+        '← Lobby': '← Sảnh', '? Guide': '? Hướng dẫn', '📜 Moves': '📜 Nước đi', '📜 Log': '📜 Nhật ký', 'HOW DO YOU WANT TO PLAY?': 'BẠN MUỐN CHƠI THẾ NÀO?',
         'Online match': 'Trận online', 'Private room': 'Phòng riêng', 'Solo': 'Chơi một mình',
         'Get paired with a real player at your level. Ranked.': 'Ghép cặp với người thật cùng trình độ. Có xếp hạng.',
         'Join a table with real players.': 'Vào bàn cùng người chơi thật.',
@@ -98,13 +98,21 @@
         'Clear': 'Xóa hết', 'Thin': 'Mảnh', 'Fat': 'Đậm', 'YOUR TURN TO DRAW': 'ĐẾN LƯỢT BẠN VẼ', 'Time left': 'Còn lại',
       };
       Object.keys(window.VI_MORE || {}).forEach((k) => { if (!(k in VI)) VI[k] = window.VI_MORE[k]; });   // part 1: zz_i18n_vi.js
+      Object.keys(window.VI_MORE2 || {}).forEach((k) => { if (!(k in VI)) VI[k] = window.VI_MORE2[k]; });   // part 2: zz_i18n_vi2.js
       const PAT = [
         [/^(\d+)[–-](\d+) PLAYERS/, (m, a, b) => `${a}-${b} NGƯỜI`], [/(\d+) PLAYERS\b/g, '$1 NGƯỜI'], [/~(\d+) MIN\b/g, '~$1 PHÚT'], [/(\d+) MIN\b/g, '$1 PHÚT'],
         [/\bSOLO\b/g, 'CHƠI ĐƠN'], [/\bCHIPS\b/g, 'CHIP'], [/^(\d+) GAMES$/, '$1 TRÒ'], [/^● (\d+) online$/, '● $1 online'], [/^(\d+) chatting$/, '$1 đang trò chuyện'],
         [/^YOUR ROOM · (\w+)$/, 'PHÒNG CỦA BẠN · $1'], [/^TABLE (\w+) CHAT$/, 'CHAT BÀN $1'], [/^(.+) ROOM$/, (m, g) => `PHÒNG ${VI[g.charAt(0) + g.slice(1).toLowerCase()] ? VI[g.charAt(0) + g.slice(1).toLowerCase()].toUpperCase() : g}`],
         [/^\? How to play (.+)$/, (m, g) => `? Cách chơi ${VI[g] || g}`], [/^(\d+)\/(\d+) XP to Lv (\d+)$/, '$1/$2 XP lên Cấp $3'], [/^Your Rank: #(\d+)$/, 'Hạng của bạn: #$1'],
         [/^(\d+) games · (\d+)% win rate$/, '$1 trận · $2% thắng'], [/^(\d+) games · (\d+)% WR$/, '$1 trận · $2% thắng'], [/^(\d+) ONLINE · (\d+)$/, '$1 ONLINE · $2'],
-        [/^(.+)'S TURN$/, 'LƯỢT CỦA $1'], [/^RANKED ONLINE · (.+)$/, (m, g) => `XẾP HẠNG ONLINE · ${(VI[g.charAt(0) + g.slice(1).toLowerCase()] || g).toUpperCase()}`],
+        [/^(.+)'S TURN$/, 'LƯỢT CỦA $1'], [/^(.+)’S TURN$/, 'LƯỢT CỦA $1'],
+        // Nov 25: results, places, pop-up notes
+        [/^You finished (\d+)(?:st|nd|rd|th)$/, 'Bạn về hạng $1'], [/^You finished (\d+)(?:st|nd|rd|th)!$/, 'Bạn về hạng $1!'], [/^(\d+)(?:ST|ND|RD|TH)$/, 'HẠNG $1'],
+        [/^(\d+)(?:st|nd|rd|th) of (\d+)$/, 'Hạng $1/$2'], [/^(.+) wins$/, '$1 thắng'], [/^(.+) wins!$/, '$1 thắng!'], [/^You are on (.+)$/, 'Bạn đang ở $1'], [/^(.+) is on (.+)$/, '$1 đang ở $2'],
+        [/^Friend request sent to (.+)\.$/, 'Đã gửi lời mời kết bạn tới $1.'], [/^You and (.+) are now friends!$/, 'Bạn và $1 đã là bạn bè!'],
+        [/^(.+): (royal|faith|trade|guard|wonder) building, costs (\d+)$/, (m, n, c, k) => `${n}: công trình ${{ royal: 'hoàng gia', faith: 'tôn giáo', trade: 'thương mại', guard: 'quân sự', wonder: 'kỳ quan' }[c]}, giá ${k}`],
+        [/^Waiting for (.+)'s screen to answer\. Your shot is marked on the map\.$/, 'Đang chờ màn hình của $1 trả lời. Phát bắn của bạn đã được đánh dấu.'],
+        [/^Target ([A-J]\d+) locked\.$/, 'Đã khóa mục tiêu $1.'], [/^Splash! ([A-J]\d+) was open water\.$/, 'Tõm! $1 là biển trống.'], [/^RANKED ONLINE · (.+)$/, (m, g) => `XẾP HẠNG ONLINE · ${(VI[g.charAt(0) + g.slice(1).toLowerCase()] || g).toUpperCase()}`],
         [/^(\d+) PLAYERS$/, '$1 NGƯỜI'], [/^Tip: (.+)$/, (m, t) => `Mẹo: ${VI[t] || t}`],
         [/^(.+) ONLINE$/, (m, g) => { const k = Object.keys(VI).find((x) => x.toUpperCase() === g); return k ? `${VI[k].toUpperCase()} ONLINE` : m; }],
         [/^HOW TO PLAY · (.+)$/, (m, g) => { const k = Object.keys(VI).find((x) => x.toUpperCase() === g); return `CÁCH CHƠI · ${k ? VI[k].toUpperCase() : g}`; }],

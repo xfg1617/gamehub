@@ -105,7 +105,8 @@
         const els = [...root.querySelectorAll(`[id$="-seat-${seat}"], [id$="-pl-${seat}"]`)].filter((el) => el.getBoundingClientRect().width > 0);
         if (els.length) return els[0];
         const chip = document.querySelectorAll('#np-bar .np-chip')[seat]; if (chip && chip.getBoundingClientRect().width > 0) return chip;
-        return seat === S.me ? document.getElementById('em-fab') : null;
+        // games without seat boxes (Tic-Tac-Toe, Checkers...): the other player's emote shows at the top of the board
+        return seat === S.me ? document.getElementById('em-fab') : document.getElementById('gs-body');
       }
       function show(seat, id) {
         const S = table(), e = BY[id]; if (!S || !e || !S.seats[seat]) return;

@@ -178,7 +178,7 @@
       function drive() {
         if (!G || G.over || G.st.win >= 0) return;
         const s = G.st.turn;
-        if (G.S.bot(s)) G.S.later(() => { if (G && G.st.turn === s && !G.over) G.S.act(Object.assign({ s }, aiAction(G.st, s, G.lvl))); }, 750 + rnd(600));
+        if (G.S.bot(s)) G.S.later(() => { if (G && G.st.turn === s && !G.over) G.S.act(Object.assign({ s }, aiAction(G.st, s, G.lvl))); }, window.__fast ? 50 : 1400 + rnd(700));
       }
       function draw() {
         const st = G.st, bd = $('hr-board'); if (!bd) return;

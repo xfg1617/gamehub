@@ -315,6 +315,15 @@
         const me = online ? online.me : sel.side === 'r' ? (Math.random() < 0.5 ? 'w' : 'b') : sel.side;
         G = { online: online || null, st: newPos(), me, lvl: +sel.lvl || 2, secs: +sel.clock, hints: !!+sel.hints, theme: sel.theme, sel: null, targets: [], last: null, over: false, hist: [], seen: {}, capW: [], capB: [], busy: false, resign: false, promo: null, tok: ++GT.cur };
         G.seen[posKey(G.st)] = 1;
+        // emotes in online chess (Chess has its own online system, so it opens a small live channel just for them)
+        if (online && typeof NP !== 'undefined') {
+          if (NP.S) { try { NP.S.leave(); } catch (e) {} }
+          const ech = NET.channel('ce:' + online.code, { name: NET.me.name, avatar: NET.me.avatar });
+          NP.S = { online: true, over: false, game: 'chess', code: online.code, me: 0,
+            seats: [{ name: NET.me.name, avatar: NET.me.avatar, uid: NET.me.id }, { name: online.opp.name, avatar: online.opp.avatar, uid: online.opp.id }],
+            emote: (id) => ech.send('emo', { id }), leave() { this.over = true; try { ech.close(); } catch (e) {} } };
+          ech.on('emo', (d, from) => { if (from !== NET.me.id && d && window.emoteShow) window.emoteShow(1, d.id); });
+        }
         body.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,560px)_1fr] gap-6 items-start">
           <div class="space-y-2">
             <div id="ch-top" class="flex items-center justify-between"></div>
@@ -514,6 +523,7 @@
         if (G.secs) G.clock.start(G.secs + 5, 'Their time', () => {}, 8); else G.clock.idle('Their move', '...');
       }
       async function finishOnline(res, title, sub, s) {
+        if (typeof NP !== 'undefined' && NP.S && NP.S.game === 'chess') NP.S.over = true;
         const o = G.online, tok = G.tok;
         document.getElementById('ch-status').textContent = title.toUpperCase();
         document.getElementById('ch-msg').textContent = sub;
@@ -560,7 +570,7 @@
           if (!G || G.tok !== tok || G.over) return;
           const mv = bestMove(G.st, G.lvl);
           if (mv) play(mv); else finish(status(G.st, G.seen));
-        }, (G.slideMs || 0) + 650);
+        }, (G.slideMs || 0) + (window.__fast ? 50 : 1300 + rnd(700)));
       }
 
       function san(st, m) {

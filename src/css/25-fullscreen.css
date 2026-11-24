@@ -280,3 +280,27 @@
     body.in-game #cc-quit, body.in-game #dm-quit, body.in-game #gm-quit, body.in-game #hr-quit, body.in-game #fi-quit,
     body.in-game #kk-quit, body.in-game #mm-quit, body.in-game #pk-quit, body.in-game #tt-quit, body.in-game #ty-quit,
     body.in-game #wd-quit, body.in-game #dg-quit, body.in-game #bjo-leave { display: none !important; }
+    /* labels drawn by CSS, in Vietnamese */
+    html[lang="vi"] .icell.aim::before { content: 'BẮN!'; }
+    html[lang="vi"] .tt-card.fix.need::after { content: 'DÙNG'; }
+    /* small laptop screens (about 1280x720): Pool and Whodunit fit without scrolling (Nov 2026). Pool's Resign / New game
+       row is hidden like the other games' give-up buttons (← Lobby leaves and asks first). */
+    body.in-game[data-game="pool"] #gs-body .grid:has(> #pl-resign) { display: none !important; }
+    @media (min-width: 1024px) and (max-height: 820px) {
+      body.in-game[data-game="pool"] #gs-body { min-width: 460px; max-width: calc((var(--av) - 330px) * 1000 / 540); }
+      body.in-game main.flex-1 { padding-bottom: 8px !important; }
+      body.in-game[data-game="manor"] .mm-room { min-height: 84px; }
+      body.in-game[data-game="manor"] .mm-roof { height: 40px; }
+      body.in-game[data-game="manor"] .mm-card { min-height: 52px; padding-top: 5px; padding-bottom: 4px; }
+    }
+    @media (min-width: 1024px) and (max-height: 820px) {
+      body.in-game[data-game="poker"] #pk-table { min-height: calc(100vh - 82px) !important; padding-top: 0 !important; padding-bottom: 14px !important; }
+      body.in-game[data-game="poker"] #pk-table .ring4 { row-gap: 0 !important; }
+    }
+    @media (min-width: 1024px) and (max-height: 820px) {
+      /* short screens: Poker's Fold / Call / Raise sit in the empty space on the left, so they never cover your seat */
+      body.in-game[data-game="poker"] #pk-ctl { left: 16px; top: 258px; bottom: auto; transform: none; width: 238px; }
+      body.in-game[data-game="poker"] #pk-ctl .win { flex-direction: column; align-items: stretch; gap: 10px; }
+      body.in-game[data-game="poker"] #pk-ctl .win > div { flex-wrap: wrap !important; }
+      body.in-game[data-game="poker"] #pk-ctl .win > div:first-child > * { flex: 1 1 0; }
+    }

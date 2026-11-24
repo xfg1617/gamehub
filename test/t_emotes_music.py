@@ -25,7 +25,17 @@ with sync_playwright() as p:
         check(pg.query_selector('#em-menu') is None, f'{tag}: tapping outside closes the menu')
         bear = pg.evaluate("EMOTE.charFor('🐻')"); robot = pg.evaluate("EMOTE.charFor('🤖')")
         check(bear == '🐻' and robot == '🤖' and pg.evaluate("EMOTE.charFor('🐺')") == '🦊', 'characters: bear, robot for computers, wolf borrows the fox')
-        pg.evaluate("closeActiveGame()"); pg.wait_for_timeout(700)
+        # the emote button sits right beside the CHAT button
+        fab = pg.evaluate("document.getElementById('em-fab').getBoundingClientRect().left"); chat = pg.evaluate("document.getElementById('chat-fab').getBoundingClientRect().right")
+        check(0 < fab - chat < 30, f'{tag}: emote button beside CHAT ({chat:.0f} -> {fab:.0f})')
+        check(pg.evaluate("document.body.classList.contains('in-game')") and not pg.evaluate("document.querySelector('aside.side').offsetWidth"), f'{tag}: full-screen game (side menu hidden)')
+        # sound & music from the game header
+        pg.click('#gs-tools .gs-snd'); pg.wait_for_timeout(300)
+        check(pg.query_selector('#mu-pop [data-mu="sfx"]') is not None and pg.query_selector('#mu-pop [data-mu="on"]') is not None, f'{tag}: the game header opens Sound & Music (both switches)')
+        was = pg.evaluate("SFX.isOn()"); pg.click('#mu-pop [data-mu="sfx"]'); pg.wait_for_timeout(200)
+        check(pg.evaluate("SFX.isOn()") != was, f'{tag}: the sound effects switch works')
+        pg.click('#mu-pop [data-mu="sfx"]'); pg.click('#mu-pop [data-mu="close"]')
+        pg.evaluate("navigateTo('play', true)"); pg.wait_for_timeout(700)
         check(pg.query_selector('#em-fab') is None, f'{tag}: no emote button outside a game')
         # music
         btn = '#mu-btn' if not mob else '#mu-btn-m'
@@ -42,7 +52,7 @@ with sync_playwright() as p:
         check(pg.evaluate("MUSIC.state().playing") == 'card', f'{tag}: picking a tune switches the music')
         pg.click('#mu-pop [data-pick="auto"]'); pg.click('#mu-pop [data-mu="on"]'); pg.wait_for_timeout(700)
         check(pg.evaluate("MUSIC.state().playing") is None, f'{tag}: switching music off stops it')
-        pg.click('#mu-pop [data-mu="on"]'); pg.mouse.click(w // 2, h - 200); pg.wait_for_timeout(300)
+        pg.click('#mu-pop [data-mu="on"]'); pg.evaluate("document.body.click()"); pg.wait_for_timeout(300)
         check(pg.query_selector('#mu-pop') is None, f'{tag}: tapping outside closes the panel')
         pg.evaluate("openGame('poker')"); pg.wait_for_timeout(300); go = pg.query_selector('#su-go'); go and go.click(); pg.wait_for_timeout(1500)
         check(pg.evaluate("MUSIC.state().playing") == 'card', f'{tag}: Auto plays the card tune at the poker table')

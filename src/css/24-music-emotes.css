@@ -15,18 +15,19 @@
     .mu-ch.sel { background: #F5B041; color: var(--ink); } .mu-ch.sel small { color: #3A2A08; }
     .mu-now { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #9DB4CC; border-top: 2px dashed rgba(247, 244, 236, .15); padding-top: 10px; }
     .mu-now b { color: #F7F4EC; }
+    .mu-state { display: block; font-size: 10px; color: #9DB4CC; font-weight: 700; letter-spacing: .04em; }
     .mu-eq { display: flex; gap: 2px; align-items: flex-end; height: 14px; }
     .mu-eq i { width: 4px; background: #2DD4BF; animation: mu-eq .8s steps(3) infinite; }
     .mu-eq i:nth-child(2) { animation-delay: -.2s; } .mu-eq i:nth-child(3) { animation-delay: -.5s; } .mu-eq i:nth-child(4) { animation-delay: -.35s; }
     @keyframes mu-eq { 0% { height: 4px; } 50% { height: 14px; } 100% { height: 8px; } }
 
     /* ---------- emotes (zz_emotes.js) ---------- */
-    .em-fab { position: fixed; right: 22px; bottom: 22px; z-index: 55; width: 54px; height: 54px; padding: 5px; background: #F5B041; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); }
+    .em-fab { position: fixed; left: 150px; bottom: 18px; z-index: 55; width: 54px; height: 54px; padding: 5px; background: #F5B041; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); }
     .em-fab:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
     .em-fab svg { width: 100%; height: 100%; display: block; }
-    @media (max-width: 1023px) { .em-fab { right: 12px; bottom: 84px; width: 48px; height: 48px; } }
-    .em-menu { position: fixed; right: 22px; bottom: 90px; z-index: 70; width: 340px; background: #0F2A44; border: 3px solid var(--ink); box-shadow: 0 5px 0 var(--ink); }
-    @media (max-width: 1023px) { .em-menu { left: 8px; right: 8px; width: auto; bottom: 144px; } body.em-open #chat-fab { visibility: hidden; } }
+    @media (max-width: 1023px) { .em-fab { width: 46px; height: 46px; } }
+    .em-menu { position: fixed; left: 16px; bottom: 84px; z-index: 70; width: 340px; background: #0F2A44; border: 3px solid var(--ink); box-shadow: 0 5px 0 var(--ink); }
+    @media (max-width: 1023px) { .em-menu { left: 8px !important; right: 8px; width: auto; } }
     .em-hd { background: #F5B041; color: var(--ink); font-family: 'Arcade Pixel', monospace; font-size: 15px; padding: 3px 10px; display: flex; justify-content: space-between; }
     .em-hint { font-size: 12px; opacity: .7; }
     .em-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; padding: 8px; }

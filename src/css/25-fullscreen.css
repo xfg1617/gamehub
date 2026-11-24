@@ -1,0 +1,74 @@
+    /* =========================================================================
+       FULL-SCREEN GAMES (Inna, Nov 2026): while a game is open (body.in-game) the side menu, the phone header
+       and the footer step aside and the game uses the whole window. The move log hides behind "📜 Moves".
+       Per-game sizing lives at the bottom of this file.
+       ========================================================================= */
+    body.in-game aside.side { display: none !important; }
+    body.in-game .lg\:ml-\[236px\] { margin-left: 0 !important; }
+    body.in-game main.flex-1 { max-width: none !important; padding: 10px 16px 12px !important; }
+    body.in-game .foot { display: none !important; }
+    body.in-game .mhdr { display: none !important; }
+    body.in-game #gs-wrap { max-width: none !important; gap: 10px !important; margin: 0 !important; }
+    body.in-game #gs-wrap > .space-y-5 > * + *, body.in-game #gs-wrap.space-y-5 > * + * { margin-top: 10px !important; }
+    body.in-game #gs-wrap > .panel, body.in-game #view-naval > .panel:first-child, body.in-game #view-daily > .panel:first-child, body.in-game #view-connect4 > .panel:first-child { padding: 6px 12px !important; }
+    body.in-game #view-naval, body.in-game #view-daily, body.in-game #view-connect4 { margin-top: 0 !important; }
+    body.in-game #view-naval > * + *, body.in-game #view-daily > * + *, body.in-game #view-connect4 > * + * { margin-top: 12px !important; }
+    body.in-game #chat-fab { left: 16px; }
+    @media (max-width: 1023px) { body.in-game main.flex-1 { padding: 8px 8px 80px !important; } }
+
+    /* the move log: hidden, or a pop-out panel when 📜 Moves is pressed */
+    .gs-moves { display: none !important; }
+    #gs-wrap:has(#gs-body .logbox) .gs-moves { display: inline-flex !important; }
+    body.in-game #game-root .logbox { display: none !important; }
+    body.in-game.show-moves #game-root .logbox { display: block !important; position: fixed; right: 16px; top: 64px; width: min(340px, calc(100vw - 32px)); height: min(60vh, 460px) !important; z-index: 75; box-shadow: 0 6px 0 var(--ink); }
+
+    /* ---------- the whole-table layout for card games: the table is the screen ---------- */
+    body.in-game .ft-cards { display: block !important; }
+    body.in-game .ft-cards > .ft-main { position: relative; }
+    body.in-game .ft-cards > .ft-side { display: none !important; }
+    .ft-badge { display: none; }
+    body.in-game .ft-badge { display: flex; align-items: center; gap: 10px; position: absolute; left: 12px; top: 12px; z-index: 6; background: rgba(5, 14, 24, .82); border: 3px solid var(--ink); color: #F7F4EC; padding: 4px 10px; font-size: 12px; max-width: calc(100% - 24px); }
+    body.in-game .ft-badge .makeclock, body.in-game .ft-badge > div { min-width: 0; }
+    body.in-game .ft-badge .ft-quit { display: none; }
+    .ft-leave { display: none; }
+    body.in-game .ft-leave { display: inline-flex; }
+
+    /* ---------- each game's board fills the screen (computers and tablets in landscape) ----------
+       --av = the height left under the slim game header. Boards are sized by height so nothing scrolls. */
+    @media (min-width: 1024px) {
+      body.in-game { --av: calc(100vh - 86px); }
+      /* square boards with a side panel */
+      body.in-game[data-game="chess"] #gs-body > .grid, body.in-game[data-game="checkers"] #gs-body > .grid { grid-template-columns: min(calc(var(--av) - 95px), 62vw) minmax(300px, 440px) !important; justify-content: center; }
+      body.in-game[data-game="tictactoe"] #gs-body > .grid { grid-template-columns: min(calc(var(--av) - 20px), 58vw) minmax(300px, 440px) !important; justify-content: center; }
+      body.in-game[data-game="c4"] #gs-body > .grid { grid-template-columns: min(calc((var(--av) - 30px) * 7 / 6), 60vw) minmax(300px, 440px) !important; justify-content: center; }
+      /* Property Tycoon: the board is as big as the height allows */
+      body.in-game[data-game="tycoon"] #gs-body > .grid { grid-template-columns: min(calc(var(--av) - 22px), calc(100vw - 400px)) 340px !important; justify-content: center; }
+      /* Pool and Bowling: the table / lane is as wide as the height allows */
+      body.in-game[data-game="pool"] #gs-body { max-width: calc((var(--av) - 470px) * 1000 / 540); min-width: 560px; margin: 0 auto; }
+      body.in-game[data-game="bowling"] #gs-body { max-width: calc((var(--av) - 290px) / .6); min-width: 560px; margin: 0 auto; }
+      /* Frontier Isles: the island fills the height */
+      body.in-game[data-game="isles"] #gs-body > .grid { grid-template-columns: minmax(0, 1fr) 340px !important; }
+      body.in-game[data-game="isles"] .fi-sea { height: calc(var(--av) - 70px); display: flex; align-items: center; justify-content: center; }
+      body.in-game[data-game="isles"] .fi-board { max-height: none; height: 100%; width: auto; max-width: 100%; }
+      /* tall side panels scroll inside themselves instead of making the page scroll */
+      body.in-game[data-game="isles"] #gs-body > .grid > div:last-child, body.in-game[data-game="manor"] #gs-body > .grid > div:last-child { max-height: var(--av); overflow-y: auto; }
+      /* Manor Mystery: map + notebook */
+      body.in-game[data-game="manor"] #gs-body > .grid { grid-template-columns: minmax(0, 1fr) 360px !important; }
+      /* card games: the table takes the screen, a slim panel keeps the timer and status */
+      body.in-game[data-game="poker"] #gs-body > .grid, body.in-game[data-game="kittens"] #gs-body > .grid, body.in-game[data-game="colorclash"] #gs-body > .grid, body.in-game[data-game="dominoes"] #gs-body > .grid { grid-template-columns: minmax(0, 1fr) 230px !important; gap: 12px !important; }
+      body.in-game[data-game="poker"] #pk-table { min-height: calc(var(--av) - 200px); display: flex; flex-direction: column; justify-content: space-between; }
+      body.in-game[data-game="poker"] #pk-table .ring4 { flex: 1; }
+      body.in-game[data-game="kittens"] #kk-opp > .r-mid, body.in-game[data-game="colorclash"] #cc-opp > .r-mid { min-height: calc(var(--av) - 400px) !important; }
+      body.in-game[data-game="dominoes"] #gs-body .felt { min-height: calc(var(--av) - 330px); }
+      body.in-game[data-game="blackjack"] #gs-body .felt { min-height: calc(var(--av) - 60px); display: flex; flex-direction: column; justify-content: space-between; }
+      body.in-game[data-game="blackjack"] #gs-body .pcard { width: 92px; height: 130px; }
+      body.in-game[data-game="blackjack"] #gs-body .pcard .pc-mid svg { width: 50px; height: 50px; }
+      body.in-game[data-game="blackjack"] #gs-body .pcard.sm { width: 64px; height: 90px; }
+      /* Word Connect: a bigger letter wheel */
+      body.in-game[data-game="wordconnect"] #gs-body > .grid { grid-template-columns: 420px minmax(0, 1fr) !important; }
+      /* Naval Grid and Daily Word (older screens): a bit bigger */
+      body.in-game #view-daily { max-width: 620px !important; }
+    }
+    @media (min-width: 1024px) and (min-height: 820px) {
+      body.in-game #view-daily { zoom: 1.12; }
+    }

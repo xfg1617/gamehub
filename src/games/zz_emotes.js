@@ -144,7 +144,7 @@
         const S = table(); if (!S) return;
         if (document.getElementById('em-menu')) return closeMenu();
         const m = document.createElement('div'); m.id = 'em-menu'; m.className = 'em-menu'; m.innerHTML = menuHTML(S); document.body.appendChild(m);
-        document.body.classList.add('em-open');
+        document.body.classList.add('em-open'); place(document.getElementById('em-fab'));
         m.addEventListener('click', (ev) => {
           ev.stopPropagation();
           const b = ev.target.closest('[data-em]'); if (b) return send(b.dataset.em);
@@ -165,7 +165,17 @@
           f.onclick = (ev) => { ev.stopPropagation(); openMenu(); };
         }
         if (f.dataset.av !== myAv(S)) { f.innerHTML = svg(BY.gg, myAv(S)); f.dataset.av = myAv(S); }
+        place(f);
       }
+      // the emote button sits right beside the CHAT button; the menu opens above both
+      function place(f) {
+        const c = document.getElementById('chat-fab'), r = c && c.getBoundingClientRect();
+        if (r && r.width) { f.style.left = Math.round(r.right + 10) + 'px'; f.style.bottom = Math.round(window.innerHeight - r.bottom - (f.offsetHeight - r.height) / 2) + 'px'; }
+        else { f.style.left = '16px'; f.style.bottom = window.innerWidth < 1024 ? '78px' : '18px'; }
+        const m = document.getElementById('em-menu'), fr = f.getBoundingClientRect();
+        if (m) { m.style.bottom = Math.round(window.innerHeight - fr.top + 10) + 'px'; if (window.innerWidth >= 1024) m.style.left = Math.max(16, Math.min(window.innerWidth - m.offsetWidth - 16, (r && r.width ? r.left : fr.left))) + 'px'; }
+      }
+      window.addEventListener('resize', () => { const f = document.getElementById('em-fab'); if (f) place(f); });
       setInterval(syncFab, 500);
       window.EMOTE = { send, show, list: EMOTES.map((e) => e.id), chars: AVS, charFor, sync: syncFab };
     })();

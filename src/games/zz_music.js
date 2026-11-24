@@ -1,6 +1,6 @@
     /* =========================================================================
-       MUSIC (Inna, Nov 2026): four retro tunes made by the browser itself (no music files), with a Music button
-       next to Sound (sidebar; ♫ in the phone header) that opens a small panel: on/off, volume, which music
+       SOUND & MUSIC (Inna, Nov 2026): four retro tunes made by the browser itself (no music files). One "Sound & Music"
+       button (sidebar; ♪ SOUND in the phone header; ♪ in every game header) opens a panel: sound effects on/off, music on/off, volume, which music
        (Auto = follows what you are doing, one tune, or Shuffle) and "music during games". Saved per browser. Starts ON (quiet) for people; automated test browsers start with it off.
        Browsers only allow sound after the first tap, so the music starts then.
        ========================================================================= */
@@ -118,23 +118,32 @@
       function buttons() {
         const snd = document.getElementById('snd-btn');
         if (snd && !document.getElementById('mu-btn')) {
-          const b = document.createElement('button'); b.id = 'mu-btn'; b.className = snd.className; b.setAttribute('style', snd.getAttribute('style') || ''); b.title = 'Music settings';
-          b.innerHTML = `${NOTE}<span id="mu-label">Music</span>`; snd.insertAdjacentElement('afterend', b);
+          const b = document.createElement('button'); b.id = 'mu-btn'; b.className = snd.className; b.setAttribute('style', snd.getAttribute('style') || ''); b.title = 'Sound effects and music';
+          b.innerHTML = `${NOTE}<span id="mu-label">Sound & Music</span>`; snd.insertAdjacentElement('afterend', b); snd.style.display = 'none';
           b.onclick = (e) => { e.stopPropagation(); toggle(b); };
         }
         const m = document.getElementById('snd-btn-m');
         if (m && !document.getElementById('mu-btn-m')) {
-          const b = document.createElement('button'); b.id = 'mu-btn-m'; b.className = 'pix text-xs text-muted'; b.title = 'Music settings';
-          m.insertAdjacentElement('afterend', b); b.onclick = (e) => { e.stopPropagation(); toggle(b); };
+          const b = document.createElement('button'); b.id = 'mu-btn-m'; b.className = 'pix text-xs text-muted'; b.title = 'Sound effects and music';
+          m.insertAdjacentElement('afterend', b); m.style.display = 'none'; b.onclick = (e) => { e.stopPropagation(); toggle(b); };
         }
+        // the older game screens (Naval Grid, Daily Word, Four-in-a-Row) get the same ♪ button in their header
+        ['view-naval', 'view-daily', 'view-connect4'].forEach((id) => {
+          const panel = document.querySelector(`#${id} > .panel`);
+          if (!panel || panel.querySelector('.gs-snd')) return;
+          const b = document.createElement('button'); b.className = 'btn-game btn-graphite px-3 py-2 text-xs gs-snd'; b.textContent = '♪'; b.title = 'Sound and music'; b.setAttribute('aria-label', 'Sound and music');
+          b.onclick = (e) => { e.stopPropagation(); toggle(b); }; panel.appendChild(b);
+        });
         paint();
       }
       function panelHTML() {
         const sw = (k) => `<button class="mu-sw ${st[k] ? 'on' : ''}" data-mu="${k}" role="switch" aria-checked="${st[k] ? 'true' : 'false'}"><i></i></button>`;
         const choice = (id, name, mood) => `<button class="mu-ch ${st.pick === id ? 'sel' : ''}" data-pick="${id}">${name}<small>${mood}</small></button>`;
-        return `<div class="mu-hd"><span>♫ MUSIC</span><button data-mu="close" aria-label="Close">✕</button></div>
+        const sfx = typeof SFX !== 'undefined' && SFX.isOn();
+        return `<div class="mu-hd"><span>♪ SOUND & MUSIC</span><button data-mu="close" aria-label="Close">✕</button></div>
           <div class="mu-bd">
-            <div class="mu-row"><span>Music<small>Background tunes, separate from sound effects</small></span>${sw('on')}</div>
+            <div class="mu-row"><span>Sound effects<small>Clicks, dice, cards, wins...</small></span><button class="mu-sw ${sfx ? 'on' : ''}" data-mu="sfx" role="switch" aria-checked="${sfx ? 'true' : 'false'}"><i></i></button></div>
+            <div class="mu-row"><span>Music<small>Background tunes</small></span>${sw('on')}</div>
             <div><div class="mu-lab">VOLUME</div><input id="mu-vol" class="mu-range" type="range" min="0" max="100" value="${Math.round(st.vol * 100)}" aria-label="Music volume"></div>
             <div><div class="mu-lab">WHICH MUSIC</div><div class="mu-grid">${choice('auto', 'Auto', 'Changes with the game')}${ORDER.map((k) => choice(k, TRACKS[k].name, TRACKS[k].mood)).join('')}${choice('shuffle', 'Shuffle', 'All of them')}</div></div>
             <div class="mu-row"><span>Music during games<small>Off = only on the menus</small></span>${sw('inGames')}</div>
@@ -147,31 +156,36 @@
         unlock();
         p = document.createElement('div'); p.id = 'mu-pop'; p.className = 'mu-pop'; p.innerHTML = panelHTML(); document.body.appendChild(p);
         const r = anchor.getBoundingClientRect();
-        if (window.innerWidth >= 1024) { p.style.left = (r.right + 12) + 'px'; p.style.top = Math.max(10, Math.min(window.innerHeight - p.offsetHeight - 10, r.bottom - p.offsetHeight)) + 'px'; }
-        else { p.style.left = '10px'; p.style.right = '10px'; p.style.top = (r.bottom + 10) + 'px'; }
+        if (window.innerWidth >= 1024 && r.left < 300) { p.style.left = (r.right + 12) + 'px'; p.style.top = Math.max(10, Math.min(window.innerHeight - p.offsetHeight - 10, r.bottom - p.offsetHeight)) + 'px'; }
+        else if (window.innerWidth >= 700) { p.style.left = Math.max(10, r.right - p.offsetWidth) + 'px'; p.style.top = (r.bottom + 10) + 'px'; }
+        else { p.style.left = '10px'; p.style.right = '10px'; p.style.width = 'auto'; p.style.top = Math.min(r.bottom + 10, window.innerHeight - p.offsetHeight - 10) + 'px'; }
         p.addEventListener('click', (e) => {
           e.stopPropagation();
           const b = e.target.closest('[data-mu],[data-pick]'); if (!b) return;
           if (b.dataset.mu === 'close') return p.remove();
-          if (b.dataset.mu) { set(b.dataset.mu, !st[b.dataset.mu]); p.innerHTML = panelHTML(); wire(p); }
+          if (b.dataset.mu === 'sfx') { if (typeof toggleSound === 'function') toggleSound(); p.innerHTML = panelHTML(); wire(p); paint(); }
+          else if (b.dataset.mu) { set(b.dataset.mu, !st[b.dataset.mu]); p.innerHTML = panelHTML(); wire(p); }
           else { set('pick', b.dataset.pick); p.innerHTML = panelHTML(); wire(p); }
         });
         wire(p); paint();
       }
       function wire(p) { const v = p.querySelector('#mu-vol'); if (v) v.oninput = () => set('vol', +v.value / 100); paint(); }
       function paint() {
-        const lab = document.getElementById('mu-label'); if (lab) lab.textContent = 'Music: ' + (st.on ? 'On' : 'Off');
-        const m = document.getElementById('mu-btn-m'); if (m) { m.textContent = st.on ? '♫ ON' : '♫ OFF'; m.style.color = st.on ? '#2DD4BF' : ''; }
+        const sfx = typeof SFX !== 'undefined' && SFX.isOn();
+        const lab = document.getElementById('mu-label'); if (lab) lab.innerHTML = `Sound & Music <small class="mu-state">${sfx ? 'ON' : 'OFF'} · ${st.on ? 'ON' : 'OFF'}</small>`;
+        const m = document.getElementById('mu-btn-m'); if (m) { m.textContent = '♪ SOUND'; m.style.color = sfx || st.on ? '#2DD4BF' : ''; }
         const now = document.getElementById('mu-now');
         if (now) now.innerHTML = cur ? `<span class="mu-eq"><i></i><i></i><i></i><i></i></span>Now playing: <b>${TRACKS[cur].name}</b>` : (st.on ? (unlocked ? 'Quiet here (music during games is off)' : 'Starts when you tap anywhere') : 'Music is off');
       }
       function unlock() { if (unlocked) return; unlocked = true; setup(); if (ac && ac.state === 'suspended') ac.resume(); sync(); }
       document.addEventListener('pointerdown', unlock, { capture: true });
       document.addEventListener('keydown', unlock, { capture: true });
-      document.addEventListener('click', (e) => { const p = document.getElementById('mu-pop'); if (p && !p.contains(e.target)) p.remove(); });
+      document.addEventListener('click', (e) => { const p = document.getElementById('mu-pop'); if (p && !p.contains(e.target) && !e.target.closest('.gs-snd, #mu-btn, #mu-btn-m')) p.remove(); });
       document.addEventListener('visibilitychange', sync);
       setInterval(sync, 600);
       if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', buttons); else buttons();
+      // the ♪ button in game headers (the side menu is hidden while playing) opens the same panel
+      window.openSoundPanel = (anchor) => toggle(anchor);
       return { set, state: () => Object.assign({ playing: cur }, st), tracks: TRACKS, sync, _unlock: unlock };
     })();
     window.MUSIC = MUSIC;

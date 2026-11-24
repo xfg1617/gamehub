@@ -521,19 +521,33 @@ One shared way to run a game table, used on this device AND online, so a game ha
 ## 5l. Music and emotes (Nov 24 2026)
 
 * **Music** (`src/games/zz_music.js`, CSS in `src/css/24-music-emotes.css`): four tunes made by the browser (Web Audio,
-  no files): Harbor Lights (calm), Arcade Morning (upbeat), Card Room (jazzy swing), Island Breeze (sunny). A Music button
-  is added next to Sound (sidebar `#mu-btn`, phone header `#mu-btn-m`) and opens `#mu-pop`: on/off, volume, which music
+  no files): Harbor Lights (calm), Arcade Morning (upbeat), Card Room (jazzy swing), Island Breeze (sunny). The Sound & Music
+  button (sidebar `#mu-btn`, phone header `#mu-btn-m`, ♪ in game headers; see 5m) opens `#mu-pop`: sound effects, music on/off, volume, which music
   (Auto = follows the game via `AUTO`, one tune, or Shuffle) and "music during games". Saved in `ps_music_v1`; default
   **on at 35 %** (off in automated test browsers: `navigator.webdriver`, or two test tabs of music slow the online
   tests enough to time out), starting on the first tap (browsers block sound before). Stops when the tab is hidden. `window.MUSIC`.
 * **Emotes** (`src/games/zz_emotes.js`): 10 silent emotes (LOL, GG, RAGE, SOB, WHAT?!, HMM, BORED, OOPS, NICE!, HOT!) drawn
   as 16×16 pixel art for **13 characters**: one per profile picture (`AVS`: 🦊🐙🐻🦉🦈🐼🦁🐸🦖🚀⚡🎯) + 🤖 for computer
   players; other emojis borrow a character (`LIKE`, else a hash). At any netplay table (`NP.S.game === activeGame`, not
-  in the lobby) a face button `#em-fab` (bottom right) opens `#em-menu`; it stays open while you tap (spam allowed, a
+  in the lobby) a face button `#em-fab` (right of the CHAT button) opens `#em-menu`; it stays open while you tap (spam allowed, a
   streak counter x2, x3...), closes on an outside tap; "Mute others" (`ps_emote_mute`). Bubbles are fixed-position above
   the player's seat (`[id$="-seat-N"]`, `[id$="-pl-N"]`, else the `#np-bar` chip, else the button) for 3 s.
   Online they go over the table channel as `emo` (`S.emote` in `npOnline`, max 5/s to the network), not as game moves.
   Chess (own online system) has no emotes yet. Inna tried emote voices and asked for them silent. `test/t_emotes_music.py`.
+
+## 5m. Full-screen games (Nov 24 2026, Inna: "the game only uses about half of the screen")
+
+* While a game is open `body.in-game` is set (`navigateTo`: views game / naval / daily / connect4) and
+  `body[data-game=<id>]` (`openGame`). `src/css/25-fullscreen.css`: the side menu, phone top bar and footer hide, `main`
+  has no max width, the game header is slim; per game, boards are sized from the height left (`--av`, ≥1024 px wide) so
+  nothing scrolls on a normal screen (1690×903 checked; 1280×720 laptops scroll a little for Poker/Pool/Manor).
+* Move logs (`.logbox`) are hidden; **📜 Moves** in the game header (`toggleMoves`, shown only when the game has a log)
+  pops the log out as a panel. Header also has **♪** = Sound & Music.
+* **Sound & Music** is one button/panel (`zz_music.js`): sidebar "Sound & Music" (the old Sound button is hidden but
+  `toggleSound` still works), phone header "♪ SOUND", ♪ in every game header and the older game screens
+  (`openSoundPanel(anchor)`); the panel has Sound effects + Music switches, volume, which music, music during games.
+* The emote button sits right of the CHAT button (`place()` in `zz_emotes.js`); the menu opens above them.
+* `test/shot_full.py [games] [d|l|m]` screenshots every game at 1690×903, 1280×720 and phone; check page height.
 
 ## 5d. Game setup screens, room codes, leaving a game
 

@@ -402,13 +402,14 @@
       const id = activeGame;
       if (typeof NP !== 'undefined' && NP.S) { try { NP.S.leave(); } catch (e) {} NP.S = null; }
       if (typeof NP !== 'undefined') NP.table = null;
-      activeGame = null;
+      activeGame = null; delete document.body.dataset.game;
       GT.cur++;
       GT.timers.forEach((t) => clearTimeout(t.id)); GT.timers.clear();
       GT.ints.forEach((t) => clearInterval(t.id)); GT.ints.clear();
       GT.raf.forEach((t) => cancelAnimationFrame(t.id)); GT.raf.clear();
       GT.ons.forEach(([tg, ty, fn, op]) => tg.removeEventListener(ty, fn, op)); GT.ons = [];
       document.querySelectorAll('.g-fx').forEach((el) => el.remove());
+      document.body.classList.remove('show-moves');
       if (id && GAME_MODS[id] && GAME_MODS[id].close) { try { GAME_MODS[id].close(); } catch (e) {} }
       const gm = document.getElementById('g-modal'); if (gm) gm.classList.add('hidden');
     }
@@ -418,7 +419,7 @@
       if (!m) { showToast('Coming soon!'); return; }
       closeActiveGame();
       navigateTo('game');
-      activeGame = id;
+      activeGame = id; document.body.dataset.game = id;
       chatOnView('game');
       const root = document.getElementById('game-root');
       root.innerHTML = '';
@@ -439,11 +440,21 @@
             <span class="spr w-8 h-8">${GICONS[m.icon]}</span>
             <h2 class="text-lg font-extrabold text-bone">${m.name}</h2>
           </div>
-          <div class="flex items-center gap-2.5 flex-wrap" id="gs-tools">${toolsHTML}<button class="btn-game btn-graphite px-3 py-2 text-xs" onclick="openGuide('${m.id}')" title="How to play ${esc(m.name)}">? Guide</button></div>
+          <div class="flex items-center gap-2.5 flex-wrap" id="gs-tools">${toolsHTML}<button class="btn-game btn-graphite px-3 py-2 text-xs gs-moves" onclick="toggleMoves()" title="Show the moves so far">📜 Moves</button><button class="btn-game btn-graphite px-3 py-2 text-xs" onclick="openGuide('${m.id}')" title="How to play ${esc(m.name)}">? Guide</button><button class="btn-game btn-graphite px-3 py-2 text-xs gs-snd" onclick="openSoundPanel(this)" title="Sound and music" aria-label="Sound and music">♪</button></div>
         </div>
         <div id="gs-body"></div></div>`;
       return document.getElementById('gs-body');
     }
+
+    // full-screen games keep the move log out of the way; the 📜 Moves button shows it as a pop-out panel
+    function toggleMoves(force) {
+      const on = force === undefined ? !document.body.classList.contains('show-moves') : !!force;
+      document.body.classList.toggle('show-moves', on);
+      if (on) { const lb = document.querySelector('#game-root .logbox'); if (lb) lb.scrollTop = lb.scrollHeight; }
+    }
+    window.toggleMoves = toggleMoves;
+    document.addEventListener('click', (e) => { if (document.body.classList.contains('show-moves') && !e.target.closest('#game-root .logbox, .gs-moves')) toggleMoves(false); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') toggleMoves(false); });
 
     /* ---------- word games: type with the phone's / iPad's own keyboard (Inna, Nov 2026) ---------- */
     // A hidden text box sits in the game; tapping the board (or the "Use my keyboard" button) focuses it, which opens

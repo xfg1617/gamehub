@@ -86,7 +86,7 @@
           ['Betting', 'On your turn: <b>Fold</b> (give up the hand), <b>Check/Call</b> (stay in by matching the bet) or <b>Raise</b> (bet more).'],
           ['Showdown', 'If more than one player is left at the end, the best five-card hand made from your two cards and the five shared ones wins the pot.'],
           ['Blinds', 'Two players must put in a small bet each hand (the blinds). They grow over time so the game always ends.']],
-          items: () => row([[`${card(14, 'h')}${card(13, 'h')}`, 'Your two cards', 'Only you can see them'], [`${typeof chipSVG === 'function' ? chipSVG(100, 36) : ''}`, 'Chips', 'What you bet with'], [`<span class="ht-small">Pair · Two pair · Three of a kind · Straight · Flush · Full house · Four of a kind · Straight flush</span>`, 'Hand ranks', 'From weaker to stronger']]),
+          items: () => row([[`${card(14, 'h')}${card(13, 'h')}`, 'Your two cards', 'Only you can see them'], [`${typeof chipSVG === 'function' ? chipSVG(100, 36) : ''}`, 'Chips', 'What you bet with'], ]) + (A('poker').ranks ? `<div class="ht-lab mt-3 mb-2">HAND RANKS · BEST TO WORST</div>${A('poker').ranks()}` : ''),
           tip: 'You don’t have to play every hand. Folding weak cards early saves chips for the good ones.', online: NET_TABLE },
         blackjack: { tag: 'SOLO OR 1-4 PLAYERS', goal: 'Beat the dealer by getting closer to 21 without going over.', steps: [
           ['Bet', 'Tap chips to make your bet, then deal.'],
@@ -120,11 +120,12 @@
           ['Scoring', 'Go out first and score all the dots left in the other hands. If nobody can play, the lowest hand wins the difference.']],
           items: () => { const t = A('dominoes').tile; return t ? row([[t(3, 5), '3 | 5', 'Fits next to a 3 or a 5'], [t(6, 6), 'Double six', 'The highest double starts the first round'], [t(0, 4), 'Blank | 4', 'Blank is zero']]) : ''; },
           tip: 'Play your big tiles early so you are not caught holding them.', online: NET_TABLE },
-        tycoon: { tag: '2-4 PLAYERS · PROPERTY GAME', goal: 'Be the richest player (Quick game) or the last one not bankrupt (Classic).', steps: [
+        tycoon: { tag: '2-4 PLAYERS · PROPERTY GAME', goal: 'Be the richest player when the rounds run out (Short, Medium or Long game) or the last one not bankrupt (Classic).', steps: [
           ['Roll', 'Hold the roll button to shake the dice and let go to throw. Move that many squares.'],
           ['Buy', 'Land on a property nobody owns and you can buy it. Skip it and it goes to auction for everyone.'],
           ['Rent', 'Land on someone else’s property and you pay them rent. Own a whole colour set to double the rent.'],
-          ['Build', 'With a full colour set, build houses (and then a hotel) to charge much more rent.'],
+          ['Build', 'With a full colour set, build houses (and then a hotel) to charge much more rent. (Room setting: or build one house each time you land on your own plot.)'],
+          ['Buy out (setting)', 'If the room turns it on: after paying rent you may buy that plot from its owner for 2 × (land price + its houses). Not a plot with a hotel, and not one from a full colour set.'],
           ['Cards and jail', 'Chance and Chest squares give a card that helps or hurts. Three doubles in a row, or the Go to Jail square, sends you to Jail.'],
           ['Short on cash?', 'Houses are sold and properties mortgaged for you automatically. If you still can’t pay, you are bankrupt.']],
           items: () => row([[sq('#FB7185') + sq('#FB7185') + sq('#FB7185'), 'Colour set', 'Own all of one colour'], [`<span class="ht-mark">🏠</span>`, 'House', 'More rent'], [`<span class="ht-mark">🏨</span>`, 'Hotel', 'The most rent'], [`<span class="ht-mark">🎲</span>`, 'Doubles', 'Roll again']]),

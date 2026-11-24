@@ -62,3 +62,50 @@
     .pcard.pk-win { outline: 3px solid #F5B041; outline-offset: 2px; transform: translateY(-6px); box-shadow: 0 6px 0 #050E18, 0 0 0 6px rgba(245, 176, 65, .25); }
     .pcard.pk-lose { opacity: .45; filter: grayscale(.35); }
     .pk-banner { display: inline-block; margin: 2px auto 0; padding: 6px 14px; background: #F5B041; color: #231505; border: 3px solid #050E18; box-shadow: 0 4px 0 #050E18; font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 1rem; }
+    /* poker hand ranks chart (guide + in-game button) */
+    .pk-ranks { display: flex; flex-direction: column; gap: 6px; }
+    .pk-rank { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; background: #0B1B2B; border: 2px solid var(--ink); padding: 6px 8px; }
+    .pk-rank.me { outline: 3px solid #F5B041; outline-offset: -3px; }
+    .pk-rn { display: flex; gap: 8px; align-items: flex-start; min-width: 150px; flex: 1; font-size: 13px; color: #F7F4EC; }
+    .pk-rn .pix { font-size: 18px; width: 18px; line-height: 1.1; }
+    .pk-yours { background: #F5B041; color: #050E18; font-size: 10px; font-weight: 800; padding: 0 4px; }
+    .pk-rc { display: flex; gap: 3px; }
+    .pk-rc .pcard.sm { width: 36px; height: 52px; }
+    .pk-rc .pcard.sm .pc-mid svg { width: 20px; height: 20px; }
+    .pk-rc .pcard.dim { opacity: .38; }
+
+    /* seats around the table: across at the top, the next player on your left, the one before you on your right */
+    .ring4 { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: ". top ." "left mid right" "me me me"; gap: 12px; align-items: center; }
+    .ring4 > .r-top { grid-area: top; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .ring4 > .r-left { grid-area: left; } .ring4 > .r-right { grid-area: right; }
+    .ring4 > .r-left, .ring4 > .r-right { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+    .ring4 > .r-mid { grid-area: mid; min-width: 0; }
+    .ring4 > .r-me { grid-area: me; justify-self: center; }
+    .ring4 > .r-left:empty, .ring4 > .r-right:empty, .ring4 > .r-top:empty { display: none; }
+    @media (max-width: 639px) {
+      /* phones: the other players sit in an arc above the table (the two sides a little lower) */
+      .ring4 { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-areas: "left top right" "mid mid mid" "me me me"; gap: 8px; align-items: start; }
+      .ring4 > .r-left, .ring4 > .r-right { padding-top: 26px; }
+      .ring4 > .r-left:empty, .ring4 > .r-right:empty, .ring4 > .r-top:empty { display: block; }
+      .ring4 .seat { min-width: 0; padding: .3rem .3rem; }
+      .ring4 .seat .text-sm { font-size: .75rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .ring4 .seat { overflow: hidden; }
+      .ring4 .seat .cc-back + .cc-back { margin-left: -13px; }
+    }
+    /* bigger cards in the games (Inna: "a little bigger"); guides and charts keep their own small sizes */
+    @media (min-width: 640px) {
+      #gs-body .pcard { width: 76px; height: 108px; }
+      #gs-body .pcard .pc-mid svg { width: 40px; height: 40px; }
+      #gs-body .pcard.sm { width: 54px; height: 77px; }
+      #gs-body .pcard.sm .pc-mid svg { width: 28px; height: 28px; }
+      #gs-body .cc-card { width: 76px; height: 110px; }
+      #gs-body .kk-card { width: 104px; height: 144px; } #gs-body .kk-card .art svg { width: 54px; height: 54px; }
+      #gs-body .kk-card.sm { width: 64px; height: 88px; } #gs-body .kk-card.sm .art svg { width: 34px; height: 34px; }
+    }
+
+    /* blackjack table: the players sit in an arc facing the dealer, like a real table (outer seats curve up) */
+    .bj-arc { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding-bottom: 4px; }
+    @media (min-width: 640px) {
+      .bj-arc { grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: start; border-top: 3px dashed rgba(247, 244, 236, .25); padding-top: 14px; }
+      .bj-arc > :nth-child(2), .bj-arc > :nth-child(3) { margin-top: 40px; }
+    }

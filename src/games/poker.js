@@ -80,7 +80,7 @@
       let G = null;
 
       function open(root) {
-        const body = gameShell(root, mod, '', 'max-w-[1000px] mx-auto');
+        const body = gameShell(root, mod, '<button id="pk-ranks-btn" class="btn-game btn-amber px-3 py-2 text-xs" onclick="pkRanks()" title="Which poker hands beat which">🃏 Hand ranks</button>', 'max-w-[1000px] mx-auto');
         setupScreen(body, mod, [
           { key: 'clock', label: 'ACTION TIMER', def: 20, choices: [[0, 'Off'], [15, '15 s'], [20, '20 s'], [30, '30 s']] },
           { key: 'speed', label: 'BLIND LEVELS', def: 6, choices: [[8, 'Slow'], [6, 'Normal'], [4, 'Fast']] },
@@ -377,17 +377,52 @@
         const ps = G.players;
         const before = gSnap(t);
         const spot = (i) => `<div id="pk-bet-${i}" class="chip-spot" style="min-height:44px"${G.pend && G.pend[i] >= ps[i].bet && ps[i].bet ? '' : ''}>${betInner(i)}</div>`;
-        const rot = [1, 2, 3].map((k) => (G.me + k) % ps.length);
-        t.innerHTML = `<div class="flex justify-center gap-3 flex-wrap">${rot.map((i) => `<div class="flex flex-col items-center gap-1">${seatHTML(ps[i], i)}${spot(i)}</div>`).join('')}</div>
-          <div class="text-center space-y-2"><div class="flex items-end justify-center gap-4"><span id="pk-deck" class="g-deck">${playingCardHTML(null, { cls: 'sm' })}</span><div id="pk-pot" class="chip-spot" style="min-width:120px">${potInner()}</div></div>
+        const rot = ps.map((_, k) => (G.me + k) % ps.length).slice(1);
+        // the other players sit around the felt: next on your left, then across, then on your right; bets face the middle
+        const side = (i, pos) => pos === 'top' ? `<div class="flex flex-col items-center gap-1">${seatHTML(ps[i], i)}${spot(i)}</div>` : `<div class="flex ${pos === 'l' ? 'flex-row' : 'flex-row-reverse'} max-sm:flex-col items-center gap-1">${seatHTML(ps[i], i)}${spot(i)}</div>`;
+        const pos = rot.length === 1 ? ['top'] : rot.length === 2 ? ['l', 'r'] : rot.map((_, k) => (k === 0 ? 'l' : k === rot.length - 1 ? 'r' : 'top'));
+        t.innerHTML = `<div class="ring4">${ringSlots('pk')}
+          <div class="r-mid text-center space-y-2"><div class="flex items-end justify-center gap-4"><span id="pk-deck" class="g-deck">${playingCardHTML(null, { cls: 'sm' })}</span><div id="pk-pot" class="chip-spot" style="min-width:120px">${potInner()}</div></div>
           <div class="flex justify-center gap-2 min-h-[94px] flex-wrap">${G.board.map((c) => playingCardHTML(c, { fk: gKey(c), cls: G.showdown && G.result && G.result.winCards ? (G.result.winCards.has(gKey(c)) ? 'pk-win' : 'pk-lose') : '' })).join('')}</div>
           ${G.showdown && G.result && G.result.banner ? `<div class="pk-banner">🏆 ${esc(G.result.banner)}</div>` : `<div class="pix text-xs text-bone/80 min-h-[16px]">${G.result ? esc(G.result.text) : ''}</div>`}
           <div id="pk-next" class="pix text-xs text-muted min-h-[16px]"></div></div>
-          <div class="flex flex-col items-center gap-1">${spot(G.me)}${seatHTML(ps[G.me], G.me)}</div>`;
+          <div class="r-me flex flex-col items-center gap-1">${spot(G.me)}${seatHTML(ps[G.me], G.me)}</div></div>`;
+        ringFill('pk', rot.map((i, k) => side(i, pos[k])));
         const bl = document.getElementById('pk-blinds'); if (bl) bl.textContent = `${G.sb}/${G.bb}`;
         const pl = document.getElementById('pk-place'); if (pl) pl.textContent = `Hand ${G.hand} · ${alive().length} players left · blinds rise every ${G.every} hands`;
         return gFlip(t, before, { from: '#pk-deck' });
       }
+
+      /* ---------- hand ranks chart (Inna: example pictures in the guide + a button while playing) ---------- */
+      // each example: five cards; the ones that make the hand are lit, the leftovers dimmed
+      const RANK_EX = [
+        ['Royal flush', 'A K Q J 10, all one suit. The best hand.', [[14, 's'], [13, 's'], [12, 's'], [11, 's'], [10, 's']], 5],
+        ['Straight flush', 'Five in a row, all one suit.', [[9, 'h'], [8, 'h'], [7, 'h'], [6, 'h'], [5, 'h']], 5],
+        ['Four of a kind', 'Four cards of the same rank.', [[12, 's'], [12, 'h'], [12, 'd'], [12, 'c'], [4, 'h']], 4],
+        ['Full house', 'Three of a kind plus a pair.', [[10, 'h'], [10, 'd'], [10, 's'], [7, 'c'], [7, 'h']], 5],
+        ['Flush', 'Any five cards of one suit.', [[13, 'd'], [10, 'd'], [8, 'd'], [5, 'd'], [3, 'd']], 5],
+        ['Straight', 'Five in a row, mixed suits.', [[8, 'c'], [7, 'd'], [6, 'h'], [5, 's'], [4, 'c']], 5],
+        ['Three of a kind', 'Three cards of the same rank.', [[7, 's'], [7, 'h'], [7, 'd'], [13, 'c'], [3, 'h']], 3],
+        ['Two pair', 'Two different pairs.', [[11, 'h'], [11, 'c'], [4, 's'], [4, 'd'], [9, 'h']], 4],
+        ['Pair', 'Two cards of the same rank.', [[14, 'h'], [14, 'd'], [9, 's'], [6, 'c'], [2, 'h']], 2],
+        ['High card', 'Nothing matches: your highest card counts.', [[14, 'c'], [11, 'd'], [8, 'h'], [6, 's'], [3, 'c']], 1],
+      ];
+      function ranksHTML(mark) {
+        return `<div class="pk-ranks">${RANK_EX.map(([n, d, cards, lit], k) => `<div class="pk-rank ${mark === n ? 'me' : ''}"><div class="pk-rn"><span class="pix text-amber">${k + 1}</span><span><b>${n}</b>${mark === n ? ' <span class="pk-yours">YOUR HAND</span>' : ''}<br><span class="text-xs text-muted">${d}</span></span></div>
+          <div class="pk-rc">${cards.map(([r, su], i) => playingCardHTML({ r, s: su }, { cls: 'sm' + (i >= lit ? ' dim' : '') })).join('')}</div></div>`).join('')}</div>`;
+      }
+      function openRanks() {
+        let el = document.getElementById('pk-ranks-modal');
+        if (!el) { el = document.createElement('div'); el.id = 'pk-ranks-modal'; el.className = 'hidden fixed inset-0 z-[64] bg-black/75 overflow-y-auto p-4'; document.body.appendChild(el); el.onclick = (e) => { if (e.target === el || e.target.closest('[data-x]')) el.classList.add('hidden'); }; }
+        // light up the rank you hold right now
+        let mark = null;
+        if (G && G.players && G.players[G.me] && G.players[G.me].hole && G.players[G.me].hole.length === 2 && !G.players[G.me].folded && (G.board || []).length >= 3) mark = handName(eval7(G.players[G.me].hole.concat(G.board)));
+        if (mark === 'Straight flush' && G) { const h = G.players[G.me].hole.concat(G.board); const b = best5(h); if (b && b.some((c) => c.r === 14) && b.some((c) => c.r === 13)) mark = 'Royal flush'; }
+        el.innerHTML = `<div class="win max-w-lg mx-auto my-4 sm:my-10 overflow-hidden"><div class="winbar amber"><span>POKER HANDS · BEST TO WORST</span><button class="pix text-sm" data-x aria-label="Close">✕</button></div>
+          <div class="p-4 space-y-3">${ranksHTML(mark)}<div class="text-xs text-muted">The bright cards make the hand. If two players have the same kind of hand, the higher cards win.</div><button class="btn-game btn-graphite w-full py-2" data-x>Close</button></div></div>`;
+        el.classList.remove('hidden'); SFX.play('card');
+      }
+      window.pkRanks = openRanks;
 
       const mod = {
         id: 'poker', name: 'Poker', icon: 'poker', cats: ['card'], sub: '4 PLAYERS · SIT & GO', color: '#F5B041', tone: 'amber', btn: 'amber',
@@ -399,6 +434,7 @@
         ], tip: 'From best to worst: straight flush, four of a kind, full house, flush, straight, three of a kind, two pair, pair, high card.' },
         profileTiles: (s) => [['TABLES WON', s.wins, 'text-amber'], ['TABLES', s.played, 'text-bone'], ['HANDS WON', s.handsWon || 0, 'text-emerald'], ['BIG POT', s.bigPot || 0, 'text-teal']],
         extraRows: (s) => srow('Best finish', s.bestPlace ? ['', '1st', '2nd', '3rd', '4th'][s.bestPlace] : '-'),
+        art: { ranks: () => ranksHTML() },
         engine: { eval7, handName, splitPots, equity }, open, close() { G = null; },
         online: { seats: () => 4, min: 2, ranked: false, start: (body, sel, S) => start(body, sel, S) },
       };

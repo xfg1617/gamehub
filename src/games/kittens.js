@@ -56,8 +56,8 @@
         const players = S.seats.map((x, i) => ({ seat: i, name: x.name, av: x.avatar, hand: deal.hands[i], knows: [], out: false }));
         G = window.__kkG = { S, me: S.online ? S.me : 0, step: 0, players, deck: deal.deck, discard: [], cur: 0, owed: 1, secs: +sel.clock, over: false, tok: ++GT.cur, log: [], stats: { defused: 0, nopes: 0, steals: 0, turns: 0 }, placed: [], banner: '' };
         body.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_250px] gap-5 items-start">
-          <div class="space-y-3 min-w-0"><div id="kk-opp" class="flex gap-3 flex-wrap justify-center"></div>
-            <div class="felt p-4 flex items-center justify-center gap-6 flex-wrap" style="min-height:170px"><div id="kk-pile" class="text-center"></div><div id="kk-disc" class="text-center"></div></div>
+          <div class="space-y-3 min-w-0"><div id="kk-opp" class="ring4">${ringSlots('kk')}
+            <div class="r-mid felt p-4 flex items-center justify-center gap-6 flex-wrap" style="min-height:170px"><div id="kk-pile" class="text-center"></div><div id="kk-disc" class="text-center"></div></div></div>
             <div id="kk-prompt" class="win p-3 text-center min-h-[48px]"></div>
             <div id="kk-hand" class="flex gap-2 flex-wrap justify-center pt-2"></div></div>
           <div class="space-y-3"><div class="win overflow-hidden"><div class="winbar amber"><span>HOT POTATO CATS</span></div><div class="p-3 space-y-2"><div id="kk-clock"></div><div id="kk-status" class="text-sm font-bold"></div></div></div>
@@ -436,7 +436,7 @@
         if (!document.getElementById('kk-opp')) return;
         const cur = G.players[G.cur];
         const others = G.players.map((_, k) => G.players[(G.me + k) % G.players.length]).slice(1);
-        document.getElementById('kk-opp').innerHTML = others.map((q) => `<div id="kk-seat-${G.players.indexOf(q)}" class="seat ${cur === q && !q.out && !G.over ? 'turn' : ''} ${q.out ? 'out' : ''}"><div class="text-sm font-display font-extrabold"><span class="text-lg">${q.av}</span> ${esc(q.name)}</div><div class="flex justify-center my-1">${q.out ? '<span class="text-2xl">💥</span>' : backHTML('sm')}</div><div class="pix text-xs text-amber">${q.out ? 'OUT' : q.hand.length + ' cards'}</div></div>`).join('');
+        ringFill('kk', others.map((q) => `<div id="kk-seat-${G.players.indexOf(q)}" class="seat ${cur === q && !q.out && !G.over ? 'turn' : ''} ${q.out ? 'out' : ''}"><div class="text-sm font-display font-extrabold"><span class="text-lg">${q.av}</span> ${esc(q.name)}</div><div class="flex justify-center my-1">${q.out ? '<span class="text-2xl">💥</span>' : backHTML('sm')}</div><div class="pix text-xs text-amber">${q.out ? 'OUT' : q.hand.length + ' cards'}</div></div>`));
         const bombs = G.deck.filter((c) => c === 'bomb').length;
         document.getElementById('kk-pile').innerHTML = `${backHTML()}<div class="pix text-xs text-bone mt-2">DRAW PILE · ${G.deck.length}</div><div class="pix text-xs text-coral">${alive().length - 1} hot potato${alive().length - 1 === 1 ? '' : 'es'} hidden</div>`;
         const top = G.discard[G.discard.length - 1];

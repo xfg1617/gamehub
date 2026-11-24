@@ -208,7 +208,7 @@
         S.onLeft = (a) => { if (!O) return; O.seats[a.s].name += ' (CPU)'; O.seats[a.s].av = '🤖'; oPaint(); };
         S.track();
         body.innerHTML = `<div class="felt p-4 sm:p-5 space-y-4" id="bjo"><div class="flex items-center justify-between gap-2"><span class="pix text-sm text-bone/80" id="bjo-hand"></span><span class="pix text-xs text-bone/70">DEALER STANDS ON 17 · BLACKJACK PAYS 3:2</span><span class="pix text-xs text-bone/70" id="bjo-shoe">SHOE</span></div>
-          <div class="text-center" id="bjo-dealer"></div><div id="bjo-seats" class="grid grid-cols-2 lg:grid-cols-4 gap-3"></div>
+          <div class="text-center" id="bjo-dealer"></div><div id="bjo-seats" class="bj-arc"></div>
           <div id="bjo-ctl" class="flex flex-wrap items-center justify-center gap-3 min-h-[60px]"></div><div id="bjo-msg" class="text-center pix text-sm min-h-[22px] text-amber"></div>
           <div class="flex justify-end"><button id="bjo-leave" class="btn-game btn-graphite py-1.5 px-4 text-xs">Leave table</button></div></div>`;
         document.getElementById('bjo-leave').onclick = () => npConfirmLeave(() => open(document.getElementById('game-root')));

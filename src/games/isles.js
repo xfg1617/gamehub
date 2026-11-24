@@ -210,11 +210,24 @@
         await W(700);
         await buildPhase(p);
       }
+      // the roll happens big, in the middle of the island (Inna: "bigger and more noticeable"): two large dice tumble
+      // in, flick through faces, land, and the total pops up; the lands with that number get a ring until the next roll
       async function rollDice() {
         SFX.play('dice');
-        for (let k = 0; k < 9; k++) { G.dice = [1 + rnd(6), 1 + rnd(6)]; drawDice(true); await W(60 + k * 10); }
-        G.dice = [1 + G.S.rng.rnd(6), 1 + G.S.rng.rnd(6)]; drawDice(false);
+        G.hotN = 0; render();
+        const sea = document.querySelector('#game-root .fi-sea'); let fx = null;
+        if (sea) { fx = document.createElement('div'); fx.className = 'fi-rollfx'; fx.innerHTML = '<div class="fi-rollbox"><div class="fi-bigdice"></div><div class="fi-rollsum"></div></div>'; sea.appendChild(fx); }
+        const show = (rolling) => { drawDice(rolling); if (fx) fx.querySelector('.fi-bigdice').innerHTML = dieFaces(G.dice[0], 'big ' + (rolling ? 'roll a' : 'land')) + dieFaces(G.dice[1], 'big ' + (rolling ? 'roll b' : 'land')); };
+        for (let k = 0; k < 10; k++) { G.dice = [1 + rnd(6), 1 + rnd(6)]; show(true); await W(50 + k * 12); }
+        G.dice = [1 + G.S.rng.rnd(6), 1 + G.S.rng.rnd(6)]; show(false);
+        const sum = G.dice[0] + G.dice[1];
+        if (fx) { const el = fx.querySelector('.fi-rollsum'); el.innerHTML = sum === 7 ? '7 <span>THE BANDIT!</span>' : `${sum}`; el.classList.add('on'); }
+        SFX.play(sum === 7 ? 'wrong' : 'coin');
+        G.hotN = sum === 7 ? 0 : sum; render();
+        await W(1300);
+        if (fx) { fx.classList.add('out'); gTimeout(() => fx.remove(), 300); }
       }
+      const dieFaces = (v, cls) => `<div class="fi-die ${cls}">${[0, 1, 2, 3, 4, 5, 6, 7, 8].map((k) => `<i class="${({ 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] })[v].includes(k) ? 'on' : ''}"></i>`).join('')}</div>`;
       function produce(sum) {
         const gains = G.players.map(() => []);
         G.H.forEach((h) => {
@@ -487,7 +500,7 @@
         G.H.forEach((hx) => {
           const can = pk && pk.kind === 'h' && pk.ids.has(hx.i);
           o += `<g id="fi-h-${hx.i}" class="${can ? 'fi-pickh' : ''}" data-h="${hx.i}"><polygon points="${hexPts(hx, SZ - 1.5)}" fill="${TER[hx.t][1]}" stroke="#050E18" stroke-width="3"/>${terrainArt(hx)}`;
-          if (hx.n) { const hot = hx.n === 6 || hx.n === 8; o += `<circle cx="${hx.x}" cy="${hx.y}" r="15" fill="#F7F4EC" stroke="#050E18" stroke-width="3"/><text x="${hx.x}" y="${hx.y + 4}" text-anchor="middle" font-family="Arcade Pixel, monospace" font-size="17" fill="${hot ? '#D13B55' : '#050E18'}">${hx.n}</text>`; for (let k = 0; k < DOTS(hx.n); k++) o += `<rect x="${hx.x - DOTS(hx.n) * 2 + k * 4 + 0.5}" y="${hx.y + 7}" width="2.5" height="2.5" fill="${hot ? '#D13B55' : '#050E18'}"/>`; }
+          if (hx.n) { const hot = hx.n === 6 || hx.n === 8; if (G.hotN && hx.n === G.hotN) o += `<circle cx="${hx.x}" cy="${hx.y}" r="22" fill="#F5B041" stroke="#050E18" stroke-width="3"/>`; o += `<circle cx="${hx.x}" cy="${hx.y}" r="15" fill="#F7F4EC" stroke="#050E18" stroke-width="3"/><text x="${hx.x}" y="${hx.y + 4}" text-anchor="middle" font-family="Arcade Pixel, monospace" font-size="17" fill="${hot ? '#D13B55' : '#050E18'}">${hx.n}</text>`; for (let k = 0; k < DOTS(hx.n); k++) o += `<rect x="${hx.x - DOTS(hx.n) * 2 + k * 4 + 0.5}" y="${hx.y + 7}" width="2.5" height="2.5" fill="${hot ? '#D13B55' : '#050E18'}"/>`; }
           if (G.robber === hx.i) o += `<g class="fi-bandit"><rect x="${hx.x + 10}" y="${hx.y - 18}" width="12" height="22" fill="#050E18"/><rect x="${hx.x + 12}" y="${hx.y - 26}" width="8" height="8" fill="#050E18"/><rect x="${hx.x + 13}" y="${hx.y - 23}" width="6" height="2" fill="#FB7185"/></g>`;
           if (can) o += `<polygon points="${hexPts(hx, SZ - 6)}" fill="none" stroke="#F5B041" stroke-width="4" stroke-dasharray="6 5" class="fi-glow"/>`;
           o += '</g>';

@@ -892,6 +892,16 @@
     const RANK_LAB = { 11: 'J', 12: 'Q', 13: 'K', 14: 'A' };
     const rankLab = (r) => RANK_LAB[r] || String(r);
     // card = { r: 2..14, s: 's'|'h'|'d'|'c' }
+    /* ---------- seats around a card table (Inna, Nov 2026: "players at 4 sides of the table") ----------
+       ringSlots(id) = the three seat places (left, across, right) for a .ring4 grid; ringFill(id, seats) puts the other
+       players' seat HTML there in playing order: the next player sits on your left, then across, then right. */
+    const ringSlots = (id) => `<div class="r-left" id="${id}-rl"></div><div class="r-top" id="${id}-rt"></div><div class="r-right" id="${id}-rr"></div>`;
+    function ringFill(id, seats) {
+      const n = seats.length, L = [], T = [], R = [];
+      if (n === 1) T.push(seats[0]); else if (n === 2) { L.push(seats[0]); R.push(seats[1]); } else if (n > 2) { L.push(seats[0]); R.push(seats[n - 1]); T.push(...seats.slice(1, n - 1)); }
+      [['rl', L], ['rt', T], ['rr', R]].forEach(([k, a]) => { const el = document.getElementById(id + '-' + k); if (el) el.innerHTML = a.join(''); });
+    }
+    window.ringSlots = ringSlots; window.ringFill = ringFill;
     function playingCardHTML(c, o = {}) {
       const fk = o.fk ? ` data-fk="${o.fk}" data-face="${!c || o.down ? 'down' : 'up'}"` : '';
       if (!c || o.down) return `<div class="pcard back ${o.cls || ''}"${fk}><div class="pc-back"></div></div>`;

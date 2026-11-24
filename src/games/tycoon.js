@@ -91,21 +91,29 @@
       }
       function canBuild(S, pi, i) {
         const t = BOARD[i]; if (t.k !== 'prop' || S.own[i] !== pi || S.mort[i] || S.houses[i] >= 5) return false;
+        // "stand on your plot" rule: one house per visit, on the plot you are standing on, no colour set needed
+        if (G && G.landBuild && G.S === S) return G.buildSpot === i && G.cur === pi && S.cash[pi] >= t.hc;
         if (!owns(S, pi, t.g) || GROUPS[t.g].some((x) => S.mort[x])) return false;
         const min = Math.min(...GROUPS[t.g].map((x) => S.houses[x]));
         return S.houses[i] === min && S.cash[pi] >= t.hc;
       }
-      function canSell(S, pi, i) { const t = BOARD[i]; return t.k === 'prop' && S.own[i] === pi && S.houses[i] > 0 && S.houses[i] === Math.max(...GROUPS[t.g].map((x) => S.houses[x])); }
+      function canSell(S, pi, i) {
+        const t = BOARD[i]; if (t.k !== 'prop' || S.own[i] !== pi || !(S.houses[i] > 0)) return false;
+        if (G && G.landBuild && G.S === S) return true;
+        return S.houses[i] === Math.max(...GROUPS[t.g].filter((x) => S.own[x] === pi).map((x) => S.houses[x]));
+      }
 
       /* ---------- setup ---------- */
       function open(root) {
         const body = gameShell(root, mod, '', 'max-w-[1100px] mx-auto');
         setupScreen(body, mod, [
           { key: 'n', label: 'PLAYERS', def: 3, choices: [[2, '2 players'], [3, '3 players'], [4, '4 players']], hint: 'On this device the other seats are computer players. Online, empty seats get computer players.' },
-          { key: 'mode', label: 'GAME LENGTH', def: 'quick', choices: [['quick', 'Quick (25 rounds)'], ['classic', 'Classic (to bankruptcy)']] },
+          { key: 'mode', label: 'GAME LENGTH', def: 'quick', choices: [['short', 'Short (15 rounds)'], ['quick', 'Medium (25 rounds)'], ['long', 'Long (40 rounds)'], ['classic', 'Classic (to bankruptcy)']], hint: 'With a round limit, the richest player at the end wins.' },
+          { key: 'build', label: 'BUILDING HOUSES', def: 'set', choices: [['set', 'Own the whole colour'], ['land', 'Stand on your plot']], hint: 'Whole colour: build once you own every plot of a colour. Stand on your plot: land on a plot you own to add one house there.' },
           { key: 'clock', label: 'DECISION TIMER', def: 25, choices: [[0, 'Off'], [20, '20 s'], [25, '25 s'], [40, '40 s']] },
           { key: 'cash', label: 'STARTING CASH', def: 1500, choices: [[1000, '$1000'], [1500, '$1500'], [2500, '$2500']] },
           { key: 'auction', label: 'Auctions', toggle: true, def: 1, hint: 'If a player skips a property, everyone can bid on it.', choices: [[1, 'On'], [0, 'Off']] },
+          { key: 'buyout', label: 'Buy out land', toggle: true, def: 0, hint: 'After paying rent you may buy that plot from its owner for 2x (land price + its houses). Not plots with a hotel, not plots from a full colour set.', choices: [[0, 'Off'], [1, 'On']] },
           { key: 'jack', label: 'Free Parking jackpot', toggle: true, def: 0, hint: 'Taxes and fines pile up on Free Parking. Land there to take it all.', choices: [[0, 'Off'], [1, 'On']] },
         ], (sel) => { const sim = !!window.__tycoonSim; start(body, sel, npLocal([{ bot: sim, name: sim ? 'Sim bot' : profile.username, avatar: profile.avatar }].concat(BN.slice(0, +sel.n - 1).map((b) => ({ bot: true, name: b[0], avatar: b[1] }))), sel)); });
       }
@@ -114,7 +122,7 @@
       function start(body, sel, NS) {
         const players = NS.seats.map((x, i) => ({ name: x.name, av: x.avatar, col: PCOL[i] }));
         players.forEach((p, i) => { p.i = i; p.pos = 0; p.jail = 0; p.free = 0; p.out = false; p.doubles = 0; });
-        G = { NS, me: NS.online ? NS.me : 0, step: 0, uiTok: 0, shown: [], goal: [], arrive: [], flash: [], auctions: sel.auction === undefined ? true : !!+sel.auction, jackpot: !!+sel.jack, pot: 0, players, S: { cash: players.map(() => +sel.cash || 1500), own: {}, houses: {}, mort: {} }, mode: sel.mode, maxRound: sel.mode === 'quick' ? 25 : 150, round: 1, cur: 0, secs: +sel.clock, dice: [1, 1], over: false, tok: ++GT.cur, log: [], deckC: NS.rng.shuffle(CHANCE.map((_, i) => i)), deckH: NS.rng.shuffle(CHEST.map((_, i) => i)), rents: 0, boughtN: 0, built: 0, msg: '' };
+        G = { NS, me: NS.online ? NS.me : 0, step: 0, uiTok: 0, shown: [], goal: [], arrive: [], flash: [], auctions: sel.auction === undefined ? true : !!+sel.auction, jackpot: !!+sel.jack, pot: 0, players, S: { cash: players.map(() => +sel.cash || 1500), own: {}, houses: {}, mort: {} }, mode: sel.mode, timed: sel.mode !== 'classic', maxRound: ({ short: 15, quick: 25, long: 40 })[sel.mode] || 150, landBuild: sel.build === 'land', buyout: !!+sel.buyout, buildSpot: null, round: 1, cur: 0, secs: +sel.clock, dice: [1, 1], over: false, tok: ++GT.cur, log: [], deckC: NS.rng.shuffle(CHANCE.map((_, i) => i)), deckH: NS.rng.shuffle(CHEST.map((_, i) => i)), rents: 0, boughtN: 0, built: 0, msg: '' };
         BOARD.forEach((t, i) => { if (t.k === 'prop') G.S.houses[i] = 0; });
         G.players.forEach((p) => { G.shown[p.i] = G.goal[p.i] = G.S.cash[p.i]; });
         body.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-5 items-start">
@@ -148,7 +156,7 @@
         }
         run().catch((e) => { if (e !== ABORT) throw e; });
       }
-      async function W(ms) { const t = G && G.tok; await gSleep(ms); if (!G || G.tok !== t) throw ABORT; }
+      async function W(ms) { const t = G && G.tok; await gSleep(window.__fast ? ms / 6 : ms); if (!G || G.tok !== t) throw ABORT; }
       const log = (t) => { G.log.push(t); const el = document.getElementById('ty-log'); if (el) { el.innerHTML = G.log.slice(-50).map((x) => `<div>${x}</div>`).join(''); el.scrollTop = el.scrollHeight; } };
       const nm = (p) => `<b>${esc(p.name)}</b>`;
       const $ = (id) => document.getElementById(id);
@@ -180,7 +188,7 @@
       }
 
       async function takeTurn(p) {
-        p.doubles = 0;
+        p.doubles = 0; G.buildSpot = null;
         $('ty-status').textContent = mine(p) ? 'YOUR TURN' : p.name.toUpperCase();
         for (;;) {
           render();
@@ -192,8 +200,10 @@
           if (p.doubles >= 3) { log(`${nm(p)} rolled 3 doubles in a row: <b>straight to Jail</b>!`); await sendJail(p); return; }
           await move(p, r[0] + r[1]);
           if (G.over || p.out) return;
+          G.buildSpot = null;
           await land(p, r[0] + r[1]);
           if (G.over || p.out) return;
+          if (G.landBuild && BOARD[p.pos].k === 'prop' && G.S.own[p.pos] === p.i && !G.S.mort[p.pos] && G.S.houses[p.pos] < 5) { G.buildSpot = p.pos; if (isMe(p)) log(`You are on your own <b>${BOARD[p.pos].n}</b>: you can build a house here.`); }
           if (p.jail > 0) return; // landed in jail
           if (!dbl) break;
           log(`${nm(p)} rolled doubles and goes again.`); await W(400);
@@ -342,7 +352,9 @@
           log(`${nm(p)} pays <b>${money(rent)}</b> rent to ${nm(owner)} for ${t.n}.`); SFX.play('chip'); 
           if (isMe(owner)) G.rentIn = (G.rentIn || 0) + rent;
           setBanner(`${p.name} pays $${rent} rent to ${owner.name}`);
-          await charge(p, rent, owner, 'rent'); await W(1000); return;
+          const paid = await charge(p, rent, owner, 'rent'); await W(1000);
+          if (paid && G.buyout && !G.over && !p.out) await buyout(p, t, owner);
+          return;
         }
         if (t.k === 'tax') { log(`${nm(p)} pays <b>${money(t.pay)}</b> ${t.n.toLowerCase()}.`); SFX.play('chip'); await charge(p, t.pay, null, 'tax'); await W(500); return; }
         if (t.k === 'gojail') { log(`${nm(p)} goes to <b>Jail</b>!`); await sendJail(p); return; }
@@ -353,6 +365,38 @@
         }
       }
       const setBanner = (t) => { G.msg = t; const el = $('ty-msg'); if (el) el.textContent = t; };
+
+      /* ---------- buy out (setting): after paying rent, buy the plot from its owner for 2x (land + houses) ---------- */
+      const buyoutPrice = (S, i) => { const t = BOARD[i]; return 2 * (t.pr + (t.k === 'prop' ? (S.houses[i] || 0) * t.hc : 0)); };
+      function canBuyout(S, pi, i) {
+        const t = BOARD[i], o = S.own[i];
+        if (!['prop', 'rail', 'util'].includes(t.k) || o === undefined || o === pi || S.mort[i]) return false;
+        if (t.k === 'prop' && S.houses[i] >= 5) return false;                 // no plots with a hotel
+        if (owns(S, o, t.k === 'prop' ? t.g : t.k === 'rail' ? 'rail' : 'ut')) return false;   // no plots from a full set
+        return S.cash[pi] >= buyoutPrice(S, i);
+      }
+      async function buyout(p, t, owner) {
+        const S = G.S, i = t.i;
+        if (!canBuyout(S, p.i, i)) return;
+        const price = buyoutPrice(S, i), h = t.k === 'prop' ? S.houses[i] : 0;
+        const what = `${t.n}${h ? ` with ${h} house${h > 1 ? 's' : ''}` : ''}`;
+        if (!mine(p)) setBanner(`${p.name} is thinking about buying ${t.n}...`);
+        const yes = await decide(p, 'bo', () => {
+          setBanner('');
+          return ask(`<button class="ty-cardlink" onclick="tyDeed(${i})">📄 See the ${esc(t.n)} card</button><button id="bo-yes" class="btn-game btn-amber py-2 px-6">Buy it for ${money(price)}</button><button id="bo-no" class="btn-game btn-graphite py-2 px-6">No thanks</button>`, { 'bo-yes': true, 'bo-no': false }, `Buy ${what} from ${owner.name}? Price: 2 × (${money(t.pr)}${h ? ` + ${h} × ${money(t.hc)}` : ''}) = ${money(price)}. You have ${money(S.cash[p.i])}.`, false);
+        }, () => {
+          // a computer buys only when it is rich enough and the plot helps it towards a set
+          const g = t.k === 'prop' ? t.g : t.k === 'rail' ? 'rail' : 'ut';
+          const others = GROUPS[g].filter((x) => x !== i);
+          const helps = others.some((x) => S.own[x] === p.i) || others.every((x) => S.own[x] === undefined || S.own[x] === p.i);
+          const left = S.cash[p.i] - price;
+          return (helps && left >= (G.timed ? 250 : 400)) || left >= 1500;
+        }, 1000);
+        if (!yes || !G || G.over || !canBuyout(S, p.i, i)) { if (!yes) log(`${nm(p)} decides not to buy ${t.n}.`); return; }
+        moneyFlow(p.i, owner.i, price); S.cash[p.i] -= price; S.cash[owner.i] += price; S.own[i] = p.i;
+        G.claimed = i; log(`🤝 ${nm(p)} buys <b>${what}</b> from ${nm(owner)} for <b>${money(price)}</b>.`); setBanner(`${p.name} buys ${t.n} from ${owner.name} for ${money(price)}`);
+        SFX.play('coin'); if (isMe(p)) G.boughtN++; render(); G.claimed = null; await W(900);
+      }
 
       async function offer(p, t) {
         const S = G.S, cash = S.cash[p.i];
@@ -365,7 +409,7 @@
           const groupMine = t.g && GROUPS[t.g].filter((x) => S.own[x] === p.i).length;
           const needs = t.g && GROUPS[t.g].length - groupMine === 1 && GROUPS[t.g].every((x) => S.own[x] === p.i || S.own[x] === undefined);
           const rivalBlocks = t.g && GROUPS[t.g].some((x) => S.own[x] !== undefined && S.own[x] !== p.i);
-          const reserve = G.mode === 'quick' ? 60 : 130;
+          const reserve = G.timed ? 60 : 130;
           return cash >= t.pr && (needs || t.k === 'rail' || cash - t.pr >= reserve + (rivalBlocks ? 40 : 0));
         }, 900);
         if (buy && cash >= t.pr) { moneyFlow(p.i, 'tile:' + t.i, t.pr); S.cash[p.i] -= t.pr; S.own[t.i] = p.i; G.claimed = t.i; log(`${nm(p)} buys <b>${t.n}</b> for ${money(t.pr)}.`); SFX.play('coin'); if (isMe(p)) G.boughtN++; render(); G.claimed = null; await W(700); }
@@ -382,7 +426,7 @@
           if (mine && mine + open === GROUPS[t.g].length) v += t.pr * (open === 1 ? 0.9 : 0.45);
           if (t.k === 'rail') v += t.pr * 0.15 * GROUPS.rail.filter((x) => S.own[x] === q.i).length;
         }
-        const reserve = G.mode === 'quick' ? 60 : 130;
+        const reserve = G.timed ? 60 : 130;
         return Math.max(0, Math.min(Math.round(v / 5) * 5, S.cash[q.i] - reserve));
       }
       async function auction(starter, t) {
@@ -461,10 +505,10 @@
         // unmortgage when rich
         for (const t of BOARD) if (S.own[t.i] === p.i && S.mort[t.i] && S.cash[p.i] > t.pr * 0.55 + 500) { moneyFlow(p.i, 'tile:' + t.i, Math.round(t.pr * 0.55)); S.cash[p.i] -= Math.round(t.pr * 0.55); S.mort[t.i] = false; log(`${nm(p)} unmortgages ${t.n}.`); }
         while (guard++ < 12) {
-          const reserve = G.mode === 'quick' ? 120 : 250;
+          const reserve = G.timed ? 120 : 250;
           const cand = BOARD.filter((t) => canBuild(S, p.i, t.i) && S.cash[p.i] - t.hc >= reserve).sort((a, b) => b.pr - a.pr)[0];
           if (!cand) break;
-          moneyFlow(p.i, 'tile:' + cand.i, cand.hc); S.cash[p.i] -= cand.hc; S.houses[cand.i]++; log(`${nm(p)} builds on <b>${cand.n}</b> (${S.houses[cand.i] === 5 ? 'hotel' : S.houses[cand.i] + ' house' + (S.houses[cand.i] > 1 ? 's' : '')}).`); SFX.play('coin'); render(); await W(350);
+          moneyFlow(p.i, 'tile:' + cand.i, cand.hc); S.cash[p.i] -= cand.hc; S.houses[cand.i]++; if (G.landBuild) G.buildSpot = null; log(`${nm(p)} builds on <b>${cand.n}</b> (${S.houses[cand.i] === 5 ? 'hotel' : S.houses[cand.i] + ' house' + (S.houses[cand.i] > 1 ? 's' : '')}).`); SFX.play('coin'); render(); await W(350);
         }
       }
       async function manage(p, when) {
@@ -496,18 +540,18 @@
       function panelAct(p, kind, i) {
         const S = G.S, pi = p.i, t = BOARD[i], me = isMe(p), who = me ? 'You' : nm(p);
         if (!t) return;
-        if (kind === 'build' && canBuild(S, pi, i)) { moneyFlow(pi, 'tile:' + i, t.hc); S.cash[pi] -= t.hc; S.houses[i]++; if (me) G.built++; SFX.play('coin'); log(`${who} build${me ? '' : 's'} on <b>${t.n}</b>.`); }
+        if (kind === 'build' && canBuild(S, pi, i)) { moneyFlow(pi, 'tile:' + i, t.hc); S.cash[pi] -= t.hc; S.houses[i]++; if (G.landBuild) G.buildSpot = null; if (me) G.built++; SFX.play('coin'); log(`${who} build${me ? '' : 's'} on <b>${t.n}</b>.`); }
         else if (kind === 'sell' && canSell(S, pi, i)) { moneyFlow('tile:' + i, pi, t.hc / 2); S.cash[pi] += t.hc / 2; S.houses[i]--; SFX.play('coin'); log(`${who} sell${me ? '' : 's'} a house on <b>${t.n}</b>.`); }
         else if (kind === 'mort' && S.own[i] === pi && !S.mort[i] && !(S.houses[i] > 0)) { moneyFlow('bank', pi, t.pr / 2); S.mort[i] = true; S.cash[pi] += t.pr / 2; SFX.play('coin'); log(`${who} mortgage${me ? '' : 's'} <b>${t.n}</b> for ${money(t.pr / 2)}.`); }
         else if (kind === 'unmort' && S.own[i] === pi && S.mort[i] && S.cash[pi] >= Math.round(t.pr * 0.55)) { moneyFlow(pi, 'bank', Math.round(t.pr * 0.55)); S.cash[pi] -= Math.round(t.pr * 0.55); S.mort[i] = false; SFX.play('coin'); log(`${who} unmortgage${me ? '' : 's'} <b>${t.n}</b>.`); }
-        else if (me) { SFX.play('wrong'); showToast(kind === 'build' ? 'You need the whole colour set, even building and enough cash.' : 'Cannot do that.', 'error'); }
+        else if (me) { SFX.play('wrong'); showToast(kind === 'build' ? (G.landBuild ? 'You can build one house on the plot you are standing on (and need the cash).' : 'You need the whole colour set, even building and enough cash.') : 'Cannot do that.', 'error'); }
         render();
       }
       // a button on your property panel: it becomes your decision (only while you are deciding)
       function panelClick(kind, i) {
         const S = G.S, me = G.players[G.me], t = BOARD[i];
         const ok = (kind === 'build' && canBuild(S, me.i, i)) || (kind === 'sell' && canSell(S, me.i, i)) || (kind === 'mort' && S.own[i] === me.i && !S.mort[i] && !(S.houses[i] > 0)) || (kind === 'unmort' && S.own[i] === me.i && S.mort[i] && S.cash[me.i] >= Math.round(t.pr * 0.55));
-        if (!ok) { SFX.play('wrong'); return showToast(kind === 'build' ? 'You need the whole colour set, even building and enough cash.' : 'Cannot do that.', 'error'); }
+        if (!ok) { SFX.play('wrong'); return showToast(kind === 'build' ? (G.landBuild ? 'You can build one house on the plot you are standing on (and need the cash).' : 'You need the whole colour set, even building and enough cash.') : 'Cannot do that.', 'error'); }
         if (G.mgRes) G.mgRes({ kind, i });
       }
 
@@ -698,7 +742,7 @@
         BOARD.forEach((t) => { const h = tileInner(t); if (G.tileCache[t.i] !== h) { G.tileCache[t.i] = h; const el = $('ty-t-' + t.i); el.innerHTML = h; el.classList.toggle('mort', !!S.mort[t.i]); } });
         const m = $('ty-msg'); if (m && m.textContent !== (G.msg || '')) m.textContent = G.msg || '';
         placePawns(hopWho);
-        $('ty-round').textContent = `ROUND ${Math.min(G.round, G.maxRound)}${G.mode === 'quick' ? '/' + G.maxRound : ''}`;
+        $('ty-round').textContent = `ROUND ${Math.min(G.round, G.maxRound)}${G.timed ? '/' + G.maxRound : ''}`;
         $('ty-players').innerHTML = G.players.map((p) => {
           const props = BOARD.filter((t) => S.own[t.i] === p.i).sort((a, b) => a.i - b.i);
           const fl = G.flash[p.i] && performance.now() < G.flash[p.i].until ? G.flash[p.i].dir : '';
@@ -792,16 +836,16 @@
 
       const mod = {
         id: 'tycoon', name: 'Property Tycoon', icon: 'tycoon', cats: ['board'], sub: '2-4 PLAYERS · ~15 MIN', color: '#34D399', tone: 'emerald', btn: 'emerald',
-        blurb: 'Roll the dice, buy properties, build houses and hotels and bankrupt your rivals. Play a Quick 25-round game or go all the way.',
+        blurb: 'Roll the dice, buy properties, build houses and hotels and bankrupt your rivals. Play 15, 25 or 40 rounds, or go all the way.',
         rules: { tag: '2-4 PLAYERS', steps: [
           '<strong class="text-bone">Roll &amp; move:</strong> Roll two dice and walk around the board. Pass <b>START</b> to collect $200. Doubles give you another go (three in a row sends you to Jail).',
           '<strong class="text-bone">Buy &amp; collect rent:</strong> Land on a free property to buy it. Land on someone else\'s and you pay rent. Own a whole colour set to <span class="text-amber font-bold">double the rent</span>, then build houses and hotels to charge much more.',
-          '<strong class="text-bone">Win:</strong> In Quick mode the richest player after 25 rounds wins. In Classic, the last player not bankrupt wins. Short on cash? Houses are sold and properties mortgaged for you automatically. Skip a property and it goes to <b>auction</b>: everyone can bid and the highest bid wins (you can turn auctions off in the settings). No trading.',
+          '<strong class="text-bone">Win:</strong> With a round limit (15, 25 or 40), the richest player at the end wins. In Classic, the last player not bankrupt wins. Short on cash? Houses are sold and properties mortgaged for you automatically. Skip a property and it goes to <b>auction</b>: everyone can bid and the highest bid wins (you can turn auctions off in the settings). Settings also let you build by standing on your own plot instead of owning the whole colour, and buy a plot from its owner (2x land + houses) after paying rent.',
         ], tip: 'Railroads and the orange and red sets are the best value. Build evenly across a set.' },
         profileTiles: (s) => [['WINS', s.wins, 'text-amber'], ['GAMES', s.played, 'text-bone'], ['BEST WORTH', '$' + (s.bestWorth || 0), 'text-emerald'], ['PROPERTIES', s.props || 0, 'text-teal']],
         extraRows: (s) => srow('Houses built', s.houses || 0),
         online: { seats: (sel) => +sel.n || 3, ranked: true, start: (body, sel, S) => start(body, sel, S) },
-        engine: { BOARD, GROUPS, rentFor, netWorth, canBuild }, open, close() { if (boardRO) { boardRO.disconnect(); boardRO = null; } G = null; },
+        engine: { BOARD, GROUPS, rentFor, netWorth, canBuild, canBuyout, buyoutPrice, get G() { return G; } }, open, close() { if (boardRO) { boardRO.disconnect(); boardRO = null; } G = null; },
       };
       registerGame(mod);
     })();

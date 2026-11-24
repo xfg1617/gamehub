@@ -36,8 +36,8 @@
         let first = deck.pop(); while (first.c === 'w' || typeof first.v !== 'number') { deck.unshift(first); first = deck.pop(); }
         G = { S, me: S.online ? S.me : 0, players, deck, disc: [first], color: first.c, dir: 1, cur: 0, secs: +sel.clock, clashRule: sel.clash === undefined ? true : !!+sel.clash, over: false, tok: ++GT.cur, log: [], caught: 0, plays: 0, banner: '' };
         body.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_250px] gap-5 items-start">
-          <div class="space-y-3 min-w-0"><div id="cc-opp" class="flex gap-3 flex-wrap justify-center"></div>
-            <div class="felt p-4 flex items-center justify-center gap-8 flex-wrap" style="min-height:190px"><div id="cc-pile" class="text-center"></div><div id="cc-top" class="text-center"></div></div>
+          <div class="space-y-3 min-w-0"><div id="cc-opp" class="ring4">${ringSlots('cc')}
+            <div class="r-mid felt p-4 flex items-center justify-center gap-8 flex-wrap" style="min-height:190px"><div id="cc-pile" class="text-center"></div><div id="cc-top" class="text-center"></div></div></div>
             <div id="cc-prompt" class="win p-3 text-center min-h-[48px] text-sm"></div>
             <div id="cc-hand" class="flex gap-2 flex-wrap justify-center pt-2"></div></div>
           <div class="space-y-3"><div class="win overflow-hidden"><div class="winbar amber"><span>COLOR CLASH</span></div><div class="p-3 space-y-2"><div id="cc-clock"></div><div id="cc-status" class="text-sm font-bold"></div></div></div>
@@ -233,7 +233,7 @@
         const area = document.getElementById('cc-opp').parentElement, before = gSnap(area);
         const cur = G.players[G.cur];
         const others = G.players.map((_, k) => G.players[(G.me + k) % G.players.length]).slice(1);
-        document.getElementById('cc-opp').innerHTML = others.map((q) => `<div id="cc-seat-${G.players.indexOf(q)}" class="seat ${cur === q && !G.over ? 'turn' : ''}"><div class="text-sm font-display font-extrabold"><span class="text-lg">${q.av}</span> ${esc(q.name)}</div><div class="flex justify-center my-1 gap-0.5">${q.hand.slice(0, 7).map((c) => `<div class="cc-card cc-back sm" data-fk="${gKey(c)}" data-face="down" style="width:20px;height:30px;border-width:2px;box-shadow:0 2px 0 var(--ink)"></div>`).join('')}</div><div class="pix text-xs ${q.hand.length === 1 ? 'text-coral' : 'text-amber'}">${q.hand.length} card${q.hand.length === 1 ? '' : 's'}</div></div>`).join('');
+        ringFill('cc', others.map((q) => `<div id="cc-seat-${G.players.indexOf(q)}" class="seat ${cur === q && !G.over ? 'turn' : ''}"><div class="text-sm font-display font-extrabold"><span class="text-lg">${q.av}</span> ${esc(q.name)}</div><div class="flex justify-center my-1 gap-0.5">${q.hand.slice(0, 7).map((c) => `<div class="cc-card cc-back sm" data-fk="${gKey(c)}" data-face="down" style="width:20px;height:30px;border-width:2px;box-shadow:0 2px 0 var(--ink)"></div>`).join('')}</div><div class="pix text-xs ${q.hand.length === 1 ? 'text-coral' : 'text-amber'}">${q.hand.length} card${q.hand.length === 1 ? '' : 's'}</div></div>`));
         document.getElementById('cc-pile').innerHTML = `<div id="cc-draw" style="display:inline-block;cursor:pointer">${backHTML('')}</div><div class="pix text-xs text-bone mt-2">DRAW · ${G.deck.length}</div>`;
         const t = top();
         document.getElementById('cc-top').innerHTML = `<div class="cc-ring" style="background:${HEX[G.color]};position:relative">${G.disc.length > 1 ? `<div style="position:absolute">${cardHTML(G.disc[G.disc.length - 2])}</div>` : ''}<div data-zone="top" style="position:relative">${cardHTML(t, { fk: gKey(t) })}</div></div><div class="pix text-xs mt-2" style="color:${HEX[G.color]}">${GL[G.color]} ${CN[G.color].toUpperCase()} ${G.dir === 1 ? '↻' : '↺'}</div>`;

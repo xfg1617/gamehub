@@ -497,6 +497,23 @@ One shared way to run a game table, used on this device AND online, so a game ha
   reads the page through `env.ASSETS`). Guide: `backend/CLOUDFLARE-MOVE.md`.
 * Not done yet (Inna to decide): security fixes (room lock, CAPTCHA, hidden cards), copy protection.
 
+## 5k. Nov 24 2026 round 2 (also held, not pushed)
+
+* **Property Tycoon settings**: GAME LENGTH Short 15 / Medium 25 (id `quick`, kept for saved picks) / Long 40 / Classic
+  (`G.timed`, `G.maxRound`). BUILDING HOUSES: whole colour (old rule) or **stand on your plot** (`G.landBuild`: one house
+  per visit on the plot you landed on, `G.buildSpot`; no set or even-building needed). **Buy out land** toggle (off by
+  default): after paying rent, buy the plot for 2 × (land + houses × house cost) (`buyoutPrice`, `canBuyout`, `buyout`):
+  never with a hotel, never from the owner's full set (rails: all 4; utilities: both), needs the cash; houses go with it;
+  bots buy only when rich and it helps a set. `window.__fast` speeds tycoon waits. `test/t_ty_rules.py`.
+* **Frontier Isles dice**: every roll shows two big dice over the island (`.fi-rollfx`), the total pops up (7 = THE
+  BANDIT!), lands with that number get an amber ring until the next roll (`G.hotN`). `test/t_isles_dice.py`.
+* **Poker hand ranks**: `RANK_EX` / `ranksHTML` in poker.js (10 ranks, 5 example cards, the cards that make the hand lit);
+  in the guide (`mod.art.ranks`) and a "🃏 Hand ranks" header button (`pkRanks()`, marks your current hand). `t_pk_ranks.py`.
+* **Seats around the table**: `ringSlots(id)` / `ringFill(id, seats)` in core + `.ring4` CSS: next player on your left,
+  then across, then right; phones = an arc above the table. Used by Poker, Hot Potato Cats, Color Clash. The Blackjack
+  online table seats players in an arc facing the dealer (`.bj-arc`). Cards are bigger on screens ≥ 640 px (`#gs-body`
+  rules in 40-shared-cards.css; guides keep their small cards). `test/shot_tables.py` takes screenshots.
+
 ## 5d. Game setup screens, room codes, leaving a game
 
 * Every game opens on a setup screen (`setupScreen` in `core.js`). Options are `{ key, label, def,

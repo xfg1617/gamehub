@@ -135,7 +135,7 @@ lives in `src/games/fourinarow.js`; online versions: `navalnet.js` (hidden tile)
 In `src/games/` (all registered through `registerGame`): Chess, Checkers, **Pool**, Poker,
 Blackjack, Bowling, Word Connect, Find the Impostor, Hot Potato Cats, Color Clash, Property Tycoon,
 Doodle Guess (was Doodle Chain), **Tic-Tac-Toe**, **Dominoes**, **Frontier Isles**, **Manor Mystery**, and since
-Nov 24 2026 **Hedge Run**, **Fibber**, **Tunnel Trouble**, **Guild Masters** (see 5o).
+Nov 24 2026 **Hedge Run**, **Bullshit** (was Fibber), **Tunnel Trouble**, **Guild Masters** (see 5o).
 
 Like Property Tycoon (our Monopoly-style game), **Frontier Isles** (Catan-style) and **Manor Mystery**
 (Clue-style) are *original* games in a familiar genre: own names, art, suspects, tools and rooms. Never use
@@ -619,8 +619,8 @@ One shared way to run a game table, used on this device AND online, so a game ha
   - **Hedge Run** (`hedge.js`, Quoridor-style): 9×9 garden, step or plant a 2-square hedge; a hedge may never shut anyone in
     (`wallProblem`). 2 players (10 hedges) or 4 (5). Computer Easy/Medium/Hard (`aiAction`: shortest paths). Your board is
     turned so your pawn starts at the bottom. `t_hedge.py`, `t_np_hedge.py`.
-  - **Fibber** (`fibber.js`, bluffing card game): put 1-4 cards face down as the current rank (A, 2 ... K), anyone can shout
-    FIBBER! within a few seconds (first tap wins, `S.ask(-1, ...)`); liar or wrong shouter takes the pile. 3-5 players.
+  - **Bullshit** (was Fibber, id still `fibber`, `fibber.js`, bluffing card game; Inna chose the name): put 1-4 cards face down as the current rank (A, 2 ... K), anyone can shout
+    BULLSHIT! within a few seconds (first tap wins, `S.ask(-1, ...)`); liar or wrong shouter takes the pile. 3-5 players.
     The doubt countdown must be stopped when the window closes (`G.stopDoubt`), or it wipes the next turn's buttons.
     `t_fibber.py`, `t_np_fibber.py`.
   - **Tunnel Trouble** (`tunnel.js`, Saboteur-style): secret Diggers vs Rascals, tunnel pieces must fit and join the tunnel,

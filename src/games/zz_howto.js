@@ -58,11 +58,11 @@
           tip: 'The panel shows how many steps everyone still needs. Save your hedges for when a rival is close to the finish.', online: NET_TABLE },
         fibber: { tag: '3-5 PLAYERS · BLUFFING', goal: 'Be the first to get rid of all your cards.', steps: [
           ['The rank goes up', 'Every turn has a rank: Aces, then Twos, then Threes... up to Kings, then back to Aces. The middle of the table shows which rank it is now.'],
-          ['Put cards down', 'On your turn, tap 1 to 4 of your cards and press <b>Put down</b>. They go face down and you say they are that rank. Don’t have any? Fib!'],
-          ['FIBBER!', 'After each play, everyone has a few seconds to press <b>FIBBER!</b> if they think it was a fib. The cards are turned over.'],
-          ['Who picks up', 'If any card was wrong, the fibber picks up the whole pile. If they were all true, the person who shouted picks it up. Get rid of your last card (without being caught) to win.']],
-          items: () => row([[card(7, 'h'), 'A true card', 'Matches the rank everyone is on'], [card(12, 's'), 'A fib', 'Any other card played as that rank'], [`<span class="btn-game btn-coral" style="padding:6px 10px;font-size:12px">FIBBER!</span>`, 'Shout', 'Turn the last cards over']]),
-          tip: 'There are only four of each rank. If you hold three Sevens and someone says "two Sevens", they must be fibbing.', online: NET_TABLE },
+          ['Put cards down', 'On your turn, tap 1 to 4 of your cards and press <b>Put down</b>. They go face down and you say they are that rank. Don’t have any? Bluff!'],
+          ['BULLSHIT!', 'After each play, everyone has a few seconds to press <b>BULLSHIT!</b> if they think it was a lie. The cards are turned over.'],
+          ['Who picks up', 'If any card was wrong, the player who lied picks up the whole pile. If they were all true, the person who shouted picks it up. Get rid of your last card (without being caught) to win.']],
+          items: () => row([[card(7, 'h'), 'A true card', 'Matches the rank everyone is on'], [card(12, 's'), 'A lie', 'Any other card played as that rank'], [`<span class="btn-game btn-coral" style="padding:6px 10px;font-size:12px">BULLSHIT!</span>`, 'Shout', 'Turn the last cards over']]),
+          tip: 'There are only four of each rank. If you hold three Sevens and someone says "two Sevens", they must be bluffing.', online: NET_TABLE },
         tunnel: { tag: '3-6 PLAYERS · SECRET TEAMS', goal: 'Diggers: dig a tunnel from the entrance to the gold. Rascals: secretly stop them.', steps: [
           ['Find out your team', 'At the start, a banner tells you if you are a <b class="text-teal">Digger</b> or a <b class="text-coral">Rascal</b>. Nobody else can see it.'],
           ['Play a card', 'On your turn, tap a card in your hand. A tunnel piece goes on a glowing square (↻ turns it around). It must fit the pieces next to it and join the tunnel.'],

@@ -42,7 +42,7 @@
         const body = gameShell(root, mod, '', 'max-w-[1200px] mx-auto');
         setupScreen(body, mod, [
           { key: 'n', label: 'PLAYERS', def: 4, choices: [[3, '3'], [4, '4'], [5, '5']] },
-          { key: 'secs', label: 'TIME TO SHOUT', def: 4, choices: [[3, '3 sec'], [4, '4 sec'], [6, '6 sec']], hint: 'How long everyone has to shout FIBBER! after each play.' },
+          { key: 'secs', label: 'TIME TO SHOUT', def: 4, choices: [[3, '3 sec'], [4, '4 sec'], [6, '6 sec']], hint: 'How long everyone has to shout BULLSHIT! after each play.' },
         ], (sel) => start(body, sel, npLocal([{ name: profile.username, avatar: profile.avatar }].concat(BOTS.slice(0, +sel.n - 1).map(([name, avatar]) => ({ bot: true, name, avatar }))), sel)));
       }
       function start(body, sel, S) {
@@ -56,7 +56,7 @@
             <div class="r-mid felt p-4 flex flex-col items-center justify-center gap-3" style="min-height:220px"><div id="fb-center" class="flex items-center justify-center gap-6 flex-wrap"></div><div id="fb-claim" class="fb-claim"></div></div></div>
             <div id="fb-prompt" class="win p-3 text-center min-h-[52px] text-sm"></div>
             <div id="fb-hand" class="fb-hand"></div></div>
-          <div class="space-y-3"><div class="win overflow-hidden"><div class="winbar amber"><span>FIBBER</span><span class="pix text-xs" id="fb-step"></span></div><div class="p-3 space-y-2"><div id="fb-status" class="text-sm font-bold"></div><div class="text-xs text-muted">Each turn the rank goes up: A, 2, 3 ... K, then A again.</div></div></div>
+          <div class="space-y-3"><div class="win overflow-hidden"><div class="winbar amber"><span>BULLSHIT</span><span class="pix text-xs" id="fb-step"></span></div><div class="p-3 space-y-2"><div id="fb-status" class="text-sm font-bold"></div><div class="text-xs text-muted">Each turn the rank goes up: A, 2, 3 ... K, then A again.</div></div></div>
             <div id="fb-log" class="logbox" style="height:240px"></div><button id="fb-quit" class="btn-game btn-coral w-full py-2 text-sm">${S.online ? 'Leave table' : 'Give up'}</button></div></div>`;
         S.track();
         S.onLeft = (a) => {
@@ -129,10 +129,10 @@
           let left = G.secs, tm = null, done = false;
           const fin = (v) => { if (done) return; done = true; if (tm) gClearInt(tm); if (G && G.step === k) prompt(''); if (v && G) S.act({ t: 'doubt', s: me.seat, k }); };
           G.stopDoubt = () => { done = true; if (tm) gClearInt(tm); };
-          prompt(`<div class="flex items-center justify-center gap-3 flex-wrap"><span>${esc(p.name)} says <b>${plural(G.need, cards.length)}</b>. Believe it?</span><button id="fb-doubt" class="btn-game btn-coral py-2 px-6 text-base">FIBBER! (${left})</button><button id="fb-ok" class="btn-game btn-graphite py-2 px-4 text-sm">I believe it</button></div>`);
+          prompt(`<div class="flex items-center justify-center gap-3 flex-wrap"><span>${esc(p.name)} says <b>${plural(G.need, cards.length)}</b>. Believe it?</span><button id="fb-doubt" class="btn-game btn-coral py-2 px-6 text-base">BULLSHIT! (${left})</button><button id="fb-ok" class="btn-game btn-graphite py-2 px-4 text-sm">I believe it</button></div>`);
           $('fb-doubt').onclick = () => fin(true);
           $('fb-ok').onclick = () => { fin(false); if (G && G.step === k) prompt('<span class="text-muted">Waiting for the others...</span>'); };
-          tm = gInterval(() => { left -= 0.25; if (left <= 0) fin(false); else { const b = $('fb-doubt'); if (b) b.textContent = `FIBBER! (${Math.ceil(left)})`; } }, 250);
+          tm = gInterval(() => { left -= 0.25; if (left <= 0) fin(false); else { const b = $('fb-doubt'); if (b) b.textContent = `BULLSHIT! (${Math.ceil(left)})`; } }, 250);
         } else if (isMe(p)) prompt('<span class="text-muted">Will anyone call your bluff...?</span>');
         const botFn = () => {
           for (const b of others.filter((q) => S.bot(q.seat))) if (botDoubt(b.hand, G.need, cards.length, p.hand.length, Math.random)) return { t: 'doubt', s: b.seat, k };
@@ -152,12 +152,12 @@
         // turn the cards over
         const caller = G.players[a.s], lie = cards.some((c) => c.r !== G.need);
         SFX.play('nope');
-        log(`${nm(caller)} shouts <b class="text-coral">FIBBER!</b>`);
+        log(`${nm(caller)} shouts <b class="text-coral">BULLSHIT!</b>`);
         G.reveal = { cards, lie, caller, p };
         draw(); SFX.play('reveal');
         await W(1900);
         const loser = lie ? p : caller;
-        if (lie) log(`It was a fib! ${nm(p)} picks up the pile (${G.pile.length} cards).`);
+        if (lie) log(`It was a lie! ${nm(p)} picks up the pile (${G.pile.length} cards).`);
         else log(`It was true! ${nm(caller)} picks up the pile (${G.pile.length} cards).`);
         if (lie && isMe(caller)) G.stats.caught++;
         SFX.play(lie === isMe(caller) || (!lie && isMe(p)) ? 'coin' : 'wrong');
@@ -178,7 +178,7 @@
           return `<div id="fb-seat-${q.seat}" class="tg-seat ${turn ? 'turn' : ''}"><div class="tg-fan">${Array.from({ length: Math.min(n, 7) }, () => playingCardHTML(null, { cls: 'sm' })).join('')}</div>${nameTag({ av: q.av, name: q.name, sub: `<span class="${n <= 2 ? 'text-coral' : ''}">${n} card${n === 1 ? '' : 's'}</span>`, badge: n, turn })}</div>`; }));
         const rv = G.reveal;
         $('fb-center').innerHTML = `<div class="text-center"><div id="fb-pile" class="fb-pile">${G.pile.length ? Array.from({ length: Math.min(G.pile.length, 6) }, (_, i) => `<div style="position:absolute;left:${i * 3}px;top:${-i * 2}px;transform:rotate(${(i * 37) % 13 - 6}deg)">${playingCardHTML(null, { cls: 'sm' })}</div>`).join('') : '<div class="fb-empty">PILE</div>'}</div><div class="pix text-xs text-bone mt-2">PILE · ${G.pile.length}</div></div>
-          ${rv ? `<div class="fb-reveal ${rv.lie ? 'lie' : 'true'}"><div class="flex gap-2">${rv.cards.map((c) => `<div class="${c.r === G.need ? 'ok' : 'bad'}">${playingCardHTML(c, { cls: 'sm' })}</div>`).join('')}</div><div class="pix text-sm mt-2 ${rv.lie ? 'text-coral' : 'text-emerald'}">${rv.lie ? 'A FIB!' : 'ALL TRUE!'}</div></div>` : ''}`;
+          ${rv ? `<div class="fb-reveal ${rv.lie ? 'lie' : 'true'}"><div class="flex gap-2">${rv.cards.map((c) => `<div class="${c.r === G.need ? 'ok' : 'bad'}">${playingCardHTML(c, { cls: 'sm' })}</div>`).join('')}</div><div class="pix text-sm mt-2 ${rv.lie ? 'text-coral' : 'text-emerald'}">${rv.lie ? 'A LIE!' : 'ALL TRUE!'}</div></div>` : ''}`;
         $('fb-claim').innerHTML = `NOW: <b>${WORD[G.need].toUpperCase()}S</b>${G.last && !rv ? ` <span class="text-muted">· ${esc(G.last.p.name)} said ${plural(G.last.need, G.last.cards.length)}</span>` : ''}`;
         $('fb-step').textContent = `${G.pile.length} IN PILE`;
         // my hand, sorted by rank; tap to pick
@@ -201,21 +201,21 @@
         reportGame('fibber', res, { elo: S.online ? 0 : res === 'win' ? 10 : -4, xp: res === 'win' ? 30 : 8, label: S.online ? 'Online table' : `${G.players.length} players` });
         gameResult({ title: !winner ? 'You gave up' : res === 'win' ? 'You win!' : `${winner.name} wins`, sub: !winner ? '' : res === 'win' ? 'You got rid of every card.' : `${winner.name} got rid of every card first.`,
           tone: res === 'win' ? 'amber' : 'coral', sprite: res === 'win' ? 'trophy' : 'anchor',
-          rows: [['Fibs you caught', G.stats.caught, 'text-emerald'], ['Fibs nobody caught', G.stats.fooled, 'text-amber'], ['Cards left', me.hand.length, 'text-bone']].concat(eloRow ? [eloRow] : []),
+          rows: [['Lies you caught', G.stats.caught, 'text-emerald'], ['Bluffs nobody caught', G.stats.fooled, 'text-amber'], ['Cards left', me.hand.length, 'text-bone']].concat(eloRow ? [eloRow] : []),
           againLabel: S.online ? 'Back to setup' : 'Play again', again: () => open($('game-root')) });
       }
 
       const K = '#050E18', rr = (x, y, w, h, f) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${f}"/>`;
       GICONS.fibber = `<svg viewBox="0 0 24 24" shape-rendering="crispEdges" aria-hidden="true">${rr(2, 5, 11, 15, K)}${rr(3, 6, 9, 13, '#1A3856')}${rr(4, 7, 7, 11, '#2B5C8A')}${rr(9, 3, 12, 16, K)}${rr(10, 4, 10, 14, '#F7F4EC')}${rr(11, 5, 2, 3, '#FB7185')}${rr(13, 9, 4, 1, K)}${rr(14, 10, 2, 4, K)}${rr(14, 15, 2, 2, K)}${rr(18, 15, 1, 2, '#FB7185')}${rr(1, 19, 9, 4, K)}${rr(2, 20, 7, 2, '#F5B041')}</svg>`;
       const mod = {
-        id: 'fibber', name: 'Fibber', icon: 'fibber', cats: ['card', 'party'], sub: '3-5 PLAYERS · ~10 MIN', color: '#FB7185', tone: 'coral', btn: 'coral',
-        blurb: 'Put cards down face down and say what they are. Fib if you have to, but if someone shouts FIBBER! and you are caught, you take the whole pile.',
+        id: 'fibber', name: 'Bullshit', icon: 'fibber', cats: ['card', 'party'], sub: '3-5 PLAYERS · ~10 MIN', color: '#FB7185', tone: 'coral', btn: 'coral',
+        blurb: 'Put cards down face down and say what they are. Bluff if you have to, but if someone shouts BULLSHIT! and you are caught, you take the whole pile.',
         rules: { tag: 'BLUFFING · 3-5 PLAYERS', steps: [
           '<strong class="text-bone">Goal:</strong> Be the first to get rid of all your cards.',
           '<strong class="text-bone">Your turn:</strong> Put 1 to 4 cards face down and say they are the rank it is now (Aces, then Twos, then Threes... up to Kings, then Aces again). They don’t have to be true!',
-          '<strong class="text-bone">FIBBER!</strong> After each play everyone has a few seconds to shout. The cards are turned over: if any card is wrong, the player who fibbed picks up the whole pile. If they were all true, the one who shouted picks it up.',
-        ], tip: 'There are only four of each rank. If you hold three Sevens and someone says "two Sevens", they are fibbing!' },
-        profileTiles: (s) => [['WINS', s.wins, 'text-amber'], ['GAMES', s.played, 'text-bone'], ['FIBS CAUGHT', s.caught || 0, 'text-emerald'], ['FIBS NOT CAUGHT', s.fooled || 0, 'text-coral']],
+          '<strong class="text-bone">BULLSHIT!</strong> After each play everyone has a few seconds to shout. The cards are turned over: if any card is wrong, the player who fibbed picks up the whole pile. If they were all true, the one who shouted picks it up.',
+        ], tip: 'There are only four of each rank. If you hold three Sevens and someone says "two Sevens", they are bluffing!' },
+        profileTiles: (s) => [['WINS', s.wins, 'text-amber'], ['GAMES', s.played, 'text-bone'], ['LIES CAUGHT', s.caught || 0, 'text-emerald'], ['BLUFFS NOT CAUGHT', s.fooled || 0, 'text-coral']],
         engine: { botPlay, botDoubt, get G() { return G; } }, open, close() { G = null; },
         art: { card: (c) => playingCardHTML(c, { cls: 'sm' }) },
         online: { seats: (sel) => +sel.n || 4, min: 3, ranked: true, start: (body, sel, S) => start(body, sel, S) },

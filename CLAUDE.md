@@ -511,8 +511,9 @@ One shared way to run a game table, used on this device AND online, so a game ha
   in the guide (`mod.art.ranks`) and a "🃏 Hand ranks" header button (`pkRanks()`, marks your current hand). `t_pk_ranks.py`.
 * **Seats around the table**: `ringSlots(id)` / `ringFill(id, seats)` in core + `.ring4` CSS: next player on your left,
   then across, then right; phones = an arc above the table. Used by Poker, Hot Potato Cats, Color Clash. The Blackjack
-  online table seats players in an arc facing the dealer (`.bj-arc`). Cards are bigger on screens ≥ 640 px (`#gs-body`
-  rules in 40-shared-cards.css; guides keep their small cards). `test/shot_tables.py` takes screenshots.
+  online table seats players in an arc facing the dealer (`.bj-arc`). Playing cards (Poker, Blackjack) are bigger on screens ≥ 640 px (`#gs-body`
+  rules in 40-shared-cards.css; guides keep their small cards). Hot Potato Cats and Color Clash keep their original card
+  and table sizes (Inna tried a bigger board and wanted the old size back). `test/shot_tables.py` takes screenshots.
 
 ## 5d. Game setup screens, room codes, leaving a game
 

@@ -77,7 +77,7 @@
           ['Build', 'Tap a building card you can afford, then press <b>Build</b>. You can’t build two of the same. The Architect can build up to 3.'],
           ['Use your power', 'Each character has a power (see below). The Shadow and the Pickpocket name a character by number, without knowing who has it!'],
           ['The end', 'When someone has the target number of buildings, the round is finished. Points: each building’s cost, +3 for all five colours, +4 for finishing first (+2 for the others who finish), +2 for each wonder.']],
-          items: () => row([1, 2, 3, 4, 5, 6, 7, 8].map((r) => [GAME_MODS.guild.art.role(r), GAME_MODS.guild.engine.ROLES[r].name, GAME_MODS.guild.engine.ROLES[r].txt])),
+          items: () => row([1, 2, 3, 4, 5, 6, 7, 8].map((r) => { const R = GAME_MODS.guild.engine.ROLES[r]; return [`<span class="ht-num" style="--rc:${R.col}">${r}</span>`, R.name, R.txt]; })),
           tip: 'Try to collect buildings in your character’s colour: the Monarch, Abbot, Merchant and Captain earn a gold for each one.', online: NET_TABLE },
         chess: { tag: '1v1 · CLASSIC', goal: 'Trap the other king so it cannot escape. That is checkmate.', steps: [
           ['Move a piece', 'Tap one of your pieces, then a highlighted square. White moves first.'],
@@ -204,7 +204,8 @@
     })();
     // one game's guide (used by the How to Play page and by the pop-up inside a game or room)
     function guideHTML(id) {
-      const h = HOWTO[id]; if (!h) return '';
+      let h = HOWTO[id]; if (!h) return '';
+      if (typeof LANG !== 'undefined' && LANG.code === 'vi' && window.HOWTO_VI && HOWTO_VI[id]) h = Object.assign({}, h, HOWTO_VI[id]);   // Vietnamese guide
       let items = ''; try { items = h.items ? h.items() : ''; } catch (e) { items = ''; }
       const c = CATALOG.find((x) => x.id === id) || {};
       return `<div class="flex items-center gap-4"><span class="ht-ico big">${GICONS[c.icon] || ''}</span><div><div class="pix text-xs text-muted">THE GOAL</div><div class="text-lg font-extrabold text-bone leading-snug">${h.goal}</div></div></div>

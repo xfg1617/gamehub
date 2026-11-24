@@ -669,7 +669,9 @@ One shared way to run a game table, used on this device AND online, so a game ha
   and a few patterns (`PAT`) as they appear (MutationObserver); chat messages, guesses and logs are skipped. Stage 1 =
   menus, home, tiles, setup/room screens, profile, friends, leaderboard, common game buttons. Part 1
   (`src/games/zz_i18n_vi.js`, `VI_MORE`, loads just before zz_lang): game descriptions, every setup option / hint, loading
-  screen lines + tips, room messages. Not yet: guides (HOWTO), in-game messages, results, toasts, Terms/Privacy. Add new lines to `VI` when you add English text. `t_lang.py`.
+  screen lines + tips, room messages. Guides: `src/games/zz_howto_vi.js` = `HOWTO_VI[id]` {goal, steps, tip, online} used by `guideHTML` when Vietnamese;
+  guide labels, card words (Kaboom Cats, Saboteurs, Poker ranks) are in `VI_MORE`. Not yet: in-game messages, results,
+  toasts, Terms/Privacy. Add new lines to `VI` when you add English text. `t_lang.py`.
 
 ## 5s. Home page v3 (Nov 25 2026, Inna: "more clean, less busy, bigger code input box")
 

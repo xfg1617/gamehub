@@ -1053,6 +1053,7 @@
     .ht-piece svg { width: 100%; height: 100%; }
     .ht-ball { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--ink); display: inline-flex; align-items: center; justify-content: center; }
     .ht-ball i { font-style: normal; font-size: .65rem; font-weight: 900; background: #F7F4EC; color: #050E18; border-radius: 50%; width: 15px; height: 15px; display: inline-flex; align-items: center; justify-content: center; }
+    .ht-num { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #0A1F33; border: 3px solid #050E18; border-top: 6px solid var(--rc); font-family: 'Arcade Pixel', monospace; font-size: 24px; color: var(--rc); }
     /* ---------- music panel (zz_music.js) ---------- */
     .mu-pop { position: fixed; z-index: 90; width: 310px; background: #0F2A44; border: 3px solid var(--ink); box-shadow: 0 5px 0 var(--ink); color: #F7F4EC; }
     .mu-hd { background: #2DD4BF; color: var(--ink); font-family: 'Arcade Pixel', monospace; font-size: 16px; padding: 4px 10px; display: flex; justify-content: space-between; align-items: center; }
@@ -16808,7 +16809,7 @@
           ['Build', 'Tap a building card you can afford, then press <b>Build</b>. You can’t build two of the same. The Architect can build up to 3.'],
           ['Use your power', 'Each character has a power (see below). The Shadow and the Pickpocket name a character by number, without knowing who has it!'],
           ['The end', 'When someone has the target number of buildings, the round is finished. Points: each building’s cost, +3 for all five colours, +4 for finishing first (+2 for the others who finish), +2 for each wonder.']],
-          items: () => row([1, 2, 3, 4, 5, 6, 7, 8].map((r) => [GAME_MODS.guild.art.role(r), GAME_MODS.guild.engine.ROLES[r].name, GAME_MODS.guild.engine.ROLES[r].txt])),
+          items: () => row([1, 2, 3, 4, 5, 6, 7, 8].map((r) => { const R = GAME_MODS.guild.engine.ROLES[r]; return [`<span class="ht-num" style="--rc:${R.col}">${r}</span>`, R.name, R.txt]; })),
           tip: 'Try to collect buildings in your character’s colour: the Monarch, Abbot, Merchant and Captain earn a gold for each one.', online: NET_TABLE },
         chess: { tag: '1v1 · CLASSIC', goal: 'Trap the other king so it cannot escape. That is checkmate.', steps: [
           ['Move a piece', 'Tap one of your pieces, then a highlighted square. White moves first.'],
@@ -16935,7 +16936,8 @@
     })();
     // one game's guide (used by the How to Play page and by the pop-up inside a game or room)
     function guideHTML(id) {
-      const h = HOWTO[id]; if (!h) return '';
+      let h = HOWTO[id]; if (!h) return '';
+      if (typeof LANG !== 'undefined' && LANG.code === 'vi' && window.HOWTO_VI && HOWTO_VI[id]) h = Object.assign({}, h, HOWTO_VI[id]);   // Vietnamese guide
       let items = ''; try { items = h.items ? h.items() : ''; } catch (e) { items = ''; }
       const c = CATALOG.find((x) => x.id === id) || {};
       return `<div class="flex items-center gap-4"><span class="ht-ico big">${GICONS[c.icon] || ''}</span><div><div class="pix text-xs text-muted">THE GOAL</div><div class="text-lg font-extrabold text-bone leading-snug">${h.goal}</div></div></div>
@@ -16977,6 +16979,162 @@
       document.getElementById('ht-back').onclick = () => { renderHowTo(); };
       document.getElementById('ht-play').onclick = () => { const fn = c.open; if (GAME_MODS[c.id]) openGame(c.id); else openSetup(c.id); };
     }
+    /* =========================================================================
+       HOW TO PLAY in Vietnamese (Nov 2026). When LANG.code is 'vi', guideHTML uses these instead of the English goal,
+       steps, tip and online note (whole sentences, so bold words inside them don't break the translation). The
+       "what things mean" labels are translated through VI_MORE (zz_i18n_vi.js).
+       ========================================================================= */
+    (() => {
+      const ON2 = 'Chọn <b>Trận online</b> để đấu với người mới (có <b>xếp hạng</b>: thắng thì tăng điểm, thua thì giảm). Chọn <b>Phòng riêng</b> để chơi với bạn bè: gửi mã hoặc link trong phòng cho họ. Không có ai chơi? Thêm người chơi máy trong phòng. Rời trận giữa chừng sẽ tính là thua.';
+      const ONT = 'Chọn <b>Trận online</b> để vào bàn với người chơi khác, hoặc <b>Phòng riêng</b> để chơi với bạn bè: gửi mã hoặc link trong phòng cho họ. Chủ phòng bấm Bắt đầu. Ghế trống có thể thêm người chơi máy. Nếu ai đó rời đi, người chơi máy sẽ thế chỗ.';
+      window.HOWTO_VI = {
+        naval: { goal: 'Đánh chìm cả năm con tàu của đối phương trước khi họ đánh chìm tàu của bạn.', steps: [
+          ['Giấu hạm đội', 'Kéo từng con tàu vào bảng của bạn. Chạm vào tàu để xoay. Các tàu không được chồng lên nhau (và ở một số ván còn không được chạm nhau). Bấm <b>Sẵn sàng</b> khi đã ưng ý.'],
+          ['Bắn', 'Đến lượt, chạm vào một ô trên bảng của đối phương. <b class="text-coral">Trúng</b> thì hiện lửa, <b>trượt</b> thì hiện bọt nước. Mỗi phát bắn chỉ có vài giây, đừng chần chừ!'],
+          ['Truy đuổi', 'Sau khi bắn trúng, hãy thử các ô bên cạnh: tàu là đường thẳng, nên phần còn lại nằm ở trên, dưới, trái hoặc phải.'],
+          ['Chiến thắng', 'Khi mọi ô của một con tàu bị bắn trúng, tàu sẽ chìm. Đánh chìm cả năm tàu để thắng.']],
+          tip: 'Lúc đầu hãy bắn theo kiểu bàn cờ (cách một ô): tàu nào cũng dài ít nhất 2 ô, nên chỉ cần nửa số phát bắn vẫn tìm ra hết.', online: 'Tàu của bạn được giữ bí mật: chỉ màn hình của bạn biết chúng ở đâu. ' + ON2 },
+        daily: { goal: 'Đoán từ bí mật 5 chữ cái trong tối đa 6 lần.', steps: [
+          ['Gõ một từ', 'Gõ một từ tiếng Anh có thật gồm 5 chữ cái rồi bấm Enter.'],
+          ['Xem màu', 'Mỗi chữ sẽ đổi màu cho biết bạn đoán gần đúng đến đâu (xem bên dưới).'],
+          ['Dùng điều đã biết', 'Lần đoán sau nên giữ các chữ xanh ở đúng chỗ và thử các chữ vàng ở vị trí khác.'],
+          ['Ngày mai quay lại', 'Mỗi ngày ai cũng có cùng một từ. Giải mỗi ngày để kéo dài chuỗi ngày. "Từ luyện tập" cho bạn chơi thêm không giới hạn.']],
+          tip: 'Hãy bắt đầu bằng một từ có nhiều chữ cái phổ biến, như CRANE hoặc SLATE.', online: 'Chữ Mỗi Ngày là trò chơi một mình. Muốn đua với người khác? Hãy chơi <b>Đấu Chữ</b>: cùng cách chơi, cùng một từ bí mật cho mọi người.' },
+        wordduel: { goal: 'Là người đầu tiên tìm ra từ bí mật 5 chữ cái.', steps: [
+          ['Cùng một từ', 'Mọi người cùng đoán một từ bí mật trên bảng của riêng mình, cùng một lúc.'],
+          ['Xem màu', 'Giống Chữ Mỗi Ngày: xanh = đúng chỗ, vàng = có trong từ nhưng sai chỗ, xám = không có trong từ.'],
+          ['Theo dõi đối thủ', 'Bên phải bạn thấy màu của mọi người (nhưng không thấy chữ), nên biết ai đang gần đích.'],
+          ['Chiến thắng', 'Ai có cả năm chữ xanh đầu tiên sẽ thắng. Mỗi người có sáu lần đoán.']], online: 'Chọn <b>Trận online</b> để đua với người lạ, hoặc <b>Phòng riêng</b> để đua với tối đa 3 người bạn. Một mình trong phòng? Thêm người chơi máy để đua.' },
+        c4: { goal: 'Xếp bốn quân của bạn thành một hàng: ngang, dọc hoặc chéo.', steps: [
+          ['Thả quân', 'Đến lượt, chạm vào một cột. Quân sẽ rơi xuống ô trống thấp nhất.'],
+          ['Lần lượt', 'Hai người lần lượt thả mỗi người một quân. Để ý đồng hồ.'],
+          ['Chặn lại!', 'Nếu đối thủ có ba quân liền nhau và bên cạnh còn trống, hãy thả quân vào đó để chặn.'],
+          ['Chiến thắng', 'Bốn quân liền nhau là thắng. Nếu bàn đầy trước thì hòa.']], online: ON2 },
+        tictactoe: { goal: 'Xếp ba quân của bạn thẳng hàng.', steps: [
+          ['Đánh quân', 'Chạm vào một ô trống. X đi trước ở ván đầu.'],
+          ['Lần lượt', 'Hai người lần lượt mỗi người đánh một quân.'],
+          ['Thắng ván', 'Ba quân thẳng hàng ngang, dọc hoặc chéo là thắng ván. Bàn đầy mà không ai thẳng hàng thì hòa.'],
+          ['Thắng trận', 'Trong trận "thắng 2/3" hoặc "thắng 3/5", ai thắng nhiều ván hơn sẽ thắng trận. Hai người thay phiên đi trước.']], online: ON2 },
+        hedge: { goal: 'Là người đầu tiên đưa quân sang bờ bên kia của khu vườn.', steps: [
+          ['Đi một bước', 'Đến lượt, chạm vào một ô đang sáng để đi tới đó: lên, xuống, trái hoặc phải.'],
+          ['Hoặc trồng hàng rào', 'Chạm vào <b>khe giữa hai ô</b>. Trên máy tính, hàng rào hiện ra khi bạn trỏ vào khe và bấm một lần là trồng; trên điện thoại, chạm một lần để xem rồi chạm lần nữa để trồng. Khe theo hàng ngang cho hàng rào nằm ngang, khe theo cột cho hàng rào đứng.'],
+          ['Hàng rào chặn đường', 'Không ai đi xuyên qua hàng rào được, nên đối thủ phải đi vòng. Nhưng không được nhốt kín ai: luôn phải còn một lối đi.'],
+          ['Nhảy qua', 'Nếu có quân khác ngay cạnh bạn, bạn có thể nhảy qua nó. Nếu phía sau có hàng rào, hãy bước chéo sang bên cạnh nó.']], online: ONT },
+        fibber: { goal: 'Là người đầu tiên đánh hết bài trên tay.', steps: [
+          ['Loại bài tăng dần', 'Mỗi lượt có một loại bài: Át, rồi 2, rồi 3... đến K, rồi quay lại Át. Giữa bàn cho biết đang đến loại nào.'],
+          ['Úp bài', 'Đến lượt, chạm vào 1 đến 4 lá bài rồi bấm <b>Đánh</b>. Bài được úp xuống và bạn nói đó là loại đang đến. Không có? Thì xạo!'],
+          ['NÓI XẠO!', 'Sau mỗi lượt đánh, mọi người có vài giây để bấm <b>NÓI XẠO!</b> nếu nghĩ đó là nói dối. Các lá bài sẽ được lật lên.'],
+          ['Ai phải ôm bài', 'Nếu có lá sai, người nói dối phải ôm cả chồng bài. Nếu tất cả đều đúng, người hô phải ôm. Đánh hết lá cuối cùng (mà không bị bắt) là thắng.']], online: ONT },
+        tunnel: { goal: 'Thợ đào: đào đường hầm từ lối vào đến kho vàng. Kẻ phá hoại: bí mật ngăn họ lại.', steps: [
+          ['Biết phe của mình', 'Lúc bắt đầu, một dòng thông báo cho bạn biết mình là <b class="text-teal">Thợ đào</b> hay <b class="text-coral">Kẻ phá hoại</b>. Không ai khác thấy được.'],
+          ['Đánh một lá', 'Đến lượt, chạm vào một lá trên tay. Mảnh đường hầm được đặt vào ô đang sáng (↻ để xoay). Nó phải khớp với các mảnh bên cạnh và nối vào đường hầm.'],
+          ['Lá hành động', 'Làm hỏng cuốc hoặc đèn của một người (họ không đào được cho đến khi sửa), sửa dụng cụ, dùng bản đồ kho báu để lén xem dưới một hòn đá ?, hoặc gây sập hầm để bỏ một mảnh đường hầm.'],
+          ['Không giúp được? Bỏ một lá', 'Bấm 🗑 Bỏ bài. Sau mỗi lượt bạn luôn rút một lá mới khi bộ bài còn.'],
+          ['Ai thắng', 'Khi đường hầm đến được kho vàng, Thợ đào thắng. Nếu mọi người hết bài trước, Kẻ phá hoại thắng.']], online: ONT },
+        guild: { goal: 'Xây thị trấn có nhiều điểm nhất.', steps: [
+          ['Chọn nhân vật', 'Mỗi vòng, mọi người bí mật chọn một nhân vật. Người cầm vương miện 👑 chọn trước, nên nhân vật tốt có thể đã bị chọn mất khi đến lượt bạn.'],
+          ['Đi theo số thứ tự', 'Nhân vật số 1 đi trước, rồi số 2, cứ thế tiếp. Đến lượt, lấy <b>2 vàng</b> hoặc xem <b>2 lá công trình và giữ 1</b>.'],
+          ['Xây dựng', 'Chạm vào lá công trình bạn đủ tiền xây, rồi bấm <b>Xây</b>. Không được xây hai công trình giống nhau. Kiến Trúc Sư được xây tối đa 3.'],
+          ['Dùng năng lực', 'Mỗi nhân vật có một năng lực (xem bên dưới). Bóng Đêm và Kẻ Móc Túi gọi tên nhân vật theo số, mà không biết ai đang giữ nó!'],
+          ['Kết thúc', 'Khi có người xây đủ số công trình mục tiêu, vòng đó sẽ chơi cho xong. Điểm: giá của từng công trình, +3 nếu có đủ năm màu, +4 cho người xong đầu tiên (+2 cho những người cũng xong), +2 cho mỗi kỳ quan.']], online: ONT },
+        chess: { goal: 'Vây vua đối phương để vua không còn đường thoát. Đó là chiếu hết.', steps: [
+          ['Đi quân', 'Chạm vào một quân của bạn, rồi chạm vào ô được tô sáng. Bên Trắng đi trước.'],
+          ['Ăn quân', 'Đi vào ô có quân đối phương để bắt quân đó ra khỏi bàn.'],
+          ['Chiếu tướng', 'Nếu vua của bạn bị tấn công, nước tiếp theo bạn phải đưa vua ra khỏi nguy hiểm.'],
+          ['Nước đặc biệt', '<b>Nhập thành</b>: vua và xe đổi chỗ trong một nước. <b>Phong cấp</b>: tốt đi đến hàng cuối sẽ thành hậu (hoặc quân khác). <b>Bắt tốt qua đường</b>: một cách ăn tốt đặc biệt.'],
+          ['Thắng hoặc hòa', 'Chiếu hết là thắng. Nếu một bên không còn nước đi hợp lệ nhưng không bị chiếu, ván cờ hòa (hết nước).']], online: ON2 },
+        checkers: { goal: 'Bắt hết quân của đối thủ, hoặc khiến họ không còn nước đi.', steps: [
+          ['Đi quân', 'Quân đi chéo một ô về phía trước, trên các ô tối. Chạm vào quân, rồi chạm vào ô được tô sáng.'],
+          ['Nhảy ăn', 'Nhảy qua quân đối phương vào ô trống phía sau để ăn nó. Nếu ăn được thì <b>bắt buộc</b> phải ăn.'],
+          ['Nhảy tiếp', 'Nếu sau khi đáp xuống còn nhảy ăn được nữa, tiếp tục trong cùng lượt.'],
+          ['Phong vua', 'Đi đến hàng cuối bên kia, quân của bạn thành vua và đi lùi được.']], online: ON2 },
+        pool: { goal: 'Đưa hết bóng của bạn (bóng đặc hoặc bóng sọc) vào lỗ, rồi đến bóng số 8.', steps: [
+          ['Ngắm', 'Giữ trên bàn và kéo để xoay hướng ngắm. Vòng tròn chấm cho biết bi cái sẽ chạm vào đâu, mũi tên ngắn cho biết các bóng sẽ đi về đâu.'],
+          ['Lực đánh', 'Kéo thanh lực về bên trái rồi thả ra để đánh. Kéo càng xa đánh càng mạnh.'],
+          ['Xoáy (tùy chọn)', 'Chạm vào hình bi cái nhỏ để đánh phía trên (bi đi theo), phía dưới (bi lùi lại) hoặc bên cạnh (bi bật băng lệch đi).'],
+          ['Bóng đặc hay bóng sọc', 'Quả đầu tiên bạn đưa vào lỗ sau cú phá bóng sẽ quyết định nhóm của bạn. Đưa được bóng của mình vào lỗ thì được đánh tiếp.'],
+          ['Phạm lỗi', 'Bi trắng rơi vào lỗ, chạm sai bóng trước, hoặc không bóng nào chạm băng là phạm lỗi. Khi đó đối thủ được đặt bi trắng ở bất cứ đâu.'],
+          ['Chiến thắng', 'Khi hết bóng của nhóm mình, hãy đưa bóng số 8 vào lỗ. Đưa nó vào quá sớm là thua!']], online: 'Bạn có thể xem đối thủ ngắm và kéo cơ trực tiếp. ' + ON2 },
+        bowling: { goal: 'Đánh đổ càng nhiều ki càng tốt trong 10 frame.', steps: [
+          ['Cầm bóng', 'Nhấn giữ vào quả bóng. Trượt sang trái hoặc phải ở phía dưới màn hình để chọn chỗ đứng.'],
+          ['Ném', 'Vuốt lên rồi thả ra. Vuốt càng nhanh bóng càng nhanh nhưng khó ngắm hơn.'],
+          ['Thêm xoáy', 'Uốn cong cuối đường vuốt, bóng sẽ móc vào khi gần đến các con ki.'],
+          ['Frame', 'Mỗi frame bạn có hai lần ném để đánh đổ cả mười con ki.'],
+          ['Tính điểm', '<b>Strike (X)</b>: đổ cả mười ki ở lần ném đầu, được 10 cộng điểm hai lần ném tiếp theo. <b>Spare (/)</b>: đổ cả mười ki trong hai lần ném, được 10 cộng điểm lần ném tiếp theo.']],
+          online: 'Mọi người lần lượt ném trên cùng một làn và cùng xem từng cú ném. Trận online 2 người có xếp hạng.' },
+        poker: { goal: 'Thắng hết chip của mọi người. Người cuối cùng còn chip sẽ thắng.', steps: [
+          ['Bài của bạn', 'Bạn nhận hai lá bài riêng. Năm lá bài chung lật ra ở giữa: ba lá (flop), rồi một lá (turn), rồi một lá (river).'],
+          ['Đặt cược', 'Đến lượt: <b>Bỏ bài</b> (bỏ ván này), <b>Xem/Theo</b> (theo mức cược để chơi tiếp) hoặc <b>Tố</b> (cược thêm).'],
+          ['Lật bài', 'Nếu cuối ván còn hơn một người, ai có bộ năm lá mạnh nhất (ghép từ hai lá riêng và năm lá chung) sẽ ăn cả pot.'],
+          ['Cược mù', 'Mỗi ván có hai người phải đặt một khoản cược nhỏ (cược mù). Mức này tăng dần để ván chơi luôn kết thúc.']], online: ONT },
+        blackjack: { goal: 'Thắng nhà cái bằng cách gần 21 điểm hơn mà không bị quá.', steps: [
+          ['Đặt cược', 'Chạm vào các chip để đặt cược, rồi chia bài.'],
+          ['Giá trị lá bài', 'Lá số tính đúng số đó, J Q K tính 10, lá Át tính 1 hoặc 11 (tùy cái nào có lợi).'],
+          ['Lượt của bạn', '<b>Rút</b> để lấy thêm lá, <b>Dừng</b> để thôi, <b>Gấp đôi</b> để nhân đôi tiền cược và rút đúng một lá nữa. Hai lá giống nhau có thể <b>Tách</b> thành hai tay (không có khi chơi online).'],
+          ['Lượt nhà cái', 'Nhà cái rút tiếp cho đến khi được 17 điểm trở lên.'],
+          ['Kết quả', 'Gần 21 hơn nhà cái thì được nhận lại gấp đôi tiền cược. Quá 21 là quắc và thua. Át + một lá 10 điểm ở hai lá đầu là <b>blackjack</b> và được trả 3 ăn 2.']],
+          online: 'Khi chơi online, mọi người ngồi cùng một bàn đấu với một nhà cái. Mỗi người bắt đầu với 1.000 chip chỉ dùng cho bàn này. Sau ván cuối, ai nhiều chip nhất sẽ thắng.' },
+        kittens: { goal: 'Đừng để bị dính Khoai Nóng. Chú mèo cuối cùng còn trụ lại sẽ thắng!', steps: [
+          ['Lượt của bạn', 'Đánh bao nhiêu lá tùy thích (hoặc không đánh), rồi rút một lá từ chồng bài để kết thúc lượt.'],
+          ['Khoai Nóng', 'Khoai Nóng được giấu trong chồng bài. Rút phải là bạn bị loại, trừ khi có Găng lò nướng.'],
+          ['Thoát nạn!', 'Có Găng lò nướng thì bạn sống sót, và được lén nhét Khoai Nóng trở lại chồng bài ở bất cứ đâu: ngay trên cùng cho người kế tiếp, hoặc giấu thật sâu.'],
+          ['Bỏ lượt và Tấn công', 'Bỏ lượt kết thúc lượt mà không phải rút. Tấn công cũng vậy, và người kế tiếp phải chơi 2 lượt liền.'],
+          ['Xem trước, Xáo bài, Xin bài', 'Xem trước cho xem 3 lá trên cùng. Xáo bài trộn lại chồng bài. Xin bài bắt một người phải đưa bạn một lá họ chọn.'],
+          ['Không Đời Nào!', 'Ai cũng có thể đánh Không Đời Nào bất cứ lúc nào để chặn một lá bài. Có thể Không Đời Nào cả một lá Không Đời Nào!'],
+          ['Bộ mèo', 'Lá mèo đánh lẻ không làm gì. Một đôi: chọn một lá úp của một người. Bộ ba: gọi tên một lá, nếu họ có thì phải đưa. Năm con mèo khác nhau: lấy bất kỳ lá nào trong chồng bài đã đánh.']], online: ONT },
+        colorclash: { goal: 'Là người đầu tiên đánh hết bài.', steps: [
+          ['Đánh trùng', 'Đánh một lá trùng với lá trên cùng về <b>màu</b> hoặc <b>số/ký hiệu</b>.'],
+          ['Không đánh được?', 'Rút một lá từ chồng bài. Nếu hợp, bạn có thể đánh luôn.'],
+          ['Lá đặc biệt', 'Một số lá cho người kế bị mất lượt, đổi chiều chơi, hoặc bắt người kế phải rút bài (xem bên dưới).'],
+          ['Hô CLASH!', 'Khi còn một lá, hãy bấm nút CLASH! thật nhanh. Quên thì phải rút 2 lá. Bắt được người khác quên thì họ phải rút 2 lá!']], online: ONT },
+        dominoes: { goal: 'Đánh hết quân trước và được cộng số nút còn trên tay đối thủ.', steps: [
+          ['Nối đầu', 'Đến lượt, đánh một quân có số trùng với một trong hai đầu đang mở của hàng.'],
+          ['Quân đôi', 'Quân có hai nửa cùng số được đặt nằm ngang.'],
+          ['Bị kẹt?', 'Trong <b>kiểu bốc</b>, bạn bốc quân cho đến khi có quân hợp. Trong <b>kiểu chặn</b>, bạn chỉ việc bỏ lượt.'],
+          ['Tính điểm', 'Ai đánh hết trước được cộng tất cả số nút còn trên tay người khác. Nếu không ai đánh được nữa, người có ít nút nhất thắng phần chênh lệch.']], online: ONT },
+        tycoon: { goal: 'Là người giàu nhất khi hết số vòng (ván Ngắn, Vừa hoặc Dài), hoặc người cuối cùng chưa phá sản (Cổ điển).', steps: [
+          ['Tung xúc xắc', 'Giữ nút tung để lắc xúc xắc rồi thả ra để tung. Đi số ô tương ứng.'],
+          ['Mua đất', 'Dừng ở ô chưa ai sở hữu thì bạn có thể mua. Không mua thì ô đó được đem ra đấu giá cho mọi người.'],
+          ['Tiền thuê', 'Dừng ở đất của người khác thì phải trả tiền thuê cho họ. Có đủ cả bộ màu thì tiền thuê gấp đôi.'],
+          ['Xây nhà', 'Có đủ bộ màu thì xây nhà (rồi khách sạn) để thu tiền thuê cao hơn nhiều. (Cài đặt phòng: hoặc xây một nhà mỗi lần dừng ở đất của mình.)'],
+          ['Mua lại đất (cài đặt)', 'Nếu phòng bật: sau khi trả tiền thuê, bạn có thể mua lại ô đó với giá 2 × (giá đất + nhà trên đó). Không áp dụng cho ô có khách sạn hoặc thuộc bộ màu đã đủ.'],
+          ['Thẻ và nhà tù', 'Ô Bất Ngờ và Hộp Bí Ẩn cho bạn một lá thẻ có thể giúp hoặc hại. Ba lần đổ đôi liên tiếp, hoặc dừng ở ô Vào Tù, sẽ bị vào tù.'],
+          ['Thiếu tiền?', 'Nhà sẽ được bán và đất được cầm cố tự động. Nếu vẫn không đủ trả, bạn phá sản.']], online: ONT },
+        isles: { goal: 'Là người đầu tiên đạt số điểm mục tiêu bằng cách xây làng, thị trấn và đường.', steps: [
+          ['Bắt đầu', 'Mỗi người đặt hai làng và hai con đường. Góc chạm vào những số hay ra (6 và 8) là tốt nhất.'],
+          ['Tung xúc xắc', 'Mỗi lượt tung xúc xắc. Mỗi ô đất có số đó sẽ cho tài nguyên cho ai có làng (1 lá) hoặc thị trấn (2 lá) ở góc của nó.'],
+          ['Xây dựng', 'Dùng tài nguyên: <b>Đường</b> (Gỗ + Đất sét), <b>Làng</b> (Gỗ + Đất sét + Len + Lúa), <b>Thị trấn</b> (2 Lúa + 3 Đá, nâng cấp từ một làng).'],
+          ['Trao đổi', 'Đổi 4 lá cùng loại lấy 1 lá bất kỳ với ngân hàng, hoặc đề nghị trao đổi với người chơi khác.'],
+          ['Tên Cướp', 'Tung ra 7 thì Tên Cướp di chuyển: nó chặn một ô đất và lấy trộm một lá. Ai đang cầm hơn 7 lá phải bỏ một nửa.'],
+          ['Điểm', 'Làng = 1 điểm, Thị trấn = 2 điểm, Đường dài nhất = 2 điểm. Ai đạt mục tiêu trước sẽ thắng.']], online: ONT },
+        manor: { goal: 'Là người đầu tiên tìm ra ai đã làm, bằng gì, và ở phòng nào.', steps: [
+          ['Bí mật', 'Một nghi phạm, một công cụ và một căn phòng được giấu trong phong bì. Các lá khác được chia ra, nên lá nào trên tay bạn thì không thể là đáp án.'],
+          ['Đi lại', 'Đến lượt, đi sang một phòng bên cạnh (các phòng ở góc có lối đi bí mật sang góc đối diện).'],
+          ['Phỏng đoán', 'Gọi tên một nghi phạm và một công cụ "ở phòng này". Người kế tiếp có một trong các lá đó phải bí mật cho bạn xem một lá.'],
+          ['Ghi chép', 'Sổ tay đánh dấu những lá bạn đã thấy. Gạch bỏ mọi thứ không thể là đáp án.'],
+          ['Buộc tội', 'Khi đã chắc chắn, hãy buộc tội! Đúng thì thắng. Sai thì bị loại (nhưng vẫn phải cho người khác xem bài).']],
+          online: 'Khi ai đó đưa ra một lá, chỉ người hỏi mới được thấy. ' + ONT },
+        wordconnect: { goal: 'Tìm càng nhiều từ càng tốt từ vòng chữ cái.', steps: [
+          ['Ghép từ', 'Chạm vào các chữ trên vòng theo thứ tự. Ngay khi chúng thành một từ bạn chưa tìm, từ đó tự được nhận.'],
+          ['Sửa lỗi', 'Chạm lại chữ cuối (hoặc ⌫ Xóa) để bỏ nó. Xóa hết để làm lại.'],
+          ['Từ dài nhất', 'Có ít nhất một từ dùng hết mọi chữ. Tìm được nó sẽ có nhiều điểm nhất.'],
+          ['Ngôi sao', 'Tìm thêm các từ ẩn để được tối đa ba ngôi sao. Gợi ý cho xem chữ đầu nhưng bị trừ điểm.']],
+          online: 'Khi online là một cuộc đua: ai cũng có cùng các chữ cái và thấy điểm của nhau khi chơi. Ai nhiều điểm nhất khi hết giờ sẽ thắng.' },
+        impostor: { goal: 'Dân thường: tìm ra kẻ giả mạo. Kẻ giả mạo: trà trộn và đừng để bị bắt.', steps: [
+          ['Từ bí mật', 'Mọi người nhận cùng một từ bí mật, trừ một người là kẻ giả mạo, nhận một từ gần giống nhưng khác. Không ai biết ai là kẻ giả mạo, kể cả chính họ!'],
+          ['Gợi ý', 'Lần lượt, mỗi người gõ một từ để gợi ý về từ của mình. Đủ rõ để đồng đội hiểu, đủ mơ hồ để kẻ giả mạo không đoán được.'],
+          ['Bỏ phiếu', 'Mọi người bỏ phiếu cho người mình nghĩ là kẻ giả mạo.'],
+          ['Cơ hội cuối', 'Kẻ giả mạo bị bắt được đoán một lần từ của cả nhóm. Đoán đúng thì vẫn thắng! Phiếu hòa thì kẻ giả mạo thoát.']],
+          online: 'Mọi người gõ gợi ý trên màn hình của mình, rồi cùng bỏ phiếu một lúc. ' + ONT },
+        doodle: { goal: 'Đoán thật nhanh hình người khác vẽ, và vẽ thật dễ hiểu để họ đoán được hình của bạn.', steps: [
+          ['Chọn từ', 'Đến lượt vẽ, chọn một từ <b>dễ</b>, <b>vừa</b> hoặc <b>khó</b>. Từ càng khó càng nhiều điểm (×1, ×1,5, ×2). Chỉ bạn thấy từ đó.'],
+          ['Vẽ', 'Vẽ lên bảng trắng. Chọn màu và cỡ bút; có nút Hoàn tác và Xóa hết. Không được viết chữ hay số!'],
+          ['Mọi người đoán', 'Những người khác gõ từ đoán vào ô bên phải. Đoán đúng được điểm: càng nhanh càng nhiều. Đoán sai sẽ hiện trong danh sách cho mọi người thấy.'],
+          ['Gợi ý', 'Người đoán thấy độ khó và một gạch cho mỗi chữ cái. Khi sắp hết giờ, một vài chữ sẽ hiện ra. Không cần gõ dấu: "meo" vẫn tính là "mèo".'],
+          ['Chiến thắng', 'Mỗi vòng ai cũng được vẽ một lần. Sau vòng cuối, ai nhiều điểm nhất sẽ thắng.']],
+          online: 'Mọi người thấy hình vẽ trực tiếp khi đang vẽ. Trò này chỉ chơi với người thật (không có người chơi máy): tạo phòng và gửi link cho bạn bè. Phòng có thể chọn từ tiếng Anh hoặc tiếng Việt.' },
+      };
+    })();
     /* =========================================================================
        VIETNAMESE, part 1 (Nov 2026): game descriptions, setup options and hints, loading-screen lines and tips.
        Merged into the table in zz_lang.js (this file loads just before it). Keys are the exact English lines.
@@ -17112,6 +17270,71 @@
       'Waiting for your opponent...': 'Đang chờ đối thủ...', 'You are in the room. The host starts the game.': 'Bạn đã vào phòng. Chủ phòng sẽ bắt đầu.',
       'You are now hosting this table.': 'Bây giờ bạn là chủ bàn.', 'Password changed!': 'Đã đổi mật khẩu!',
       'Password not changed: it needs at least 8 characters.': 'Chưa đổi mật khẩu: cần ít nhất 8 ký tự.', 'Choose a new password (at least 8 characters):': 'Chọn mật khẩu mới (ít nhất 8 ký tự):',
+      // guide screen
+      'THE GOAL': 'MỤC TIÊU', 'WHAT THINGS MEAN': 'Ý NGHĨA CÁC THỨ', 'TIP': 'MẸO', 'ONLINE': 'ONLINE', 'Got it': 'Đã hiểu', '← All games': '← Tất cả trò chơi',
+      'No guide for this game yet.': 'Trò này chưa có hướng dẫn.', 'GRID': 'BẢNG', 'ONE WORD A DAY': 'MỖI NGÀY MỘT TỪ', 'WORD RACE': 'ĐUA CHỮ', 'COLUMNS': 'CỘT',
+      'MAZE RACE': 'ĐUA MÊ CUNG', 'BLUFFING': 'NÓI XẠO', 'SECRET TEAMS': 'PHE BÍ MẬT', 'CHARACTERS & TOWNS': 'NHÂN VẬT & THỊ TRẤN', 'CLASSIC': 'CỔ ĐIỂN',
+      '8-BALL': 'BÓNG 8', '10 FRAMES': '10 FRAME', "TEXAS HOLD'EM": "TEXAS HOLD'EM", 'PUSH YOUR LUCK': 'THỬ VẬN MAY', 'MATCH COLOURS': 'GHÉP MÀU',
+      'DOUBLE-SIX': 'DOMINO 6 NÚT', 'PROPERTY GAME': 'TRÒ ĐẤT ĐAI', 'BUILD AN ISLAND': 'XÂY ĐẢO', 'WHODUNIT': 'AI LÀ THỦ PHẠM', 'PARTY': 'VUI NHÓM',
+      'DRAW & GUESS': 'VẼ & ĐOÁN', 'SOLO OR 1-4 PLAYERS': 'CHƠI ĐƠN HOẶC 1-4 NGƯỜI', 'SOLO OR ONLINE RACE': 'CHƠI ĐƠN HOẶC ĐUA ONLINE',
+      // "what things mean"
+      'Carrier': 'Tàu sân bay', '5 squares long': 'Dài 5 ô', 'Battleship': 'Thiết giáp hạm', '4 squares': '4 ô', 'Cruiser': 'Tuần dương hạm', '3 squares': '3 ô',
+      'Submarine': 'Tàu ngầm', 'Destroyer': 'Khu trục hạm', '2 squares, the hardest to find': '2 ô, khó tìm nhất', 'Green': 'Xanh', 'Right letter, right spot': 'Đúng chữ, đúng chỗ',
+      'Amber': 'Vàng', 'In the word, but somewhere else': 'Có trong từ, nhưng ở chỗ khác', 'Grey': 'Xám', 'Not in the word at all': 'Hoàn toàn không có trong từ',
+      'In the word, wrong spot': 'Có trong từ, sai chỗ', 'Not in the word': 'Không có trong từ', 'Amber disc': 'Quân vàng', 'The first player': 'Người đi trước',
+      'Coral disc': 'Quân đỏ', 'The second player': 'Người đi sau', 'Coral': 'Đỏ', 'Teal': 'Xanh ngọc', 'Hedge': 'Hàng rào',
+      '2 squares long. You have 10 (5 with 4 players)': 'Dài 2 ô. Bạn có 10 cái (5 cái nếu chơi 4 người)', 'Glowing square': 'Ô sáng', 'Where you can move now': 'Nơi bạn có thể đi lúc này',
+      'Coloured edge': 'Cạnh có màu', 'The side each player is racing to': 'Bờ mà mỗi người đang đua tới', 'A true card': 'Lá thật', 'Matches the rank everyone is on': 'Đúng loại bài đang đến',
+      'A lie': 'Lá xạo', 'Any other card played as that rank': 'Lá khác nhưng nói là loại đó', 'Shout': 'Hô', 'Turn the last cards over': 'Lật các lá vừa đánh',
+      'Tunnel': 'Đường hầm', 'Join it to the tunnel': 'Nối vào đường hầm', 'Dead end': 'Đường cụt', 'The tunnel stops here': 'Đường hầm dừng ở đây', 'Break': 'Làm hỏng',
+      'Stops someone digging': 'Khiến ai đó không đào được', 'Map': 'Bản đồ', 'Peek under a stone': 'Lén xem dưới hòn đá',
+      'Shadow': 'Bóng Đêm', 'Name a character: they miss their whole turn this round.': 'Gọi tên một nhân vật: họ mất cả lượt vòng này.',
+      'Pickpocket': 'Kẻ Móc Túi', 'Name a character: when their turn starts, you take all their gold.': 'Gọi tên một nhân vật: khi đến lượt họ, bạn lấy hết vàng của họ.',
+      'Trader': 'Thương Lái', 'Draw 2 extra building cards.': 'Rút thêm 2 lá công trình.', 'Monarch': 'Quốc Vương',
+      'Take the crown (pick first next round). +1 gold for each royal building.': 'Lấy vương miện (chọn trước ở vòng sau). +1 vàng cho mỗi công trình hoàng gia.',
+      'Abbot': 'Tu Viện Trưởng', '+1 gold for each faith building. The Captain can’t touch your town.': '+1 vàng cho mỗi công trình tôn giáo. Đội Trưởng không đụng được vào thị trấn của bạn.',
+      'Merchant': 'Thương Gia', '+1 gold, and +1 for each trade building.': '+1 vàng, và +1 cho mỗi công trình buôn bán.', 'Architect': 'Kiến Trúc Sư',
+      'Draw 2 extra cards and build up to 3 buildings.': 'Rút thêm 2 lá và xây tối đa 3 công trình.', 'Captain': 'Đội Trưởng',
+      '+1 gold for each guard building. Pay 1 less than its cost to knock down a building.': '+1 vàng cho mỗi công trình phòng thủ. Trả ít hơn giá 1 vàng để phá một công trình.',
+      'King': 'Vua', 'One square any way. Protect it!': 'Đi một ô theo mọi hướng. Hãy bảo vệ nó!', 'Queen': 'Hậu', 'Any distance, any direction': 'Đi xa bao nhiêu cũng được, mọi hướng',
+      'Rook': 'Xe', 'Straight lines': 'Đi thẳng', 'Bishop': 'Tượng', 'Diagonals': 'Đi chéo', 'Knight': 'Mã', 'An L shape. Can jump over pieces': 'Đi hình chữ L. Nhảy qua được quân khác',
+      'Pawn': 'Tốt', 'Forward one (two on its first move), takes diagonally': 'Tiến một ô (nước đầu được hai ô), ăn chéo', 'Your piece': 'Quân của bạn',
+      'Moves diagonally forward': 'Đi chéo về phía trước', 'Moves forward and backward': 'Đi tới và đi lùi', 'Jump over these to capture': 'Nhảy qua để ăn quân',
+      'Cue ball': 'Bi cái', 'The white one you hit': 'Bóng trắng bạn đánh', 'Solids 1-7': 'Bóng đặc 1-7', 'One full colour': 'Một màu trơn', 'Stripes 9-15': 'Bóng sọc 9-15',
+      'A coloured band': 'Có một dải màu', '8-ball': 'Bóng số 8', 'Last!': 'Cuối cùng!', 'Strike': 'Strike', 'All 10 pins, first throw': 'Đổ cả 10 ki ở lần ném đầu',
+      'Spare': 'Spare', 'All 10 pins, two throws': 'Đổ cả 10 ki trong hai lần ném', 'Miss': 'Trượt', 'No pins': 'Không đổ con nào', 'Your two cards': 'Hai lá của bạn',
+      'Only you can see them': 'Chỉ bạn thấy được', 'Chips': 'Chip', 'What you bet with': 'Thứ bạn dùng để cược', 'HAND RANKS · BEST TO WORST': 'THỨ HẠNG BÀI · TỪ MẠNH ĐẾN YẾU',
+      'Blackjack!': 'Blackjack!', 'Ace + a 10-value card': 'Át + một lá 10 điểm', 'A tough hand: hit or stand?': 'Bài khó: rút hay dừng?', 'Your bet': 'Tiền cược của bạn',
+      'Hot Potato': 'Khoai Nóng', 'Draw it and you are out': 'Rút phải là bị loại', 'Oven Mitt': 'Găng lò nướng', 'Saves you once': 'Cứu bạn một lần', 'No Way': 'Không Đời Nào',
+      'Stop any card': 'Chặn bất kỳ lá nào', 'Peek': 'Xem trước', 'See the top 3 cards': 'Xem 3 lá trên cùng', 'Skip': 'Bỏ lượt', 'End your turn without drawing': 'Kết thúc lượt mà không rút',
+      'Attack': 'Tấn công', 'Next player takes 2 turns': 'Người kế phải chơi 2 lượt', 'Favor': 'Xin bài', 'They give you a card': 'Họ phải đưa bạn một lá',
+      'Cat cards': 'Lá mèo', 'Pairs, threes, five different': 'Đôi, bộ ba, năm con khác nhau', 'Number': 'Số', 'Match colour or number': 'Trùng màu hoặc số',
+      'Next player misses a turn': 'Người kế mất lượt', 'Reverse': 'Đổi chiều', 'Turn order flips': 'Đảo chiều chơi', 'Next player draws 2': 'Người kế rút 2 lá',
+      'Wild': 'Đổi màu', 'Pick any colour': 'Chọn màu bất kỳ', 'Wild +4': 'Đổi màu +4', 'Pick a colour, next draws 4': 'Chọn màu, người kế rút 4 lá',
+      'Fits next to a 3 or a 5': 'Nối được với số 3 hoặc 5', 'Double six': 'Đôi sáu', 'The highest double starts the first round': 'Quân đôi lớn nhất đi đầu ván đầu tiên',
+      'Blank is zero': 'Ô trống là 0', 'Colour set': 'Bộ màu', 'Own all of one colour': 'Có đủ các ô cùng màu', 'House': 'Nhà', 'More rent': 'Tiền thuê cao hơn',
+      'Hotel': 'Khách sạn', 'The most rent': 'Tiền thuê cao nhất', 'Doubles': 'Đổ đôi', 'Roll again': 'Được tung tiếp', 'Timber': 'Gỗ', 'From forests': 'Từ rừng',
+      'Clay': 'Đất sét', 'From clay pits': 'Từ hố đất sét', 'Wool': 'Len', 'From pastures': 'Từ đồng cỏ', 'Grain': 'Lúa', 'From fields': 'Từ cánh đồng',
+      'Stone': 'Đá', 'From mountains': 'Từ núi', '6 suspects': '6 nghi phạm', 'Who did it': 'Ai làm', '6 tools': '6 công cụ', 'With what': 'Bằng gì', '9 rooms': '9 phòng',
+      'Where': 'Ở đâu', 'Shuffle': 'Xáo', 'Mix up the wheel to see new words': 'Xáo vòng chữ để thấy từ mới', 'Hint': 'Gợi ý', 'Shows the start of a word': 'Cho xem phần đầu của một từ',
+      'Impostor': 'Kẻ giả mạo', 'Has a different word': 'Có một từ khác', 'Vote': 'Bỏ phiếu', 'Point at the odd one out': 'Chỉ ra người khác biệt', 'Drawer': 'Người vẽ',
+      'Gets points when people guess': 'Được điểm khi có người đoán đúng', 'Guessers': 'Người đoán', 'Faster guesses score more': 'Đoán nhanh hơn được nhiều điểm hơn',
+      'Letters appear as time runs out': 'Chữ cái hiện ra khi sắp hết giờ',
+      // words printed on game cards
+      'HOT POTATO': 'KHOAI NÓNG', 'Draw it and you are out, unless you have an Oven Mitt': 'Rút phải là bị loại, trừ khi có Găng lò nướng', 'OVEN MITT': 'GĂNG LÒ NƯỚNG',
+      'Saves you from a Hot Potato. Hide the potato back in the pile': 'Cứu bạn khỏi Khoai Nóng. Giấu khoai lại vào chồng bài', 'ATTACK': 'TẤN CÔNG',
+      'End your turn without drawing. The next player takes 2 turns': 'Kết thúc lượt mà không rút. Người kế phải chơi 2 lượt', 'SKIP': 'BỎ LƯỢT',
+      'End your turn without drawing': 'Kết thúc lượt mà không rút', 'SHUFFLE': 'XÁO BÀI', 'Shuffle the draw pile': 'Xáo lại chồng bài', 'PEEK': 'XEM TRƯỚC',
+      'Look at the top 3 cards of the pile': 'Xem 3 lá trên cùng của chồng bài', 'FAVOR': 'XIN BÀI', 'A player gives you a card of their choice': 'Một người phải đưa bạn một lá họ chọn',
+      'NO WAY': 'KHÔNG ĐỜI NÀO', 'Stop any action. Play it any time': 'Chặn mọi hành động. Đánh lúc nào cũng được', 'SOCK CAT': 'MÈO TẤT', 'BOX CAT': 'MÈO HỘP',
+      'LOAF CAT': 'MÈO BÁNH MÌ', 'YARN CAT': 'MÈO CUỘN LEN', 'TOAST CAT': 'MÈO BÁNH NƯỚNG', 'Pair: pick a card · Three: name a card': 'Đôi: chọn một lá · Ba: gọi tên một lá',
+      'DEAD END': 'ĐƯỜNG CỤT', 'Break pick': 'Hỏng cuốc', 'Break lamp': 'Hỏng đèn', 'Fix pick': 'Sửa cuốc', 'Fix lamp': 'Sửa đèn', 'Treasure map': 'Bản đồ kho báu', 'Cave-in': 'Sập hầm',
+      'Blank | 4': 'Trống | 4', 'Royal flush': 'Thùng phá sảnh lớn', 'A K Q J 10, all one suit. The best hand.': 'A K Q J 10 cùng chất. Bộ mạnh nhất.',
+      'Straight flush': 'Thùng phá sảnh', 'Five in a row, all one suit.': 'Năm lá liên tiếp cùng chất.', 'Four of a kind': 'Tứ quý', 'Four cards of the same rank.': 'Bốn lá cùng số.',
+      'Full house': 'Cù lũ', 'Three of a kind plus a pair.': 'Một bộ ba cộng một đôi.', 'Flush': 'Thùng', 'Any five cards of one suit.': 'Năm lá bất kỳ cùng chất.',
+      'Straight': 'Sảnh', 'Five in a row, mixed suits.': 'Năm lá liên tiếp, khác chất.', 'Three of a kind': 'Bộ ba', 'Three cards of the same rank.': 'Ba lá cùng số.',
+      'Two pair': 'Hai đôi', 'Two different pairs.': 'Hai đôi khác nhau.', 'Pair': 'Đôi', 'Two cards of the same rank.': 'Hai lá cùng số.', 'High card': 'Mậu thầu',
+      'Nothing matches: your highest card counts.': 'Không có bộ nào: tính lá cao nhất.',
     };
     /* =========================================================================
        LANGUAGE: English / Tiếng Việt (Nov 2026, Inna; stage 1). The page is written in English; when Vietnamese is
@@ -17222,6 +17445,8 @@
         [/^(.+)'S TURN$/, 'LƯỢT CỦA $1'], [/^RANKED ONLINE · (.+)$/, (m, g) => `XẾP HẠNG ONLINE · ${(VI[g.charAt(0) + g.slice(1).toLowerCase()] || g).toUpperCase()}`],
         [/^(\d+) PLAYERS$/, '$1 NGƯỜI'], [/^Tip: (.+)$/, (m, t) => `Mẹo: ${VI[t] || t}`],
         [/^(.+) ONLINE$/, (m, g) => { const k = Object.keys(VI).find((x) => x.toUpperCase() === g); return k ? `${VI[k].toUpperCase()} ONLINE` : m; }],
+        [/^HOW TO PLAY · (.+)$/, (m, g) => { const k = Object.keys(VI).find((x) => x.toUpperCase() === g); return `CÁCH CHƠI · ${k ? VI[k].toUpperCase() : g}`; }],
+        [/^((?:\d+[-–]\d+ NGƯỜI|\d+ NGƯỜI|1v1|CHƠI ĐƠN)) · (.+)$/, (m, a, b) => `${a} · ${VI[b] || b.replace('GRID', 'BẢNG').replace('COLUMNS', 'CỘT')}`],
         [/^Invite friends or add computer players \(at least (\d+) players\)\.$/, 'Mời bạn bè hoặc thêm người chơi máy (ít nhất $1 người).'],
         [/^Waiting for friends to join \(at least (\d+) players\)\.\.\.$/, 'Đang chờ bạn bè vào phòng (ít nhất $1 người)...'],
         [/^Waiting for (.+)\.\.\.$/, 'Đang chờ $1...'], [/^(\d+) online now$/, '$1 đang online'],

@@ -107,6 +107,8 @@
         [/^(.+)'S TURN$/, 'LƯỢT CỦA $1'], [/^RANKED ONLINE · (.+)$/, (m, g) => `XẾP HẠNG ONLINE · ${(VI[g.charAt(0) + g.slice(1).toLowerCase()] || g).toUpperCase()}`],
         [/^(\d+) PLAYERS$/, '$1 NGƯỜI'], [/^Tip: (.+)$/, (m, t) => `Mẹo: ${VI[t] || t}`],
         [/^(.+) ONLINE$/, (m, g) => { const k = Object.keys(VI).find((x) => x.toUpperCase() === g); return k ? `${VI[k].toUpperCase()} ONLINE` : m; }],
+        [/^HOW TO PLAY · (.+)$/, (m, g) => { const k = Object.keys(VI).find((x) => x.toUpperCase() === g); return `CÁCH CHƠI · ${k ? VI[k].toUpperCase() : g}`; }],
+        [/^((?:\d+[-–]\d+ NGƯỜI|\d+ NGƯỜI|1v1|CHƠI ĐƠN)) · (.+)$/, (m, a, b) => `${a} · ${VI[b] || b.replace('GRID', 'BẢNG').replace('COLUMNS', 'CỘT')}`],
         [/^Invite friends or add computer players \(at least (\d+) players\)\.$/, 'Mời bạn bè hoặc thêm người chơi máy (ít nhất $1 người).'],
         [/^Waiting for friends to join \(at least (\d+) players\)\.\.\.$/, 'Đang chờ bạn bè vào phòng (ít nhất $1 người)...'],
         [/^Waiting for (.+)\.\.\.$/, 'Đang chờ $1...'], [/^(\d+) online now$/, '$1 đang online'],

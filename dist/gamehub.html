@@ -1519,7 +1519,7 @@
       body.in-game[data-game="poker"] #pk-table { min-height: calc(100vh - 82px) !important; padding-top: 0 !important; padding-bottom: 14px !important; }
       body.in-game[data-game="poker"] #pk-table .ring4 { row-gap: 0 !important; }
     }
-    @media (min-width: 1024px) and (max-height: 820px) {
+    @media (min-width: 1024px) and (max-height: 950px) {
       /* short screens: Poker's Fold / Call / Raise sit in the empty space on the left, so they never cover your seat */
       body.in-game[data-game="poker"] #pk-ctl { left: 16px; top: 258px; bottom: auto; transform: none; width: 238px; }
       body.in-game[data-game="poker"] #pk-ctl .win { flex-direction: column; align-items: stretch; gap: 10px; }
@@ -1541,6 +1541,16 @@
     .ng-peek-bar { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 55; display: flex; align-items: center; gap: 12px; padding: 8px 12px 8px 16px;
       background: rgba(5, 14, 24, .94); border: 2px solid #F5B041; box-shadow: 3px 3px 0 #050E18; color: #F7F4EC; font-weight: 700; font-size: 14px; }
     .ng-peek-bar.hidden { display: none; }
+    /* Poker on 1280-1600 px screens: the five shared cards stay in one row and your own cards stay above the
+       Fold / Call / Raise bar (the table had 260 px empty sides, which squeezed the middle) */
+    @media (min-width: 1024px) {
+      body.in-game[data-game="poker"] #pk-table { padding: 0 40px 96px !important; }
+      body.in-game[data-game="poker"] #pk-table .ring4 { column-gap: 48px !important; }
+      body.in-game[data-game="poker"] .pk-board { flex-wrap: nowrap !important; }
+    }
+    @media (min-width: 1024px) and (max-height: 950px) {
+      body.in-game[data-game="poker"] #pk-table { padding: 0 40px 14px 270px !important; }
+    }
     /* ---------- home page top (Nov 2026): one slim bar to create / join a room, two slim links ---------- */
     .nh { min-width: 0; max-width: 100%; box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); border: 4px solid #050E18; box-shadow: 0 6px 0 #050E18; margin-bottom: 14px; }
     .nh-l { background: #F5B041; padding: 16px 24px; display: flex; flex-direction: column; justify-content: center; gap: 8px; min-width: 0; }
@@ -2147,6 +2157,21 @@
       padding: 6px 16px !important; background: rgba(5, 14, 24, .78) !important; border: 2px solid #050E18 !important; box-shadow: 2px 2px 0 rgba(5, 14, 24, .6) !important; }
     #fb-prompt:empty, #cc-prompt:empty, #kk-prompt:empty { visibility: hidden; }
     #fb-prompt .btn-game, #cc-prompt .btn-game, #kk-prompt .btn-game { padding-top: .35rem !important; padding-bottom: .35rem !important; }
+    /* real playing-card faces everywhere (Poker, Blackjack): pip sizes are a share of the card's width (percentages of
+       the full-card layer), so they grow and shrink with every card size */
+    .pcard .pc-pips { position: absolute; inset: 0; }
+    .pcard .pc-pips i { position: absolute; width: 19%; transform: translate(-50%, -50%); line-height: 0; }
+    .pcard .pc-pips i svg { width: 100% !important; height: auto !important; display: block; }
+    .pcard .pc-face { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .pcard .pc-face b { font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 1.9em; line-height: 1; }
+    .pcard .pc-face i { width: 20%; line-height: 0; } .pcard .pc-face i svg { width: 100% !important; height: auto !important; }
+    .pcard .pc-one { display: none; }
+    /* tiny cards (the hand-ranks guide, small seats): one big suit symbol reads better than tiny pips */
+    .pk-rc .pc-pips, .pk-rc .pc-face, .ht-items .pc-pips, .ht-items .pc-face, .pcard.xs .pc-pips, .pcard.xs .pc-face { display: none !important; }
+    .pk-rc .pc-one, .ht-items .pc-one, .pcard.xs .pc-one { display: flex !important; position: absolute; inset: 0; align-items: center; justify-content: center; padding-top: 10%; }
+    .pcard .pc-one svg { width: 58% !important; height: auto !important; }
+    .pcard.sm .pc-face b { font-size: 1.45em; }
+    @media (min-width: 640px) { #gs-body .pcard:not(.sm) .pc-face b { font-size: 2.4em; } }
     /* ---------- Pool: pull-back power bar ---------- */
     .pl-bar { position: relative; height: 58px; background: #0A1624; border: 3px solid var(--ink); box-shadow: inset 0 3px 0 rgba(0,0,0,.4); touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; overflow: hidden; }
     .pl-bar.dragging { cursor: grabbing; }
@@ -6619,8 +6644,18 @@
       const fk = o.fk ? ` data-fk="${o.fk}" data-face="${!c || o.down ? 'down' : 'up'}"` : '';
       if (!c || o.down) return `<div class="pcard back ${o.cls || ''}"${fk}><div class="pc-back"></div></div>`;
       const col = SUIT_COL[c.s];
-      return `<div class="pcard ${o.cls || ''}"${fk} style="color:${col}"><span class="pc-corner">${rankLab(c.r)}<i>${suitSVG(c.s, 14)}</i></span><span class="pc-mid">${suitSVG(c.s, 34)}</span><span class="pc-corner br">${rankLab(c.r)}<i>${suitSVG(c.s, 14)}</i></span></div>`;
+      // the middle shows the real number of suit symbols (3 of hearts = three hearts), like a real card (Inna, Nov 2026);
+      // Aces show one big suit, J / Q / K a big letter. Pip sizes follow the card's width (container units).
+      const P = PC_PIPS[c.r];
+      const mid = P ? `<span class="pc-pips">${P.map(([x, y]) => `<i style="left:${x}%;top:${y}%${y > 50 ? ';transform:translate(-50%,-50%) rotate(180deg)' : ''}">${suitSVG(c.s, 14)}</i>`).join('')}</span>`
+        : c.r === 14 ? `<span class="pc-mid">${suitSVG(c.s, 34)}</span>` : `<span class="pc-face"><b>${rankLab(c.r)}</b><i>${suitSVG(c.s, 14)}</i></span>`;
+      return `<div class="pcard pc-real ${o.cls || ''}"${fk} style="color:${col}"><span class="pc-corner">${rankLab(c.r)}<i>${suitSVG(c.s, 14)}</i></span>${mid}${P || c.r !== 14 ? `<span class="pc-one">${suitSVG(c.s, 34)}</span>` : ''}<span class="pc-corner br">${rankLab(c.r)}<i>${suitSVG(c.s, 14)}</i></span></div>`;
     }
+    const PC_PIPS = { 2: [[50, 22], [50, 78]], 3: [[50, 22], [50, 50], [50, 78]], 4: [[34, 22], [66, 22], [34, 78], [66, 78]],
+      5: [[34, 22], [66, 22], [50, 50], [34, 78], [66, 78]], 6: [[34, 22], [66, 22], [34, 50], [66, 50], [34, 78], [66, 78]],
+      7: [[34, 22], [66, 22], [50, 36], [34, 50], [66, 50], [34, 78], [66, 78]], 8: [[34, 22], [66, 22], [50, 36], [34, 50], [66, 50], [50, 64], [34, 78], [66, 78]],
+      9: [[34, 22], [66, 22], [34, 41], [66, 41], [50, 50], [34, 59], [66, 59], [34, 78], [66, 78]],
+      10: [[34, 22], [66, 22], [50, 31], [34, 41], [66, 41], [34, 59], [66, 59], [50, 69], [34, 78], [66, 78]] };
     function newDeck(n = 1) {
       const d = [];
       for (let k = 0; k < n; k++) for (const s of SUITS) for (let r = 2; r <= 14; r++) d.push({ r, s });
@@ -14076,7 +14111,7 @@
         const pos = rot.length === 1 ? ['top'] : rot.length === 2 ? ['l', 'r'] : rot.map((_, k) => (k === 0 ? 'l' : k === rot.length - 1 ? 'r' : 'top'));
         t.innerHTML = `<div class="ring4">${ringSlots('pk')}
           <div class="r-mid text-center space-y-2"><div class="flex items-end justify-center gap-4"><span id="pk-deck" class="g-deck">${playingCardHTML(null, { cls: 'sm' })}</span><div id="pk-pot" class="chip-spot" style="min-width:120px">${potInner()}</div></div>
-          <div class="flex justify-center gap-2 min-h-[94px] flex-wrap">${G.board.map((c) => playingCardHTML(c, { fk: gKey(c), cls: G.showdown && G.result && G.result.winCards ? (G.result.winCards.has(gKey(c)) ? 'pk-win' : 'pk-lose') : '' })).join('')}</div>
+          <div class="pk-board flex justify-center gap-2 min-h-[94px] flex-wrap">${G.board.map((c) => playingCardHTML(c, { fk: gKey(c), cls: G.showdown && G.result && G.result.winCards ? (G.result.winCards.has(gKey(c)) ? 'pk-win' : 'pk-lose') : '' })).join('')}</div>
           ${G.showdown && G.result && G.result.banner ? `<div class="pk-banner">🏆 ${esc(G.result.banner)}</div>` : `<div class="pix text-xs text-bone/80 min-h-[16px]">${G.result ? esc(G.result.text) : ''}</div>`}
           <div id="pk-next" class="pix text-xs text-muted min-h-[16px]"></div></div>
           <div class="r-me flex flex-col items-center gap-1">${spot(G.me)}${seatHTML(ps[G.me], G.me)}</div></div>`;

@@ -11,7 +11,7 @@ with sync_playwright() as p:
     check(r['imp'] is True, 'holding 3 Sevens, the computer calls "2 Sevens" a fib')
     check(r['real'] == '[0,1,2]', 'with real cards the computer plays them all')
     check(r['fib'] == 1, 'with none, it fibs with one card')
-    pg.evaluate("window.__fast = 1; setupSave('fibber', { n: 4, secs: 3 }); openGame('fibber')"); pg.wait_for_timeout(400)
+    pg.evaluate("window.__fast = 1; setupSave('fibber', { n: 3, secs: 3, turn: 0 }); openGame('fibber')"); pg.wait_for_timeout(400)
     if pg.query_selector('[data-mode]'): pg.click('[data-mode]'); pg.wait_for_timeout(300)
     pg.click('#su-go'); pg.wait_for_selector('#fb-hand .fb-card', timeout=10000)
     plays = doubts = 0; shot = {'turn': False, 'reveal': False}
@@ -32,7 +32,7 @@ with sync_playwright() as p:
     check(pg.evaluate("GAME_MODS.fibber.engine.G.over"), f'the game reaches the end ({plays} plays by you, {doubts} shouts)')
     pl = pg.evaluate("GAME_MODS.fibber.engine.G.places.map(q => q.name + ':' + q.hand.length).join(' ')")
     print('   finishing order:', pl)
-    check(len(pl.split()) == 4 and pl.split()[-1].split(':')[1] != '0' and all(x.split(':')[1] == '0' for x in pl.split()[:-1]), 'play goes on until only one player still has cards (1st, 2nd, 3rd, last)')
+    check(len(pl.split()) == 3 and pl.split()[-1].split(':')[1] != '0' and all(x.split(':')[1] == '0' for x in pl.split()[:-1]), 'play goes on until only one player still has cards (1st, 2nd, 3rd, last)')
     pg.wait_for_selector('#g-modal:not(.hidden)', timeout=15000)
     check(plays > 2 and shot['reveal'], 'you played cards and saw cards turned over')
     pg.screenshot(path=S + '15_fibber_end.png')

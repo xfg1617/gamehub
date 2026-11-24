@@ -192,3 +192,18 @@
       padding: 6px 16px !important; background: rgba(5, 14, 24, .78) !important; border: 2px solid #050E18 !important; box-shadow: 2px 2px 0 rgba(5, 14, 24, .6) !important; }
     #fb-prompt:empty, #cc-prompt:empty, #kk-prompt:empty { visibility: hidden; }
     #fb-prompt .btn-game, #cc-prompt .btn-game, #kk-prompt .btn-game { padding-top: .35rem !important; padding-bottom: .35rem !important; }
+    /* real playing-card faces everywhere (Poker, Blackjack): pip sizes are a share of the card's width (percentages of
+       the full-card layer), so they grow and shrink with every card size */
+    .pcard .pc-pips { position: absolute; inset: 0; }
+    .pcard .pc-pips i { position: absolute; width: 19%; transform: translate(-50%, -50%); line-height: 0; }
+    .pcard .pc-pips i svg { width: 100% !important; height: auto !important; display: block; }
+    .pcard .pc-face { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .pcard .pc-face b { font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 1.9em; line-height: 1; }
+    .pcard .pc-face i { width: 20%; line-height: 0; } .pcard .pc-face i svg { width: 100% !important; height: auto !important; }
+    .pcard .pc-one { display: none; }
+    /* tiny cards (the hand-ranks guide, small seats): one big suit symbol reads better than tiny pips */
+    .pk-rc .pc-pips, .pk-rc .pc-face, .ht-items .pc-pips, .ht-items .pc-face, .pcard.xs .pc-pips, .pcard.xs .pc-face { display: none !important; }
+    .pk-rc .pc-one, .ht-items .pc-one, .pcard.xs .pc-one { display: flex !important; position: absolute; inset: 0; align-items: center; justify-content: center; padding-top: 10%; }
+    .pcard .pc-one svg { width: 58% !important; height: auto !important; }
+    .pcard.sm .pc-face b { font-size: 1.45em; }
+    @media (min-width: 640px) { #gs-body .pcard:not(.sm) .pc-face b { font-size: 2.4em; } }

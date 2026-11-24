@@ -390,7 +390,7 @@
         const pos = rot.length === 1 ? ['top'] : rot.length === 2 ? ['l', 'r'] : rot.map((_, k) => (k === 0 ? 'l' : k === rot.length - 1 ? 'r' : 'top'));
         t.innerHTML = `<div class="ring4">${ringSlots('pk')}
           <div class="r-mid text-center space-y-2"><div class="flex items-end justify-center gap-4"><span id="pk-deck" class="g-deck">${playingCardHTML(null, { cls: 'sm' })}</span><div id="pk-pot" class="chip-spot" style="min-width:120px">${potInner()}</div></div>
-          <div class="flex justify-center gap-2 min-h-[94px] flex-wrap">${G.board.map((c) => playingCardHTML(c, { fk: gKey(c), cls: G.showdown && G.result && G.result.winCards ? (G.result.winCards.has(gKey(c)) ? 'pk-win' : 'pk-lose') : '' })).join('')}</div>
+          <div class="pk-board flex justify-center gap-2 min-h-[94px] flex-wrap">${G.board.map((c) => playingCardHTML(c, { fk: gKey(c), cls: G.showdown && G.result && G.result.winCards ? (G.result.winCards.has(gKey(c)) ? 'pk-win' : 'pk-lose') : '' })).join('')}</div>
           ${G.showdown && G.result && G.result.banner ? `<div class="pk-banner">🏆 ${esc(G.result.banner)}</div>` : `<div class="pix text-xs text-bone/80 min-h-[16px]">${G.result ? esc(G.result.text) : ''}</div>`}
           <div id="pk-next" class="pix text-xs text-muted min-h-[16px]"></div></div>
           <div class="r-me flex flex-col items-center gap-1">${spot(G.me)}${seatHTML(ps[G.me], G.me)}</div></div>`;

@@ -816,3 +816,10 @@ folder that was handed over, so they do not exist here.)
 * **Phones**: the bottom tab bar is gone (`.mtabs` hidden; ☰ menu has everything); in games CHAT and emote are small icons.
 * **Cards**: card numbers use Outfit (6 vs 8 were hard to tell in the pixel font); Uno 6 and 9 underlined (`u69`);
   Poker bet amounts (`.chip-amt`) and status lines like "All in" (`.tg-st`, red) are bigger. Timer ring stays under badges.
+* **Real card faces everywhere** (`playingCardHTML` in core.js, `PC_PIPS`): 2-10 show their number of suit symbols, Aces one
+  big suit, J/Q/K a big letter; pips are a % of the card width. Tiny cards (hand-ranks guide `.pk-rc`, guide items, `.xs`)
+  show one big suit (`.pc-one`). Uno and Kaboom Cats keep their own cards. Don't use `container-type` on `.pcard`: it
+  broke the Poker board row.
+* **Poker layout (1280-1920 wide)**: the table's sides were 260 px empty, which squeezed the five shared cards onto
+  several rows and pushed your cards under the button bar; now 40 px sides, `.pk-board` never wraps, and on screens up to
+  950 px tall Fold / Call / Raise sit on the left.

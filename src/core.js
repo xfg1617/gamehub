@@ -1030,8 +1030,18 @@
       const fk = o.fk ? ` data-fk="${o.fk}" data-face="${!c || o.down ? 'down' : 'up'}"` : '';
       if (!c || o.down) return `<div class="pcard back ${o.cls || ''}"${fk}><div class="pc-back"></div></div>`;
       const col = SUIT_COL[c.s];
-      return `<div class="pcard ${o.cls || ''}"${fk} style="color:${col}"><span class="pc-corner">${rankLab(c.r)}<i>${suitSVG(c.s, 14)}</i></span><span class="pc-mid">${suitSVG(c.s, 34)}</span><span class="pc-corner br">${rankLab(c.r)}<i>${suitSVG(c.s, 14)}</i></span></div>`;
+      // the middle shows the real number of suit symbols (3 of hearts = three hearts), like a real card (Inna, Nov 2026);
+      // Aces show one big suit, J / Q / K a big letter. Pip sizes follow the card's width (container units).
+      const P = PC_PIPS[c.r];
+      const mid = P ? `<span class="pc-pips">${P.map(([x, y]) => `<i style="left:${x}%;top:${y}%${y > 50 ? ';transform:translate(-50%,-50%) rotate(180deg)' : ''}">${suitSVG(c.s, 14)}</i>`).join('')}</span>`
+        : c.r === 14 ? `<span class="pc-mid">${suitSVG(c.s, 34)}</span>` : `<span class="pc-face"><b>${rankLab(c.r)}</b><i>${suitSVG(c.s, 14)}</i></span>`;
+      return `<div class="pcard pc-real ${o.cls || ''}"${fk} style="color:${col}"><span class="pc-corner">${rankLab(c.r)}<i>${suitSVG(c.s, 14)}</i></span>${mid}${P || c.r !== 14 ? `<span class="pc-one">${suitSVG(c.s, 34)}</span>` : ''}<span class="pc-corner br">${rankLab(c.r)}<i>${suitSVG(c.s, 14)}</i></span></div>`;
     }
+    const PC_PIPS = { 2: [[50, 22], [50, 78]], 3: [[50, 22], [50, 50], [50, 78]], 4: [[34, 22], [66, 22], [34, 78], [66, 78]],
+      5: [[34, 22], [66, 22], [50, 50], [34, 78], [66, 78]], 6: [[34, 22], [66, 22], [34, 50], [66, 50], [34, 78], [66, 78]],
+      7: [[34, 22], [66, 22], [50, 36], [34, 50], [66, 50], [34, 78], [66, 78]], 8: [[34, 22], [66, 22], [50, 36], [34, 50], [66, 50], [50, 64], [34, 78], [66, 78]],
+      9: [[34, 22], [66, 22], [34, 41], [66, 41], [50, 50], [34, 59], [66, 59], [34, 78], [66, 78]],
+      10: [[34, 22], [66, 22], [50, 31], [34, 41], [66, 41], [34, 59], [66, 59], [50, 69], [34, 78], [66, 78]] };
     function newDeck(n = 1) {
       const d = [];
       for (let k = 0; k < n; k++) for (const s of SUITS) for (let r = 2; r <= 14; r++) d.push({ r, s });

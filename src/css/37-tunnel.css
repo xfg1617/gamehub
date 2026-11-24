@@ -42,3 +42,7 @@
       body.in-game[data-game="tunnel"] .tt-card { width: 76px; height: 104px; }
       body.in-game[data-game="tunnel"] .tt-card.tun svg { width: 64px; height: 64px; }
     }
+    /* a Fix card I need right now glows (Cael, Nov 2026) */
+    .tt-card.fix.need { outline: 3px solid #34D399; animation: ttNeed .8s steps(2, jump-none) infinite; }
+    .tt-card.fix.need::after { content: 'USE ME'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); font-family: 'Arcade Pixel', monospace; font-size: 11px; white-space: nowrap; padding: 1px 5px; background: #34D399; color: #050E18; border: 2px solid #050E18; }
+    @keyframes ttNeed { 0% { outline-color: #34D399; } 100% { outline-color: #F7F4EC; } }

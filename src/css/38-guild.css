@@ -46,3 +46,16 @@
       body.in-game[data-game="guild"] .gm-role b { font-size: 1rem; }
       body.in-game[data-game="guild"] .gm-role small { font-size: .74rem; }
     }
+    /* Cael (near-sighted, Nov 2026): the colour strip that shows a building's type is thick and bright, the cost is big,
+       and the info box appears at once */
+    .gm-b { border-bottom-width: 9px !important; }
+    .gm-b.big { border-bottom-width: 14px !important; }
+    .gm-b i { font-size: 16px; }
+    .gm-b.big i { font-size: 20px; top: 1px; right: 4px; color: #F5B041; text-shadow: 2px 2px 0 #050E18; }
+    .gm-b.no { opacity: .72; }
+    #gm-tip { position: fixed; z-index: 200; display: none; pointer-events: none; max-width: 260px; padding: 6px 10px; font-size: 14px; font-weight: 700;
+      color: #F7F4EC; background: #050E18; border: 2px solid #F5B041; box-shadow: 3px 3px 0 rgba(0, 0, 0, .5); }
+    @media (min-width: 1024px) {
+      body.in-game[data-game="guild"] .gm-b i { font-size: 18px; }
+      body.in-game[data-game="guild"] .gm-b.big i { font-size: 24px; }
+    }

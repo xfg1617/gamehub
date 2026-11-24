@@ -49,7 +49,7 @@
         const deck = S.rng.shuffle(newDeckSorted());
         const players = S.seats.map((x, i) => ({ seat: i, name: x.name, av: x.avatar, hand: [] }));
         deck.forEach((c, k) => players[k % players.length].hand.push(c));
-        G = { S, me: S.online ? S.me : 0, players, pile: [], step: 0, cur: S.rng.rnd(players.length), need: 14, last: null, secs: +sel.secs || 7, over: false, tok: ++GT.cur, log: [], sel: new Set(), stats: { caught: 0, fooled: 0, lied: 0 } };
+        G = { S, me: S.online ? S.me : 0, players, pile: [], step: 0, cur: S.rng.rnd(players.length), need: 14, last: null, secs: +sel.secs || 7, over: false, tok: ++GT.cur, log: [], sel: new Set(), places: [], stats: { caught: 0, fooled: 0, lied: 0 } };
         GT.started = true; GT.over = false;
         body.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_250px] gap-5 items-start">
           <div class="space-y-3 min-w-0"><div id="fb-opp" class="ring4">${ringSlots('fb')}
@@ -65,7 +65,7 @@
         };
         npBar('');
         let sure = false;
-        $('fb-quit').onclick = (e) => { if (S.online) return npConfirmLeave(() => open($('game-root'))); if (!sure) { sure = true; e.target.textContent = 'Really give up?'; gTimeout(() => { sure = false; e.target.textContent = 'Give up'; }, 3000); return; } if (!G.over) { G.tok++; finish(null); } };
+        $('fb-quit').onclick = (e) => { if (S.online) return npConfirmLeave(() => open($('game-root'))); if (G.over) return; if (G.places.includes(G.players[G.me])) return endNow(); if (!sure) { sure = true; e.target.textContent = 'Really give up?'; gTimeout(() => { sure = false; if (!G.places.includes(G.players[G.me])) e.target.textContent = 'Give up'; }, 3000); return; } G.tok++; finish(null); };
         log(`Cards are dealt. ${nm(G.players[G.cur])} starts with <b>Aces</b>.`);
         draw();
         run().catch((e) => { if (e !== ABORT) throw e; });
@@ -83,7 +83,7 @@
           const p = G.players[G.cur];
           await turn(p);
           if (G.over) return;
-          G.cur = (G.cur + 1) % G.players.length;
+          do G.cur = (G.cur + 1) % G.players.length; while (G.places.includes(G.players[G.cur]));
           G.need = ORDER[(ORDER.indexOf(G.need) + 1) % 13];
           draw();
         }
@@ -123,9 +123,9 @@
       }
       // everyone else may shout FIBBER! (first tap wins; the host decides for computer players)
       async function doubtWindow(p, cards, k) {
-        const S = G.S, t = G.tok, me = G.players[G.me], others = G.players.filter((q) => q !== p);
+        const S = G.S, t = G.tok, me = G.players[G.me], others = G.players.filter((q) => q !== p && !G.places.includes(q));
         const people = others.filter((q) => !S.bot(q.seat));
-        if (S.mine(me.seat) && me !== p) {
+        if (S.mine(me.seat) && me !== p && others.includes(me)) {
           let left = G.secs, tm = null, done = false;
           const fin = (v) => { if (done) return; done = true; if (tm) gClearInt(tm); if (G && G.step === k) prompt(''); if (v && G) S.act({ t: 'doubt', s: me.seat, k }); };
           G.stopDoubt = () => { done = true; if (tm) gClearInt(tm); };
@@ -146,7 +146,7 @@
         prompt('');
         if (a.t !== 'doubt') {
           if (isMe(p) && cards.some((c) => c.r !== G.need)) G.stats.fooled++;
-          if (!p.hand.length) return win(p);
+          if (!p.hand.length) return placeOut(p);
           return;
         }
         // turn the cards over
@@ -166,25 +166,57 @@
         loser.hand.push(...G.pile); G.pile = []; G.reveal = null;
         draw();
         await W(1300);
-        if (!p.hand.length) return win(p);
+        if (!p.hand.length) return placeOut(p);
       }
-      function win(p) { if (G.over) return; G.tok++; finish(p); }
+      // Inna (Nov 2026): the game goes on until only one player still has cards. 1st, 2nd, 3rd... in the order they run out.
+      const ORD = (n) => n + (n === 1 ? 'st' : n === 2 ? 'nd' : n === 3 ? 'rd' : 'th');
+      function placeOut(p) {
+        if (G.over || G.places.includes(p)) return;
+        G.places.push(p); const n = G.places.length;
+        log(`${nm(p)} has no cards left: <b class="text-amber">${ORD(n)} place!</b>`);
+        SFX.play(isMe(p) ? 'win' : 'coin');
+        if (isMe(p)) showToast(n === 1 ? 'You got rid of every card: 1st place! 🏆' : `You finished ${ORD(n)}!`, 'success');
+        const left = G.players.filter((q) => !G.places.includes(q));
+        if (left.length <= 1) { if (left[0]) G.places.push(left[0]); G.tok++; finish(true); return; }
+        if (isMe(p)) { const b = $('fb-quit'); if (b && !G.S.online) b.textContent = 'See the results now'; }
+        draw();
+      }
+      // offline, after I'm out: skip the rest (the others are ranked by how many cards they still hold)
+      function endNow() {
+        const left = G.players.filter((q) => !G.places.includes(q)).sort((a, b) => a.hand.length - b.hand.length);
+        G.places.push(...left); G.tok++; finish(true);
+      }
 
+      // a card that shows its real number of suit symbols (3 of hearts = three hearts), like a real playing card
+      const PIPS = { 2: [[50, 20], [50, 80]], 3: [[50, 20], [50, 50], [50, 80]], 4: [[33, 20], [67, 20], [33, 80], [67, 80]],
+        5: [[33, 20], [67, 20], [50, 50], [33, 80], [67, 80]], 6: [[33, 20], [67, 20], [33, 50], [67, 50], [33, 80], [67, 80]],
+        7: [[33, 20], [67, 20], [50, 35], [33, 50], [67, 50], [33, 80], [67, 80]], 8: [[33, 20], [67, 20], [50, 35], [33, 50], [67, 50], [50, 65], [33, 80], [67, 80]],
+        9: [[33, 20], [67, 20], [33, 40], [67, 40], [50, 50], [33, 60], [67, 60], [33, 80], [67, 80]],
+        10: [[33, 20], [67, 20], [50, 30], [33, 40], [67, 40], [33, 60], [67, 60], [50, 70], [33, 80], [67, 80]] };
+      function pipCard(c) {
+        const col = SUIT_COL[c.s], corner = `<span class="pc-corner">${rankLab(c.r)}<i>${suitSVG(c.s, 14)}</i></span>`;
+        let mid;
+        if (PIPS[c.r]) mid = `<span class="fb-pips">${PIPS[c.r].map(([x, y]) => `<i style="left:${x}%;top:${y}%${y > 50 ? ';transform:translate(-50%,-50%) rotate(180deg)' : ''}">${suitSVG(c.s, 14)}</i>`).join('')}</span>`;
+        else if (c.r === 14) mid = `<span class="fb-ace">${suitSVG(c.s, 34)}</span>`;
+        else mid = `<span class="fb-face"><b>${rankLab(c.r)}</b>${suitSVG(c.s, 14)}</span>`;
+        return `<div class="pcard sm fb-pc" style="color:${col}">${corner}${mid}</div>`;
+      }
       function draw() {
         if (!$('fb-opp')) return;
         const S = G.S, cur = G.players[G.cur];
         const others = G.players.map((_, k) => G.players[(G.me + k) % G.players.length]).slice(1);
-        ringFill('fb', others.map((q) => { const turn = cur === q && !G.over, n = q.hand.length;
+        ringFill('fb', others.map((q) => { const turn = cur === q && !G.over, n = q.hand.length, pl = G.places.indexOf(q) + 1;
+          if (pl && n === 0) return `<div id="fb-seat-${q.seat}" class="tg-seat"><div class="tg-fan"><div class="fb-place">${ORD(pl).toUpperCase()}</div></div>${nameTag({ av: q.av, name: q.name, sub: '<span class="text-amber">out of cards</span>' })}</div>`;
           return `<div id="fb-seat-${q.seat}" class="tg-seat ${turn ? 'turn' : ''}"><div class="tg-fan">${Array.from({ length: Math.min(n, 7) }, () => playingCardHTML(null, { cls: 'sm' })).join('')}</div>${nameTag({ av: q.av, name: q.name, sub: `<span class="${n <= 2 ? 'text-coral' : ''}">${n} card${n === 1 ? '' : 's'}</span>`, badge: n, turn })}</div>`; }));
         const rv = G.reveal;
-        $('fb-center').innerHTML = `<div class="text-center"><div id="fb-pile" class="fb-pile">${G.pile.length ? Array.from({ length: Math.min(G.pile.length, 6) }, (_, i) => `<div style="position:absolute;left:${i * 3}px;top:${-i * 2}px;transform:rotate(${(i * 37) % 13 - 6}deg)">${playingCardHTML(null, { cls: 'sm' })}</div>`).join('') : '<div class="fb-empty">PILE</div>'}</div><div class="pix text-xs text-bone mt-2">PILE · ${G.pile.length}</div></div>
-          ${rv ? `<div class="fb-reveal ${rv.lie ? 'lie' : 'true'}"><div class="flex gap-2">${rv.cards.map((c) => `<div class="${c.r === G.need ? 'ok' : 'bad'}">${playingCardHTML(c, { cls: 'sm' })}</div>`).join('')}</div><div class="pix text-sm mt-2 ${rv.lie ? 'text-coral' : 'text-emerald'}">${rv.lie ? 'A LIE!' : 'ALL TRUE!'}</div></div>` : ''}`;
+        $('fb-center').innerHTML = `<div class="text-center"><div id="fb-pile" class="fb-pile">${G.pile.length ? Array.from({ length: Math.min(G.pile.length, 16) }, (_, i) => `<div style="position:absolute;left:${(i * 7) % 9 - 4}px;top:${-i * 3}px;transform:rotate(${(i * 37) % 17 - 8}deg)">${playingCardHTML(null, { cls: 'sm' })}</div>`).join('') : '<div class="fb-empty">PILE</div>'}${G.pile.length ? `<div class="fb-count ${G.pile.length >= 12 ? 'big' : ''}">${G.pile.length}</div>` : ''}</div><div class="pix text-sm text-bone mt-2">PILE · ${G.pile.length} CARD${G.pile.length === 1 ? '' : 'S'}</div></div>
+          ${rv ? `<div class="fb-reveal ${rv.lie ? 'lie' : 'true'}"><div class="flex gap-2">${rv.cards.map((c) => `<div class="${c.r === G.need ? 'ok' : 'bad'}">${pipCard(c)}</div>`).join('')}</div><div class="pix text-sm mt-2 ${rv.lie ? 'text-coral' : 'text-emerald'}">${rv.lie ? 'A LIE!' : 'ALL TRUE!'}</div></div>` : ''}`;
         $('fb-claim').innerHTML = `NOW: <b>${WORD[G.need].toUpperCase()}S</b>${G.last && !rv ? ` <span class="text-muted">· ${esc(G.last.p.name)} said ${plural(G.last.need, G.last.cards.length)}</span>` : ''}`;
         $('fb-step').textContent = `${G.pile.length} IN PILE`;
         // my hand, sorted by rank; tap to pick
         const me = G.players[G.me], picking = !!G.choose;
         const order = me.hand.map((c, i) => ({ c, i })).sort((a, b) => ORDER.indexOf(a.c.r) - ORDER.indexOf(b.c.r) || a.c.s.localeCompare(b.c.s));
-        $('fb-hand').innerHTML = `<div class="pix text-xs text-muted mb-1 text-center">YOUR CARDS · ${me.hand.length}</div><div class="flex flex-wrap justify-center gap-1.5">${order.map(({ c, i }) => `<button class="fb-card ${G.sel.has(i) ? 'sel' : ''} ${c.r === G.need ? 'match' : ''}" data-i="${i}" ${picking ? '' : 'disabled'}>${playingCardHTML(c, { cls: 'sm' })}</button>`).join('')}</div>`;
+        $('fb-hand').innerHTML = `<div class="pix text-xs text-muted mb-1 text-center">YOUR CARDS · ${me.hand.length}</div><div class="flex flex-wrap justify-center gap-1.5">${order.map(({ c, i }) => `<button class="fb-card ${G.sel.has(i) ? 'sel' : ''} ${c.r === G.need ? 'match' : ''}" data-i="${i}" ${picking ? '' : 'disabled'}>${pipCard(c)}</button>`).join('')}</div>`;
         $('fb-hand').querySelectorAll('.fb-card').forEach((b) => { b.onclick = () => {
           if (!G.choose) return; const i = +b.dataset.i;
           if (G.sel.has(i)) G.sel.delete(i); else if (G.sel.size < 4) G.sel.add(i); else return showToast('You can put down at most 4 cards.', 'error');
@@ -192,16 +224,17 @@
         }; });
         return 0;
       }
-      async function finish(winner) {
+      async function finish(played) {
         G.over = true; G.S.over = true; G.choose = null;
-        const S = G.S, me = G.players[G.me], res = winner === me ? 'win' : 'loss', tok = G.tok;
+        const S = G.S, me = G.players[G.me], place = G.places.indexOf(me) + 1, res = played && place === 1 ? 'win' : 'loss', tok = G.tok, winner = played ? G.places[0] : null;
         const eloRow = S.online ? await S.finish(res) : null;
         if (!G || G.tok !== tok) return;
         const s = gstat('fibber'); s.caught = (s.caught || 0) + G.stats.caught; s.fooled = (s.fooled || 0) + G.stats.fooled;
         reportGame('fibber', res, { elo: S.online ? 0 : res === 'win' ? 10 : -4, xp: res === 'win' ? 30 : 8, label: S.online ? 'Online table' : `${G.players.length} players` });
-        gameResult({ title: !winner ? 'You gave up' : res === 'win' ? 'You win!' : `${winner.name} wins`, sub: !winner ? '' : res === 'win' ? 'You got rid of every card.' : `${winner.name} got rid of every card first.`,
+        const order = G.places.map((q, i) => `${ORD(i + 1)} ${q === me ? 'You' : q.name}`).join(' · ');
+        gameResult({ title: !winner ? 'You gave up' : res === 'win' ? 'You win!' : `You finished ${ORD(place)}`, sub: !winner ? '' : order,
           tone: res === 'win' ? 'amber' : 'coral', sprite: res === 'win' ? 'trophy' : 'anchor',
-          rows: [['Lies you caught', G.stats.caught, 'text-emerald'], ['Bluffs nobody caught', G.stats.fooled, 'text-amber'], ['Cards left', me.hand.length, 'text-bone']].concat(eloRow ? [eloRow] : []),
+          rows: [['Your place', winner ? `${ORD(place)} of ${G.players.length}` : '-', res === 'win' ? 'text-amber' : 'text-bone'], ['Lies you caught', G.stats.caught, 'text-emerald'], ['Bluffs nobody caught', G.stats.fooled, 'text-amber']].concat(eloRow ? [eloRow] : []),
           againLabel: S.online ? 'Back to setup' : 'Play again', again: () => open($('game-root')) });
       }
 
@@ -211,7 +244,7 @@
         id: 'fibber', name: 'Bullshit', icon: 'fibber', cats: ['card', 'party'], sub: '3-5 PLAYERS · ~10 MIN', color: '#FB7185', tone: 'coral', btn: 'coral',
         blurb: 'Put cards down face down and say what they are. Bluff if you have to, but if someone shouts BULLSHIT! and you are caught, you take the whole pile.',
         rules: { tag: 'BLUFFING · 3-5 PLAYERS', steps: [
-          '<strong class="text-bone">Goal:</strong> Be the first to get rid of all your cards.',
+          '<strong class="text-bone">Goal:</strong> Be the first to get rid of all your cards. The others play on for 2nd, 3rd... until only one player still has cards.',
           '<strong class="text-bone">Your turn:</strong> Put 1 to 4 cards face down and say they are the rank it is now (Aces, then Twos, then Threes... up to Kings, then Aces again). They don’t have to be true!',
           '<strong class="text-bone">BULLSHIT!</strong> After each play everyone has a few seconds to shout. The cards are turned over: if any card is wrong, the player who fibbed picks up the whole pile. If they were all true, the one who shouted picks it up.',
         ], tip: 'There are only four of each rank. If you hold three Sevens and someone says "two Sevens", they are bluffing!' },

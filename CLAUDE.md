@@ -733,3 +733,19 @@ folder that was handed over, so they do not exist here.)
 * Keep each game self-contained in its own file; shared behaviour goes in `core.js`.
 * Mobile matters: the layout must work at 390 px wide. Check it.
 * When Inna asks for a change to one game, change that game only — the other 14 are finished work.
+
+## 5t. Nov 25 2026: player feedback (Cael) + online reliability
+
+* **Online tables survive lost messages** (`npOnline` in netplay.js): a guest's decision gets an `_id` and is re-sent every
+  ~3 s until it comes back as a table move (the host ignores repeats via `seen`); every guest also sends `sync {from}`
+  every 3 s so a lost LAST move is noticed (the host answers only when it has newer moves). `test/t_np_lossy.py` plays
+  Sea Battle Online with 30% of messages thrown away. Before this, one lost message on a bad connection was never re-sent.
+* **Sea Battle**: online, a fired shot is marked at once (`'pend'` in `ng.playerShots`, dashed amber box) until the
+  defender answers; after 6 s with no answer the banner says "Slow connection...". The aimed square shows a FIRE! tag.
+* **Bullshit**: play goes on until one player still has cards (`G.places`, `placeOut`); finishing order on the result
+  screen; Elo/win = 1st place. Offline, once you're out, the side button becomes "See the results now" (`endNow`).
+  Your hand and turned-over cards show real pips (`pipCard`, `PIPS`); the pile is big, grows with the cards, big count.
+* **Mine Saboteurs**: a broken tool explains how to fix it (`fixHelp`), matching Fix cards glow with a USE ME tag, guide
+  step "Broken pick or lamp?" + Fix card picture; peeked goal stones show a big GOLD / ROCK badge; bigger "?".
+* **Castles & Kings**: instant info box over buildings (`#gm-tip`, `data-tip`; no `title`), thicker brighter colour strips.
+* **Landlord**: dice total (`#ty-msg`) and "Your cash" much bigger. Room GAME SETTINGS rows no longer overflow (wrap).

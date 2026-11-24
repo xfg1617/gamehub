@@ -56,7 +56,7 @@
           ['Jumping', 'If another pawn is right next to you, you can jump over it. If there is a hedge behind it, step to the side of it instead.']],
           items: () => row([[`<span style="display:inline-block;width:44px;height:10px;background:#1E7A3E;border:2px solid #050E18"></span>`, 'Hedge', '2 squares long. You have 10 (5 with 4 players)'], [`<span style="display:inline-block;width:30px;height:30px;background:#F7EBC0;box-shadow:inset 0 0 0 3px #2DD4BF"></span>`, 'Glowing square', 'Where you can move now'], [`<span style="display:inline-block;width:40px;height:6px;background:#F5B041"></span>`, 'Coloured edge', 'The side each player is racing to']]),
           tip: 'The panel shows how many steps everyone still needs. Save your hedges for when a rival is close to the finish.', online: NET_TABLE },
-        fibber: { tag: '3-5 PLAYERS · BLUFFING', goal: 'Be the first to get rid of all your cards.', steps: [
+        fibber: { tag: '3-5 PLAYERS · BLUFFING', goal: 'Be the first to get rid of all your cards. The others play on for 2nd, 3rd... until one player is left holding cards.', steps: [
           ['The rank goes up', 'Every turn has a rank: Aces, then Twos, then Threes... up to Kings, then back to Aces. The middle of the table shows which rank it is now.'],
           ['Put cards down', 'On your turn, tap 1 to 4 of your cards and press <b>Put down</b>. They go face down and you say they are that rank. Don’t have any? Bluff!'],
           ['BULLSHIT!', 'After each play, everyone has a few seconds to press <b>BULLSHIT!</b> if they think it was a lie. The cards are turned over.'],
@@ -66,10 +66,11 @@
         tunnel: { tag: '3-6 PLAYERS · SECRET TEAMS', goal: 'Diggers: dig a tunnel from the entrance to the gold. Rascals: secretly stop them.', steps: [
           ['Find out your team', 'At the start, a banner tells you if you are a <b class="text-teal">Digger</b> or a <b class="text-coral">Rascal</b>. Nobody else can see it.'],
           ['Play a card', 'On your turn, tap a card in your hand. A tunnel piece goes on a glowing square (↻ turns it around). It must fit the pieces next to it and join the tunnel.'],
-          ['Action cards', 'Break a player’s pick or lamp (they can’t dig until it’s fixed), fix one, use a treasure map to secretly peek under a ? stone, or cause a cave-in to remove a tunnel piece.'],
+          ['Action cards', 'Break a player’s pick or lamp (they can’t dig until it’s fixed), fix one, use a treasure map to secretly look under one of the three goal stones, or cause a cave-in to remove a tunnel piece.'],
+          ['Broken pick or lamp?', 'You can’t dig with a broken tool. Play a <b class="text-emerald">Fix card</b> (the same tool with a green ✓): tap it, then tap yourself. A friend can also fix it for you. Your Fix cards glow while you need one.'],
           ['Can’t help? Throw one away', 'Press 🗑 Throw away. You always draw a new card after your turn while the deck lasts.'],
           ['Who wins', 'When the tunnel reaches the gold, the Diggers win. If everyone runs out of cards first, the Rascals win.']],
-          items: () => row([[GAME_MODS.tunnel.art.card({ k: 'tun', e: 15 }), 'Tunnel', 'Join it to the tunnel'], [GAME_MODS.tunnel.art.card({ k: 'tun', e: 5, dead: true }), 'Dead end', 'The tunnel stops here'], [GAME_MODS.tunnel.art.card({ k: 'break', tool: 'pick' }), 'Break', 'Stops someone digging'], [GAME_MODS.tunnel.art.card({ k: 'map' }), 'Map', 'Peek under a stone']]),
+          items: () => row([[GAME_MODS.tunnel.art.card({ k: 'tun', e: 15 }), 'Tunnel', 'Join it to the tunnel'], [GAME_MODS.tunnel.art.card({ k: 'tun', e: 5, dead: true }), 'Dead end', 'The tunnel stops here'], [GAME_MODS.tunnel.art.card({ k: 'break', tool: 'pick' }), 'Break', 'Stops someone digging'], [GAME_MODS.tunnel.art.card({ k: 'fix', tool: 'pick' }), 'Fix', 'Mends a broken tool'], [GAME_MODS.tunnel.art.card({ k: 'map' }), 'Map', 'Peek under a stone']]),
           tip: 'Watch who plays dead ends and who breaks tools. That is probably a Rascal!', online: NET_TABLE },
         guild: { tag: '3-6 PLAYERS · CHARACTERS & TOWNS', goal: 'Build the town worth the most points.', steps: [
           ['Pick a character', 'Each round, everyone secretly picks one character. The player with the crown 👑 picks first, so the best ones may be gone by your turn.'],

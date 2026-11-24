@@ -3,6 +3,8 @@
        Merged into the table in zz_lang.js (this file loads just before it). Keys are the exact English lines.
        ========================================================================= */
     window.VI_MORE = {
+      // Bullshit: play on for places, Mine Saboteurs fix cards (Nov 2026)
+      'See the results now': 'Xem kết quả ngay', 'out of cards': 'hết bài', 'Your place': 'Hạng của bạn', 'Lies you caught': 'Lần bắt được nói dối', 'Bluffs nobody caught': 'Lần lừa không bị bắt',
       // loading screen
       'Shuffling the deck...': 'Đang xáo bài...', 'Setting up the table...': 'Đang dọn bàn...', 'Finding a good seat...': 'Đang tìm chỗ ngồi đẹp...', 'Warming up...': 'Đang khởi động...',
       // shared setup words
@@ -150,7 +152,7 @@
       'Coloured edge': 'Cạnh có màu', 'The side each player is racing to': 'Bờ mà mỗi người đang đua tới', 'A true card': 'Lá thật', 'Matches the rank everyone is on': 'Đúng loại bài đang đến',
       'A lie': 'Lá xạo', 'Any other card played as that rank': 'Lá khác nhưng nói là loại đó', 'Shout': 'Hô', 'Turn the last cards over': 'Lật các lá vừa đánh',
       'Tunnel': 'Đường hầm', 'Join it to the tunnel': 'Nối vào đường hầm', 'Dead end': 'Đường cụt', 'The tunnel stops here': 'Đường hầm dừng ở đây', 'Break': 'Làm hỏng',
-      'Stops someone digging': 'Khiến ai đó không đào được', 'Map': 'Bản đồ', 'Peek under a stone': 'Lén xem dưới hòn đá',
+      'Stops someone digging': 'Khiến ai đó không đào được', 'Map': 'Bản đồ', 'Fix': 'Sửa', 'Mends a broken tool': 'Sửa dụng cụ bị hỏng', 'Peek under a stone': 'Lén xem dưới hòn đá',
       'Shadow': 'Bóng Đêm', 'Name a character: they miss their whole turn this round.': 'Gọi tên một nhân vật: họ mất cả lượt vòng này.',
       'Pickpocket': 'Kẻ Móc Túi', 'Name a character: when their turn starts, you take all their gold.': 'Gọi tên một nhân vật: khi đến lượt họ, bạn lấy hết vàng của họ.',
       'Trader': 'Thương Lái', 'Draw 2 extra building cards.': 'Rút thêm 2 lá công trình.', 'Monarch': 'Quốc Vương',

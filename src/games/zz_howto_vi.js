@@ -39,7 +39,7 @@
           ['Hoặc trồng hàng rào', 'Chạm vào <b>khe giữa hai ô</b>. Trên máy tính, hàng rào hiện ra khi bạn trỏ vào khe và bấm một lần là trồng; trên điện thoại, chạm một lần để xem rồi chạm lần nữa để trồng. Khe theo hàng ngang cho hàng rào nằm ngang, khe theo cột cho hàng rào đứng.'],
           ['Hàng rào chặn đường', 'Không ai đi xuyên qua hàng rào được, nên đối thủ phải đi vòng. Nhưng không được nhốt kín ai: luôn phải còn một lối đi.'],
           ['Nhảy qua', 'Nếu có quân khác ngay cạnh bạn, bạn có thể nhảy qua nó. Nếu phía sau có hàng rào, hãy bước chéo sang bên cạnh nó.']], online: ONT },
-        fibber: { goal: 'Là người đầu tiên đánh hết bài trên tay.', steps: [
+        fibber: { goal: 'Là người đầu tiên đánh hết bài trên tay. Những người còn lại chơi tiếp để giành hạng 2, 3... cho đến khi chỉ còn một người cầm bài.', steps: [
           ['Loại bài tăng dần', 'Mỗi lượt có một loại bài: Át, rồi 2, rồi 3... đến K, rồi quay lại Át. Giữa bàn cho biết đang đến loại nào.'],
           ['Úp bài', 'Đến lượt, chạm vào 1 đến 4 lá bài rồi bấm <b>Đánh</b>. Bài được úp xuống và bạn nói đó là loại đang đến. Không có? Thì xạo!'],
           ['NÓI XẠO!', 'Sau mỗi lượt đánh, mọi người có vài giây để bấm <b>NÓI XẠO!</b> nếu nghĩ đó là nói dối. Các lá bài sẽ được lật lên.'],
@@ -47,7 +47,8 @@
         tunnel: { goal: 'Thợ đào: đào đường hầm từ lối vào đến kho vàng. Kẻ phá hoại: bí mật ngăn họ lại.', steps: [
           ['Biết phe của mình', 'Lúc bắt đầu, một dòng thông báo cho bạn biết mình là <b class="text-teal">Thợ đào</b> hay <b class="text-coral">Kẻ phá hoại</b>. Không ai khác thấy được.'],
           ['Đánh một lá', 'Đến lượt, chạm vào một lá trên tay. Mảnh đường hầm được đặt vào ô đang sáng (↻ để xoay). Nó phải khớp với các mảnh bên cạnh và nối vào đường hầm.'],
-          ['Lá hành động', 'Làm hỏng cuốc hoặc đèn của một người (họ không đào được cho đến khi sửa), sửa dụng cụ, dùng bản đồ kho báu để lén xem dưới một hòn đá ?, hoặc gây sập hầm để bỏ một mảnh đường hầm.'],
+          ['Lá hành động', 'Làm hỏng cuốc hoặc đèn của một người (họ không đào được cho đến khi sửa), sửa dụng cụ, dùng bản đồ kho báu để lén xem dưới một trong ba hòn đá đích, hoặc gây sập hầm để bỏ một mảnh đường hầm.'],
+          ['Cuốc hoặc đèn bị hỏng?', 'Dụng cụ hỏng thì không đào được. Đánh một <b class="text-emerald">lá Sửa</b> (cùng dụng cụ có dấu ✓ xanh): chạm vào lá, rồi chạm vào chính bạn. Người khác cũng có thể sửa giúp bạn. Lá Sửa của bạn sẽ sáng lên khi bạn cần.'],
           ['Không giúp được? Bỏ một lá', 'Bấm 🗑 Bỏ bài. Sau mỗi lượt bạn luôn rút một lá mới khi bộ bài còn.'],
           ['Ai thắng', 'Khi đường hầm đến được kho vàng, Thợ đào thắng. Nếu mọi người hết bài trước, Kẻ phá hoại thắng.']], online: ONT },
         guild: { goal: 'Xây thị trấn có nhiều điểm nhất.', steps: [

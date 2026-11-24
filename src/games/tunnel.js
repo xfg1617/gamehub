@@ -137,7 +137,9 @@
       /* ---------- art ---------- */
       function tileSVG(c, o = {}) {
         if (!c) return '';
-        if (c.goal !== undefined && !c.open) return `<svg viewBox="0 0 40 40" shape-rendering="crispEdges"><rect width="40" height="40" fill="#3B2A1C"/><rect x="3" y="3" width="34" height="34" fill="#7A6A5A"/><rect x="8" y="9" width="10" height="7" fill="#958473"/><rect x="21" y="20" width="12" height="9" fill="#958473"/><text x="20" y="27" text-anchor="middle" font-family="Arcade Pixel, monospace" font-size="18" fill="#F7F4EC">?</text>${o.peek ? `<text x="20" y="38" text-anchor="middle" font-size="9">${o.peek === 'gold' ? '💰' : '🪨'}</text>` : ''}</svg>`;
+        if (c.goal !== undefined && !c.open) return `<svg viewBox="0 0 40 40" shape-rendering="crispEdges"><rect width="40" height="40" fill="#3B2A1C"/><rect x="3" y="3" width="34" height="34" fill="#7A6A5A"/><rect x="8" y="9" width="10" height="7" fill="#958473"/><rect x="21" y="20" width="12" height="9" fill="#958473"/>${o.peek === 'gold' ? '<rect x="3" y="3" width="34" height="34" fill="#F5B041"/><rect x="9" y="7" width="22" height="16" fill="#050E18"/><rect x="11" y="9" width="18" height="12" fill="#FFD36B"/><rect x="13" y="10" width="6" height="4" fill="#FFF3C4"/><rect x="3" y="26" width="34" height="11" fill="#050E18"/><text x="20" y="35" text-anchor="middle" font-family="Arcade Pixel, monospace" font-size="11" fill="#F5B041">GOLD</text>'
+          : o.peek ? '<rect x="3" y="3" width="34" height="34" fill="#5A6470"/><rect x="9" y="8" width="22" height="15" fill="#050E18"/><rect x="11" y="10" width="18" height="11" fill="#9DB4CC"/><rect x="13" y="11" width="6" height="3" fill="#C9D6E3"/><rect x="3" y="26" width="34" height="11" fill="#050E18"/><text x="20" y="35" text-anchor="middle" font-family="Arcade Pixel, monospace" font-size="11" fill="#C9D6E3">ROCK</text>'
+          : '<text x="20" y="31" text-anchor="middle" font-family="Arcade Pixel, monospace" font-size="30" fill="#F7F4EC">?</text>'}</svg>`;
         const e = c.e, P = '#E8C98E', D = '#4A3523';
         let s = `<svg viewBox="0 0 40 40" shape-rendering="crispEdges"><rect width="40" height="40" fill="${D}"/><rect x="1" y="1" width="38" height="38" fill="#6B4F35"/><rect x="4" y="5" width="5" height="3" fill="#7D5E40"/><rect x="29" y="31" width="6" height="3" fill="#7D5E40"/>`;
         if (e & N_) s += `<rect x="14" y="0" width="12" height="${c.dead ? 11 : 20}" fill="${P}"/>`;
@@ -214,7 +216,7 @@
         const S = G.S, t = G.tok, k = ++G.step, mine = S.mine(p.seat);
         $('tt-status').textContent = mine ? 'YOUR TURN' : `${p.name.toUpperCase()}'S TURN`;
         G.sel = null; G.flip = false;
-        if (mine) { G.myK = k; prompt('Tap a card in your hand to use it, or throw one away.'); } else prompt(`<span class="text-muted">${esc(p.name)} is thinking...</span>`);
+        if (mine) { G.myK = k; prompt(myTurnText()); } else prompt(`<span class="text-muted">${esc(p.name)} is thinking...</span>`);
         draw();
         const a = await S.ask(p.seat, () => Object.assign({ t: 'x', k }, botMove(G, p)), 900 + rnd(800), (x) => x.s === p.seat && x.k === k);
         if (!G || G.tok !== t) throw ABORT;
@@ -290,19 +292,26 @@
         if (!G || !G.myK || G.over) return;
         G.sel = G.sel === i ? null : i; G.flip = false; SFX.play('click');
         const c = G.players[G.me].hand[i];
-        if (G.sel === null) prompt('Tap a card in your hand to use it, or throw one away.');
+        if (G.sel === null) prompt(myTurnText());
         else prompt(hint(c));
         draw();
       }
       function hint(c) {
         const me = G.players[G.me], brk = me.broken.pick || me.broken.lamp;
         const bar = (txt) => `<div class="flex items-center justify-center gap-2 flex-wrap"><span>${txt}</span>${c.k === 'tun' && !brk ? '<button id="tt-flip" class="btn-game btn-graphite py-1.5 px-3 text-xs">↻ Turn it</button>' : ''}<button id="tt-throw" class="btn-game btn-graphite py-1.5 px-3 text-xs">🗑 Throw away</button></div>`;
-        if (c.k === 'tun') return bar(brk ? 'Your tools are broken, so you can’t dig. Fix them first, or throw a card away.' : 'Tap a glowing square on the map to dig there.');
+        if (c.k === 'tun') return bar(brk ? fixHelp(me) : 'Tap a glowing square on the map to dig there.');
         if (c.k === 'break') return bar(`Tap a player on the right to break their ${c.tool === 'pick' ? 'pick ⛏' : 'lamp 🔦'}.`);
         if (c.k === 'fix') return bar(`Tap a player (or yourself) with a broken ${c.tool === 'pick' ? 'pick ⛏' : 'lamp 🔦'} to fix it.`);
-        if (c.k === 'map') return bar('Tap one of the three ? stones to secretly look under it.');
+        if (c.k === 'map') return bar('Tap one of the three goal stones on the right to secretly look under it.');
         return bar('Tap a tunnel piece on the map to make it cave in.');
       }
+      // what to do about broken tools (Cael: "where do you fix your tool?")
+      function fixHelp(me) {
+        const bad = Object.keys(TOOLS).filter((t) => me.broken[t]), names = bad.map((t) => (t === 'pick' ? 'pick ⛏' : 'lamp 🔦')).join(' and ');
+        const have = me.hand.some((h) => h.k === 'fix' && me.broken[h.tool]);
+        return `Your ${names} ${bad.length > 1 ? 'are' : 'is'} broken, so you can’t dig. ${have ? 'Tap your glowing <b class="text-emerald">Fix card</b>, then tap yourself.' : 'You need a <b class="text-emerald">Fix card</b> (the same tool with a green ✓). Throw a card away to draw a new one, or wait for a friend to fix it.'}`;
+      }
+      const myTurnText = () => { const me = G.players[G.me]; return me.broken.pick || me.broken.lamp ? fixHelp(me) : 'Tap a card in your hand to use it, or throw one away.'; };
       const send = (a) => { if (!G.myK) return; const k = G.myK; G.myK = null; G.sel = null; prompt(''); G.S.act(Object.assign({ s: G.me, k }, a)); };
 
       function draw() {
@@ -331,7 +340,7 @@
         $('tt-players').querySelectorAll('.tt-pl.tgt').forEach((el) => { el.onclick = () => send({ t: 'act', i: G.sel, target: +el.dataset.seat }); });
         $('tt-deck').textContent = `DECK ${G.deck.length}`;
         // my hand
-        $('tt-hand').innerHTML = `<div class="pix text-xs text-muted mb-1 text-center">YOUR CARDS</div><div class="flex flex-wrap justify-center gap-2">${me.hand.map((h2, i) => cardHTML(h2, { cls: `${G.sel === i ? 'sel' : ''} ${G.myK ? 'live' : ''}`, data: `data-i="${i}"`, flip: G.sel === i && G.flip })).join('')}</div>`;
+        $('tt-hand').innerHTML = `<div class="pix text-xs text-muted mb-1 text-center">YOUR CARDS</div><div class="flex flex-wrap justify-center gap-2">${me.hand.map((h2, i) => cardHTML(h2, { cls: `${G.sel === i ? 'sel' : ''} ${G.myK ? 'live' : ''} ${h2.k === 'fix' && me.broken[h2.tool] ? 'need' : ''}`, data: `data-i="${i}"`, flip: G.sel === i && G.flip })).join('')}</div>`;
         $('tt-hand').querySelectorAll('.tt-card').forEach((el) => { el.onclick = () => pickCard(+el.dataset.i); });
         const fl = $('tt-flip'); if (fl) fl.onclick = () => { G.flip = !G.flip; SFX.play('click'); draw(); };
         const th = $('tt-throw'); if (th) th.onclick = () => send({ t: 'discard', i: G.sel });

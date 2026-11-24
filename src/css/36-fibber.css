@@ -36,7 +36,40 @@
       #fb-opp .tg-fan .pcard:first-child { margin-left: 0 !important; }
       .fb-hand .pcard.sm { width: 84px !important; height: 120px !important; }
       .fb-hand .pcard.sm .pc-mid svg { width: 44px !important; height: 44px !important; }
-      .fb-pile .pcard.sm, .fb-reveal .pcard.sm { width: 78px !important; height: 110px !important; }
-      .fb-pile { width: 84px !important; height: 116px !important; }
+      .fb-reveal .pcard.sm { width: 78px !important; height: 110px !important; }
       .fb-claim { font-size: 24px !important; padding: 6px 18px !important; }
+    }
+    /* real card faces (Cael, Nov 2026): 3 of hearts shows three hearts */
+    .fb-pc .fb-pips { position: absolute; inset: 0; }
+    .fb-pc .fb-pips i { position: absolute; transform: translate(-50%, -50%); line-height: 0; }
+    .fb-pc .fb-pips svg { width: 9px; height: 9px; display: block; }
+    .fb-pc .fb-ace { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+    .fb-pc .fb-ace svg { width: 22px; height: 22px; }
+    .fb-pc .fb-face { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+    .fb-pc .fb-face b { font-family: 'Arcade Pixel', monospace; font-size: 22px; line-height: 1; font-weight: normal; }
+    .fb-pc .fb-face svg { width: 10px; height: 10px; }
+    .fb-pc .pc-corner { z-index: 1; }
+    .fb-pc .pc-corner i { display: none !important; }
+    /* the pile in the middle: big, grows taller with every card, big count on top */
+    .fb-pile { width: 84px; height: 116px; }
+    .fb-pile .pcard.sm { width: 78px; height: 110px; }
+    .fb-count { position: absolute; right: -18px; top: -26px; z-index: 30; min-width: 36px; height: 36px; padding: 0 6px; display: flex; align-items: center; justify-content: center;
+      font-family: 'Arcade Pixel', monospace; font-size: 22px; color: #050E18; background: #F5B041; border: 3px solid #050E18; box-shadow: 3px 3px 0 #050E18; }
+    .fb-count.big { background: #FB7185; font-size: 26px; min-width: 44px; height: 44px; animation: fbPulse 1s steps(2, jump-none) infinite; }
+    @keyframes fbPulse { 0% { transform: scale(1); } 100% { transform: scale(1.12); } }
+    .fb-place { font-family: 'Arcade Pixel', monospace; font-size: 22px; color: #050E18; background: #F5B041; border: 3px solid #050E18; box-shadow: 3px 3px 0 #050E18; padding: 4px 10px; }
+    @media (max-width: 640px) {
+      .fb-hand .fb-pc .fb-pips svg { width: 7px; height: 7px; }
+      .fb-hand .fb-pc .fb-face b { font-size: 16px; }
+      .fb-hand .fb-pc .fb-ace svg { width: 16px; height: 16px; }
+      .fb-pile { width: 66px; height: 92px; } .fb-pile .pcard.sm { width: 60px; height: 86px; }
+    }
+    @media (min-width: 1024px) {
+      .fb-pc .fb-pips svg { width: 15px !important; height: 15px !important; }
+      .fb-pc .fb-ace svg { width: 40px !important; height: 40px !important; }
+      .fb-pc .fb-face b { font-size: 40px; } .fb-pc .fb-face svg { width: 16px !important; height: 16px !important; }
+      .fb-pile { width: 124px !important; height: 172px !important; }
+      .fb-pile .pcard.sm { width: 118px !important; height: 166px !important; }
+      .fb-count { font-size: 28px; min-width: 46px; height: 46px; right: -24px; top: -30px; }
+      .fb-count.big { font-size: 34px; min-width: 56px; height: 56px; }
     }

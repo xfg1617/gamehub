@@ -86,3 +86,8 @@
     .ty-dsep { height: 2px; background: #050E18; opacity: .25; margin: 5px 0; }
     .ty-down { margin-top: 6px; font-size: .78rem; text-align: center; color: #3B4A5C; }
     .ty-cardlink { display: block; width: 100%; margin-bottom: 8px; font-size: .78rem; font-weight: 800; color: #F5B041; text-decoration: underline; text-decoration-style: dotted; }
+    /* Cael (Nov 2026): the dice total and "Your cash" in the middle of the board are big enough to read at a glance */
+    #ty-msg { font-size: 20px !important; line-height: 1.15; text-shadow: 2px 2px 0 #050E18; }
+    #ty-prompt > .space-y-2 > .font-bold { font-size: 17px !important; text-shadow: 1px 1px 0 #050E18; }
+    @media (min-width: 1024px) { #ty-msg { font-size: 30px !important; } #ty-prompt > .space-y-2 > .font-bold { font-size: 21px !important; } }
+    @media (max-width: 560px) { #ty-msg { font-size: 16px !important; } #ty-prompt > .space-y-2 > .font-bold { font-size: 15px !important; } }

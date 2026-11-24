@@ -82,3 +82,8 @@
     @media (pointer: coarse) { .devkb-show { display: inline-flex; } }
     /* while the device keyboard is open, the on-screen letter keys step aside so the board stays visible */
     body.devkb-on #dw-keyboard, body.devkb-on #wd-kb { display: none; }
+    /* room settings never stick out of their box: rows shrink to the box, long choices wrap onto two lines */
+    .np-sets { grid-template-columns: minmax(0, 1fr); }
+    .np-sets .seg { display: flex; flex-wrap: wrap; max-width: 100%; }
+    .np-sets .seg-btn { white-space: normal; min-width: 0; line-height: 1.15; padding-top: .45rem; padding-bottom: .45rem; }
+    @media (max-width: 640px) { .np-sets .seg-btn { flex: 1 1 calc(50% - 4px); } }

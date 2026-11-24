@@ -1037,6 +1037,11 @@
     @media (pointer: coarse) { .devkb-show { display: inline-flex; } }
     /* while the device keyboard is open, the on-screen letter keys step aside so the board stays visible */
     body.devkb-on #dw-keyboard, body.devkb-on #wd-kb { display: none; }
+    /* room settings never stick out of their box: rows shrink to the box, long choices wrap onto two lines */
+    .np-sets { grid-template-columns: minmax(0, 1fr); }
+    .np-sets .seg { display: flex; flex-wrap: wrap; max-width: 100%; }
+    .np-sets .seg-btn { white-space: normal; min-width: 0; line-height: 1.15; padding-top: .45rem; padding-bottom: .45rem; }
+    @media (max-width: 640px) { .np-sets .seg-btn { flex: 1 1 calc(50% - 4px); } }
     /* ===== HOW TO PLAY: title grid + step-by-step guides ===== */
     .ht-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
     .ht-tile { display: flex; align-items: center; gap: 10px; padding: 12px; background: #0F2A44; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); text-align: left; color: #F7F4EC; transition: transform .08s; }
@@ -1726,9 +1731,42 @@
       #fb-opp .tg-fan .pcard:first-child { margin-left: 0 !important; }
       .fb-hand .pcard.sm { width: 84px !important; height: 120px !important; }
       .fb-hand .pcard.sm .pc-mid svg { width: 44px !important; height: 44px !important; }
-      .fb-pile .pcard.sm, .fb-reveal .pcard.sm { width: 78px !important; height: 110px !important; }
-      .fb-pile { width: 84px !important; height: 116px !important; }
+      .fb-reveal .pcard.sm { width: 78px !important; height: 110px !important; }
       .fb-claim { font-size: 24px !important; padding: 6px 18px !important; }
+    }
+    /* real card faces (Cael, Nov 2026): 3 of hearts shows three hearts */
+    .fb-pc .fb-pips { position: absolute; inset: 0; }
+    .fb-pc .fb-pips i { position: absolute; transform: translate(-50%, -50%); line-height: 0; }
+    .fb-pc .fb-pips svg { width: 9px; height: 9px; display: block; }
+    .fb-pc .fb-ace { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+    .fb-pc .fb-ace svg { width: 22px; height: 22px; }
+    .fb-pc .fb-face { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+    .fb-pc .fb-face b { font-family: 'Arcade Pixel', monospace; font-size: 22px; line-height: 1; font-weight: normal; }
+    .fb-pc .fb-face svg { width: 10px; height: 10px; }
+    .fb-pc .pc-corner { z-index: 1; }
+    .fb-pc .pc-corner i { display: none !important; }
+    /* the pile in the middle: big, grows taller with every card, big count on top */
+    .fb-pile { width: 84px; height: 116px; }
+    .fb-pile .pcard.sm { width: 78px; height: 110px; }
+    .fb-count { position: absolute; right: -18px; top: -26px; z-index: 30; min-width: 36px; height: 36px; padding: 0 6px; display: flex; align-items: center; justify-content: center;
+      font-family: 'Arcade Pixel', monospace; font-size: 22px; color: #050E18; background: #F5B041; border: 3px solid #050E18; box-shadow: 3px 3px 0 #050E18; }
+    .fb-count.big { background: #FB7185; font-size: 26px; min-width: 44px; height: 44px; animation: fbPulse 1s steps(2, jump-none) infinite; }
+    @keyframes fbPulse { 0% { transform: scale(1); } 100% { transform: scale(1.12); } }
+    .fb-place { font-family: 'Arcade Pixel', monospace; font-size: 22px; color: #050E18; background: #F5B041; border: 3px solid #050E18; box-shadow: 3px 3px 0 #050E18; padding: 4px 10px; }
+    @media (max-width: 640px) {
+      .fb-hand .fb-pc .fb-pips svg { width: 7px; height: 7px; }
+      .fb-hand .fb-pc .fb-face b { font-size: 16px; }
+      .fb-hand .fb-pc .fb-ace svg { width: 16px; height: 16px; }
+      .fb-pile { width: 66px; height: 92px; } .fb-pile .pcard.sm { width: 60px; height: 86px; }
+    }
+    @media (min-width: 1024px) {
+      .fb-pc .fb-pips svg { width: 15px !important; height: 15px !important; }
+      .fb-pc .fb-ace svg { width: 40px !important; height: 40px !important; }
+      .fb-pc .fb-face b { font-size: 40px; } .fb-pc .fb-face svg { width: 16px !important; height: 16px !important; }
+      .fb-pile { width: 124px !important; height: 172px !important; }
+      .fb-pile .pcard.sm { width: 118px !important; height: 166px !important; }
+      .fb-count { font-size: 28px; min-width: 46px; height: 46px; right: -24px; top: -30px; }
+      .fb-count.big { font-size: 34px; min-width: 56px; height: 56px; }
     }
     /* ---------- Mine Saboteurs (tunnel.js) ---------- */
     .tt-role { padding: 8px 12px; border: 3px solid #050E18; font-size: .85rem; color: #F7F4EC; background: #12304D; border-left: 8px solid #2DD4BF; }
@@ -1774,6 +1812,10 @@
       body.in-game[data-game="tunnel"] .tt-card { width: 76px; height: 104px; }
       body.in-game[data-game="tunnel"] .tt-card.tun svg { width: 64px; height: 64px; }
     }
+    /* a Fix card I need right now glows (Cael, Nov 2026) */
+    .tt-card.fix.need { outline: 3px solid #34D399; animation: ttNeed .8s steps(2, jump-none) infinite; }
+    .tt-card.fix.need::after { content: 'USE ME'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); font-family: 'Arcade Pixel', monospace; font-size: 11px; white-space: nowrap; padding: 1px 5px; background: #34D399; color: #050E18; border: 2px solid #050E18; }
+    @keyframes ttNeed { 0% { outline-color: #34D399; } 100% { outline-color: #F7F4EC; } }
     /* ---------- Castles & Kings (guild.js) ---------- */
     .gm-towns { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
     .gm-town { background: rgba(5, 14, 24, .55); border: 3px solid #050E18; padding: 8px; }
@@ -1821,6 +1863,19 @@
       body.in-game[data-game="guild"] .gm-role { width: 160px; }
       body.in-game[data-game="guild"] .gm-role b { font-size: 1rem; }
       body.in-game[data-game="guild"] .gm-role small { font-size: .74rem; }
+    }
+    /* Cael (near-sighted, Nov 2026): the colour strip that shows a building's type is thick and bright, the cost is big,
+       and the info box appears at once */
+    .gm-b { border-bottom-width: 9px !important; }
+    .gm-b.big { border-bottom-width: 14px !important; }
+    .gm-b i { font-size: 16px; }
+    .gm-b.big i { font-size: 20px; top: 1px; right: 4px; color: #F5B041; text-shadow: 2px 2px 0 #050E18; }
+    .gm-b.no { opacity: .72; }
+    #gm-tip { position: fixed; z-index: 200; display: none; pointer-events: none; max-width: 260px; padding: 6px 10px; font-size: 14px; font-weight: 700;
+      color: #F7F4EC; background: #050E18; border: 2px solid #F5B041; box-shadow: 3px 3px 0 rgba(0, 0, 0, .5); }
+    @media (min-width: 1024px) {
+      body.in-game[data-game="guild"] .gm-b i { font-size: 18px; }
+      body.in-game[data-game="guild"] .gm-b.big i { font-size: 24px; }
     }
     /* ===== MORE GAMES: shared card + board styles ===== */
     .g-fly { position: fixed; z-index: 70; pointer-events: none; display: inline-flex; }
@@ -2086,6 +2141,11 @@
     .ty-dsep { height: 2px; background: #050E18; opacity: .25; margin: 5px 0; }
     .ty-down { margin-top: 6px; font-size: .78rem; text-align: center; color: #3B4A5C; }
     .ty-cardlink { display: block; width: 100%; margin-bottom: 8px; font-size: .78rem; font-weight: 800; color: #F5B041; text-decoration: underline; text-decoration-style: dotted; }
+    /* Cael (Nov 2026): the dice total and "Your cash" in the middle of the board are big enough to read at a glance */
+    #ty-msg { font-size: 20px !important; line-height: 1.15; text-shadow: 2px 2px 0 #050E18; }
+    #ty-prompt > .space-y-2 > .font-bold { font-size: 17px !important; text-shadow: 1px 1px 0 #050E18; }
+    @media (min-width: 1024px) { #ty-msg { font-size: 30px !important; } #ty-prompt > .space-y-2 > .font-bold { font-size: 21px !important; } }
+    @media (max-width: 560px) { #ty-msg { font-size: 16px !important; } #ty-prompt > .space-y-2 > .font-bold { font-size: 15px !important; } }
     .wc-wheel { position: relative; width: 290px; height: 290px; margin: 0 auto; background: #0F2A44; border: 4px solid var(--ink); box-shadow: 0 5px 0 var(--ink); border-radius: 50% !important; touch-action: none; user-select: none; }
     .wc-let { position: absolute; width: 58px; height: 58px; margin: -29px 0 0 -29px; background: #F7F4EC; color: #050E18; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); border-radius: 50% !important; display: flex; align-items: center; justify-content: center; font-family: 'Arcade Pixel', sans-serif; font-size: 1.9rem; font-weight: 700; cursor: pointer; z-index: 2; transition: transform .06s; }
     .wc-let.on { background: #F5B041; transform: scale(1.08); }
@@ -10559,7 +10619,7 @@
         const deck = S.rng.shuffle(newDeckSorted());
         const players = S.seats.map((x, i) => ({ seat: i, name: x.name, av: x.avatar, hand: [] }));
         deck.forEach((c, k) => players[k % players.length].hand.push(c));
-        G = { S, me: S.online ? S.me : 0, players, pile: [], step: 0, cur: S.rng.rnd(players.length), need: 14, last: null, secs: +sel.secs || 7, over: false, tok: ++GT.cur, log: [], sel: new Set(), stats: { caught: 0, fooled: 0, lied: 0 } };
+        G = { S, me: S.online ? S.me : 0, players, pile: [], step: 0, cur: S.rng.rnd(players.length), need: 14, last: null, secs: +sel.secs || 7, over: false, tok: ++GT.cur, log: [], sel: new Set(), places: [], stats: { caught: 0, fooled: 0, lied: 0 } };
         GT.started = true; GT.over = false;
         body.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_250px] gap-5 items-start">
           <div class="space-y-3 min-w-0"><div id="fb-opp" class="ring4">${ringSlots('fb')}
@@ -10575,7 +10635,7 @@
         };
         npBar('');
         let sure = false;
-        $('fb-quit').onclick = (e) => { if (S.online) return npConfirmLeave(() => open($('game-root'))); if (!sure) { sure = true; e.target.textContent = 'Really give up?'; gTimeout(() => { sure = false; e.target.textContent = 'Give up'; }, 3000); return; } if (!G.over) { G.tok++; finish(null); } };
+        $('fb-quit').onclick = (e) => { if (S.online) return npConfirmLeave(() => open($('game-root'))); if (G.over) return; if (G.places.includes(G.players[G.me])) return endNow(); if (!sure) { sure = true; e.target.textContent = 'Really give up?'; gTimeout(() => { sure = false; if (!G.places.includes(G.players[G.me])) e.target.textContent = 'Give up'; }, 3000); return; } G.tok++; finish(null); };
         log(`Cards are dealt. ${nm(G.players[G.cur])} starts with <b>Aces</b>.`);
         draw();
         run().catch((e) => { if (e !== ABORT) throw e; });
@@ -10593,7 +10653,7 @@
           const p = G.players[G.cur];
           await turn(p);
           if (G.over) return;
-          G.cur = (G.cur + 1) % G.players.length;
+          do G.cur = (G.cur + 1) % G.players.length; while (G.places.includes(G.players[G.cur]));
           G.need = ORDER[(ORDER.indexOf(G.need) + 1) % 13];
           draw();
         }
@@ -10633,9 +10693,9 @@
       }
       // everyone else may shout FIBBER! (first tap wins; the host decides for computer players)
       async function doubtWindow(p, cards, k) {
-        const S = G.S, t = G.tok, me = G.players[G.me], others = G.players.filter((q) => q !== p);
+        const S = G.S, t = G.tok, me = G.players[G.me], others = G.players.filter((q) => q !== p && !G.places.includes(q));
         const people = others.filter((q) => !S.bot(q.seat));
-        if (S.mine(me.seat) && me !== p) {
+        if (S.mine(me.seat) && me !== p && others.includes(me)) {
           let left = G.secs, tm = null, done = false;
           const fin = (v) => { if (done) return; done = true; if (tm) gClearInt(tm); if (G && G.step === k) prompt(''); if (v && G) S.act({ t: 'doubt', s: me.seat, k }); };
           G.stopDoubt = () => { done = true; if (tm) gClearInt(tm); };
@@ -10656,7 +10716,7 @@
         prompt('');
         if (a.t !== 'doubt') {
           if (isMe(p) && cards.some((c) => c.r !== G.need)) G.stats.fooled++;
-          if (!p.hand.length) return win(p);
+          if (!p.hand.length) return placeOut(p);
           return;
         }
         // turn the cards over
@@ -10676,25 +10736,57 @@
         loser.hand.push(...G.pile); G.pile = []; G.reveal = null;
         draw();
         await W(1300);
-        if (!p.hand.length) return win(p);
+        if (!p.hand.length) return placeOut(p);
       }
-      function win(p) { if (G.over) return; G.tok++; finish(p); }
+      // Inna (Nov 2026): the game goes on until only one player still has cards. 1st, 2nd, 3rd... in the order they run out.
+      const ORD = (n) => n + (n === 1 ? 'st' : n === 2 ? 'nd' : n === 3 ? 'rd' : 'th');
+      function placeOut(p) {
+        if (G.over || G.places.includes(p)) return;
+        G.places.push(p); const n = G.places.length;
+        log(`${nm(p)} has no cards left: <b class="text-amber">${ORD(n)} place!</b>`);
+        SFX.play(isMe(p) ? 'win' : 'coin');
+        if (isMe(p)) showToast(n === 1 ? 'You got rid of every card: 1st place! 🏆' : `You finished ${ORD(n)}!`, 'success');
+        const left = G.players.filter((q) => !G.places.includes(q));
+        if (left.length <= 1) { if (left[0]) G.places.push(left[0]); G.tok++; finish(true); return; }
+        if (isMe(p)) { const b = $('fb-quit'); if (b && !G.S.online) b.textContent = 'See the results now'; }
+        draw();
+      }
+      // offline, after I'm out: skip the rest (the others are ranked by how many cards they still hold)
+      function endNow() {
+        const left = G.players.filter((q) => !G.places.includes(q)).sort((a, b) => a.hand.length - b.hand.length);
+        G.places.push(...left); G.tok++; finish(true);
+      }
 
+      // a card that shows its real number of suit symbols (3 of hearts = three hearts), like a real playing card
+      const PIPS = { 2: [[50, 20], [50, 80]], 3: [[50, 20], [50, 50], [50, 80]], 4: [[33, 20], [67, 20], [33, 80], [67, 80]],
+        5: [[33, 20], [67, 20], [50, 50], [33, 80], [67, 80]], 6: [[33, 20], [67, 20], [33, 50], [67, 50], [33, 80], [67, 80]],
+        7: [[33, 20], [67, 20], [50, 35], [33, 50], [67, 50], [33, 80], [67, 80]], 8: [[33, 20], [67, 20], [50, 35], [33, 50], [67, 50], [50, 65], [33, 80], [67, 80]],
+        9: [[33, 20], [67, 20], [33, 40], [67, 40], [50, 50], [33, 60], [67, 60], [33, 80], [67, 80]],
+        10: [[33, 20], [67, 20], [50, 30], [33, 40], [67, 40], [33, 60], [67, 60], [50, 70], [33, 80], [67, 80]] };
+      function pipCard(c) {
+        const col = SUIT_COL[c.s], corner = `<span class="pc-corner">${rankLab(c.r)}<i>${suitSVG(c.s, 14)}</i></span>`;
+        let mid;
+        if (PIPS[c.r]) mid = `<span class="fb-pips">${PIPS[c.r].map(([x, y]) => `<i style="left:${x}%;top:${y}%${y > 50 ? ';transform:translate(-50%,-50%) rotate(180deg)' : ''}">${suitSVG(c.s, 14)}</i>`).join('')}</span>`;
+        else if (c.r === 14) mid = `<span class="fb-ace">${suitSVG(c.s, 34)}</span>`;
+        else mid = `<span class="fb-face"><b>${rankLab(c.r)}</b>${suitSVG(c.s, 14)}</span>`;
+        return `<div class="pcard sm fb-pc" style="color:${col}">${corner}${mid}</div>`;
+      }
       function draw() {
         if (!$('fb-opp')) return;
         const S = G.S, cur = G.players[G.cur];
         const others = G.players.map((_, k) => G.players[(G.me + k) % G.players.length]).slice(1);
-        ringFill('fb', others.map((q) => { const turn = cur === q && !G.over, n = q.hand.length;
+        ringFill('fb', others.map((q) => { const turn = cur === q && !G.over, n = q.hand.length, pl = G.places.indexOf(q) + 1;
+          if (pl && n === 0) return `<div id="fb-seat-${q.seat}" class="tg-seat"><div class="tg-fan"><div class="fb-place">${ORD(pl).toUpperCase()}</div></div>${nameTag({ av: q.av, name: q.name, sub: '<span class="text-amber">out of cards</span>' })}</div>`;
           return `<div id="fb-seat-${q.seat}" class="tg-seat ${turn ? 'turn' : ''}"><div class="tg-fan">${Array.from({ length: Math.min(n, 7) }, () => playingCardHTML(null, { cls: 'sm' })).join('')}</div>${nameTag({ av: q.av, name: q.name, sub: `<span class="${n <= 2 ? 'text-coral' : ''}">${n} card${n === 1 ? '' : 's'}</span>`, badge: n, turn })}</div>`; }));
         const rv = G.reveal;
-        $('fb-center').innerHTML = `<div class="text-center"><div id="fb-pile" class="fb-pile">${G.pile.length ? Array.from({ length: Math.min(G.pile.length, 6) }, (_, i) => `<div style="position:absolute;left:${i * 3}px;top:${-i * 2}px;transform:rotate(${(i * 37) % 13 - 6}deg)">${playingCardHTML(null, { cls: 'sm' })}</div>`).join('') : '<div class="fb-empty">PILE</div>'}</div><div class="pix text-xs text-bone mt-2">PILE · ${G.pile.length}</div></div>
-          ${rv ? `<div class="fb-reveal ${rv.lie ? 'lie' : 'true'}"><div class="flex gap-2">${rv.cards.map((c) => `<div class="${c.r === G.need ? 'ok' : 'bad'}">${playingCardHTML(c, { cls: 'sm' })}</div>`).join('')}</div><div class="pix text-sm mt-2 ${rv.lie ? 'text-coral' : 'text-emerald'}">${rv.lie ? 'A LIE!' : 'ALL TRUE!'}</div></div>` : ''}`;
+        $('fb-center').innerHTML = `<div class="text-center"><div id="fb-pile" class="fb-pile">${G.pile.length ? Array.from({ length: Math.min(G.pile.length, 16) }, (_, i) => `<div style="position:absolute;left:${(i * 7) % 9 - 4}px;top:${-i * 3}px;transform:rotate(${(i * 37) % 17 - 8}deg)">${playingCardHTML(null, { cls: 'sm' })}</div>`).join('') : '<div class="fb-empty">PILE</div>'}${G.pile.length ? `<div class="fb-count ${G.pile.length >= 12 ? 'big' : ''}">${G.pile.length}</div>` : ''}</div><div class="pix text-sm text-bone mt-2">PILE · ${G.pile.length} CARD${G.pile.length === 1 ? '' : 'S'}</div></div>
+          ${rv ? `<div class="fb-reveal ${rv.lie ? 'lie' : 'true'}"><div class="flex gap-2">${rv.cards.map((c) => `<div class="${c.r === G.need ? 'ok' : 'bad'}">${pipCard(c)}</div>`).join('')}</div><div class="pix text-sm mt-2 ${rv.lie ? 'text-coral' : 'text-emerald'}">${rv.lie ? 'A LIE!' : 'ALL TRUE!'}</div></div>` : ''}`;
         $('fb-claim').innerHTML = `NOW: <b>${WORD[G.need].toUpperCase()}S</b>${G.last && !rv ? ` <span class="text-muted">· ${esc(G.last.p.name)} said ${plural(G.last.need, G.last.cards.length)}</span>` : ''}`;
         $('fb-step').textContent = `${G.pile.length} IN PILE`;
         // my hand, sorted by rank; tap to pick
         const me = G.players[G.me], picking = !!G.choose;
         const order = me.hand.map((c, i) => ({ c, i })).sort((a, b) => ORDER.indexOf(a.c.r) - ORDER.indexOf(b.c.r) || a.c.s.localeCompare(b.c.s));
-        $('fb-hand').innerHTML = `<div class="pix text-xs text-muted mb-1 text-center">YOUR CARDS · ${me.hand.length}</div><div class="flex flex-wrap justify-center gap-1.5">${order.map(({ c, i }) => `<button class="fb-card ${G.sel.has(i) ? 'sel' : ''} ${c.r === G.need ? 'match' : ''}" data-i="${i}" ${picking ? '' : 'disabled'}>${playingCardHTML(c, { cls: 'sm' })}</button>`).join('')}</div>`;
+        $('fb-hand').innerHTML = `<div class="pix text-xs text-muted mb-1 text-center">YOUR CARDS · ${me.hand.length}</div><div class="flex flex-wrap justify-center gap-1.5">${order.map(({ c, i }) => `<button class="fb-card ${G.sel.has(i) ? 'sel' : ''} ${c.r === G.need ? 'match' : ''}" data-i="${i}" ${picking ? '' : 'disabled'}>${pipCard(c)}</button>`).join('')}</div>`;
         $('fb-hand').querySelectorAll('.fb-card').forEach((b) => { b.onclick = () => {
           if (!G.choose) return; const i = +b.dataset.i;
           if (G.sel.has(i)) G.sel.delete(i); else if (G.sel.size < 4) G.sel.add(i); else return showToast('You can put down at most 4 cards.', 'error');
@@ -10702,16 +10794,17 @@
         }; });
         return 0;
       }
-      async function finish(winner) {
+      async function finish(played) {
         G.over = true; G.S.over = true; G.choose = null;
-        const S = G.S, me = G.players[G.me], res = winner === me ? 'win' : 'loss', tok = G.tok;
+        const S = G.S, me = G.players[G.me], place = G.places.indexOf(me) + 1, res = played && place === 1 ? 'win' : 'loss', tok = G.tok, winner = played ? G.places[0] : null;
         const eloRow = S.online ? await S.finish(res) : null;
         if (!G || G.tok !== tok) return;
         const s = gstat('fibber'); s.caught = (s.caught || 0) + G.stats.caught; s.fooled = (s.fooled || 0) + G.stats.fooled;
         reportGame('fibber', res, { elo: S.online ? 0 : res === 'win' ? 10 : -4, xp: res === 'win' ? 30 : 8, label: S.online ? 'Online table' : `${G.players.length} players` });
-        gameResult({ title: !winner ? 'You gave up' : res === 'win' ? 'You win!' : `${winner.name} wins`, sub: !winner ? '' : res === 'win' ? 'You got rid of every card.' : `${winner.name} got rid of every card first.`,
+        const order = G.places.map((q, i) => `${ORD(i + 1)} ${q === me ? 'You' : q.name}`).join(' · ');
+        gameResult({ title: !winner ? 'You gave up' : res === 'win' ? 'You win!' : `You finished ${ORD(place)}`, sub: !winner ? '' : order,
           tone: res === 'win' ? 'amber' : 'coral', sprite: res === 'win' ? 'trophy' : 'anchor',
-          rows: [['Lies you caught', G.stats.caught, 'text-emerald'], ['Bluffs nobody caught', G.stats.fooled, 'text-amber'], ['Cards left', me.hand.length, 'text-bone']].concat(eloRow ? [eloRow] : []),
+          rows: [['Your place', winner ? `${ORD(place)} of ${G.players.length}` : '-', res === 'win' ? 'text-amber' : 'text-bone'], ['Lies you caught', G.stats.caught, 'text-emerald'], ['Bluffs nobody caught', G.stats.fooled, 'text-amber']].concat(eloRow ? [eloRow] : []),
           againLabel: S.online ? 'Back to setup' : 'Play again', again: () => open($('game-root')) });
       }
 
@@ -10721,7 +10814,7 @@
         id: 'fibber', name: 'Bullshit', icon: 'fibber', cats: ['card', 'party'], sub: '3-5 PLAYERS · ~10 MIN', color: '#FB7185', tone: 'coral', btn: 'coral',
         blurb: 'Put cards down face down and say what they are. Bluff if you have to, but if someone shouts BULLSHIT! and you are caught, you take the whole pile.',
         rules: { tag: 'BLUFFING · 3-5 PLAYERS', steps: [
-          '<strong class="text-bone">Goal:</strong> Be the first to get rid of all your cards.',
+          '<strong class="text-bone">Goal:</strong> Be the first to get rid of all your cards. The others play on for 2nd, 3rd... until only one player still has cards.',
           '<strong class="text-bone">Your turn:</strong> Put 1 to 4 cards face down and say they are the rank it is now (Aces, then Twos, then Threes... up to Kings, then Aces again). They don’t have to be true!',
           '<strong class="text-bone">BULLSHIT!</strong> After each play everyone has a few seconds to shout. The cards are turned over: if any card is wrong, the player who fibbed picks up the whole pile. If they were all true, the one who shouted picks it up.',
         ], tip: 'There are only four of each rank. If you hold three Sevens and someone says "two Sevens", they are bluffing!' },
@@ -10900,7 +10993,7 @@
        ========================================================================= */
     (function guildGame() {
       const ABORT = { a: 1 };
-      const COLORS = { royal: '#F5B041', faith: '#60A5FA', trade: '#34D399', guard: '#FB7185', wonder: '#C084FC' };
+      const COLORS = { royal: '#F5B041', faith: '#4DB2FF', trade: '#34D399', guard: '#FB7185', wonder: '#C084FC' };
       const CNAME = { royal: 'royal', faith: 'faith', trade: 'trade', guard: 'guard', wonder: 'wonder' };
       const BUILD = [['Manor', 'royal', 3, 5], ['Castle', 'royal', 4, 4], ['Palace', 'royal', 5, 3], ['Shrine', 'faith', 1, 3], ['Chapel', 'faith', 2, 3], ['Abbey', 'faith', 3, 3], ['Cathedral', 'faith', 5, 2],
         ['Inn', 'trade', 1, 5], ['Market', 'trade', 2, 4], ['Trading Post', 'trade', 2, 3], ['Harbor', 'trade', 3, 3], ['Guild Hall', 'trade', 4, 3], ['Town Hall', 'trade', 5, 2],
@@ -10970,6 +11063,14 @@
         players.forEach((p) => { for (let k = 0; k < 4; k++) p.hand.push(deck.pop()); });
         G = { S, me: S.online ? S.me : 0, players, deck, crown: S.rng.rnd(players.length), target: +sel.target || 7, round: 0, step: 0, over: false, tok: ++GT.cur, log: [], out: [], firstDone: null, cur: -1 };
         GT.started = true; GT.over = false;
+        // instant info box over a building (the browser's own hover box waits about a second; Cael found it slow)
+        const tipEl = () => { let t = $('gm-tip'); if (!t) { t = document.createElement('div'); t.id = 'gm-tip'; document.body.appendChild(t); } return t; };
+        const showTip = (el) => { const t = tipEl(), r = el.getBoundingClientRect(); t.textContent = el.dataset.tip; t.style.display = 'block';
+          const w = t.offsetWidth; t.style.left = Math.max(6, Math.min(innerWidth - w - 6, r.left + r.width / 2 - w / 2)) + 'px'; t.style.top = Math.max(6, r.top - t.offsetHeight - 8) + 'px'; };
+        const hideTip = () => { const t = $('gm-tip'); if (t) t.style.display = 'none'; };
+        gOn(body, 'pointerover', (e) => { const el = e.target.closest && e.target.closest('[data-tip]'); if (el) showTip(el); });
+        gOn(body, 'pointerout', (e) => { const el = e.target.closest && e.target.closest('[data-tip]'); if (el && !el.contains(e.relatedTarget)) hideTip(); });
+        gOn(body, 'pointerdown', (e) => { const el = e.target.closest && e.target.closest('[data-tip]'); if (el && e.pointerType !== 'mouse') { showTip(el); gTimeout(hideTip, 1600); } });
         body.innerHTML = `<div class="gm-wrap grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-4 items-start">
           <div class="space-y-3 min-w-0"><div id="gm-towns" class="gm-towns"></div>
             <div id="gm-prompt" class="win p-3 text-sm min-h-[54px]"></div>
@@ -11114,7 +11215,7 @@
       }
 
       function bldHTML(c, attr = '', cls = '') {
-        return `<div class="gm-b ${cls}" style="--bc:${COLORS[c.c]}" ${attr} title="${esc(c.name)}: ${CNAME[c.c]} building, costs ${c.cost}"><svg viewBox="0 0 20 16" shape-rendering="crispEdges"><rect x="2" y="7" width="16" height="9" fill="#050E18"/><rect x="3" y="8" width="14" height="8" fill="${COLORS[c.c]}"/><rect x="1" y="5" width="18" height="3" fill="#050E18"/><rect x="${c.c === 'faith' ? 9 : 5}" y="${c.c === 'faith' ? 0 : 2}" width="${c.c === 'faith' ? 2 : 10}" height="${c.c === 'faith' ? 6 : 3}" fill="#050E18"/>${c.c === 'wonder' ? '<rect x="8" y="0" width="4" height="5" fill="#050E18"/><rect x="9" y="1" width="2" height="3" fill="#F5B041"/>' : ''}${c.c === 'guard' ? '<rect x="3" y="3" width="2" height="2" fill="#050E18"/><rect x="15" y="3" width="2" height="2" fill="#050E18"/>' : ''}<rect x="8" y="11" width="4" height="5" fill="#050E18"/></svg><b>${esc(c.name)}</b><i>${c.cost}</i></div>`;
+        return `<div class="gm-b ${cls}" style="--bc:${COLORS[c.c]}" ${attr} data-tip="${esc(c.name)}: ${CNAME[c.c]} building, costs ${c.cost}" aria-label="${esc(c.name)}: ${CNAME[c.c]} building, costs ${c.cost}"><svg viewBox="0 0 20 16" shape-rendering="crispEdges"><rect x="2" y="7" width="16" height="9" fill="#050E18"/><rect x="3" y="8" width="14" height="8" fill="${COLORS[c.c]}"/><rect x="1" y="5" width="18" height="3" fill="#050E18"/><rect x="${c.c === 'faith' ? 9 : 5}" y="${c.c === 'faith' ? 0 : 2}" width="${c.c === 'faith' ? 2 : 10}" height="${c.c === 'faith' ? 6 : 3}" fill="#050E18"/>${c.c === 'wonder' ? '<rect x="8" y="0" width="4" height="5" fill="#050E18"/><rect x="9" y="1" width="2" height="3" fill="#F5B041"/>' : ''}${c.c === 'guard' ? '<rect x="3" y="3" width="2" height="2" fill="#050E18"/><rect x="15" y="3" width="2" height="2" fill="#050E18"/>' : ''}<rect x="8" y="11" width="4" height="5" fill="#050E18"/></svg><b>${esc(c.name)}</b><i>${c.cost}</i></div>`;
       }
       function draw() {
         if (!$('gm-towns') || !G) return;
@@ -11177,7 +11278,7 @@
           '<strong class="text-bone">Points:</strong> Every building is worth its cost. +3 for having all five colours, +4 for finishing first (+2 for others who finish), +2 for each wonder.',
         ], tip: 'The Merchant, Monarch, Abbot and Captain earn more gold the more buildings of their colour you own.' },
         profileTiles: (s) => [['WINS', s.wins, 'text-amber'], ['GAMES', s.played, 'text-bone'], ['BEST SCORE', s.best || 0, 'text-teal'], ['BUILT', s.built || 0, 'text-emerald']],
-        engine: { buildDeck, score, income, botPickRole, botBuilds, ROLES, get G() { return G; } }, open, close() { G = null; },
+        engine: { buildDeck, score, income, botPickRole, botBuilds, ROLES, get G() { return G; } }, open, close() { const t = document.getElementById('gm-tip'); if (t) t.remove(); G = null; },
         art: { role: (r) => roleCard(r), building: (c) => bldHTML(c, '', 'big') },
         online: { seats: (sel) => +sel.n || 4, min: 3, ranked: false, start: (body, sel, S) => start(body, sel, S) },
       };
@@ -14845,7 +14946,9 @@
       /* ---------- art ---------- */
       function tileSVG(c, o = {}) {
         if (!c) return '';
-        if (c.goal !== undefined && !c.open) return `<svg viewBox="0 0 40 40" shape-rendering="crispEdges"><rect width="40" height="40" fill="#3B2A1C"/><rect x="3" y="3" width="34" height="34" fill="#7A6A5A"/><rect x="8" y="9" width="10" height="7" fill="#958473"/><rect x="21" y="20" width="12" height="9" fill="#958473"/><text x="20" y="27" text-anchor="middle" font-family="Arcade Pixel, monospace" font-size="18" fill="#F7F4EC">?</text>${o.peek ? `<text x="20" y="38" text-anchor="middle" font-size="9">${o.peek === 'gold' ? '💰' : '🪨'}</text>` : ''}</svg>`;
+        if (c.goal !== undefined && !c.open) return `<svg viewBox="0 0 40 40" shape-rendering="crispEdges"><rect width="40" height="40" fill="#3B2A1C"/><rect x="3" y="3" width="34" height="34" fill="#7A6A5A"/><rect x="8" y="9" width="10" height="7" fill="#958473"/><rect x="21" y="20" width="12" height="9" fill="#958473"/>${o.peek === 'gold' ? '<rect x="3" y="3" width="34" height="34" fill="#F5B041"/><rect x="9" y="7" width="22" height="16" fill="#050E18"/><rect x="11" y="9" width="18" height="12" fill="#FFD36B"/><rect x="13" y="10" width="6" height="4" fill="#FFF3C4"/><rect x="3" y="26" width="34" height="11" fill="#050E18"/><text x="20" y="35" text-anchor="middle" font-family="Arcade Pixel, monospace" font-size="11" fill="#F5B041">GOLD</text>'
+          : o.peek ? '<rect x="3" y="3" width="34" height="34" fill="#5A6470"/><rect x="9" y="8" width="22" height="15" fill="#050E18"/><rect x="11" y="10" width="18" height="11" fill="#9DB4CC"/><rect x="13" y="11" width="6" height="3" fill="#C9D6E3"/><rect x="3" y="26" width="34" height="11" fill="#050E18"/><text x="20" y="35" text-anchor="middle" font-family="Arcade Pixel, monospace" font-size="11" fill="#C9D6E3">ROCK</text>'
+          : '<text x="20" y="31" text-anchor="middle" font-family="Arcade Pixel, monospace" font-size="30" fill="#F7F4EC">?</text>'}</svg>`;
         const e = c.e, P = '#E8C98E', D = '#4A3523';
         let s = `<svg viewBox="0 0 40 40" shape-rendering="crispEdges"><rect width="40" height="40" fill="${D}"/><rect x="1" y="1" width="38" height="38" fill="#6B4F35"/><rect x="4" y="5" width="5" height="3" fill="#7D5E40"/><rect x="29" y="31" width="6" height="3" fill="#7D5E40"/>`;
         if (e & N_) s += `<rect x="14" y="0" width="12" height="${c.dead ? 11 : 20}" fill="${P}"/>`;
@@ -14922,7 +15025,7 @@
         const S = G.S, t = G.tok, k = ++G.step, mine = S.mine(p.seat);
         $('tt-status').textContent = mine ? 'YOUR TURN' : `${p.name.toUpperCase()}'S TURN`;
         G.sel = null; G.flip = false;
-        if (mine) { G.myK = k; prompt('Tap a card in your hand to use it, or throw one away.'); } else prompt(`<span class="text-muted">${esc(p.name)} is thinking...</span>`);
+        if (mine) { G.myK = k; prompt(myTurnText()); } else prompt(`<span class="text-muted">${esc(p.name)} is thinking...</span>`);
         draw();
         const a = await S.ask(p.seat, () => Object.assign({ t: 'x', k }, botMove(G, p)), 900 + rnd(800), (x) => x.s === p.seat && x.k === k);
         if (!G || G.tok !== t) throw ABORT;
@@ -14998,19 +15101,26 @@
         if (!G || !G.myK || G.over) return;
         G.sel = G.sel === i ? null : i; G.flip = false; SFX.play('click');
         const c = G.players[G.me].hand[i];
-        if (G.sel === null) prompt('Tap a card in your hand to use it, or throw one away.');
+        if (G.sel === null) prompt(myTurnText());
         else prompt(hint(c));
         draw();
       }
       function hint(c) {
         const me = G.players[G.me], brk = me.broken.pick || me.broken.lamp;
         const bar = (txt) => `<div class="flex items-center justify-center gap-2 flex-wrap"><span>${txt}</span>${c.k === 'tun' && !brk ? '<button id="tt-flip" class="btn-game btn-graphite py-1.5 px-3 text-xs">↻ Turn it</button>' : ''}<button id="tt-throw" class="btn-game btn-graphite py-1.5 px-3 text-xs">🗑 Throw away</button></div>`;
-        if (c.k === 'tun') return bar(brk ? 'Your tools are broken, so you can’t dig. Fix them first, or throw a card away.' : 'Tap a glowing square on the map to dig there.');
+        if (c.k === 'tun') return bar(brk ? fixHelp(me) : 'Tap a glowing square on the map to dig there.');
         if (c.k === 'break') return bar(`Tap a player on the right to break their ${c.tool === 'pick' ? 'pick ⛏' : 'lamp 🔦'}.`);
         if (c.k === 'fix') return bar(`Tap a player (or yourself) with a broken ${c.tool === 'pick' ? 'pick ⛏' : 'lamp 🔦'} to fix it.`);
-        if (c.k === 'map') return bar('Tap one of the three ? stones to secretly look under it.');
+        if (c.k === 'map') return bar('Tap one of the three goal stones on the right to secretly look under it.');
         return bar('Tap a tunnel piece on the map to make it cave in.');
       }
+      // what to do about broken tools (Cael: "where do you fix your tool?")
+      function fixHelp(me) {
+        const bad = Object.keys(TOOLS).filter((t) => me.broken[t]), names = bad.map((t) => (t === 'pick' ? 'pick ⛏' : 'lamp 🔦')).join(' and ');
+        const have = me.hand.some((h) => h.k === 'fix' && me.broken[h.tool]);
+        return `Your ${names} ${bad.length > 1 ? 'are' : 'is'} broken, so you can’t dig. ${have ? 'Tap your glowing <b class="text-emerald">Fix card</b>, then tap yourself.' : 'You need a <b class="text-emerald">Fix card</b> (the same tool with a green ✓). Throw a card away to draw a new one, or wait for a friend to fix it.'}`;
+      }
+      const myTurnText = () => { const me = G.players[G.me]; return me.broken.pick || me.broken.lamp ? fixHelp(me) : 'Tap a card in your hand to use it, or throw one away.'; };
       const send = (a) => { if (!G.myK) return; const k = G.myK; G.myK = null; G.sel = null; prompt(''); G.S.act(Object.assign({ s: G.me, k }, a)); };
 
       function draw() {
@@ -15039,7 +15149,7 @@
         $('tt-players').querySelectorAll('.tt-pl.tgt').forEach((el) => { el.onclick = () => send({ t: 'act', i: G.sel, target: +el.dataset.seat }); });
         $('tt-deck').textContent = `DECK ${G.deck.length}`;
         // my hand
-        $('tt-hand').innerHTML = `<div class="pix text-xs text-muted mb-1 text-center">YOUR CARDS</div><div class="flex flex-wrap justify-center gap-2">${me.hand.map((h2, i) => cardHTML(h2, { cls: `${G.sel === i ? 'sel' : ''} ${G.myK ? 'live' : ''}`, data: `data-i="${i}"`, flip: G.sel === i && G.flip })).join('')}</div>`;
+        $('tt-hand').innerHTML = `<div class="pix text-xs text-muted mb-1 text-center">YOUR CARDS</div><div class="flex flex-wrap justify-center gap-2">${me.hand.map((h2, i) => cardHTML(h2, { cls: `${G.sel === i ? 'sel' : ''} ${G.myK ? 'live' : ''} ${h2.k === 'fix' && me.broken[h2.tool] ? 'need' : ''}`, data: `data-i="${i}"`, flip: G.sel === i && G.flip })).join('')}</div>`;
         $('tt-hand').querySelectorAll('.tt-card').forEach((el) => { el.onclick = () => pickCard(+el.dataset.i); });
         const fl = $('tt-flip'); if (fl) fl.onclick = () => { G.flip = !G.flip; SFX.play('click'); draw(); };
         const th = $('tt-throw'); if (th) th.onclick = () => send({ t: 'discard', i: G.sel });
@@ -16825,7 +16935,7 @@
           ['Jumping', 'If another pawn is right next to you, you can jump over it. If there is a hedge behind it, step to the side of it instead.']],
           items: () => row([[`<span style="display:inline-block;width:44px;height:10px;background:#1E7A3E;border:2px solid #050E18"></span>`, 'Hedge', '2 squares long. You have 10 (5 with 4 players)'], [`<span style="display:inline-block;width:30px;height:30px;background:#F7EBC0;box-shadow:inset 0 0 0 3px #2DD4BF"></span>`, 'Glowing square', 'Where you can move now'], [`<span style="display:inline-block;width:40px;height:6px;background:#F5B041"></span>`, 'Coloured edge', 'The side each player is racing to']]),
           tip: 'The panel shows how many steps everyone still needs. Save your hedges for when a rival is close to the finish.', online: NET_TABLE },
-        fibber: { tag: '3-5 PLAYERS · BLUFFING', goal: 'Be the first to get rid of all your cards.', steps: [
+        fibber: { tag: '3-5 PLAYERS · BLUFFING', goal: 'Be the first to get rid of all your cards. The others play on for 2nd, 3rd... until one player is left holding cards.', steps: [
           ['The rank goes up', 'Every turn has a rank: Aces, then Twos, then Threes... up to Kings, then back to Aces. The middle of the table shows which rank it is now.'],
           ['Put cards down', 'On your turn, tap 1 to 4 of your cards and press <b>Put down</b>. They go face down and you say they are that rank. Don’t have any? Bluff!'],
           ['BULLSHIT!', 'After each play, everyone has a few seconds to press <b>BULLSHIT!</b> if they think it was a lie. The cards are turned over.'],
@@ -16835,10 +16945,11 @@
         tunnel: { tag: '3-6 PLAYERS · SECRET TEAMS', goal: 'Diggers: dig a tunnel from the entrance to the gold. Rascals: secretly stop them.', steps: [
           ['Find out your team', 'At the start, a banner tells you if you are a <b class="text-teal">Digger</b> or a <b class="text-coral">Rascal</b>. Nobody else can see it.'],
           ['Play a card', 'On your turn, tap a card in your hand. A tunnel piece goes on a glowing square (↻ turns it around). It must fit the pieces next to it and join the tunnel.'],
-          ['Action cards', 'Break a player’s pick or lamp (they can’t dig until it’s fixed), fix one, use a treasure map to secretly peek under a ? stone, or cause a cave-in to remove a tunnel piece.'],
+          ['Action cards', 'Break a player’s pick or lamp (they can’t dig until it’s fixed), fix one, use a treasure map to secretly look under one of the three goal stones, or cause a cave-in to remove a tunnel piece.'],
+          ['Broken pick or lamp?', 'You can’t dig with a broken tool. Play a <b class="text-emerald">Fix card</b> (the same tool with a green ✓): tap it, then tap yourself. A friend can also fix it for you. Your Fix cards glow while you need one.'],
           ['Can’t help? Throw one away', 'Press 🗑 Throw away. You always draw a new card after your turn while the deck lasts.'],
           ['Who wins', 'When the tunnel reaches the gold, the Diggers win. If everyone runs out of cards first, the Rascals win.']],
-          items: () => row([[GAME_MODS.tunnel.art.card({ k: 'tun', e: 15 }), 'Tunnel', 'Join it to the tunnel'], [GAME_MODS.tunnel.art.card({ k: 'tun', e: 5, dead: true }), 'Dead end', 'The tunnel stops here'], [GAME_MODS.tunnel.art.card({ k: 'break', tool: 'pick' }), 'Break', 'Stops someone digging'], [GAME_MODS.tunnel.art.card({ k: 'map' }), 'Map', 'Peek under a stone']]),
+          items: () => row([[GAME_MODS.tunnel.art.card({ k: 'tun', e: 15 }), 'Tunnel', 'Join it to the tunnel'], [GAME_MODS.tunnel.art.card({ k: 'tun', e: 5, dead: true }), 'Dead end', 'The tunnel stops here'], [GAME_MODS.tunnel.art.card({ k: 'break', tool: 'pick' }), 'Break', 'Stops someone digging'], [GAME_MODS.tunnel.art.card({ k: 'fix', tool: 'pick' }), 'Fix', 'Mends a broken tool'], [GAME_MODS.tunnel.art.card({ k: 'map' }), 'Map', 'Peek under a stone']]),
           tip: 'Watch who plays dead ends and who breaks tools. That is probably a Rascal!', online: NET_TABLE },
         guild: { tag: '3-6 PLAYERS · CHARACTERS & TOWNS', goal: 'Build the town worth the most points.', steps: [
           ['Pick a character', 'Each round, everyone secretly picks one character. The player with the crown 👑 picks first, so the best ones may be gone by your turn.'],
@@ -17057,7 +17168,7 @@
           ['Hoặc trồng hàng rào', 'Chạm vào <b>khe giữa hai ô</b>. Trên máy tính, hàng rào hiện ra khi bạn trỏ vào khe và bấm một lần là trồng; trên điện thoại, chạm một lần để xem rồi chạm lần nữa để trồng. Khe theo hàng ngang cho hàng rào nằm ngang, khe theo cột cho hàng rào đứng.'],
           ['Hàng rào chặn đường', 'Không ai đi xuyên qua hàng rào được, nên đối thủ phải đi vòng. Nhưng không được nhốt kín ai: luôn phải còn một lối đi.'],
           ['Nhảy qua', 'Nếu có quân khác ngay cạnh bạn, bạn có thể nhảy qua nó. Nếu phía sau có hàng rào, hãy bước chéo sang bên cạnh nó.']], online: ONT },
-        fibber: { goal: 'Là người đầu tiên đánh hết bài trên tay.', steps: [
+        fibber: { goal: 'Là người đầu tiên đánh hết bài trên tay. Những người còn lại chơi tiếp để giành hạng 2, 3... cho đến khi chỉ còn một người cầm bài.', steps: [
           ['Loại bài tăng dần', 'Mỗi lượt có một loại bài: Át, rồi 2, rồi 3... đến K, rồi quay lại Át. Giữa bàn cho biết đang đến loại nào.'],
           ['Úp bài', 'Đến lượt, chạm vào 1 đến 4 lá bài rồi bấm <b>Đánh</b>. Bài được úp xuống và bạn nói đó là loại đang đến. Không có? Thì xạo!'],
           ['NÓI XẠO!', 'Sau mỗi lượt đánh, mọi người có vài giây để bấm <b>NÓI XẠO!</b> nếu nghĩ đó là nói dối. Các lá bài sẽ được lật lên.'],
@@ -17065,7 +17176,8 @@
         tunnel: { goal: 'Thợ đào: đào đường hầm từ lối vào đến kho vàng. Kẻ phá hoại: bí mật ngăn họ lại.', steps: [
           ['Biết phe của mình', 'Lúc bắt đầu, một dòng thông báo cho bạn biết mình là <b class="text-teal">Thợ đào</b> hay <b class="text-coral">Kẻ phá hoại</b>. Không ai khác thấy được.'],
           ['Đánh một lá', 'Đến lượt, chạm vào một lá trên tay. Mảnh đường hầm được đặt vào ô đang sáng (↻ để xoay). Nó phải khớp với các mảnh bên cạnh và nối vào đường hầm.'],
-          ['Lá hành động', 'Làm hỏng cuốc hoặc đèn của một người (họ không đào được cho đến khi sửa), sửa dụng cụ, dùng bản đồ kho báu để lén xem dưới một hòn đá ?, hoặc gây sập hầm để bỏ một mảnh đường hầm.'],
+          ['Lá hành động', 'Làm hỏng cuốc hoặc đèn của một người (họ không đào được cho đến khi sửa), sửa dụng cụ, dùng bản đồ kho báu để lén xem dưới một trong ba hòn đá đích, hoặc gây sập hầm để bỏ một mảnh đường hầm.'],
+          ['Cuốc hoặc đèn bị hỏng?', 'Dụng cụ hỏng thì không đào được. Đánh một <b class="text-emerald">lá Sửa</b> (cùng dụng cụ có dấu ✓ xanh): chạm vào lá, rồi chạm vào chính bạn. Người khác cũng có thể sửa giúp bạn. Lá Sửa của bạn sẽ sáng lên khi bạn cần.'],
           ['Không giúp được? Bỏ một lá', 'Bấm 🗑 Bỏ bài. Sau mỗi lượt bạn luôn rút một lá mới khi bộ bài còn.'],
           ['Ai thắng', 'Khi đường hầm đến được kho vàng, Thợ đào thắng. Nếu mọi người hết bài trước, Kẻ phá hoại thắng.']], online: ONT },
         guild: { goal: 'Xây thị trấn có nhiều điểm nhất.', steps: [
@@ -17177,6 +17289,8 @@
        Merged into the table in zz_lang.js (this file loads just before it). Keys are the exact English lines.
        ========================================================================= */
     window.VI_MORE = {
+      // Bullshit: play on for places, Mine Saboteurs fix cards (Nov 2026)
+      'See the results now': 'Xem kết quả ngay', 'out of cards': 'hết bài', 'Your place': 'Hạng của bạn', 'Lies you caught': 'Lần bắt được nói dối', 'Bluffs nobody caught': 'Lần lừa không bị bắt',
       // loading screen
       'Shuffling the deck...': 'Đang xáo bài...', 'Setting up the table...': 'Đang dọn bàn...', 'Finding a good seat...': 'Đang tìm chỗ ngồi đẹp...', 'Warming up...': 'Đang khởi động...',
       // shared setup words
@@ -17324,7 +17438,7 @@
       'Coloured edge': 'Cạnh có màu', 'The side each player is racing to': 'Bờ mà mỗi người đang đua tới', 'A true card': 'Lá thật', 'Matches the rank everyone is on': 'Đúng loại bài đang đến',
       'A lie': 'Lá xạo', 'Any other card played as that rank': 'Lá khác nhưng nói là loại đó', 'Shout': 'Hô', 'Turn the last cards over': 'Lật các lá vừa đánh',
       'Tunnel': 'Đường hầm', 'Join it to the tunnel': 'Nối vào đường hầm', 'Dead end': 'Đường cụt', 'The tunnel stops here': 'Đường hầm dừng ở đây', 'Break': 'Làm hỏng',
-      'Stops someone digging': 'Khiến ai đó không đào được', 'Map': 'Bản đồ', 'Peek under a stone': 'Lén xem dưới hòn đá',
+      'Stops someone digging': 'Khiến ai đó không đào được', 'Map': 'Bản đồ', 'Fix': 'Sửa', 'Mends a broken tool': 'Sửa dụng cụ bị hỏng', 'Peek under a stone': 'Lén xem dưới hòn đá',
       'Shadow': 'Bóng Đêm', 'Name a character: they miss their whole turn this round.': 'Gọi tên một nhân vật: họ mất cả lượt vòng này.',
       'Pickpocket': 'Kẻ Móc Túi', 'Name a character: when their turn starts, you take all their gold.': 'Gọi tên một nhân vật: khi đến lượt họ, bạn lấy hết vàng của họ.',
       'Trader': 'Thương Lái', 'Draw 2 extra building cards.': 'Rút thêm 2 lá công trình.', 'Monarch': 'Quốc Vương',

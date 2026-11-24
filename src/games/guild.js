@@ -8,7 +8,7 @@
        ========================================================================= */
     (function guildGame() {
       const ABORT = { a: 1 };
-      const COLORS = { royal: '#F5B041', faith: '#60A5FA', trade: '#34D399', guard: '#FB7185', wonder: '#C084FC' };
+      const COLORS = { royal: '#F5B041', faith: '#4DB2FF', trade: '#34D399', guard: '#FB7185', wonder: '#C084FC' };
       const CNAME = { royal: 'royal', faith: 'faith', trade: 'trade', guard: 'guard', wonder: 'wonder' };
       const BUILD = [['Manor', 'royal', 3, 5], ['Castle', 'royal', 4, 4], ['Palace', 'royal', 5, 3], ['Shrine', 'faith', 1, 3], ['Chapel', 'faith', 2, 3], ['Abbey', 'faith', 3, 3], ['Cathedral', 'faith', 5, 2],
         ['Inn', 'trade', 1, 5], ['Market', 'trade', 2, 4], ['Trading Post', 'trade', 2, 3], ['Harbor', 'trade', 3, 3], ['Guild Hall', 'trade', 4, 3], ['Town Hall', 'trade', 5, 2],
@@ -78,6 +78,14 @@
         players.forEach((p) => { for (let k = 0; k < 4; k++) p.hand.push(deck.pop()); });
         G = { S, me: S.online ? S.me : 0, players, deck, crown: S.rng.rnd(players.length), target: +sel.target || 7, round: 0, step: 0, over: false, tok: ++GT.cur, log: [], out: [], firstDone: null, cur: -1 };
         GT.started = true; GT.over = false;
+        // instant info box over a building (the browser's own hover box waits about a second; Cael found it slow)
+        const tipEl = () => { let t = $('gm-tip'); if (!t) { t = document.createElement('div'); t.id = 'gm-tip'; document.body.appendChild(t); } return t; };
+        const showTip = (el) => { const t = tipEl(), r = el.getBoundingClientRect(); t.textContent = el.dataset.tip; t.style.display = 'block';
+          const w = t.offsetWidth; t.style.left = Math.max(6, Math.min(innerWidth - w - 6, r.left + r.width / 2 - w / 2)) + 'px'; t.style.top = Math.max(6, r.top - t.offsetHeight - 8) + 'px'; };
+        const hideTip = () => { const t = $('gm-tip'); if (t) t.style.display = 'none'; };
+        gOn(body, 'pointerover', (e) => { const el = e.target.closest && e.target.closest('[data-tip]'); if (el) showTip(el); });
+        gOn(body, 'pointerout', (e) => { const el = e.target.closest && e.target.closest('[data-tip]'); if (el && !el.contains(e.relatedTarget)) hideTip(); });
+        gOn(body, 'pointerdown', (e) => { const el = e.target.closest && e.target.closest('[data-tip]'); if (el && e.pointerType !== 'mouse') { showTip(el); gTimeout(hideTip, 1600); } });
         body.innerHTML = `<div class="gm-wrap grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-4 items-start">
           <div class="space-y-3 min-w-0"><div id="gm-towns" class="gm-towns"></div>
             <div id="gm-prompt" class="win p-3 text-sm min-h-[54px]"></div>
@@ -222,7 +230,7 @@
       }
 
       function bldHTML(c, attr = '', cls = '') {
-        return `<div class="gm-b ${cls}" style="--bc:${COLORS[c.c]}" ${attr} title="${esc(c.name)}: ${CNAME[c.c]} building, costs ${c.cost}"><svg viewBox="0 0 20 16" shape-rendering="crispEdges"><rect x="2" y="7" width="16" height="9" fill="#050E18"/><rect x="3" y="8" width="14" height="8" fill="${COLORS[c.c]}"/><rect x="1" y="5" width="18" height="3" fill="#050E18"/><rect x="${c.c === 'faith' ? 9 : 5}" y="${c.c === 'faith' ? 0 : 2}" width="${c.c === 'faith' ? 2 : 10}" height="${c.c === 'faith' ? 6 : 3}" fill="#050E18"/>${c.c === 'wonder' ? '<rect x="8" y="0" width="4" height="5" fill="#050E18"/><rect x="9" y="1" width="2" height="3" fill="#F5B041"/>' : ''}${c.c === 'guard' ? '<rect x="3" y="3" width="2" height="2" fill="#050E18"/><rect x="15" y="3" width="2" height="2" fill="#050E18"/>' : ''}<rect x="8" y="11" width="4" height="5" fill="#050E18"/></svg><b>${esc(c.name)}</b><i>${c.cost}</i></div>`;
+        return `<div class="gm-b ${cls}" style="--bc:${COLORS[c.c]}" ${attr} data-tip="${esc(c.name)}: ${CNAME[c.c]} building, costs ${c.cost}" aria-label="${esc(c.name)}: ${CNAME[c.c]} building, costs ${c.cost}"><svg viewBox="0 0 20 16" shape-rendering="crispEdges"><rect x="2" y="7" width="16" height="9" fill="#050E18"/><rect x="3" y="8" width="14" height="8" fill="${COLORS[c.c]}"/><rect x="1" y="5" width="18" height="3" fill="#050E18"/><rect x="${c.c === 'faith' ? 9 : 5}" y="${c.c === 'faith' ? 0 : 2}" width="${c.c === 'faith' ? 2 : 10}" height="${c.c === 'faith' ? 6 : 3}" fill="#050E18"/>${c.c === 'wonder' ? '<rect x="8" y="0" width="4" height="5" fill="#050E18"/><rect x="9" y="1" width="2" height="3" fill="#F5B041"/>' : ''}${c.c === 'guard' ? '<rect x="3" y="3" width="2" height="2" fill="#050E18"/><rect x="15" y="3" width="2" height="2" fill="#050E18"/>' : ''}<rect x="8" y="11" width="4" height="5" fill="#050E18"/></svg><b>${esc(c.name)}</b><i>${c.cost}</i></div>`;
       }
       function draw() {
         if (!$('gm-towns') || !G) return;
@@ -285,7 +293,7 @@
           '<strong class="text-bone">Points:</strong> Every building is worth its cost. +3 for having all five colours, +4 for finishing first (+2 for others who finish), +2 for each wonder.',
         ], tip: 'The Merchant, Monarch, Abbot and Captain earn more gold the more buildings of their colour you own.' },
         profileTiles: (s) => [['WINS', s.wins, 'text-amber'], ['GAMES', s.played, 'text-bone'], ['BEST SCORE', s.best || 0, 'text-teal'], ['BUILT', s.built || 0, 'text-emerald']],
-        engine: { buildDeck, score, income, botPickRole, botBuilds, ROLES, get G() { return G; } }, open, close() { G = null; },
+        engine: { buildDeck, score, income, botPickRole, botBuilds, ROLES, get G() { return G; } }, open, close() { const t = document.getElementById('gm-tip'); if (t) t.remove(); G = null; },
         art: { role: (r) => roleCard(r), building: (c) => bldHTML(c, '', 'big') },
         online: { seats: (sel) => +sel.n || 4, min: 3, ranked: false, start: (body, sel, S) => start(body, sel, S) },
       };

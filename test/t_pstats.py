@@ -7,7 +7,7 @@ with sync_playwright() as p:
     A, B = players(p, 2)
     A.set_viewport_size({'width': 1440, 'height': 900})
     B.evaluate("""(() => { profile.xp = 730; const g = gstat('chess'); g.played = 14; g.wins = 9; g.losses = 5;
-      const t = gstat('tictactoe'); t.played = 6; t.wins = 2; t.draws = 3; t.losses = 1; profile.badges = ['first', 'mate'];
+      const t = gstat('tictactoe'); t.played = 6; t.wins = 2; t.draws = 3; t.losses = 1; profile.wins = 11;
       profile.history = [{ game: 'chess', result: 'win', at: Date.now() - 300000 }, { game: 'tictactoe', result: 'draw', at: Date.now() - 7200000 }, { game: 'chess', result: 'loss', at: Date.now() - 90000000 }];
       return NET.publishStats(myPublicStats()); })()""")
     bid = B.evaluate("NET.me.id")

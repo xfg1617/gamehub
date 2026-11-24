@@ -193,7 +193,7 @@
         const won = g === 'daily' ? (o.solved || o.wins || 0) : (o.wins || 0);
         games[g] = [o.played | 0, won | 0, (o.losses || 0) | 0, (o.draws || 0) | 0]; pl += o.played | 0; w += won | 0;
       });
-      return { lv: Math.floor((profile.xp || 0) / 100) + 1, played: pl, wins: w, games, badges: (profile.badges || []).slice(0, 30),
+      return { lv: Math.floor((profile.xp || 0) / 100) + 1, played: pl, wins: w, games, badges: window.REWARDS ? REWARDS.earned().slice(0, 40) : [],
         hist: (profile.history || []).slice(0, 12).map((h) => [h.game, h.result, h.at || 0]) };
     }
     let psLast = '';

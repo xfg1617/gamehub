@@ -49,6 +49,13 @@
           ['Win the match', 'In a "best of 3" or "best of 5", the first to win most of the games wins the match. Players take turns starting.']],
           items: () => row([[`<span class="ht-mark" style="color:#FB7185">✕</span>`, 'X', 'Coral'], [`<span class="ht-mark" style="color:#2DD4BF">◯</span>`, 'O', 'Teal']]),
           tip: 'Take the centre if you can. If your opponent takes it, take a corner.', online: NET_2P },
+        hedge: { tag: '2-4 PLAYERS · MAZE RACE', goal: 'Be the first to get your pawn to the other side of the garden.', steps: [
+          ['Take a step', 'On your turn, tap one of the glowing squares to move there: up, down, left or right.'],
+          ['Or plant a hedge', 'Press <b>Plant hedge</b>, tap a yellow dot between squares, then press <b>Plant</b>. Tap the dot again (or ↻ Turn it) to switch between lying flat and standing up.'],
+          ['Hedges block the way', 'Nobody can walk through a hedge, so it makes rivals walk around. But you can never shut someone in completely: there must always be a way through.'],
+          ['Jumping', 'If another pawn is right next to you, you can jump over it. If there is a hedge behind it, step to the side of it instead.']],
+          items: () => row([[`<span style="display:inline-block;width:44px;height:10px;background:#1E7A3E;border:2px solid #050E18"></span>`, 'Hedge', '2 squares long. You have 10 (5 with 4 players)'], [`<span style="display:inline-block;width:30px;height:30px;background:#F7EBC0;box-shadow:inset 0 0 0 3px #2DD4BF"></span>`, 'Glowing square', 'Where you can move now'], [`<span style="display:inline-block;width:40px;height:6px;background:#F5B041"></span>`, 'Coloured edge', 'The side each player is racing to']]),
+          tip: 'The panel shows how many steps everyone still needs. Save your hedges for when a rival is close to the finish.', online: NET_TABLE },
         chess: { tag: '1v1 · CLASSIC', goal: 'Trap the other king so it cannot escape. That is checkmate.', steps: [
           ['Move a piece', 'Tap one of your pieces, then a highlighted square. White moves first.'],
           ['Capture', 'Move onto an enemy piece to take it off the board.'],

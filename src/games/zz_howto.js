@@ -191,14 +191,14 @@
           ['Last chance', 'A caught impostor gets one guess at the group’s word. Guess right and they still win! A tied vote lets the impostor escape.']],
           items: () => row([[`<span class="ht-mark">🕵️</span>`, 'Impostor', 'Has a different word'], [`<span class="ht-mark">🗳️</span>`, 'Vote', 'Point at the odd one out']]),
           tip: 'If you think you might be the impostor, copy the style of the other hints.', online: 'Everyone types their hint on their own screen, then everyone votes at the same time. ' + NET_TABLE },
-        doodle: { tag: '2-6 PLAYERS · DRAW & GUESS', goal: 'Guess other players’ drawings fast, and draw well so they can guess yours.', steps: [
-          ['Pick a word', 'When it’s your turn to draw, choose one of 3 words. Only you can see it.'],
+        doodle: { tag: '2-8 PLAYERS · DRAW & GUESS', goal: 'Guess other players’ drawings fast, and draw well so they can guess yours.', steps: [
+          ['Pick a word', 'When it’s your turn to draw, choose an <b>easy</b>, <b>medium</b> or <b>hard</b> word. Harder words are worth more points (×1, ×1.5, ×2). Only you can see it.'],
           ['Draw it', 'Draw on the white board. Pick a colour and a pen size; Undo and Clear help. No letters or numbers!'],
           ['Everyone guesses', 'The others type guesses in the box on the right. A right guess gets points: the faster, the more. Wrong guesses show in the list for everyone.'],
-          ['Hints', 'When time runs low, some letters of the word appear at the top.'],
+          ['Hints', 'Guessers see the level and a dash for every letter. When time runs low, some letters appear. Accents don’t matter: “meo” counts for “mèo”.'],
           ['Winning', 'Everyone draws once per round. After the last round, the most points wins.']],
           items: () => row([[`<span class="ht-mark">✏️</span>`, 'Drawer', 'Gets points when people guess'], [`<span class="ht-mark">💬</span>`, 'Guessers', 'Faster guesses score more'], [`<span class="pix" style="letter-spacing:3px">_ _ T _</span>`, 'Hint', 'Letters appear as time runs out']]),
-          tip: 'Draw the most important shape first, big and simple. Details can wait.', online: 'Everyone sees the drawing live as it’s made. ' + NET_TABLE + ' Computer players draw and guess too. Solo mode lets you guess doodles by yourself.' },
+          tip: 'Draw the most important shape first, big and simple. Details can wait.', online: 'Everyone sees the drawing live as it’s made. It’s played with real people only (no computer players): create a room and send your friends the link. The room can pick English or Vietnamese words.' },
       };
       return G;
     })();

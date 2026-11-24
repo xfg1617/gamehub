@@ -538,7 +538,7 @@
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
     }
     // Solo play stays for games you can play alone (Inna): which options a Solo game keeps narrowed to
-    const SOLO_MODE = { wordconnect: {}, blackjack: {}, bowling: { mode: ['solo'] }, doodle: { mode: ['solo'] } };
+    const SOLO_MODE = { wordconnect: {}, blackjack: {}, bowling: { mode: ['solo'] } };
     const PASS_PLAY = /pass\s*&\s*play/i;
     // which setup option is the computer players' level, and which one is the table size, per game
     const BOT_LEVEL = { hedge: 'lvl', checkers: 'lvl', c4: 'lvl', pool: 'lvl', tictactoe: 'lvl', wordduel: 'lvl', dominoes: 'lvl', isles: 'lvl', manor: 'lvl', poker: 'style', bowling: 'mode', chess: 'lvl', navalnet: 'ai' };

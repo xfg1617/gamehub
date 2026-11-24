@@ -1176,6 +1176,9 @@
 .dg-feed { height: 220px; overflow-y: auto; padding: 8px 10px; font-size: .8rem; color: #F7F4EC; display: flex; flex-direction: column; gap: 3px; }
 .dg-feed i { color: #9DB4CC; }
 @media (min-width: 1024px) { body.in-game[data-game="doodle"] #gs-body > .grid.dg-wrap { grid-template-columns: min(calc((var(--av) - 190px) * 1.58), calc(100vw - 420px)) 300px !important; justify-content: center; } }
+.dg-pick { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 130px; }
+.dg-pick small { font-family: 'Arcade Pixel', monospace; font-size: 12px; opacity: .85; }
+.dg-pick span { font-size: 1rem; font-weight: 800; }
     /* =========================================================================
        FULL-SCREEN GAMES (Inna, Nov 2026): while a game is open (body.in-game) the side menu, the phone header
        and the footer step aside and the game uses the whole window. The move log hides behind "📜 Moves".
@@ -5910,7 +5913,7 @@
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
     }
     // Solo play stays for games you can play alone (Inna): which options a Solo game keeps narrowed to
-    const SOLO_MODE = { wordconnect: {}, blackjack: {}, bowling: { mode: ['solo'] }, doodle: { mode: ['solo'] } };
+    const SOLO_MODE = { wordconnect: {}, blackjack: {}, bowling: { mode: ['solo'] } };
     const PASS_PLAY = /pass\s*&\s*play/i;
     // which setup option is the computer players' level, and which one is the table size, per game
     const BOT_LEVEL = { hedge: 'lvl', checkers: 'lvl', c4: 'lvl', pool: 'lvl', tictactoe: 'lvl', wordduel: 'lvl', dominoes: 'lvl', isles: 'lvl', manor: 'lvl', poker: 'style', bowling: 'mode', chess: 'lvl', navalnet: 'ai' };
@@ -6967,7 +6970,6 @@
       if (m.id === 'tictactoe') { s.mode = 'ai'; s.first = s.first || 'alt'; }
       if (m.id === 'c4') { s.mode = 'ai'; s.first = s.first || 'me'; }
       if (m.id === 'bowling') s.mode = lvl || 'bot1';
-      if (m.id === 'doodle') s.mode = 'live';
       return s;
     }
     // Sea Battle vs the computer (the offline version) with the room's settings
@@ -10039,12 +10041,12 @@
       function open(root) {
         const body = gameShell(root, mod, '', 'max-w-[900px] mx-auto');
         setupScreen(body, mod, [
-          { key: 'mode', label: 'MODE', def: 'live', local: true, choices: [['live', 'Draw & Guess'], ['solo', 'Solo: Guess the Doodle']] },
-          { key: 'n', label: 'PLAYERS', def: 4, when: (s) => s.mode !== 'solo', choices: [[2, '2'], [3, '3'], [4, '4'], [5, '5'], [6, '6']] },
-          { key: 'rounds', label: 'ROUNDS', def: 2, when: (s) => s.mode !== 'solo', choices: [[1, '1'], [2, '2'], [3, '3']], hint: 'In each round, everyone draws once.' },
-          { key: 'dtime', label: 'DRAWING TIME', def: 80, when: (s) => s.mode !== 'solo', choices: [[60, '60 sec'], [80, '80 sec'], [100, '100 sec']] },
-        ], (sel) => (sel.mode === 'solo' ? solo(body) : live(body, sel, npLocal([{ name: profile.username, avatar: profile.avatar }].concat(['Doodlebot', 'Sketchy', 'Pencil Pal', 'Crayon', 'Scribbles'].slice(0, (+sel.n || 4) - 1).map((name, i) => ({ bot: true, name, avatar: ['🤖', '🦊', '🐻', '🐙', '🦉'][i] }))), sel))),
-          'Draw & Guess: take turns drawing a word while everyone else races to guess it. Solo: watch a doodle appear and guess what it is.');
+          { key: 'n', label: 'PLAYERS', def: 8, choices: [[2, '2'], [3, '3'], [4, '4'], [5, '5'], [6, '6'], [8, '8']] },
+          { key: 'lang', label: 'WORDS', def: (typeof LANG !== 'undefined' && LANG.code === 'vi') ? 'vi' : 'en', choices: [['en', 'English'], ['vi', 'Tiếng Việt']] },
+          { key: 'rounds', label: 'ROUNDS', def: 2, choices: [[1, '1'], [2, '2'], [3, '3']], hint: 'In each round, everyone draws once.' },
+          { key: 'dtime', label: 'DRAWING TIME', def: 60, choices: [[60, '60 sec'], [80, '80 sec'], [100, '100 sec']] },
+        ], (sel) => showToast('Draw & Guess is played with friends online: create a room and invite them.', 'info'),
+          'Take turns drawing a word while everyone else races to guess it. Play with friends: create a room and send them the link.');
       }
 
       /* ====================== ONLINE: everyone plays at once, each on a different chain ====================== */
@@ -10196,7 +10198,7 @@
       }
 
       /* ====================== SOLO: GUESS THE DOODLE ====================== */
-      const norm = (s) => String(s).toLowerCase().replace(/[^a-z]/g, '');
+      const norm = (s) => String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9]/g, '');
       function lev(a, b) { const m = a.length, n = b.length; const d = Array.from({ length: m + 1 }, (_, i) => [i, ...Array(n).fill(0)]); for (let j = 1; j <= n; j++) d[0][j] = j; for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); return d[m][n]; }
       function matches(guess, doodle) { const g = norm(guess); if (!g) return false; return doodle.w.some((w) => { const x = norm(w); return g === x || g === x + 's' || (x.length >= 5 && lev(g, x) <= 1); }); }
       const ROUNDS = 6, TIME = 30;
@@ -10253,7 +10255,7 @@
       const WORDS = ['apple', 'banana', 'rocket', 'castle', 'guitar', 'snowman', 'pizza', 'rainbow', 'spider', 'umbrella', 'robot', 'dragon', 'island', 'camera', 'balloon', 'penguin', 'volcano', 'sandwich', 'ladder', 'candle', 'glasses', 'trophy', 'whale', 'turtle', 'cactus', 'kite', 'anchor', 'crown', 'ghost', 'bridge', 'cookie', 'flower', 'pirate', 'rabbit', 'shoe', 'clock', 'moon', 'star', 'bicycle', 'giraffe'];
       async function LW(ms) { const t = G && G.tok; await gSleep(window.__fast && !G.S.online ? Math.min(ms, 40) : ms); if (!G || G.tok !== t) throw ABORT; }
       function live(body, sel, S) {
-        G = { mode: 'live', S, body, me: S.online ? S.me : 0, score: S.seats.map(() => 0), rounds: +sel.rounds || 2, time: +sel.dtime || 80, tok: ++GT.cur, over: false, step: 0, view: {} };
+        G = { mode: 'live', lang: sel.lang === 'vi' ? 'vi' : 'en', S, body, me: S.online ? S.me : 0, score: S.seats.map(() => 0), rounds: +sel.rounds || 2, time: +sel.dtime || 80, tok: ++GT.cur, over: false, step: 0, view: {} };
         GT.started = true; GT.over = false;
         S.track(); npBar('');
         body.innerHTML = `<div class="dg-wrap grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-4 items-start">
@@ -10282,6 +10284,8 @@
         el.innerHTML = order.map((i) => `<div class="pl-tag flex items-center gap-2.5 ${i === G.drawer ? 'turn' : ''} ${i === G.me ? 'me' : ''}" style="--pc:${G.guessed && G.guessed.has(i) ? '#34D399' : '#9DB4CC'}"><span class="tg-av">${esc(S.seats[i].avatar || '🙂')}</span><span class="min-w-0 flex-1"><b class="block truncate text-bone text-sm">${esc(S.name(i))}${S.bot(i) ? ' <small class="text-muted">CPU</small>' : ''}</b><small class="text-xs ${G.guessed && G.guessed.has(i) ? 'text-emerald' : 'text-muted'}">${i === G.drawer ? '✏️ drawing' : G.guessed && G.guessed.has(i) ? '✓ guessed it' : ''}</small></span><b class="pix text-amber text-lg">${G.score[i]}</b></div>`).join('');
         $('dg-round').textContent = G.round ? `ROUND ${G.round}/${G.rounds}` : '';
       }
+      const LEVELS = { easy: { en: 'EASY', vi: 'DỄ', mult: 1, cls: 'btn-emerald' }, medium: { en: 'MEDIUM', vi: 'TRUNG BÌNH', mult: 1.5, cls: 'btn-amber' }, hard: { en: 'HARD', vi: 'KHÓ', mult: 2, cls: 'btn-coral' } };
+      const wordList = (lang, lvl) => ((window.DOODLE_WORDS || {})[lang] || (window.DOODLE_WORDS || {}).en || {})[lvl] || ['apple'];
       const hintOf = (word, shown) => word.split('').map((ch, i) => (ch === ' ' ? ' ' : shown.includes(i) ? ch.toUpperCase() : '_')).join(' ');
       async function liveTurn(d) {
         const S = G.S, k = ++G.step, t = G.tok;
@@ -10289,25 +10293,27 @@
         $('dg-who').textContent = S.mine(d) ? 'YOUR TURN TO DRAW' : `${S.name(d).toUpperCase()} IS CHOOSING A WORD...`;
         $('dg-hint').textContent = ''; $('dg-tools').innerHTML = ''; G.clock.idle('Get ready', '...');
         $('dg-stage').innerHTML = `<div class="dg-wait">${esc(S.seats[d].avatar || '🙂')}<b>${esc(S.name(d))}</b> ${S.mine(d) ? 'is you! Pick a word to draw.' : 'is picking a word...'}</div>`;
-        // 1. the drawer picks a word (a computer player picks one of the built-in doodles)
+        // 1. the drawer picks one of three words: one easy, one medium, one hard (harder = more points)
+        const lang = G.lang;
         if (S.mine(d)) {
-          const opts = shuffle(WORDS.concat(DOODLES.map((x) => x.w[0]))).slice(0, 3);
-          $('dg-stage').innerHTML = `<div class="dg-wait"><b>Choose a word to draw:</b><div class="flex gap-2 flex-wrap justify-center mt-3">${opts.map((w) => `<button class="btn-game btn-amber py-2 px-5" data-w="${esc(w)}">${esc(w)}</button>`).join('')}</div></div>`;
-          document.querySelectorAll('#dg-stage [data-w]').forEach((b) => { b.onclick = () => { const di = DOODLES.findIndex((x) => x.w[0] === b.dataset.w); S.act(Object.assign({ t: 'word', s: d, k }, di >= 0 ? { di } : { w: b.dataset.w })); $('dg-stage').innerHTML = ''; }; });
+          const opts = ['easy', 'medium', 'hard'].map((l) => [l, pick(wordList(lang, l))]);
+          $('dg-stage').innerHTML = `<div class="dg-wait"><b>Choose a word to draw:</b><div class="flex gap-3 flex-wrap justify-center mt-3">${opts.map(([l, w]) => `<button class="dg-pick btn-game ${LEVELS[l].cls} py-2 px-5" data-w="${esc(w)}" data-l="${l}"><small>${LEVELS[l][lang] || LEVELS[l].en} · ×${LEVELS[l].mult}</small><span>${esc(w)}</span></button>`).join('')}</div></div>`;
+          document.querySelectorAll('#dg-stage [data-w]').forEach((b) => { b.onclick = () => { S.act({ t: 'word', s: d, k, w: b.dataset.w, l: b.dataset.l }); $('dg-stage').innerHTML = ''; }; });
         }
-        const a = await S.ask(d, () => ({ t: 'word', k, di: Math.floor(Math.random() * DOODLES.length), bot: 1 }), 900 + rnd(600), (x) => x.s === d && x.t === 'word' && x.k === k);
+        // (a player who left is played by the table: it just picks an easy word, and nobody draws it)
+        const a = await S.ask(d, () => ({ t: 'word', k, w: pick(wordList(lang, 'easy')), l: 'easy' }), 1500, (x) => x.s === d && x.t === 'word' && x.k === k);
         if (!G || G.tok !== t) throw ABORT;
-        const doodle = a.di !== undefined && DOODLES[a.di] ? DOODLES[a.di] : null;
-        const word = (doodle ? doodle.w[0] : String(a.w || 'apple')).toLowerCase().slice(0, 24);
-        G.word = word; G.k = k; G.t0 = Date.now();
+        const lvl = LEVELS[a.l] ? a.l : 'easy', mult = LEVELS[lvl].mult;
+        const word = String(a.w || 'apple').toLowerCase().slice(0, 30);
+        G.word = word; G.k = k; G.t0 = Date.now(); G.lvl = lvl;
         const letters = word.split('').map((_, i) => i).filter((i) => word[i] !== ' '), shown = [];
-        const paintHint = () => { const h = $('dg-hint'); if (h) h.textContent = S.mine(d) ? word.toUpperCase() : hintOf(word, shown); };
+        const lvlTag = `${LEVELS[lvl][lang] || LEVELS[lvl].en} · `;
+        const paintHint = () => { const h = $('dg-hint'); if (h) h.textContent = lvlTag + (S.mine(d) ? word.toUpperCase() : hintOf(word, shown)); };
         paintHint();
         $('dg-who').textContent = S.mine(d) ? `DRAW: ${word.toUpperCase()}` : `${S.name(d).toUpperCase()} IS DRAWING`;
         feed(`<i>${esc(S.name(d))} is drawing now.</i>`);
         // 2. the drawing
         if (S.mine(d)) drawPad(k);
-        else if (a.bot || !doodle || S.bot(d)) { if (doodle && (a.bot || S.bot(d))) botDraw(doodle); else viewPad(); }
         else viewPad();
         G.clock.start(G.time, 'Time left', () => {}, 10);
         const hintT = gInterval(() => { const el = (Date.now() - G.t0) / 1000; const want = el > G.time * 0.75 ? 2 : el > G.time * 0.45 ? 1 : 0; while (shown.length < Math.min(want, letters.length - 1)) { const left = letters.filter((i) => !shown.includes(i)); shown.push(left[(word.length * 7 + shown.length * 3) % left.length]); } paintHint(); }, 500);
@@ -10316,11 +10322,6 @@
         const tick = () => {
           const el = (Date.now() - G.t0) / 1000;
           if (el >= G.time || others.every((i) => G.guessed.has(i))) return { t: 'end', k };
-          for (const b of shuffle(others.filter((i) => S.bot(i) && !G.guessed.has(i)))) {
-            const r = Math.random(), pr = Math.min(0.55, (el / G.time) * (S.mine(d) ? 0.5 : 0.9) + 0.03);
-            if (r < pr) return { t: 'guess', s: b, k, txt: word };
-            if (r < pr + 0.18) return { t: 'guess', s: b, k, txt: pick(WORDS.concat(DOODLES.map((x) => x.w[0])).filter((w) => w !== word)) };
-          }
           return { t: 'tick', k };
         };
         for (;;) {
@@ -10328,10 +10329,10 @@
           if (!G || G.tok !== t) { gClearInt(hintT); throw ABORT; }
           if (g.t === 'end') break;
           if (g.t !== 'guess') continue;
-          const right = doodle ? matches(g.txt, doodle) : matches(g.txt, { w: [word] });
+          const right = matches(g.txt, { w: [word] });
           if (right) {
             G.guessed.add(g.s);
-            const left = Math.max(0, G.time - (Date.now() - G.t0) / 1000), pts = Math.max(20, Math.round(30 + 70 * left / G.time) - shown.length * 5);
+            const left = Math.max(0, G.time - (Date.now() - G.t0) / 1000), pts = Math.max(20, Math.round((30 + 70 * left / G.time) * mult) - shown.length * 5);
             G.score[g.s] += pts; G.score[d] += Math.round(pts / 3);
             feed(`<b class="text-emerald">✓ ${esc(S.name(g.s))} guessed the word! +${pts}</b>`);
             SFX.play(g.s === G.me ? 'win' : 'coin'); board();
@@ -10345,7 +10346,6 @@
         $('dg-hint').textContent = word.toUpperCase();
         $('dg-who').textContent = `THE WORD WAS: ${word.toUpperCase()}`;
         feed(`<i>The word was <b class="text-amber">${esc(word)}</b>.</i>`);
-        if (doodle && (a.bot || S.bot(d))) botDraw(doodle, true);
         SFX.play('reveal'); board();
         await LW(3200);
       }
@@ -10413,22 +10413,77 @@
       }
 
       const mod = {
-        id: 'doodle', name: 'Doodle Guess', icon: 'doodle', cats: ['party'], sub: '2-6 PLAYERS · SOLO', color: '#F5B041', tone: 'amber', btn: 'amber',
+        id: 'doodle', name: 'Doodle Guess', icon: 'doodle', cats: ['party'], sub: '2-8 PLAYERS · ~10 MIN', color: '#F5B041', tone: 'amber', btn: 'amber',
         blurb: 'Take turns drawing a secret word while everyone races to guess it. The faster you guess, the more points you get.',
-        rules: { tag: 'DRAW & GUESS · 2-6 PLAYERS', steps: [
-          '<strong class="text-bone">Drawing:</strong> When it is your turn, pick one of 3 words and draw it. No letters or numbers! Everyone sees your drawing as you make it.',
-          '<strong class="text-bone">Guessing:</strong> Everyone else types guesses. The faster you guess right, the more points you get. Letters of the word show up as hints when time runs low.',
-          '<strong class="text-bone">Points:</strong> The drawer gets points too, for every player who guesses. After everyone has drawn (1, 2 or 3 rounds), the most points wins.',
-          '<strong class="text-bone">Solo:</strong> A computer player draws a doodle stroke by stroke. Type what it is as fast as you can.',
+        rules: { tag: 'DRAW & GUESS · 2-8 PLAYERS', steps: [
+          '<strong class="text-bone">Drawing:</strong> When it is your turn, pick an <b>easy</b>, <b>medium</b> or <b>hard</b> word (harder words score more) and draw it. No letters or numbers! Everyone sees your drawing as you make it.',
+          '<strong class="text-bone">Guessing:</strong> Everyone else sees the level and a dash for every letter, and types guesses. The faster you guess right, the more points you get. Some letters show up when time runs low.',
+          '<strong class="text-bone">Points:</strong> The drawer gets points too, for every player who guesses, so the more people get it, the more the drawer scores. After everyone has drawn (1, 2 or 3 rounds), the most points wins.',
         ], tip: 'Draw the most important shape first, big and simple. Details can wait.' },
         profileTiles: (s) => [['GAMES', s.played, 'text-bone'], ['WINS', s.wins || 0, 'text-amber'], ['GUESSED', s.guessed || 0, 'text-emerald'], ['BEST SOLO', s.bestSolo || 0, 'text-teal']],
         extraRows: (s) => srow('Drawings made', s.drawings || 0),
-        online: { seats: (sel) => +sel.n || 6, min: 2, ranked: false, start: (body, sel, S) => live(body, sel, S) },
-        engine: { DOODLES, matches, word: () => (G && G.word) || '' }, open, close() { G = null; },
+        online: { seats: (sel) => +sel.n || 8, min: 2, bots: false, ranked: false, start: (body, sel, S) => live(body, sel, S) },
+        engine: { DOODLES, matches, norm, word: () => (G && G.word) || '' }, open, close() { G = null; },
       };
       registerGame(mod);
     })();
 
+    /* =========================================================================
+       DOODLE GUESS word lists (Nov 2026, Inna): three levels in English and Vietnamese. The drawer is offered one word
+       of each level; harder words score more. Vietnamese guesses are accepted with or without accents.
+       ========================================================================= */
+    const DOODLE_WORDS = {
+      en: {
+        easy: ['cat', 'dog', 'fish', 'bird', 'house', 'tree', 'sun', 'moon', 'star', 'apple', 'banana', 'flower', 'car', 'boat', 'ball', 'hat', 'shoe',
+          'cup', 'key', 'clock', 'book', 'chair', 'table', 'bed', 'door', 'window', 'heart', 'cloud', 'rain', 'snow', 'egg', 'cake', 'pizza', 'cookie',
+          'ice cream', 'bread', 'cheese', 'carrot', 'grapes', 'lemon', 'pear', 'cherry', 'leaf', 'mushroom', 'snail', 'bee', 'ant', 'duck', 'cow',
+          'pig', 'sheep', 'horse', 'frog', 'mouse', 'rabbit', 'bear', 'lion', 'snake', 'spider', 'smile', 'eye', 'nose', 'hand', 'foot', 'ear',
+          'kite', 'balloon', 'candle', 'lamp', 'phone', 'pencil', 'scissors', 'umbrella', 'glasses', 'sock', 'shirt', 'bag', 'box', 'bell', 'flag',
+          'train', 'bus', 'plane', 'bike', 'rocket', 'ladder', 'fork', 'spoon', 'bottle', 'tooth', 'crown', 'ring', 'rainbow', 'mountain', 'island'],
+        medium: ['castle', 'guitar', 'piano', 'drum', 'robot', 'dragon', 'pirate', 'ghost', 'witch', 'wizard', 'mermaid', 'unicorn', 'dinosaur',
+          'penguin', 'giraffe', 'elephant', 'kangaroo', 'octopus', 'shark', 'whale', 'turtle', 'crab', 'owl', 'bat', 'butterfly', 'ladybug', 'camel',
+          'volcano', 'waterfall', 'desert', 'cactus', 'lighthouse', 'bridge', 'tent', 'campfire', 'igloo', 'windmill', 'tractor', 'helicopter',
+          'submarine', 'skateboard', 'scooter', 'parachute', 'snowman', 'sandcastle', 'treasure', 'anchor', 'compass', 'telescope', 'microscope',
+          'camera', 'television', 'computer', 'headphones', 'microphone', 'toothbrush', 'hammer', 'saw', 'shovel', 'bucket', 'basket', 'teapot',
+          'sandwich', 'hamburger', 'hot dog', 'popcorn', 'pancake', 'donut', 'lollipop', 'birthday cake', 'present', 'trophy', 'medal', 'magnet',
+          'mailbox', 'traffic light', 'fire truck', 'ambulance', 'police car', 'spaceship', 'astronaut', 'alien', 'planet', 'comet', 'tornado',
+          'lightning', 'scarecrow', 'zombie', 'vampire', 'superhero', 'knight', 'king', 'queen', 'princess', 'chef', 'doctor', 'farmer'],
+        hard: ['birthday party', 'traffic jam', 'sleepwalking', 'fishing', 'surfing', 'skiing', 'camping', 'juggling', 'dancing', 'swimming',
+          'gardening', 'snoring', 'sneezing', 'yawning', 'brushing teeth', 'taking a selfie', 'flying a kite', 'playing soccer', 'riding a horse',
+          'walking the dog', 'blowing bubbles', 'building a snowman', 'roller coaster', 'haunted house', 'shooting star', 'solar eclipse', 'earthquake',
+          'black hole', 'time travel', 'gravity', 'echo', 'shadow', 'reflection', 'dream', 'nightmare', 'invisible', 'hiccups', 'sunburn', 'jet lag',
+          'homework', 'weekend', 'vacation', 'wedding', 'graduation', 'magic trick', 'tug of war', 'hide and seek', 'musical chairs', 'pillow fight',
+          'food fight', 'treasure hunt', 'message in a bottle', 'stuck in an elevator', 'power outage', 'first day of school', 'bad hair day',
+          'brain freeze', 'butterflies in stomach', 'cold feet', 'couch potato', 'piece of cake', 'raining cats and dogs', 'hot air balloon',
+          'self driving car', 'virtual reality', 'video call', 'wifi', 'password', 'recycling', 'global warming', 'evolution', 'photosynthesis',
+          'democracy', 'friendship', 'happiness', 'jealousy', 'boredom', 'surprise party', 'lost and found', 'escape room', 'stage fright'],
+      },
+      vi: {
+        easy: ['con mèo', 'con chó', 'con cá', 'con chim', 'con gà', 'con vịt', 'con bò', 'con heo', 'con ngựa', 'con ếch', 'con chuột', 'con thỏ',
+          'con gấu', 'con rắn', 'con nhện', 'con ong', 'con kiến', 'ngôi nhà', 'cái cây', 'mặt trời', 'mặt trăng', 'ngôi sao', 'đám mây', 'cơn mưa',
+          'quả táo', 'quả chuối', 'quả cam', 'quả dưa hấu', 'quả xoài', 'bông hoa', 'chiếc lá', 'cây nấm', 'xe đạp', 'xe máy', 'ô tô', 'xe buýt',
+          'máy bay', 'con thuyền', 'quả bóng', 'cái mũ', 'nón lá', 'đôi giày', 'cái áo', 'cái ô', 'cái cốc', 'chìa khóa', 'đồng hồ', 'quyển sách',
+          'cái ghế', 'cái bàn', 'cái giường', 'cửa sổ', 'trái tim', 'quả trứng', 'cái bánh', 'cây kem', 'đôi đũa', 'cái thìa', 'cái kéo', 'bút chì',
+          'điện thoại', 'cái đèn', 'cây nến', 'quả bóng bay', 'con diều', 'kính mắt', 'cái cặp', 'bàn chải', 'cái nồi', 'cái chén'],
+        medium: ['bánh mì', 'phở', 'bánh chưng', 'bánh xèo', 'nem rán', 'trà sữa', 'cà phê sữa đá', 'áo dài', 'xích lô', 'lồng đèn', 'con rồng',
+          'con lân', 'cầu vồng', 'núi lửa', 'thác nước', 'ngọn hải đăng', 'cây cầu', 'cái lều', 'đống lửa trại', 'cối xay gió', 'máy cày',
+          'trực thăng', 'tàu ngầm', 'ván trượt', 'người tuyết', 'lâu đài cát', 'kho báu', 'mỏ neo', 'la bàn', 'kính thiên văn', 'máy ảnh', 'ti vi',
+          'máy tính', 'tai nghe', 'cái búa', 'cái xẻng', 'cái giỏ', 'ấm trà', 'bánh kem', 'hộp quà', 'cúp vàng', 'đèn giao thông', 'xe cứu hỏa',
+          'xe cứu thương', 'tàu vũ trụ', 'phi hành gia', 'người ngoài hành tinh', 'hành tinh', 'lốc xoáy', 'tia sét', 'bù nhìn', 'ma cà rồng',
+          'siêu anh hùng', 'hiệp sĩ', 'nhà vua', 'công chúa', 'đầu bếp', 'bác sĩ', 'nông dân', 'con khủng long', 'chim cánh cụt', 'hươu cao cổ',
+          'con voi', 'con bạch tuộc', 'cá mập', 'cá voi', 'con rùa', 'con cua', 'con cú', 'con bướm', 'đàn ghi-ta', 'đàn piano', 'cái trống',
+          'người máy', 'cướp biển', 'con ma', 'phù thủy', 'nàng tiên cá', 'kỳ lân', 'tàu hỏa'],
+        hard: ['đá bóng', 'câu cá', 'thả diều', 'múa lân', 'đi chợ', 'tắc đường', 'mất điện', 'ngủ gật', 'đánh răng', 'say xe', 'sinh nhật',
+          'Trung Thu', 'Tết', 'lì xì', 'lướt sóng', 'chụp ảnh tự sướng', 'đi máy bay', 'cắm trại', 'tung hứng', 'nhảy múa', 'bơi lội', 'làm vườn',
+          'ngáy', 'hắt hơi', 'ngáp', 'dắt chó đi dạo', 'thổi bong bóng', 'đắp người tuyết', 'tàu lượn siêu tốc', 'nhà ma', 'sao băng', 'nhật thực',
+          'động đất', 'hố đen', 'du hành thời gian', 'trọng lực', 'cái bóng', 'giấc mơ', 'ác mộng', 'tàng hình', 'nấc cụt', 'cháy nắng',
+          'bài tập về nhà', 'cuối tuần', 'kỳ nghỉ', 'đám cưới', 'lễ tốt nghiệp', 'ảo thuật', 'kéo co', 'trốn tìm', 'đánh gối', 'truy tìm kho báu',
+          'kẹt thang máy', 'ngày đầu đi học', 'kẹt xe', 'bán hàng rong', 'uống trà đá', 'ăn vặt', 'hát karaoke', 'gọi video', 'mật khẩu', 'tái chế',
+          'nóng lên toàn cầu', 'tình bạn', 'hạnh phúc', 'ghen tị', 'buồn chán', 'tiệc bất ngờ', 'phòng thoát hiểm', 'run sợ sân khấu', 'lười biếng',
+          'thức khuya', 'nghiện điện thoại'],
+      },
+    };
+    window.DOODLE_WORDS = DOODLE_WORDS;
     /* =========================================================================
        FIBBER (original game, Nov 2026): a family-friendly bluffing card game for 3-5 players.
        All 52 cards are dealt. Turns go round the table and the rank goes up each turn: Aces, Twos, Threes ... Kings,
@@ -16874,14 +16929,14 @@
           ['Last chance', 'A caught impostor gets one guess at the group’s word. Guess right and they still win! A tied vote lets the impostor escape.']],
           items: () => row([[`<span class="ht-mark">🕵️</span>`, 'Impostor', 'Has a different word'], [`<span class="ht-mark">🗳️</span>`, 'Vote', 'Point at the odd one out']]),
           tip: 'If you think you might be the impostor, copy the style of the other hints.', online: 'Everyone types their hint on their own screen, then everyone votes at the same time. ' + NET_TABLE },
-        doodle: { tag: '2-6 PLAYERS · DRAW & GUESS', goal: 'Guess other players’ drawings fast, and draw well so they can guess yours.', steps: [
-          ['Pick a word', 'When it’s your turn to draw, choose one of 3 words. Only you can see it.'],
+        doodle: { tag: '2-8 PLAYERS · DRAW & GUESS', goal: 'Guess other players’ drawings fast, and draw well so they can guess yours.', steps: [
+          ['Pick a word', 'When it’s your turn to draw, choose an <b>easy</b>, <b>medium</b> or <b>hard</b> word. Harder words are worth more points (×1, ×1.5, ×2). Only you can see it.'],
           ['Draw it', 'Draw on the white board. Pick a colour and a pen size; Undo and Clear help. No letters or numbers!'],
           ['Everyone guesses', 'The others type guesses in the box on the right. A right guess gets points: the faster, the more. Wrong guesses show in the list for everyone.'],
-          ['Hints', 'When time runs low, some letters of the word appear at the top.'],
+          ['Hints', 'Guessers see the level and a dash for every letter. When time runs low, some letters appear. Accents don’t matter: “meo” counts for “mèo”.'],
           ['Winning', 'Everyone draws once per round. After the last round, the most points wins.']],
           items: () => row([[`<span class="ht-mark">✏️</span>`, 'Drawer', 'Gets points when people guess'], [`<span class="ht-mark">💬</span>`, 'Guessers', 'Faster guesses score more'], [`<span class="pix" style="letter-spacing:3px">_ _ T _</span>`, 'Hint', 'Letters appear as time runs out']]),
-          tip: 'Draw the most important shape first, big and simple. Details can wait.', online: 'Everyone sees the drawing live as it’s made. ' + NET_TABLE + ' Computer players draw and guess too. Solo mode lets you guess doodles by yourself.' },
+          tip: 'Draw the most important shape first, big and simple. Details can wait.', online: 'Everyone sees the drawing live as it’s made. It’s played with real people only (no computer players): create a room and send your friends the link. The room can pick English or Vietnamese words.' },
       };
       return G;
     })();

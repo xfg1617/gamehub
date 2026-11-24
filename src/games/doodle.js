@@ -36,12 +36,12 @@
       function open(root) {
         const body = gameShell(root, mod, '', 'max-w-[900px] mx-auto');
         setupScreen(body, mod, [
-          { key: 'mode', label: 'MODE', def: 'live', local: true, choices: [['live', 'Draw & Guess'], ['solo', 'Solo: Guess the Doodle']] },
-          { key: 'n', label: 'PLAYERS', def: 4, when: (s) => s.mode !== 'solo', choices: [[2, '2'], [3, '3'], [4, '4'], [5, '5'], [6, '6']] },
-          { key: 'rounds', label: 'ROUNDS', def: 2, when: (s) => s.mode !== 'solo', choices: [[1, '1'], [2, '2'], [3, '3']], hint: 'In each round, everyone draws once.' },
-          { key: 'dtime', label: 'DRAWING TIME', def: 80, when: (s) => s.mode !== 'solo', choices: [[60, '60 sec'], [80, '80 sec'], [100, '100 sec']] },
-        ], (sel) => (sel.mode === 'solo' ? solo(body) : live(body, sel, npLocal([{ name: profile.username, avatar: profile.avatar }].concat(['Doodlebot', 'Sketchy', 'Pencil Pal', 'Crayon', 'Scribbles'].slice(0, (+sel.n || 4) - 1).map((name, i) => ({ bot: true, name, avatar: ['🤖', '🦊', '🐻', '🐙', '🦉'][i] }))), sel))),
-          'Draw & Guess: take turns drawing a word while everyone else races to guess it. Solo: watch a doodle appear and guess what it is.');
+          { key: 'n', label: 'PLAYERS', def: 8, choices: [[2, '2'], [3, '3'], [4, '4'], [5, '5'], [6, '6'], [8, '8']] },
+          { key: 'lang', label: 'WORDS', def: (typeof LANG !== 'undefined' && LANG.code === 'vi') ? 'vi' : 'en', choices: [['en', 'English'], ['vi', 'Tiếng Việt']] },
+          { key: 'rounds', label: 'ROUNDS', def: 2, choices: [[1, '1'], [2, '2'], [3, '3']], hint: 'In each round, everyone draws once.' },
+          { key: 'dtime', label: 'DRAWING TIME', def: 60, choices: [[60, '60 sec'], [80, '80 sec'], [100, '100 sec']] },
+        ], (sel) => showToast('Draw & Guess is played with friends online: create a room and invite them.', 'info'),
+          'Take turns drawing a word while everyone else races to guess it. Play with friends: create a room and send them the link.');
       }
 
       /* ====================== ONLINE: everyone plays at once, each on a different chain ====================== */
@@ -193,7 +193,7 @@
       }
 
       /* ====================== SOLO: GUESS THE DOODLE ====================== */
-      const norm = (s) => String(s).toLowerCase().replace(/[^a-z]/g, '');
+      const norm = (s) => String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9]/g, '');
       function lev(a, b) { const m = a.length, n = b.length; const d = Array.from({ length: m + 1 }, (_, i) => [i, ...Array(n).fill(0)]); for (let j = 1; j <= n; j++) d[0][j] = j; for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); return d[m][n]; }
       function matches(guess, doodle) { const g = norm(guess); if (!g) return false; return doodle.w.some((w) => { const x = norm(w); return g === x || g === x + 's' || (x.length >= 5 && lev(g, x) <= 1); }); }
       const ROUNDS = 6, TIME = 30;
@@ -250,7 +250,7 @@
       const WORDS = ['apple', 'banana', 'rocket', 'castle', 'guitar', 'snowman', 'pizza', 'rainbow', 'spider', 'umbrella', 'robot', 'dragon', 'island', 'camera', 'balloon', 'penguin', 'volcano', 'sandwich', 'ladder', 'candle', 'glasses', 'trophy', 'whale', 'turtle', 'cactus', 'kite', 'anchor', 'crown', 'ghost', 'bridge', 'cookie', 'flower', 'pirate', 'rabbit', 'shoe', 'clock', 'moon', 'star', 'bicycle', 'giraffe'];
       async function LW(ms) { const t = G && G.tok; await gSleep(window.__fast && !G.S.online ? Math.min(ms, 40) : ms); if (!G || G.tok !== t) throw ABORT; }
       function live(body, sel, S) {
-        G = { mode: 'live', S, body, me: S.online ? S.me : 0, score: S.seats.map(() => 0), rounds: +sel.rounds || 2, time: +sel.dtime || 80, tok: ++GT.cur, over: false, step: 0, view: {} };
+        G = { mode: 'live', lang: sel.lang === 'vi' ? 'vi' : 'en', S, body, me: S.online ? S.me : 0, score: S.seats.map(() => 0), rounds: +sel.rounds || 2, time: +sel.dtime || 80, tok: ++GT.cur, over: false, step: 0, view: {} };
         GT.started = true; GT.over = false;
         S.track(); npBar('');
         body.innerHTML = `<div class="dg-wrap grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-4 items-start">
@@ -279,6 +279,8 @@
         el.innerHTML = order.map((i) => `<div class="pl-tag flex items-center gap-2.5 ${i === G.drawer ? 'turn' : ''} ${i === G.me ? 'me' : ''}" style="--pc:${G.guessed && G.guessed.has(i) ? '#34D399' : '#9DB4CC'}"><span class="tg-av">${esc(S.seats[i].avatar || '🙂')}</span><span class="min-w-0 flex-1"><b class="block truncate text-bone text-sm">${esc(S.name(i))}${S.bot(i) ? ' <small class="text-muted">CPU</small>' : ''}</b><small class="text-xs ${G.guessed && G.guessed.has(i) ? 'text-emerald' : 'text-muted'}">${i === G.drawer ? '✏️ drawing' : G.guessed && G.guessed.has(i) ? '✓ guessed it' : ''}</small></span><b class="pix text-amber text-lg">${G.score[i]}</b></div>`).join('');
         $('dg-round').textContent = G.round ? `ROUND ${G.round}/${G.rounds}` : '';
       }
+      const LEVELS = { easy: { en: 'EASY', vi: 'DỄ', mult: 1, cls: 'btn-emerald' }, medium: { en: 'MEDIUM', vi: 'TRUNG BÌNH', mult: 1.5, cls: 'btn-amber' }, hard: { en: 'HARD', vi: 'KHÓ', mult: 2, cls: 'btn-coral' } };
+      const wordList = (lang, lvl) => ((window.DOODLE_WORDS || {})[lang] || (window.DOODLE_WORDS || {}).en || {})[lvl] || ['apple'];
       const hintOf = (word, shown) => word.split('').map((ch, i) => (ch === ' ' ? ' ' : shown.includes(i) ? ch.toUpperCase() : '_')).join(' ');
       async function liveTurn(d) {
         const S = G.S, k = ++G.step, t = G.tok;
@@ -286,25 +288,27 @@
         $('dg-who').textContent = S.mine(d) ? 'YOUR TURN TO DRAW' : `${S.name(d).toUpperCase()} IS CHOOSING A WORD...`;
         $('dg-hint').textContent = ''; $('dg-tools').innerHTML = ''; G.clock.idle('Get ready', '...');
         $('dg-stage').innerHTML = `<div class="dg-wait">${esc(S.seats[d].avatar || '🙂')}<b>${esc(S.name(d))}</b> ${S.mine(d) ? 'is you! Pick a word to draw.' : 'is picking a word...'}</div>`;
-        // 1. the drawer picks a word (a computer player picks one of the built-in doodles)
+        // 1. the drawer picks one of three words: one easy, one medium, one hard (harder = more points)
+        const lang = G.lang;
         if (S.mine(d)) {
-          const opts = shuffle(WORDS.concat(DOODLES.map((x) => x.w[0]))).slice(0, 3);
-          $('dg-stage').innerHTML = `<div class="dg-wait"><b>Choose a word to draw:</b><div class="flex gap-2 flex-wrap justify-center mt-3">${opts.map((w) => `<button class="btn-game btn-amber py-2 px-5" data-w="${esc(w)}">${esc(w)}</button>`).join('')}</div></div>`;
-          document.querySelectorAll('#dg-stage [data-w]').forEach((b) => { b.onclick = () => { const di = DOODLES.findIndex((x) => x.w[0] === b.dataset.w); S.act(Object.assign({ t: 'word', s: d, k }, di >= 0 ? { di } : { w: b.dataset.w })); $('dg-stage').innerHTML = ''; }; });
+          const opts = ['easy', 'medium', 'hard'].map((l) => [l, pick(wordList(lang, l))]);
+          $('dg-stage').innerHTML = `<div class="dg-wait"><b>Choose a word to draw:</b><div class="flex gap-3 flex-wrap justify-center mt-3">${opts.map(([l, w]) => `<button class="dg-pick btn-game ${LEVELS[l].cls} py-2 px-5" data-w="${esc(w)}" data-l="${l}"><small>${LEVELS[l][lang] || LEVELS[l].en} · ×${LEVELS[l].mult}</small><span>${esc(w)}</span></button>`).join('')}</div></div>`;
+          document.querySelectorAll('#dg-stage [data-w]').forEach((b) => { b.onclick = () => { S.act({ t: 'word', s: d, k, w: b.dataset.w, l: b.dataset.l }); $('dg-stage').innerHTML = ''; }; });
         }
-        const a = await S.ask(d, () => ({ t: 'word', k, di: Math.floor(Math.random() * DOODLES.length), bot: 1 }), 900 + rnd(600), (x) => x.s === d && x.t === 'word' && x.k === k);
+        // (a player who left is played by the table: it just picks an easy word, and nobody draws it)
+        const a = await S.ask(d, () => ({ t: 'word', k, w: pick(wordList(lang, 'easy')), l: 'easy' }), 1500, (x) => x.s === d && x.t === 'word' && x.k === k);
         if (!G || G.tok !== t) throw ABORT;
-        const doodle = a.di !== undefined && DOODLES[a.di] ? DOODLES[a.di] : null;
-        const word = (doodle ? doodle.w[0] : String(a.w || 'apple')).toLowerCase().slice(0, 24);
-        G.word = word; G.k = k; G.t0 = Date.now();
+        const lvl = LEVELS[a.l] ? a.l : 'easy', mult = LEVELS[lvl].mult;
+        const word = String(a.w || 'apple').toLowerCase().slice(0, 30);
+        G.word = word; G.k = k; G.t0 = Date.now(); G.lvl = lvl;
         const letters = word.split('').map((_, i) => i).filter((i) => word[i] !== ' '), shown = [];
-        const paintHint = () => { const h = $('dg-hint'); if (h) h.textContent = S.mine(d) ? word.toUpperCase() : hintOf(word, shown); };
+        const lvlTag = `${LEVELS[lvl][lang] || LEVELS[lvl].en} · `;
+        const paintHint = () => { const h = $('dg-hint'); if (h) h.textContent = lvlTag + (S.mine(d) ? word.toUpperCase() : hintOf(word, shown)); };
         paintHint();
         $('dg-who').textContent = S.mine(d) ? `DRAW: ${word.toUpperCase()}` : `${S.name(d).toUpperCase()} IS DRAWING`;
         feed(`<i>${esc(S.name(d))} is drawing now.</i>`);
         // 2. the drawing
         if (S.mine(d)) drawPad(k);
-        else if (a.bot || !doodle || S.bot(d)) { if (doodle && (a.bot || S.bot(d))) botDraw(doodle); else viewPad(); }
         else viewPad();
         G.clock.start(G.time, 'Time left', () => {}, 10);
         const hintT = gInterval(() => { const el = (Date.now() - G.t0) / 1000; const want = el > G.time * 0.75 ? 2 : el > G.time * 0.45 ? 1 : 0; while (shown.length < Math.min(want, letters.length - 1)) { const left = letters.filter((i) => !shown.includes(i)); shown.push(left[(word.length * 7 + shown.length * 3) % left.length]); } paintHint(); }, 500);
@@ -313,11 +317,6 @@
         const tick = () => {
           const el = (Date.now() - G.t0) / 1000;
           if (el >= G.time || others.every((i) => G.guessed.has(i))) return { t: 'end', k };
-          for (const b of shuffle(others.filter((i) => S.bot(i) && !G.guessed.has(i)))) {
-            const r = Math.random(), pr = Math.min(0.55, (el / G.time) * (S.mine(d) ? 0.5 : 0.9) + 0.03);
-            if (r < pr) return { t: 'guess', s: b, k, txt: word };
-            if (r < pr + 0.18) return { t: 'guess', s: b, k, txt: pick(WORDS.concat(DOODLES.map((x) => x.w[0])).filter((w) => w !== word)) };
-          }
           return { t: 'tick', k };
         };
         for (;;) {
@@ -325,10 +324,10 @@
           if (!G || G.tok !== t) { gClearInt(hintT); throw ABORT; }
           if (g.t === 'end') break;
           if (g.t !== 'guess') continue;
-          const right = doodle ? matches(g.txt, doodle) : matches(g.txt, { w: [word] });
+          const right = matches(g.txt, { w: [word] });
           if (right) {
             G.guessed.add(g.s);
-            const left = Math.max(0, G.time - (Date.now() - G.t0) / 1000), pts = Math.max(20, Math.round(30 + 70 * left / G.time) - shown.length * 5);
+            const left = Math.max(0, G.time - (Date.now() - G.t0) / 1000), pts = Math.max(20, Math.round((30 + 70 * left / G.time) * mult) - shown.length * 5);
             G.score[g.s] += pts; G.score[d] += Math.round(pts / 3);
             feed(`<b class="text-emerald">✓ ${esc(S.name(g.s))} guessed the word! +${pts}</b>`);
             SFX.play(g.s === G.me ? 'win' : 'coin'); board();
@@ -342,7 +341,6 @@
         $('dg-hint').textContent = word.toUpperCase();
         $('dg-who').textContent = `THE WORD WAS: ${word.toUpperCase()}`;
         feed(`<i>The word was <b class="text-amber">${esc(word)}</b>.</i>`);
-        if (doodle && (a.bot || S.bot(d))) botDraw(doodle, true);
         SFX.play('reveal'); board();
         await LW(3200);
       }
@@ -410,18 +408,17 @@
       }
 
       const mod = {
-        id: 'doodle', name: 'Doodle Guess', icon: 'doodle', cats: ['party'], sub: '2-6 PLAYERS · SOLO', color: '#F5B041', tone: 'amber', btn: 'amber',
+        id: 'doodle', name: 'Doodle Guess', icon: 'doodle', cats: ['party'], sub: '2-8 PLAYERS · ~10 MIN', color: '#F5B041', tone: 'amber', btn: 'amber',
         blurb: 'Take turns drawing a secret word while everyone races to guess it. The faster you guess, the more points you get.',
-        rules: { tag: 'DRAW & GUESS · 2-6 PLAYERS', steps: [
-          '<strong class="text-bone">Drawing:</strong> When it is your turn, pick one of 3 words and draw it. No letters or numbers! Everyone sees your drawing as you make it.',
-          '<strong class="text-bone">Guessing:</strong> Everyone else types guesses. The faster you guess right, the more points you get. Letters of the word show up as hints when time runs low.',
-          '<strong class="text-bone">Points:</strong> The drawer gets points too, for every player who guesses. After everyone has drawn (1, 2 or 3 rounds), the most points wins.',
-          '<strong class="text-bone">Solo:</strong> A computer player draws a doodle stroke by stroke. Type what it is as fast as you can.',
+        rules: { tag: 'DRAW & GUESS · 2-8 PLAYERS', steps: [
+          '<strong class="text-bone">Drawing:</strong> When it is your turn, pick an <b>easy</b>, <b>medium</b> or <b>hard</b> word (harder words score more) and draw it. No letters or numbers! Everyone sees your drawing as you make it.',
+          '<strong class="text-bone">Guessing:</strong> Everyone else sees the level and a dash for every letter, and types guesses. The faster you guess right, the more points you get. Some letters show up when time runs low.',
+          '<strong class="text-bone">Points:</strong> The drawer gets points too, for every player who guesses, so the more people get it, the more the drawer scores. After everyone has drawn (1, 2 or 3 rounds), the most points wins.',
         ], tip: 'Draw the most important shape first, big and simple. Details can wait.' },
         profileTiles: (s) => [['GAMES', s.played, 'text-bone'], ['WINS', s.wins || 0, 'text-amber'], ['GUESSED', s.guessed || 0, 'text-emerald'], ['BEST SOLO', s.bestSolo || 0, 'text-teal']],
         extraRows: (s) => srow('Drawings made', s.drawings || 0),
-        online: { seats: (sel) => +sel.n || 6, min: 2, ranked: false, start: (body, sel, S) => live(body, sel, S) },
-        engine: { DOODLES, matches, word: () => (G && G.word) || '' }, open, close() { G = null; },
+        online: { seats: (sel) => +sel.n || 8, min: 2, bots: false, ranked: false, start: (body, sel, S) => live(body, sel, S) },
+        engine: { DOODLES, matches, norm, word: () => (G && G.word) || '' }, open, close() { G = null; },
       };
       registerGame(mod);
     })();

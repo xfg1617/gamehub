@@ -749,3 +749,15 @@ folder that was handed over, so they do not exist here.)
   step "Broken pick or lamp?" + Fix card picture; peeked goal stones show a big GOLD / ROCK badge; bigger "?".
 * **Castles & Kings**: instant info box over buildings (`#gm-tip`, `data-tip`; no `title`), thicker brighter colour strips.
 * **Landlord**: dice total (`#ty-msg`) and "Your cash" much bigger. Room GAME SETTINGS rows no longer overflow (wrap).
+* **Less clutter in games (Inna)**: the online name strip (`#np-bar`) only shows for a warning ("X disconnected");
+  Give up / Leave table buttons are hidden in card and board games (`25-fullscreen.css`; ← Lobby leaves and asks first);
+  Kaboom Cats / Uno side panels lost their title bar; Bullshit has no side panel at all (log kept for 📜 Moves).
+* **Bullshit**: the rank is random every turn (never the same twice, `S.rng` so every screen agrees); `noDoubles()` after
+  each pickup is a safety net (a player saw six Eights on the old version; not reproduced). `test/t_cards_unique.py` checks
+  Uno, Kaboom Cats, Dominoes and Bullshit never have a card in two places.
+* **Landlord**: whose turn it is shows above the dice (`#ty-title`); pawns fill their square (shrink when sharing), your
+  own has a teal ring; tapping a pawn shows the square under it (deed card or a toast).
+* **Friends in a game** (`zz_friends.js`, `zz_chatfriends.js`): a friend request pops up anywhere (`frReqPop`: Accept /
+  See card / Not now); tapping a player's name tag at an online table opens their player card (Add friend); the chat's
+  👥 Friends view lists AT THIS TABLE with + Add friend / Accept; "Chat" on a card during a game opens the chat window.
+  Fixed: the first friend request after opening the site never popped up. `test/t_friends_ingame.py`.

@@ -1,7 +1,6 @@
     /* =========================================================================
        FIBBER (original game, Nov 2026): a family-friendly bluffing card game for 3-5 players.
-       All 52 cards are dealt. Turns go round the table and the rank goes up each turn: Aces, Twos, Threes ... Kings,
-       then Aces again. On your turn put 1 to 4 cards face down and say they are that rank (you may fib!).
+       All 52 cards are dealt. Turns go round the table and every turn gets a random rank (never the same twice in a row). On your turn put 1 to 4 cards face down and say they are that rank (you may fib!).
        Anyone can shout FIBBER! The cards are turned over: if any of them is not that rank, the fibber picks up the
        whole pile; if they were all true, the person who shouted picks it up. First to get rid of every card wins.
        Script-style netplay: every decision goes through S.ask, so it plays the same on this device and online.
@@ -49,23 +48,22 @@
         const deck = S.rng.shuffle(newDeckSorted());
         const players = S.seats.map((x, i) => ({ seat: i, name: x.name, av: x.avatar, hand: [] }));
         deck.forEach((c, k) => players[k % players.length].hand.push(c));
-        G = { S, me: S.online ? S.me : 0, players, pile: [], step: 0, cur: S.rng.rnd(players.length), need: 14, last: null, secs: +sel.secs || 7, over: false, tok: ++GT.cur, log: [], sel: new Set(), places: [], stats: { caught: 0, fooled: 0, lied: 0 } };
+        G = { S, me: S.online ? S.me : 0, players, pile: [], step: 0, cur: S.rng.rnd(players.length), need: ORDER[S.rng.rnd(13)], last: null, secs: +sel.secs || 7, over: false, tok: ++GT.cur, log: [], sel: new Set(), places: [], stats: { caught: 0, fooled: 0, lied: 0 } };
         GT.started = true; GT.over = false;
-        body.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_250px] gap-5 items-start">
+        body.innerHTML = `<div class="grid grid-cols-1 gap-5 items-start">
           <div class="space-y-3 min-w-0"><div id="fb-opp" class="ring4">${ringSlots('fb')}
             <div class="r-mid felt p-4 flex flex-col items-center justify-center gap-3" style="min-height:220px"><div id="fb-center" class="flex items-center justify-center gap-6 flex-wrap"></div><div id="fb-claim" class="fb-claim"></div></div></div>
             <div id="fb-prompt" class="win p-3 text-center min-h-[52px] text-sm"></div>
+            <div class="text-center"><button id="fb-quit" class="hidden btn-game btn-amber py-2 px-6 text-sm">See the results now</button></div>
             <div id="fb-hand" class="fb-hand"></div></div>
-          <div class="space-y-3"><div class="win overflow-hidden"><div class="winbar amber"><span>BULLSHIT</span><span class="pix text-xs" id="fb-step"></span></div><div class="p-3 space-y-2"><div id="fb-status" class="text-sm font-bold"></div><div class="text-xs text-muted">Each turn the rank goes up: A, 2, 3 ... K, then A again.</div></div></div>
-            <div id="fb-log" class="logbox" style="height:240px"></div><button id="fb-quit" class="btn-game btn-coral w-full py-2 text-sm">${S.online ? 'Leave table' : 'Give up'}</button></div></div>`;
+          <div class="hidden"><span id="fb-status"></span><span id="fb-step"></span><div id="fb-log" class="logbox" style="height:240px"></div></div></div>`;
         S.track();
         S.onLeft = (a) => {
           if (!G) return; const q = G.players[a.s]; q.name += ' (CPU)'; q.av = '🤖';
           log(`${nm(q)} ${a.t === '_gone' ? 'disconnected' : 'left'}. A computer player takes the seat.`); draw();
         };
         npBar('');
-        let sure = false;
-        $('fb-quit').onclick = (e) => { if (S.online) return npConfirmLeave(() => open($('game-root'))); if (G.over) return; if (G.places.includes(G.players[G.me])) return endNow(); if (!sure) { sure = true; e.target.textContent = 'Really give up?'; gTimeout(() => { sure = false; if (!G.places.includes(G.players[G.me])) e.target.textContent = 'Give up'; }, 3000); return; } G.tok++; finish(null); };
+        $('fb-quit').onclick = () => { if (G && !G.over && G.places.includes(G.players[G.me])) endNow(); };
         log(`Cards are dealt. ${nm(G.players[G.cur])} starts with <b>Aces</b>.`);
         draw();
         run().catch((e) => { if (e !== ABORT) throw e; });
@@ -84,7 +82,7 @@
           await turn(p);
           if (G.over) return;
           do G.cur = (G.cur + 1) % G.players.length; while (G.places.includes(G.players[G.cur]));
-          G.need = ORDER[(ORDER.indexOf(G.need) + 1) % 13];
+          { const nx = ORDER.filter((r) => r !== G.need); G.need = nx[G.S.rng.rnd(nx.length)]; }
           draw();
         }
       }
@@ -163,7 +161,7 @@
         SFX.play(lie === isMe(caller) || (!lie && isMe(p)) ? 'coin' : 'wrong');
         const n = G.pile.length;
         for (let i = 0; i < Math.min(n, 6); i++) gFly('#fb-pile', seatEl(loser), playingCardHTML(null, { cls: 'sm' }), { ms: 420, delay: i * 70, arc: 30 });
-        loser.hand.push(...G.pile); G.pile = []; G.reveal = null;
+        loser.hand.push(...G.pile); G.pile = []; G.reveal = null; noDoubles();
         draw();
         await W(1300);
         if (!p.hand.length) return placeOut(p);
@@ -178,7 +176,7 @@
         if (isMe(p)) showToast(n === 1 ? 'You got rid of every card: 1st place! 🏆' : `You finished ${ORD(n)}!`, 'success');
         const left = G.players.filter((q) => !G.places.includes(q));
         if (left.length <= 1) { if (left[0]) G.places.push(left[0]); G.tok++; finish(true); return; }
-        if (isMe(p)) { const b = $('fb-quit'); if (b && !G.S.online) b.textContent = 'See the results now'; }
+        if (isMe(p) && !G.S.online) { const b = $('fb-quit'); if (b) b.classList.remove('hidden'); }
         draw();
       }
       // offline, after I'm out: skip the rest (the others are ranked by how many cards they still hold)
@@ -200,6 +198,10 @@
         else if (c.r === 14) mid = `<span class="fb-ace">${suitSVG(c.s, 34)}</span>`;
         else mid = `<span class="fb-face"><b>${rankLab(c.r)}</b>${suitSVG(c.s, 14)}</span>`;
         return `<div class="pcard sm fb-pc" style="color:${col}">${corner}${mid}</div>`;
+      }
+      function noDoubles() {
+        const seen = new Set();
+        for (const q of G.players) q.hand = q.hand.filter((c) => { if (!c) return false; const k = c.r + c.s; if (seen.has(k)) { console.warn('Bullshit: a card was in two places', k); return false; } seen.add(k); return true; });
       }
       function draw() {
         if (!$('fb-opp')) return;
@@ -245,7 +247,7 @@
         blurb: 'Put cards down face down and say what they are. Bluff if you have to, but if someone shouts BULLSHIT! and you are caught, you take the whole pile.',
         rules: { tag: 'BLUFFING · 3-5 PLAYERS', steps: [
           '<strong class="text-bone">Goal:</strong> Be the first to get rid of all your cards. The others play on for 2nd, 3rd... until only one player still has cards.',
-          '<strong class="text-bone">Your turn:</strong> Put 1 to 4 cards face down and say they are the rank it is now (Aces, then Twos, then Threes... up to Kings, then Aces again). They don’t have to be true!',
+          '<strong class="text-bone">Your turn:</strong> Put 1 to 4 cards face down and say they are the rank it is now (a new rank is picked at random every turn). They don’t have to be true!',
           '<strong class="text-bone">BULLSHIT!</strong> After each play everyone has a few seconds to shout. The cards are turned over: if any card is wrong, the player who fibbed picks up the whole pile. If they were all true, the one who shouted picks it up.',
         ], tip: 'There are only four of each rank. If you hold three Sevens and someone says "two Sevens", they are bluffing!' },
         profileTiles: (s) => [['WINS', s.wins, 'text-amber'], ['GAMES', s.played, 'text-bone'], ['LIES CAUGHT', s.caught || 0, 'text-emerald'], ['BLUFFS NOT CAUGHT', s.fooled || 0, 'text-coral']],

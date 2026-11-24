@@ -53,3 +53,11 @@
     .cf-row b { flex: 1; font-size: 14px; } .cf-go { font-family: 'Arcade Pixel', monospace; font-size: 12px; color: #2DD4BF; }
     .cf-head { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-bottom: 2px solid #050E18; color: #F7F4EC; }
     .cf-back { font-family: 'Arcade Pixel', monospace; font-size: 12px; color: #F5B041; margin-right: 4px; }
+    /* a friend request pops up anywhere, also during a game (Accept / See card / Not now) */
+    #fr-req-pop { position: fixed; left: 16px; bottom: 84px; z-index: 70; max-width: 360px; padding: 12px 14px; background: #0E2236; border: 3px solid #050E18;
+      border-left: 6px solid #34D399; box-shadow: 4px 4px 0 #050E18; display: grid; gap: 10px; color: #F7F4EC; font-size: 14px; }
+    #fr-req-pop.hidden { display: none; }
+    #fr-req-pop .fr-rq-t { display: flex; align-items: center; gap: 10px; }
+    .cf-mate { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-bottom: 1px solid rgba(157, 180, 204, .15); }
+    .tg-tag, .pl-tag { cursor: default; }
+    body.in-game .tg-tag:hover { filter: brightness(1.12); }

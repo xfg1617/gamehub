@@ -20,8 +20,8 @@
     const frRoomCode = (t) => { const m = /\/r\/([A-Za-z0-9]{4,6})\b/.exec(t) || /#join=([A-Za-z0-9]{4,6})/.exec(t); return m ? m[1].toUpperCase() : null; };
     function frStart() {
       if (FR.started || !frOn()) return; FR.started = true;
-      frLoad();
       let knownIn = null;
+      frLoad().then(() => { knownIn = true; });   // requests that were already waiting show as a badge, new ones pop up
       FR.off = NET.onSocial(async (ev) => {
         if (ev.type === 'dm') {
           const list = FR.msgs[ev.from]; if (list && !list.some((x) => x.id === ev.id)) list.push(ev);
@@ -32,13 +32,40 @@
         } else {
           const before = new Set((FR.list.incoming || []).map((x) => x.id));
           await frLoad();
-          if (knownIn !== null) FR.list.incoming.filter((x) => !before.has(x.id)).forEach((x) => { showToast(`${x.name} wants to be your friend.`, 'info'); SFX.play('pop'); });
+          if (knownIn !== null) FR.list.incoming.filter((x) => !before.has(x.id)).forEach((x) => { frReqPop(x); SFX.play('pop'); });
           knownIn = true;
         }
       });
       setInterval(() => { if (activeView === 'friends') paintFriendList(); }, 10000);
     }
     document.addEventListener('ps-online', frStart);
+
+    /* ---------- friends during a game (Inna, Nov 2026) ----------
+       A friend request pops up wherever you are (also mid-game) with Accept / Not now. Tapping a player's name tag at an
+       online table opens their player card (Add friend / Accept / Chat). The chat's Friends view lists the table too. */
+    function frReqPop(x) {
+      let el = document.getElementById('fr-req-pop');
+      if (!el) { el = document.createElement('div'); el.id = 'fr-req-pop'; document.body.appendChild(el); }
+      el.innerHTML = `<div class="fr-rq-t"><span class="text-2xl">${esc(x.avatar || '🙂')}</span><span><b>${esc(x.name)}</b> wants to be your friend.</span></div>
+        <div class="flex gap-2"><button class="btn-game btn-emerald py-1.5 px-4 text-sm" data-a="yes">Accept</button><button class="btn-game btn-graphite py-1.5 px-3 text-sm" data-a="card">See card</button><button class="btn-game btn-graphite py-1.5 px-3 text-sm" data-a="no">Not now</button></div>`;
+      el.classList.remove('hidden');
+      const close = () => el.classList.add('hidden');
+      clearTimeout(el._t); el._t = setTimeout(close, 20000);
+      el.querySelectorAll('[data-a]').forEach((b) => { b.onclick = async () => {
+        const a = b.dataset.a; close();
+        if (a === 'yes') { try { await NET.addFriend(x.id); SFX.play('pop'); showToast(`You and ${x.name} are now friends!`, 'success'); frLoad(); } catch (e) { showToast(e.message || 'Could not accept', 'error'); } }
+        if (a === 'card') openPlayerCard(x.id);
+      }; });
+    }
+    window.frReqPop = frReqPop;
+    // a tap on a player's name tag at an online table = their player card
+    document.addEventListener('click', (e) => {
+      const S = typeof NP !== 'undefined' && NP.S; if (!S || !S.online || !frOn() || !e.target.closest) return;
+      const tag = e.target.closest('.tg-tag, .pl-tag'); if (!tag || e.target.closest('button:not([disabled]), .tgt, [data-i]')) return;
+      const host = tag.closest('[id]'), m = host && /-(seat|pl)-(\d+)$/.exec(host.id); if (!m) return;
+      const st = S.seats[+m[2]]; if (!st || st.bot || !st.uid || (NET.me && st.uid === NET.me.id)) return;
+      openPlayerCard(st.uid);
+    });
 
     /* ---------- the Friends page ---------- */
     function renderFriends() {
@@ -143,7 +170,7 @@
       el.querySelectorAll('[data-act]').forEach((b) => { b.onclick = async () => {
         const a = b.dataset.act;
         if (a === 'x') return el.classList.add('hidden');
-        if (a === 'chat') { el.classList.add('hidden'); return openFriendChat(id); }
+        if (a === 'chat') { el.classList.add('hidden'); if (document.body.classList.contains('in-game') && window.chatFriends) return chatFriends.openWith(id, c); return openFriendChat(id); }
         if (a === 'full') { el.classList.add('hidden'); return openPlayerProfile(c, st); }
         if (a === 'add') { b.disabled = true; try { await NET.addFriend(id); SFX.play('pop'); showToast(c.friend === 'asked' ? 'You are now friends!' : `Friend request sent to ${c.name}.`, 'success'); } catch (e) { showToast(e.message || 'Could not send the request.', 'error'); } frLoad(); return openPlayerCard(id); }
         if (a === 'rm') { await NET.removeFriend(id).catch(() => {}); frLoad(); return openPlayerCard(id); }

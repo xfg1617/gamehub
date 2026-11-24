@@ -442,7 +442,7 @@
         profileTiles: (s) => [['TABLES WON', s.wins, 'text-amber'], ['TABLES', s.played, 'text-bone'], ['HANDS WON', s.handsWon || 0, 'text-emerald'], ['BIG POT', s.bigPot || 0, 'text-teal']],
         extraRows: (s) => srow('Best finish', s.bestPlace ? ['', '1st', '2nd', '3rd', '4th'][s.bestPlace] : '-'),
         art: { ranks: () => ranksHTML() },
-        engine: { eval7, handName, splitPots, equity }, open, close() { G = null; },
+        engine: { eval7, handName, splitPots, equity, get G() { return G; } }, open, close() { G = null; },
         online: { seats: () => 4, min: 2, ranked: false, start: (body, sel, S) => start(body, sel, S) },
       };
       registerGame(mod);

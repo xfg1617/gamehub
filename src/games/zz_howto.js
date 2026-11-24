@@ -57,7 +57,7 @@
           items: () => row([[`<span style="display:inline-block;width:44px;height:10px;background:#1E7A3E;border:2px solid #050E18"></span>`, 'Hedge', '2 squares long. You have 10 (5 with 4 players)'], [`<span style="display:inline-block;width:30px;height:30px;background:#F7EBC0;box-shadow:inset 0 0 0 3px #2DD4BF"></span>`, 'Glowing square', 'Where you can move now'], [`<span style="display:inline-block;width:40px;height:6px;background:#F5B041"></span>`, 'Coloured edge', 'The side each player is racing to']]),
           tip: 'The panel shows how many steps everyone still needs. Save your hedges for when a rival is close to the finish.', online: NET_TABLE },
         fibber: { tag: '3-5 PLAYERS · BLUFFING', goal: 'Be the first to get rid of all your cards. The others play on for 2nd, 3rd... until one player is left holding cards.', steps: [
-          ['The rank goes up', 'Every turn has a rank: Aces, then Twos, then Threes... up to Kings, then back to Aces. The middle of the table shows which rank it is now.'],
+          ['A new rank every turn', 'Every turn has a rank, picked at random (never the same one twice in a row). The middle of the table shows which rank it is now.'],
           ['Put cards down', 'On your turn, tap 1 to 4 of your cards and press <b>Put down</b>. They go face down and you say they are that rank. Don’t have any? Bluff!'],
           ['BULLSHIT!', 'After each play, everyone has a few seconds to press <b>BULLSHIT!</b> if they think it was a lie. The cards are turned over.'],
           ['Who picks up', 'If any card was wrong, the player who lied picks up the whole pile. If they were all true, the person who shouted picks it up. Get rid of your last card (without being caught) to win.']],

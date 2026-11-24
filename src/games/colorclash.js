@@ -40,7 +40,7 @@
             <div class="r-mid felt p-4 flex items-center justify-center gap-8 flex-wrap" style="min-height:190px"><div id="cc-pile" class="text-center"></div><div id="cc-top" class="text-center"></div></div></div>
             <div id="cc-prompt" class="win p-3 text-center min-h-[48px] text-sm"></div>
             <div id="cc-hand" class="flex gap-2 flex-wrap justify-center pt-2"></div></div>
-          <div class="space-y-3"><div class="win overflow-hidden"><div class="winbar amber"><span>UNO</span></div><div class="p-3 space-y-2"><div id="cc-clock"></div><div id="cc-status" class="text-sm font-bold"></div></div></div>
+          <div class="space-y-3"><div class="win overflow-hidden"><div class="p-3 space-y-2"><div id="cc-clock"></div><div id="cc-status" class="text-sm font-bold"></div></div></div>
             <div id="cc-log" class="logbox" style="height:240px"></div><button id="cc-quit" class="btn-game btn-coral w-full py-2 text-sm">${S.online ? 'Leave table' : 'Give up'}</button></div></div>`;
         G.clock = makeClock(document.getElementById('cc-clock'));
         S.track();
@@ -258,7 +258,7 @@
           '<strong class="text-bone">CLASH!</strong> When you are down to <span class="text-amber font-bold">one card</span>, press the CLASH button fast. Forget and you draw 2. Spot a bot that forgot and you can catch it!',
         ], tip: 'Each colour has its own symbol (★ ◆ ♥ ♣), so you can tell them apart even without colours.' },
         profileTiles: (s) => [['WINS', s.wins, 'text-amber'], ['GAMES', s.played, 'text-bone'], ['WIN RATE', pct(s.wins, s.played) + '%', 'text-emerald'], ['BOTS CAUGHT', s.caught || 0, 'text-teal']],
-        engine: { buildDeck, canPlay }, open, close() { G = null; },
+        engine: { buildDeck, canPlay, get G() { return G; } }, open, close() { G = null; },
         art: { card: (c) => cardHTML(c) },
         online: { seats: (sel) => +sel.n || 3, ranked: true, start: (body, sel, S) => start(body, sel, S) },
       };

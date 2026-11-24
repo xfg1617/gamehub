@@ -953,6 +953,14 @@
     .cf-row b { flex: 1; font-size: 14px; } .cf-go { font-family: 'Arcade Pixel', monospace; font-size: 12px; color: #2DD4BF; }
     .cf-head { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-bottom: 2px solid #050E18; color: #F7F4EC; }
     .cf-back { font-family: 'Arcade Pixel', monospace; font-size: 12px; color: #F5B041; margin-right: 4px; }
+    /* a friend request pops up anywhere, also during a game (Accept / See card / Not now) */
+    #fr-req-pop { position: fixed; left: 16px; bottom: 84px; z-index: 70; max-width: 360px; padding: 12px 14px; background: #0E2236; border: 3px solid #050E18;
+      border-left: 6px solid #34D399; box-shadow: 4px 4px 0 #050E18; display: grid; gap: 10px; color: #F7F4EC; font-size: 14px; }
+    #fr-req-pop.hidden { display: none; }
+    #fr-req-pop .fr-rq-t { display: flex; align-items: center; gap: 10px; }
+    .cf-mate { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-bottom: 1px solid rgba(157, 180, 204, .15); }
+    .tg-tag, .pl-tag { cursor: default; }
+    body.in-game .tg-tag:hover { filter: brightness(1.12); }
     /* ===== ONLINE TABLES: lobby seats, the bar above an online game, the private-room game picker ===== */
     .np-seats { display: grid; gap: 6px; }
     .np-seat { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: #0A1624; border: 3px solid var(--ink); color: #9DB4CC; font-size: .875rem; min-width: 0; }
@@ -1466,6 +1474,11 @@
     /* page changes fade in a little */
     #view-play:not(.hidden), #view-leaderboard:not(.hidden), #view-rules:not(.hidden), #view-profile:not(.hidden), #view-friends:not(.hidden), #view-game:not(.hidden) { animation: g-viewin .22s ease-out both; }
     @keyframes g-viewin { from { opacity: 0; } to { opacity: 1; } }
+    /* Inna (Nov 2026): less clutter during a game. The ← Lobby button already leaves (and asks first), so the extra
+       Give up / Leave table buttons are hidden in these games */
+    body.in-game #cc-quit, body.in-game #dm-quit, body.in-game #gm-quit, body.in-game #hr-quit, body.in-game #fi-quit,
+    body.in-game #kk-quit, body.in-game #mm-quit, body.in-game #pk-quit, body.in-game #tt-quit, body.in-game #ty-quit,
+    body.in-game #wd-quit, body.in-game #dg-quit, body.in-game #bjo-leave { display: none !important; }
     /* ---------- home page top (Nov 2026): one slim bar to create / join a room, two slim links ---------- */
     .nh { min-width: 0; max-width: 100%; box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); border: 4px solid #050E18; box-shadow: 0 6px 0 #050E18; margin-bottom: 14px; }
     .nh-l { background: #F5B041; padding: 16px 24px; display: flex; flex-direction: column; justify-content: center; gap: 8px; min-width: 0; }
@@ -1722,7 +1735,7 @@
        sit side by side, never stacked. */
     #fb-opp > .r-top { flex-wrap: nowrap; }
     @media (min-width: 1024px) {
-      body.in-game[data-game="fibber"] #gs-body > .grid > div:first-child { max-width: none !important; padding: 0 40px 0 270px; }
+      body.in-game[data-game="fibber"] #gs-body > .grid > div:first-child { max-width: none !important; padding: 0 40px; }
       body.in-game[data-game="fibber"] #fb-opp { column-gap: 260px !important; row-gap: 40px !important; }
       body.in-game[data-game="fibber"] #fb-opp > .r-top { gap: 180px; }
       body.in-game[data-game="fibber"] #fb-opp > .r-mid { min-height: calc(100vh - 560px) !important; }
@@ -1768,6 +1781,7 @@
       .fb-count { font-size: 28px; min-width: 46px; height: 46px; right: -24px; top: -30px; }
       .fb-count.big { font-size: 34px; min-width: 56px; height: 56px; }
     }
+    .fb-claim { white-space: nowrap; }
     /* ---------- Mine Saboteurs (tunnel.js) ---------- */
     .tt-role { padding: 8px 12px; border: 3px solid #050E18; font-size: .85rem; color: #F7F4EC; background: #12304D; border-left: 8px solid #2DD4BF; }
     .tt-role.rascal { border-left-color: #FB7185; }
@@ -2146,6 +2160,13 @@
     #ty-prompt > .space-y-2 > .font-bold { font-size: 17px !important; text-shadow: 1px 1px 0 #050E18; }
     @media (min-width: 1024px) { #ty-msg { font-size: 30px !important; } #ty-prompt > .space-y-2 > .font-bold { font-size: 21px !important; } }
     @media (max-width: 560px) { #ty-msg { font-size: 16px !important; } #ty-prompt > .space-y-2 > .font-bold { font-size: 15px !important; } }
+    /* Cael (Nov 2026): pawns fill their square so you can find yourself; your own pawn has a teal ring; tap a pawn to
+       see the square under it. Whose turn it is sits above the dice. */
+    .ty-pawn { width: clamp(24px, 6.6cqi, 54px); height: clamp(24px, 6.6cqi, 54px); pointer-events: auto; cursor: pointer; transition: translate .26s cubic-bezier(.3,.7,.25,1), scale .2s; }
+    .ty-pawn b { border-width: 3px; font-size: clamp(13px, 3.9cqi, 32px); box-shadow: 0 3px 0 var(--ink); }
+    .ty-pawn.me b { outline: 3px solid #2DD4BF; outline-offset: 1px; }
+    .ty-title { display: flex; align-items: center; gap: .4em; font-size: clamp(15px, 4.2cqi, 30px); }
+    .ty-who { display: inline-flex; align-items: center; justify-content: center; width: 1.5em; height: 1.5em; font-size: .8em; background: var(--pc); border: 3px solid #050E18; border-radius: 50%; text-shadow: none; }
     .wc-wheel { position: relative; width: 290px; height: 290px; margin: 0 auto; background: #0F2A44; border: 4px solid var(--ink); box-shadow: 0 5px 0 var(--ink); border-radius: 50% !important; touch-action: none; user-select: none; }
     .wc-let { position: absolute; width: 58px; height: 58px; margin: -29px 0 0 -29px; background: #F7F4EC; color: #050E18; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); border-radius: 50% !important; display: flex; align-items: center; justify-content: center; font-family: 'Arcade Pixel', sans-serif; font-size: 1.9rem; font-weight: 700; cursor: pointer; z-index: 2; transition: transform .06s; }
     .wc-let.on { background: #F5B041; transform: scale(1.08); }
@@ -7340,6 +7361,9 @@
       const seats = S.seats.map((x, i) => `<span class="np-chip ${x.left ? 'gone' : ''} ${i === S.me ? 'me' : ''}" title="${esc(x.name)}">${esc(x.avatar)} ${esc(x.name)}${x.bot && !x.left ? ' <i>CPU</i>' : ''}${x.left ? ' <i>LEFT</i>' : ''}</span>`).join('');
       const html = `<span class="pix text-xs text-teal">● ONLINE${S.ranked ? ' · RANKED' : ''} · ${esc(S.code)}</span><span class="np-chips">${seats}</span>${warn ? `<span class="np-warn">${esc(warn)}</span>` : ''}`;
       if (bar.innerHTML !== html) bar.innerHTML = html;
+      // Inna (Nov 2026): the strip of player names is clutter during a game (the table already shows everyone);
+      // it only appears for a warning such as "X disconnected"
+      bar.classList.toggle('hidden', !warn);
     }
     // for games: the "Leave" button of an online table asks first, then leaves
     function npConfirmLeave(then) {
@@ -9579,7 +9603,7 @@
             <div class="r-mid felt p-4 flex items-center justify-center gap-8 flex-wrap" style="min-height:190px"><div id="cc-pile" class="text-center"></div><div id="cc-top" class="text-center"></div></div></div>
             <div id="cc-prompt" class="win p-3 text-center min-h-[48px] text-sm"></div>
             <div id="cc-hand" class="flex gap-2 flex-wrap justify-center pt-2"></div></div>
-          <div class="space-y-3"><div class="win overflow-hidden"><div class="winbar amber"><span>UNO</span></div><div class="p-3 space-y-2"><div id="cc-clock"></div><div id="cc-status" class="text-sm font-bold"></div></div></div>
+          <div class="space-y-3"><div class="win overflow-hidden"><div class="p-3 space-y-2"><div id="cc-clock"></div><div id="cc-status" class="text-sm font-bold"></div></div></div>
             <div id="cc-log" class="logbox" style="height:240px"></div><button id="cc-quit" class="btn-game btn-coral w-full py-2 text-sm">${S.online ? 'Leave table' : 'Give up'}</button></div></div>`;
         G.clock = makeClock(document.getElementById('cc-clock'));
         S.track();
@@ -9797,7 +9821,7 @@
           '<strong class="text-bone">CLASH!</strong> When you are down to <span class="text-amber font-bold">one card</span>, press the CLASH button fast. Forget and you draw 2. Spot a bot that forgot and you can catch it!',
         ], tip: 'Each colour has its own symbol (★ ◆ ♥ ♣), so you can tell them apart even without colours.' },
         profileTiles: (s) => [['WINS', s.wins, 'text-amber'], ['GAMES', s.played, 'text-bone'], ['WIN RATE', pct(s.wins, s.played) + '%', 'text-emerald'], ['BOTS CAUGHT', s.caught || 0, 'text-teal']],
-        engine: { buildDeck, canPlay }, open, close() { G = null; },
+        engine: { buildDeck, canPlay, get G() { return G; } }, open, close() { G = null; },
         art: { card: (c) => cardHTML(c) },
         online: { seats: (sel) => +sel.n || 3, ranked: true, start: (body, sel, S) => start(body, sel, S) },
       };
@@ -10570,8 +10594,7 @@
     window.DOODLE_WORDS = DOODLE_WORDS;
     /* =========================================================================
        FIBBER (original game, Nov 2026): a family-friendly bluffing card game for 3-5 players.
-       All 52 cards are dealt. Turns go round the table and the rank goes up each turn: Aces, Twos, Threes ... Kings,
-       then Aces again. On your turn put 1 to 4 cards face down and say they are that rank (you may fib!).
+       All 52 cards are dealt. Turns go round the table and every turn gets a random rank (never the same twice in a row). On your turn put 1 to 4 cards face down and say they are that rank (you may fib!).
        Anyone can shout FIBBER! The cards are turned over: if any of them is not that rank, the fibber picks up the
        whole pile; if they were all true, the person who shouted picks it up. First to get rid of every card wins.
        Script-style netplay: every decision goes through S.ask, so it plays the same on this device and online.
@@ -10619,23 +10642,22 @@
         const deck = S.rng.shuffle(newDeckSorted());
         const players = S.seats.map((x, i) => ({ seat: i, name: x.name, av: x.avatar, hand: [] }));
         deck.forEach((c, k) => players[k % players.length].hand.push(c));
-        G = { S, me: S.online ? S.me : 0, players, pile: [], step: 0, cur: S.rng.rnd(players.length), need: 14, last: null, secs: +sel.secs || 7, over: false, tok: ++GT.cur, log: [], sel: new Set(), places: [], stats: { caught: 0, fooled: 0, lied: 0 } };
+        G = { S, me: S.online ? S.me : 0, players, pile: [], step: 0, cur: S.rng.rnd(players.length), need: ORDER[S.rng.rnd(13)], last: null, secs: +sel.secs || 7, over: false, tok: ++GT.cur, log: [], sel: new Set(), places: [], stats: { caught: 0, fooled: 0, lied: 0 } };
         GT.started = true; GT.over = false;
-        body.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_250px] gap-5 items-start">
+        body.innerHTML = `<div class="grid grid-cols-1 gap-5 items-start">
           <div class="space-y-3 min-w-0"><div id="fb-opp" class="ring4">${ringSlots('fb')}
             <div class="r-mid felt p-4 flex flex-col items-center justify-center gap-3" style="min-height:220px"><div id="fb-center" class="flex items-center justify-center gap-6 flex-wrap"></div><div id="fb-claim" class="fb-claim"></div></div></div>
             <div id="fb-prompt" class="win p-3 text-center min-h-[52px] text-sm"></div>
+            <div class="text-center"><button id="fb-quit" class="hidden btn-game btn-amber py-2 px-6 text-sm">See the results now</button></div>
             <div id="fb-hand" class="fb-hand"></div></div>
-          <div class="space-y-3"><div class="win overflow-hidden"><div class="winbar amber"><span>BULLSHIT</span><span class="pix text-xs" id="fb-step"></span></div><div class="p-3 space-y-2"><div id="fb-status" class="text-sm font-bold"></div><div class="text-xs text-muted">Each turn the rank goes up: A, 2, 3 ... K, then A again.</div></div></div>
-            <div id="fb-log" class="logbox" style="height:240px"></div><button id="fb-quit" class="btn-game btn-coral w-full py-2 text-sm">${S.online ? 'Leave table' : 'Give up'}</button></div></div>`;
+          <div class="hidden"><span id="fb-status"></span><span id="fb-step"></span><div id="fb-log" class="logbox" style="height:240px"></div></div></div>`;
         S.track();
         S.onLeft = (a) => {
           if (!G) return; const q = G.players[a.s]; q.name += ' (CPU)'; q.av = '🤖';
           log(`${nm(q)} ${a.t === '_gone' ? 'disconnected' : 'left'}. A computer player takes the seat.`); draw();
         };
         npBar('');
-        let sure = false;
-        $('fb-quit').onclick = (e) => { if (S.online) return npConfirmLeave(() => open($('game-root'))); if (G.over) return; if (G.places.includes(G.players[G.me])) return endNow(); if (!sure) { sure = true; e.target.textContent = 'Really give up?'; gTimeout(() => { sure = false; if (!G.places.includes(G.players[G.me])) e.target.textContent = 'Give up'; }, 3000); return; } G.tok++; finish(null); };
+        $('fb-quit').onclick = () => { if (G && !G.over && G.places.includes(G.players[G.me])) endNow(); };
         log(`Cards are dealt. ${nm(G.players[G.cur])} starts with <b>Aces</b>.`);
         draw();
         run().catch((e) => { if (e !== ABORT) throw e; });
@@ -10654,7 +10676,7 @@
           await turn(p);
           if (G.over) return;
           do G.cur = (G.cur + 1) % G.players.length; while (G.places.includes(G.players[G.cur]));
-          G.need = ORDER[(ORDER.indexOf(G.need) + 1) % 13];
+          { const nx = ORDER.filter((r) => r !== G.need); G.need = nx[G.S.rng.rnd(nx.length)]; }
           draw();
         }
       }
@@ -10733,7 +10755,7 @@
         SFX.play(lie === isMe(caller) || (!lie && isMe(p)) ? 'coin' : 'wrong');
         const n = G.pile.length;
         for (let i = 0; i < Math.min(n, 6); i++) gFly('#fb-pile', seatEl(loser), playingCardHTML(null, { cls: 'sm' }), { ms: 420, delay: i * 70, arc: 30 });
-        loser.hand.push(...G.pile); G.pile = []; G.reveal = null;
+        loser.hand.push(...G.pile); G.pile = []; G.reveal = null; noDoubles();
         draw();
         await W(1300);
         if (!p.hand.length) return placeOut(p);
@@ -10748,7 +10770,7 @@
         if (isMe(p)) showToast(n === 1 ? 'You got rid of every card: 1st place! 🏆' : `You finished ${ORD(n)}!`, 'success');
         const left = G.players.filter((q) => !G.places.includes(q));
         if (left.length <= 1) { if (left[0]) G.places.push(left[0]); G.tok++; finish(true); return; }
-        if (isMe(p)) { const b = $('fb-quit'); if (b && !G.S.online) b.textContent = 'See the results now'; }
+        if (isMe(p) && !G.S.online) { const b = $('fb-quit'); if (b) b.classList.remove('hidden'); }
         draw();
       }
       // offline, after I'm out: skip the rest (the others are ranked by how many cards they still hold)
@@ -10770,6 +10792,10 @@
         else if (c.r === 14) mid = `<span class="fb-ace">${suitSVG(c.s, 34)}</span>`;
         else mid = `<span class="fb-face"><b>${rankLab(c.r)}</b>${suitSVG(c.s, 14)}</span>`;
         return `<div class="pcard sm fb-pc" style="color:${col}">${corner}${mid}</div>`;
+      }
+      function noDoubles() {
+        const seen = new Set();
+        for (const q of G.players) q.hand = q.hand.filter((c) => { if (!c) return false; const k = c.r + c.s; if (seen.has(k)) { console.warn('Bullshit: a card was in two places', k); return false; } seen.add(k); return true; });
       }
       function draw() {
         if (!$('fb-opp')) return;
@@ -10815,7 +10841,7 @@
         blurb: 'Put cards down face down and say what they are. Bluff if you have to, but if someone shouts BULLSHIT! and you are caught, you take the whole pile.',
         rules: { tag: 'BLUFFING · 3-5 PLAYERS', steps: [
           '<strong class="text-bone">Goal:</strong> Be the first to get rid of all your cards. The others play on for 2nd, 3rd... until only one player still has cards.',
-          '<strong class="text-bone">Your turn:</strong> Put 1 to 4 cards face down and say they are the rank it is now (Aces, then Twos, then Threes... up to Kings, then Aces again). They don’t have to be true!',
+          '<strong class="text-bone">Your turn:</strong> Put 1 to 4 cards face down and say they are the rank it is now (a new rank is picked at random every turn). They don’t have to be true!',
           '<strong class="text-bone">BULLSHIT!</strong> After each play everyone has a few seconds to shout. The cards are turned over: if any card is wrong, the player who fibbed picks up the whole pile. If they were all true, the one who shouted picks it up.',
         ], tip: 'There are only four of each rank. If you hold three Sevens and someone says "two Sevens", they are bluffing!' },
         profileTiles: (s) => [['WINS', s.wins, 'text-amber'], ['GAMES', s.played, 'text-bone'], ['LIES CAUGHT', s.caught || 0, 'text-emerald'], ['BLUFFS NOT CAUGHT', s.fooled || 0, 'text-coral']],
@@ -12467,7 +12493,7 @@
             <div class="r-mid felt p-4 flex items-center justify-center gap-6 flex-wrap" style="min-height:170px"><div id="kk-pile" class="text-center"></div><div id="kk-disc" class="text-center"></div></div></div>
             <div id="kk-prompt" class="win p-3 text-center min-h-[48px]"></div>
             <div id="kk-hand" class="flex gap-2 flex-wrap justify-center pt-2"></div></div>
-          <div class="space-y-3"><div class="win overflow-hidden"><div class="winbar amber"><span>KABOOM CATS</span></div><div class="p-3 space-y-2"><div id="kk-clock"></div><div id="kk-status" class="text-sm font-bold"></div></div></div>
+          <div class="space-y-3"><div class="win overflow-hidden"><div class="p-3 space-y-2"><div id="kk-clock"></div><div id="kk-status" class="text-sm font-bold"></div></div></div>
             <div id="kk-log" class="logbox" style="height:250px"></div><button id="kk-quit" class="btn-game btn-coral w-full py-2 text-sm">${S.online ? 'Leave table' : 'Give up'}</button></div></div>`;
         G.clock = makeClock(document.getElementById('kk-clock'));
         S.track();
@@ -13888,7 +13914,7 @@
         profileTiles: (s) => [['TABLES WON', s.wins, 'text-amber'], ['TABLES', s.played, 'text-bone'], ['HANDS WON', s.handsWon || 0, 'text-emerald'], ['BIG POT', s.bigPot || 0, 'text-teal']],
         extraRows: (s) => srow('Best finish', s.bestPlace ? ['', '1st', '2nd', '3rd', '4th'][s.bestPlace] : '-'),
         art: { ranks: () => ranksHTML() },
-        engine: { eval7, handName, splitPots, equity }, open, close() { G = null; },
+        engine: { eval7, handName, splitPots, equity, get G() { return G; } }, open, close() { G = null; },
         online: { seats: () => 4, min: 2, ranked: false, start: (body, sel, S) => start(body, sel, S) },
       };
       registerGame(mod);
@@ -15900,14 +15926,19 @@
         G.tall = tall; G.tileCache = {};
         bd.className = 'ty-board' + (tall ? ' tall' : '');
         bd.innerHTML = BOARD.map((t) => { const [r, c] = cellOf(t.i, tall); return `<div id="ty-t-${t.i}" class="ty-t k-${t.k} s-${sideOf(t.i, tall)} ${CORNER_NAME[t.k] ? 'corner' : ''}" style="grid-row:${r};grid-column:${c}" title="${t.n}${t.pr ? ' $' + t.pr : ''}"></div>`; }).join('') +
-          `<div class="ty-center"><div class="ty-title">LANDLORD</div>
+          `<div class="ty-center"><div id="ty-title" class="ty-title">LANDLORD</div>
             <div class="ty-mid"><div id="ty-deck-ch" class="ty-deck ch">${ART.chance}<span>SURPRISE</span></div><div id="ty-dice" class="ty-dice">${dieHTMLs()}</div><div id="ty-deck-mb" class="ty-deck mb">${ART.chest}<span>MYSTERY</span></div></div>
             <div id="ty-msg" class="pix text-xs text-amber min-h-[18px]">${esc(G.msg || '')}</div>
             <div id="ty-card" class="ty-card"></div>
             <div id="ty-prompt" class="w-full max-w-[420px]">${G.prompt || ''}</div></div>
-          <div id="ty-pawns" class="ty-pawns">${G.players.map((p) => `<div id="ty-pawn-${p.i}" class="ty-pawn"><b style="background:${p.col}">${p.av}</b></div>`).join('')}</div>`;
+          <div id="ty-pawns" class="ty-pawns">${G.players.map((p) => `<div id="ty-pawn-${p.i}" class="ty-pawn ${p.i === G.me ? 'me' : ''}" title="${esc(p.name)}"><b style="background:${p.col}">${p.av}</b></div>`).join('')}</div>`;
         if (G._rebind) G._rebind();
-        bd.onclick = (e) => { if (e.target.closest('#ty-prompt, button')) return; const tl = e.target.closest('.ty-t'); if (tl) openDeed(+tl.id.slice(5)); };
+        bd.onclick = (e) => {
+          if (e.target.closest('#ty-prompt, button')) return;
+          const pw = e.target.closest('.ty-pawn');
+          if (pw) { const q = G.players[+pw.id.slice(8)], t = q && BOARD[q.pos]; if (!t) return; if (['prop', 'rail', 'util'].includes(t.k)) openDeed(t.i); else showToast(`${q.i === G.me ? 'You are' : q.name + ' is'} on ${t.n}`, 'info'); return; }
+          const tl = e.target.closest('.ty-t'); if (tl) openDeed(+tl.id.slice(5));
+        };
         setCube(0, G.dice[0]); setCube(1, G.dice[1]);
       }
       // put every pawn on its square; players sharing a square stand side by side
@@ -15918,9 +15949,10 @@
           if (p.out) { el.style.display = 'none'; return; }
           const tile = $('ty-t-' + p.pos); if (!tile) return;
           const mates = G.players.filter((q) => !q.out && q.pos === p.pos), k = mates.indexOf(p), n = mates.length;
+          const sc = n > 2 ? 0.55 : n > 1 ? 0.68 : 1; el.style.scale = sc;
           const pw = el.offsetWidth || 20;
-          const cx = tile.offsetLeft + tile.offsetWidth / 2, cy = tile.offsetTop + tile.offsetHeight * 0.62;
-          const ox = n > 1 ? ((k % 2) - 0.5) * pw * 0.8 : 0, oy = n > 2 ? (Math.floor(k / 2) - 0.5) * pw * 0.8 : 0;
+          const cx = tile.offsetLeft + tile.offsetWidth / 2, cy = tile.offsetTop + tile.offsetHeight * 0.55;
+          const ox = n > 1 ? ((k % 2) - 0.5) * pw * sc * 1.02 : 0, oy = n > 2 ? (Math.floor(k / 2) - 0.5) * pw * sc * 1.02 : 0;
           el.style.translate = `${Math.round(cx - pw / 2 + ox)}px ${Math.round(cy - pw / 2 + oy)}px`;
           if (hopWho === p && !motionOff()) el.firstElementChild.animate([{ translate: '0 0' }, { translate: '0 -9px', offset: 0.45 }, { translate: '0 0' }], { duration: 250, easing: 'ease-out' });
         });
@@ -15933,6 +15965,7 @@
         BOARD.forEach((t) => { const h = tileInner(t); if (G.tileCache[t.i] !== h) { G.tileCache[t.i] = h; const el = $('ty-t-' + t.i); el.innerHTML = h; el.classList.toggle('mort', !!S.mort[t.i]); } });
         const m = $('ty-msg'); if (m && m.textContent !== (G.msg || '')) m.textContent = G.msg || '';
         placePawns(hopWho);
+        const tt = $('ty-title'); if (tt && cur) { const h = G.over ? 'LANDLORD' : `<span class="ty-who" style="--pc:${cur.col}">${cur.av}</span> ${cur.i === G.me ? 'YOUR TURN' : esc(cur.name.toUpperCase()) + '’S TURN'}`; if (tt.innerHTML !== h) tt.innerHTML = h; }
         $('ty-round').textContent = `ROUND ${Math.min(G.round, G.maxRound)}${G.timed ? '/' + G.maxRound : ''}`;
         $('ty-players').innerHTML = G.players.map((p) => {
           const props = BOARD.filter((t) => S.own[t.i] === p.i).sort((a, b) => a.i - b.i);
@@ -16427,12 +16460,26 @@
         const host = body(); if (!host) return;
         if (!NET.on) { host.innerHTML = '<div class="p-5 text-sm text-muted text-center">Friends need the online service.</div>'; return; }
         host.innerHTML = '<div class="p-5 text-sm text-muted text-center">Loading your friends...</div>';
-        let list = [];
-        try { list = (await NET.friends()).friends || []; } catch (e) {}
+        let list = [], all = { friends: [], incoming: [], outgoing: [] };
+        try { all = await NET.friends(); list = all.friends || []; } catch (e) {}
         if (!CF.on || CF.sel) return;
-        host.innerHTML = `<div class="cf-list">${list.length ? list.map((f) => `<button class="cf-row" data-id="${esc(f.id)}"><span class="fr-dot ${NET.isOnline && NET.isOnline(f.id) ? 'on' : ''}"></span><span class="text-lg">${esc(f.avatar || '🙂')}</span><b>${esc(f.name || 'Player')}</b><span class="cf-go">Chat ▶</span></button>`).join('')
+        // the people at this online table: add them as friends (or accept their request) without leaving the game
+        const S = typeof NP !== 'undefined' && NP.S, me = NET.me && NET.me.id, has = (l, id) => (l || []).some((x) => x.id === id);
+        const mates = S && S.online ? S.seats.filter((x) => x && !x.bot && x.uid && x.uid !== me) : [];
+        const mateRow = (x) => { const st = has(all.friends, x.uid) ? 'f' : has(all.incoming, x.uid) ? 'in' : has(all.outgoing, x.uid) ? 'out' : '';
+          return `<div class="cf-row cf-mate"><span class="text-lg">${esc(x.avatar || '🙂')}</span><button class="flex-1 text-left truncate font-bold text-bone" data-card="${esc(x.uid)}">${esc(x.name)}</button>${
+            st === 'f' ? '<span class="pix text-xs text-emerald">FRIENDS ✓</span>' : st === 'out' ? '<span class="pix text-xs text-muted">REQUEST SENT</span>'
+            : `<button class="btn-game ${st === 'in' ? 'btn-emerald' : 'btn-amber'} py-1 px-3 text-xs" data-add="${esc(x.uid)}">${st === 'in' ? 'Accept' : '+ Add friend'}</button>`}</div>`; };
+        const tableHTML = mates.length ? `<div class="pix text-xs text-muted px-3 pt-3 pb-1">AT THIS TABLE</div>${mates.map(mateRow).join('')}<div class="pix text-xs text-muted px-3 pt-3 pb-1">YOUR FRIENDS</div>` : '';
+        host.innerHTML = tableHTML + `<div class="cf-list">${list.length ? list.map((f) => `<button class="cf-row" data-id="${esc(f.id)}"><span class="fr-dot ${NET.isOnline && NET.isOnline(f.id) ? 'on' : ''}"></span><span class="text-lg">${esc(f.avatar || '🙂')}</span><b>${esc(f.name || 'Player')}</b><span class="cf-go">Chat ▶</span></button>`).join('')
           : '<div class="p-5 text-sm text-muted text-center">No friends yet. Add people from the Friends page or by tapping their name in a chat.</div>'}</div>`;
         host.querySelectorAll('[data-id]').forEach((r) => { r.onclick = () => openDm(list.find((f) => f.id === r.dataset.id)); });
+        host.querySelectorAll('[data-card]').forEach((r) => { r.onclick = () => window.openPlayerCard && openPlayerCard(r.dataset.card); });
+        host.querySelectorAll('[data-add]').forEach((b) => { b.onclick = async () => {
+          b.disabled = true; const x = mates.find((m) => m.uid === b.dataset.add), was = has(all.incoming, b.dataset.add);
+          try { await NET.addFriend(b.dataset.add); SFX.play('pop'); showToast(was ? `You and ${x.name} are now friends!` : `Friend request sent to ${x.name}.`, 'success'); } catch (e) { showToast(e.message || 'Could not send', 'error'); }
+          openList();
+        }; });
       }
       async function openDm(f) {
         if (!f) return;
@@ -16456,7 +16503,13 @@
         };
       }
       setInterval(headerButton, 1000);
-      window.chatFriends = { openList, back };
+      // open a private chat with one friend inside the chat window (used by the player card during a game)
+      function openWith(id, c) {
+        if (typeof chatToggle === 'function') chatToggle(true);
+        headerButton(); CF.on = true; const b = document.getElementById('chat-fr-btn'); if (b) b.textContent = '← Room';
+        openDm({ id, name: (c && c.name) || 'Friend', avatar: (c && c.avatar) || '🙂' });
+      }
+      window.chatFriends = { openList, back, openWith };
     })();
     /* =========================================================================
        EMOTES (Inna, Nov 2026): at a game table, the face button (bottom right) opens a menu of 10 emotes. Each
@@ -16676,8 +16729,8 @@
     const frRoomCode = (t) => { const m = /\/r\/([A-Za-z0-9]{4,6})\b/.exec(t) || /#join=([A-Za-z0-9]{4,6})/.exec(t); return m ? m[1].toUpperCase() : null; };
     function frStart() {
       if (FR.started || !frOn()) return; FR.started = true;
-      frLoad();
       let knownIn = null;
+      frLoad().then(() => { knownIn = true; });   // requests that were already waiting show as a badge, new ones pop up
       FR.off = NET.onSocial(async (ev) => {
         if (ev.type === 'dm') {
           const list = FR.msgs[ev.from]; if (list && !list.some((x) => x.id === ev.id)) list.push(ev);
@@ -16688,13 +16741,40 @@
         } else {
           const before = new Set((FR.list.incoming || []).map((x) => x.id));
           await frLoad();
-          if (knownIn !== null) FR.list.incoming.filter((x) => !before.has(x.id)).forEach((x) => { showToast(`${x.name} wants to be your friend.`, 'info'); SFX.play('pop'); });
+          if (knownIn !== null) FR.list.incoming.filter((x) => !before.has(x.id)).forEach((x) => { frReqPop(x); SFX.play('pop'); });
           knownIn = true;
         }
       });
       setInterval(() => { if (activeView === 'friends') paintFriendList(); }, 10000);
     }
     document.addEventListener('ps-online', frStart);
+
+    /* ---------- friends during a game (Inna, Nov 2026) ----------
+       A friend request pops up wherever you are (also mid-game) with Accept / Not now. Tapping a player's name tag at an
+       online table opens their player card (Add friend / Accept / Chat). The chat's Friends view lists the table too. */
+    function frReqPop(x) {
+      let el = document.getElementById('fr-req-pop');
+      if (!el) { el = document.createElement('div'); el.id = 'fr-req-pop'; document.body.appendChild(el); }
+      el.innerHTML = `<div class="fr-rq-t"><span class="text-2xl">${esc(x.avatar || '🙂')}</span><span><b>${esc(x.name)}</b> wants to be your friend.</span></div>
+        <div class="flex gap-2"><button class="btn-game btn-emerald py-1.5 px-4 text-sm" data-a="yes">Accept</button><button class="btn-game btn-graphite py-1.5 px-3 text-sm" data-a="card">See card</button><button class="btn-game btn-graphite py-1.5 px-3 text-sm" data-a="no">Not now</button></div>`;
+      el.classList.remove('hidden');
+      const close = () => el.classList.add('hidden');
+      clearTimeout(el._t); el._t = setTimeout(close, 20000);
+      el.querySelectorAll('[data-a]').forEach((b) => { b.onclick = async () => {
+        const a = b.dataset.a; close();
+        if (a === 'yes') { try { await NET.addFriend(x.id); SFX.play('pop'); showToast(`You and ${x.name} are now friends!`, 'success'); frLoad(); } catch (e) { showToast(e.message || 'Could not accept', 'error'); } }
+        if (a === 'card') openPlayerCard(x.id);
+      }; });
+    }
+    window.frReqPop = frReqPop;
+    // a tap on a player's name tag at an online table = their player card
+    document.addEventListener('click', (e) => {
+      const S = typeof NP !== 'undefined' && NP.S; if (!S || !S.online || !frOn() || !e.target.closest) return;
+      const tag = e.target.closest('.tg-tag, .pl-tag'); if (!tag || e.target.closest('button:not([disabled]), .tgt, [data-i]')) return;
+      const host = tag.closest('[id]'), m = host && /-(seat|pl)-(\d+)$/.exec(host.id); if (!m) return;
+      const st = S.seats[+m[2]]; if (!st || st.bot || !st.uid || (NET.me && st.uid === NET.me.id)) return;
+      openPlayerCard(st.uid);
+    });
 
     /* ---------- the Friends page ---------- */
     function renderFriends() {
@@ -16799,7 +16879,7 @@
       el.querySelectorAll('[data-act]').forEach((b) => { b.onclick = async () => {
         const a = b.dataset.act;
         if (a === 'x') return el.classList.add('hidden');
-        if (a === 'chat') { el.classList.add('hidden'); return openFriendChat(id); }
+        if (a === 'chat') { el.classList.add('hidden'); if (document.body.classList.contains('in-game') && window.chatFriends) return chatFriends.openWith(id, c); return openFriendChat(id); }
         if (a === 'full') { el.classList.add('hidden'); return openPlayerProfile(c, st); }
         if (a === 'add') { b.disabled = true; try { await NET.addFriend(id); SFX.play('pop'); showToast(c.friend === 'asked' ? 'You are now friends!' : `Friend request sent to ${c.name}.`, 'success'); } catch (e) { showToast(e.message || 'Could not send the request.', 'error'); } frLoad(); return openPlayerCard(id); }
         if (a === 'rm') { await NET.removeFriend(id).catch(() => {}); frLoad(); return openPlayerCard(id); }
@@ -16936,7 +17016,7 @@
           items: () => row([[`<span style="display:inline-block;width:44px;height:10px;background:#1E7A3E;border:2px solid #050E18"></span>`, 'Hedge', '2 squares long. You have 10 (5 with 4 players)'], [`<span style="display:inline-block;width:30px;height:30px;background:#F7EBC0;box-shadow:inset 0 0 0 3px #2DD4BF"></span>`, 'Glowing square', 'Where you can move now'], [`<span style="display:inline-block;width:40px;height:6px;background:#F5B041"></span>`, 'Coloured edge', 'The side each player is racing to']]),
           tip: 'The panel shows how many steps everyone still needs. Save your hedges for when a rival is close to the finish.', online: NET_TABLE },
         fibber: { tag: '3-5 PLAYERS · BLUFFING', goal: 'Be the first to get rid of all your cards. The others play on for 2nd, 3rd... until one player is left holding cards.', steps: [
-          ['The rank goes up', 'Every turn has a rank: Aces, then Twos, then Threes... up to Kings, then back to Aces. The middle of the table shows which rank it is now.'],
+          ['A new rank every turn', 'Every turn has a rank, picked at random (never the same one twice in a row). The middle of the table shows which rank it is now.'],
           ['Put cards down', 'On your turn, tap 1 to 4 of your cards and press <b>Put down</b>. They go face down and you say they are that rank. Don’t have any? Bluff!'],
           ['BULLSHIT!', 'After each play, everyone has a few seconds to press <b>BULLSHIT!</b> if they think it was a lie. The cards are turned over.'],
           ['Who picks up', 'If any card was wrong, the player who lied picks up the whole pile. If they were all true, the person who shouted picks it up. Get rid of your last card (without being caught) to win.']],
@@ -17169,7 +17249,7 @@
           ['Hàng rào chặn đường', 'Không ai đi xuyên qua hàng rào được, nên đối thủ phải đi vòng. Nhưng không được nhốt kín ai: luôn phải còn một lối đi.'],
           ['Nhảy qua', 'Nếu có quân khác ngay cạnh bạn, bạn có thể nhảy qua nó. Nếu phía sau có hàng rào, hãy bước chéo sang bên cạnh nó.']], online: ONT },
         fibber: { goal: 'Là người đầu tiên đánh hết bài trên tay. Những người còn lại chơi tiếp để giành hạng 2, 3... cho đến khi chỉ còn một người cầm bài.', steps: [
-          ['Loại bài tăng dần', 'Mỗi lượt có một loại bài: Át, rồi 2, rồi 3... đến K, rồi quay lại Át. Giữa bàn cho biết đang đến loại nào.'],
+          ['Mỗi lượt một loại bài mới', 'Mỗi lượt có một loại bài được chọn ngẫu nhiên (không bao giờ trùng hai lượt liền nhau). Giữa bàn cho biết đang đến loại nào.'],
           ['Úp bài', 'Đến lượt, chạm vào 1 đến 4 lá bài rồi bấm <b>Đánh</b>. Bài được úp xuống và bạn nói đó là loại đang đến. Không có? Thì xạo!'],
           ['NÓI XẠO!', 'Sau mỗi lượt đánh, mọi người có vài giây để bấm <b>NÓI XẠO!</b> nếu nghĩ đó là nói dối. Các lá bài sẽ được lật lên.'],
           ['Ai phải ôm bài', 'Nếu có lá sai, người nói dối phải ôm cả chồng bài. Nếu tất cả đều đúng, người hô phải ôm. Đánh hết lá cuối cùng (mà không bị bắt) là thắng.']], online: ONT },

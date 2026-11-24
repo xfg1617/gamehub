@@ -709,14 +709,19 @@
         G.tall = tall; G.tileCache = {};
         bd.className = 'ty-board' + (tall ? ' tall' : '');
         bd.innerHTML = BOARD.map((t) => { const [r, c] = cellOf(t.i, tall); return `<div id="ty-t-${t.i}" class="ty-t k-${t.k} s-${sideOf(t.i, tall)} ${CORNER_NAME[t.k] ? 'corner' : ''}" style="grid-row:${r};grid-column:${c}" title="${t.n}${t.pr ? ' $' + t.pr : ''}"></div>`; }).join('') +
-          `<div class="ty-center"><div class="ty-title">LANDLORD</div>
+          `<div class="ty-center"><div id="ty-title" class="ty-title">LANDLORD</div>
             <div class="ty-mid"><div id="ty-deck-ch" class="ty-deck ch">${ART.chance}<span>SURPRISE</span></div><div id="ty-dice" class="ty-dice">${dieHTMLs()}</div><div id="ty-deck-mb" class="ty-deck mb">${ART.chest}<span>MYSTERY</span></div></div>
             <div id="ty-msg" class="pix text-xs text-amber min-h-[18px]">${esc(G.msg || '')}</div>
             <div id="ty-card" class="ty-card"></div>
             <div id="ty-prompt" class="w-full max-w-[420px]">${G.prompt || ''}</div></div>
-          <div id="ty-pawns" class="ty-pawns">${G.players.map((p) => `<div id="ty-pawn-${p.i}" class="ty-pawn"><b style="background:${p.col}">${p.av}</b></div>`).join('')}</div>`;
+          <div id="ty-pawns" class="ty-pawns">${G.players.map((p) => `<div id="ty-pawn-${p.i}" class="ty-pawn ${p.i === G.me ? 'me' : ''}" title="${esc(p.name)}"><b style="background:${p.col}">${p.av}</b></div>`).join('')}</div>`;
         if (G._rebind) G._rebind();
-        bd.onclick = (e) => { if (e.target.closest('#ty-prompt, button')) return; const tl = e.target.closest('.ty-t'); if (tl) openDeed(+tl.id.slice(5)); };
+        bd.onclick = (e) => {
+          if (e.target.closest('#ty-prompt, button')) return;
+          const pw = e.target.closest('.ty-pawn');
+          if (pw) { const q = G.players[+pw.id.slice(8)], t = q && BOARD[q.pos]; if (!t) return; if (['prop', 'rail', 'util'].includes(t.k)) openDeed(t.i); else showToast(`${q.i === G.me ? 'You are' : q.name + ' is'} on ${t.n}`, 'info'); return; }
+          const tl = e.target.closest('.ty-t'); if (tl) openDeed(+tl.id.slice(5));
+        };
         setCube(0, G.dice[0]); setCube(1, G.dice[1]);
       }
       // put every pawn on its square; players sharing a square stand side by side
@@ -727,9 +732,10 @@
           if (p.out) { el.style.display = 'none'; return; }
           const tile = $('ty-t-' + p.pos); if (!tile) return;
           const mates = G.players.filter((q) => !q.out && q.pos === p.pos), k = mates.indexOf(p), n = mates.length;
+          const sc = n > 2 ? 0.55 : n > 1 ? 0.68 : 1; el.style.scale = sc;
           const pw = el.offsetWidth || 20;
-          const cx = tile.offsetLeft + tile.offsetWidth / 2, cy = tile.offsetTop + tile.offsetHeight * 0.62;
-          const ox = n > 1 ? ((k % 2) - 0.5) * pw * 0.8 : 0, oy = n > 2 ? (Math.floor(k / 2) - 0.5) * pw * 0.8 : 0;
+          const cx = tile.offsetLeft + tile.offsetWidth / 2, cy = tile.offsetTop + tile.offsetHeight * 0.55;
+          const ox = n > 1 ? ((k % 2) - 0.5) * pw * sc * 1.02 : 0, oy = n > 2 ? (Math.floor(k / 2) - 0.5) * pw * sc * 1.02 : 0;
           el.style.translate = `${Math.round(cx - pw / 2 + ox)}px ${Math.round(cy - pw / 2 + oy)}px`;
           if (hopWho === p && !motionOff()) el.firstElementChild.animate([{ translate: '0 0' }, { translate: '0 -9px', offset: 0.45 }, { translate: '0 0' }], { duration: 250, easing: 'ease-out' });
         });
@@ -742,6 +748,7 @@
         BOARD.forEach((t) => { const h = tileInner(t); if (G.tileCache[t.i] !== h) { G.tileCache[t.i] = h; const el = $('ty-t-' + t.i); el.innerHTML = h; el.classList.toggle('mort', !!S.mort[t.i]); } });
         const m = $('ty-msg'); if (m && m.textContent !== (G.msg || '')) m.textContent = G.msg || '';
         placePawns(hopWho);
+        const tt = $('ty-title'); if (tt && cur) { const h = G.over ? 'LANDLORD' : `<span class="ty-who" style="--pc:${cur.col}">${cur.av}</span> ${cur.i === G.me ? 'YOUR TURN' : esc(cur.name.toUpperCase()) + '’S TURN'}`; if (tt.innerHTML !== h) tt.innerHTML = h; }
         $('ty-round').textContent = `ROUND ${Math.min(G.round, G.maxRound)}${G.timed ? '/' + G.maxRound : ''}`;
         $('ty-players').innerHTML = G.players.map((p) => {
           const props = BOARD.filter((t) => S.own[t.i] === p.i).sort((a, b) => a.i - b.i);

@@ -433,6 +433,9 @@
       const seats = S.seats.map((x, i) => `<span class="np-chip ${x.left ? 'gone' : ''} ${i === S.me ? 'me' : ''}" title="${esc(x.name)}">${esc(x.avatar)} ${esc(x.name)}${x.bot && !x.left ? ' <i>CPU</i>' : ''}${x.left ? ' <i>LEFT</i>' : ''}</span>`).join('');
       const html = `<span class="pix text-xs text-teal">● ONLINE${S.ranked ? ' · RANKED' : ''} · ${esc(S.code)}</span><span class="np-chips">${seats}</span>${warn ? `<span class="np-warn">${esc(warn)}</span>` : ''}`;
       if (bar.innerHTML !== html) bar.innerHTML = html;
+      // Inna (Nov 2026): the strip of player names is clutter during a game (the table already shows everyone);
+      // it only appears for a warning such as "X disconnected"
+      bar.classList.toggle('hidden', !warn);
     }
     // for games: the "Leave" button of an online table asks first, then leaves
     function npConfirmLeave(then) {

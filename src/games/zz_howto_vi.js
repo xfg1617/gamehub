@@ -40,7 +40,7 @@
           ['Hàng rào chặn đường', 'Không ai đi xuyên qua hàng rào được, nên đối thủ phải đi vòng. Nhưng không được nhốt kín ai: luôn phải còn một lối đi.'],
           ['Nhảy qua', 'Nếu có quân khác ngay cạnh bạn, bạn có thể nhảy qua nó. Nếu phía sau có hàng rào, hãy bước chéo sang bên cạnh nó.']], online: ONT },
         fibber: { goal: 'Là người đầu tiên đánh hết bài trên tay. Những người còn lại chơi tiếp để giành hạng 2, 3... cho đến khi chỉ còn một người cầm bài.', steps: [
-          ['Loại bài tăng dần', 'Mỗi lượt có một loại bài: Át, rồi 2, rồi 3... đến K, rồi quay lại Át. Giữa bàn cho biết đang đến loại nào.'],
+          ['Mỗi lượt một loại bài mới', 'Mỗi lượt có một loại bài được chọn ngẫu nhiên (không bao giờ trùng hai lượt liền nhau). Giữa bàn cho biết đang đến loại nào.'],
           ['Úp bài', 'Đến lượt, chạm vào 1 đến 4 lá bài rồi bấm <b>Đánh</b>. Bài được úp xuống và bạn nói đó là loại đang đến. Không có? Thì xạo!'],
           ['NÓI XẠO!', 'Sau mỗi lượt đánh, mọi người có vài giây để bấm <b>NÓI XẠO!</b> nếu nghĩ đó là nói dối. Các lá bài sẽ được lật lên.'],
           ['Ai phải ôm bài', 'Nếu có lá sai, người nói dối phải ôm cả chồng bài. Nếu tất cả đều đúng, người hô phải ôm. Đánh hết lá cuối cùng (mà không bị bắt) là thắng.']], online: ONT },

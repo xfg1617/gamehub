@@ -275,3 +275,8 @@
     /* page changes fade in a little */
     #view-play:not(.hidden), #view-leaderboard:not(.hidden), #view-rules:not(.hidden), #view-profile:not(.hidden), #view-friends:not(.hidden), #view-game:not(.hidden) { animation: g-viewin .22s ease-out both; }
     @keyframes g-viewin { from { opacity: 0; } to { opacity: 1; } }
+    /* Inna (Nov 2026): less clutter during a game. The ← Lobby button already leaves (and asks first), so the extra
+       Give up / Leave table buttons are hidden in these games */
+    body.in-game #cc-quit, body.in-game #dm-quit, body.in-game #gm-quit, body.in-game #hr-quit, body.in-game #fi-quit,
+    body.in-game #kk-quit, body.in-game #mm-quit, body.in-game #pk-quit, body.in-game #tt-quit, body.in-game #ty-quit,
+    body.in-game #wd-quit, body.in-game #dg-quit, body.in-game #bjo-leave { display: none !important; }

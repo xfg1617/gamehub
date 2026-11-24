@@ -27,7 +27,7 @@
        sit side by side, never stacked. */
     #fb-opp > .r-top { flex-wrap: nowrap; }
     @media (min-width: 1024px) {
-      body.in-game[data-game="fibber"] #gs-body > .grid > div:first-child { max-width: none !important; padding: 0 40px 0 270px; }
+      body.in-game[data-game="fibber"] #gs-body > .grid > div:first-child { max-width: none !important; padding: 0 40px; }
       body.in-game[data-game="fibber"] #fb-opp { column-gap: 260px !important; row-gap: 40px !important; }
       body.in-game[data-game="fibber"] #fb-opp > .r-top { gap: 180px; }
       body.in-game[data-game="fibber"] #fb-opp > .r-mid { min-height: calc(100vh - 560px) !important; }
@@ -73,3 +73,4 @@
       .fb-count { font-size: 28px; min-width: 46px; height: 46px; right: -24px; top: -30px; }
       .fb-count.big { font-size: 34px; min-width: 56px; height: 56px; }
     }
+    .fb-claim { white-space: nowrap; }

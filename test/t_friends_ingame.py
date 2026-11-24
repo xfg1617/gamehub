@@ -1,0 +1,25 @@
+"""Friends during a game: at an online Bullshit table A taps B's name tag -> B's player card -> Add friend; B gets a
+pop-up with Accept (mid-game) and accepts; the chat's Friends view lists the table with FRIENDS."""
+import sys, time; sys.path.insert(0, 'test')
+from nplib import *
+with sync_playwright() as p:
+    A, B = players(p, 2)
+    code = open_table(A, 'fibber', 'room', {'n': 3, 'secs': 5})
+    join(B, code); A.wait_for_timeout(2000); start(A); A.wait_for_timeout(2500)
+    check(A.query_selector('#fb-hand') and B.query_selector('#fb-hand'), 'the game started on both screens')
+    bseat = B.evaluate("NP.S.me")
+    A.evaluate(f"document.querySelector('#fb-seat-{bseat} .tg-tag').click()"); A.wait_for_timeout(1500)
+    check(A.evaluate("!document.getElementById('pcard-modal').classList.contains('hidden')"), "tapping B's name tag opens B's player card")
+    A.evaluate("document.querySelector('#pcard-modal [data-act=add]').click()"); A.wait_for_timeout(500)
+    t0 = time.time()
+    while time.time() - t0 < 20 and not B.evaluate("!!document.querySelector('#fr-req-pop:not(.hidden)')"): B.wait_for_timeout(500)
+    check(B.evaluate("!!document.querySelector('#fr-req-pop:not(.hidden)')"), 'B gets a friend request pop-up during the game')
+    B.screenshot(path='test/shots/friends_ingame_pop.png')
+    B.evaluate("document.querySelector('#fr-req-pop [data-a=yes]').click()"); B.wait_for_timeout(1500)
+    check(B.evaluate("NET.friends().then(r => r.friends.length)") == 1, 'B accepted: they are friends')
+    check(B.evaluate("!!document.getElementById('fb-hand')"), 'B is still in the game')
+    A.evaluate("chatToggle(true)"); A.wait_for_timeout(1500); A.evaluate("chatFriends.openList()"); A.wait_for_timeout(1500)
+    txt = A.evaluate("document.getElementById('chat-room').innerText")
+    check('AT THIS TABLE' in txt and 'FRIENDS' in txt, "the chat's Friends view lists the table: " + txt[:80].replace('\n', ' '))
+    A.screenshot(path='test/shots/friends_ingame_chat.png')
+    done(A, B)

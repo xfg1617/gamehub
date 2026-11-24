@@ -24,12 +24,26 @@
         const host = body(); if (!host) return;
         if (!NET.on) { host.innerHTML = '<div class="p-5 text-sm text-muted text-center">Friends need the online service.</div>'; return; }
         host.innerHTML = '<div class="p-5 text-sm text-muted text-center">Loading your friends...</div>';
-        let list = [];
-        try { list = (await NET.friends()).friends || []; } catch (e) {}
+        let list = [], all = { friends: [], incoming: [], outgoing: [] };
+        try { all = await NET.friends(); list = all.friends || []; } catch (e) {}
         if (!CF.on || CF.sel) return;
-        host.innerHTML = `<div class="cf-list">${list.length ? list.map((f) => `<button class="cf-row" data-id="${esc(f.id)}"><span class="fr-dot ${NET.isOnline && NET.isOnline(f.id) ? 'on' : ''}"></span><span class="text-lg">${esc(f.avatar || '🙂')}</span><b>${esc(f.name || 'Player')}</b><span class="cf-go">Chat ▶</span></button>`).join('')
+        // the people at this online table: add them as friends (or accept their request) without leaving the game
+        const S = typeof NP !== 'undefined' && NP.S, me = NET.me && NET.me.id, has = (l, id) => (l || []).some((x) => x.id === id);
+        const mates = S && S.online ? S.seats.filter((x) => x && !x.bot && x.uid && x.uid !== me) : [];
+        const mateRow = (x) => { const st = has(all.friends, x.uid) ? 'f' : has(all.incoming, x.uid) ? 'in' : has(all.outgoing, x.uid) ? 'out' : '';
+          return `<div class="cf-row cf-mate"><span class="text-lg">${esc(x.avatar || '🙂')}</span><button class="flex-1 text-left truncate font-bold text-bone" data-card="${esc(x.uid)}">${esc(x.name)}</button>${
+            st === 'f' ? '<span class="pix text-xs text-emerald">FRIENDS ✓</span>' : st === 'out' ? '<span class="pix text-xs text-muted">REQUEST SENT</span>'
+            : `<button class="btn-game ${st === 'in' ? 'btn-emerald' : 'btn-amber'} py-1 px-3 text-xs" data-add="${esc(x.uid)}">${st === 'in' ? 'Accept' : '+ Add friend'}</button>`}</div>`; };
+        const tableHTML = mates.length ? `<div class="pix text-xs text-muted px-3 pt-3 pb-1">AT THIS TABLE</div>${mates.map(mateRow).join('')}<div class="pix text-xs text-muted px-3 pt-3 pb-1">YOUR FRIENDS</div>` : '';
+        host.innerHTML = tableHTML + `<div class="cf-list">${list.length ? list.map((f) => `<button class="cf-row" data-id="${esc(f.id)}"><span class="fr-dot ${NET.isOnline && NET.isOnline(f.id) ? 'on' : ''}"></span><span class="text-lg">${esc(f.avatar || '🙂')}</span><b>${esc(f.name || 'Player')}</b><span class="cf-go">Chat ▶</span></button>`).join('')
           : '<div class="p-5 text-sm text-muted text-center">No friends yet. Add people from the Friends page or by tapping their name in a chat.</div>'}</div>`;
         host.querySelectorAll('[data-id]').forEach((r) => { r.onclick = () => openDm(list.find((f) => f.id === r.dataset.id)); });
+        host.querySelectorAll('[data-card]').forEach((r) => { r.onclick = () => window.openPlayerCard && openPlayerCard(r.dataset.card); });
+        host.querySelectorAll('[data-add]').forEach((b) => { b.onclick = async () => {
+          b.disabled = true; const x = mates.find((m) => m.uid === b.dataset.add), was = has(all.incoming, b.dataset.add);
+          try { await NET.addFriend(b.dataset.add); SFX.play('pop'); showToast(was ? `You and ${x.name} are now friends!` : `Friend request sent to ${x.name}.`, 'success'); } catch (e) { showToast(e.message || 'Could not send', 'error'); }
+          openList();
+        }; });
       }
       async function openDm(f) {
         if (!f) return;
@@ -53,5 +67,11 @@
         };
       }
       setInterval(headerButton, 1000);
-      window.chatFriends = { openList, back };
+      // open a private chat with one friend inside the chat window (used by the player card during a game)
+      function openWith(id, c) {
+        if (typeof chatToggle === 'function') chatToggle(true);
+        headerButton(); CF.on = true; const b = document.getElementById('chat-fr-btn'); if (b) b.textContent = '← Room';
+        openDm({ id, name: (c && c.name) || 'Friend', avatar: (c && c.avatar) || '🙂' });
+      }
+      window.chatFriends = { openList, back, openWith };
     })();

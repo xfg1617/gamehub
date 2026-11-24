@@ -91,3 +91,10 @@
     #ty-prompt > .space-y-2 > .font-bold { font-size: 17px !important; text-shadow: 1px 1px 0 #050E18; }
     @media (min-width: 1024px) { #ty-msg { font-size: 30px !important; } #ty-prompt > .space-y-2 > .font-bold { font-size: 21px !important; } }
     @media (max-width: 560px) { #ty-msg { font-size: 16px !important; } #ty-prompt > .space-y-2 > .font-bold { font-size: 15px !important; } }
+    /* Cael (Nov 2026): pawns fill their square so you can find yourself; your own pawn has a teal ring; tap a pawn to
+       see the square under it. Whose turn it is sits above the dice. */
+    .ty-pawn { width: clamp(24px, 6.6cqi, 54px); height: clamp(24px, 6.6cqi, 54px); pointer-events: auto; cursor: pointer; transition: translate .26s cubic-bezier(.3,.7,.25,1), scale .2s; }
+    .ty-pawn b { border-width: 3px; font-size: clamp(13px, 3.9cqi, 32px); box-shadow: 0 3px 0 var(--ink); }
+    .ty-pawn.me b { outline: 3px solid #2DD4BF; outline-offset: 1px; }
+    .ty-title { display: flex; align-items: center; gap: .4em; font-size: clamp(15px, 4.2cqi, 30px); }
+    .ty-who { display: inline-flex; align-items: center; justify-content: center; width: 1.5em; height: 1.5em; font-size: .8em; background: var(--pc); border: 3px solid #050E18; border-radius: 50%; text-shadow: none; }

@@ -14,8 +14,11 @@ output: say what changed and what it does, not how clever the implementation is.
 
 ## 0. How Inna updates the site (live since Nov 2026)
 
-* Live at **https://gamehub.us.com** (domain at Porkbun, hosted on Netlify by drag-and-drop, Supabase backend,
-  Google sign-in configured). Discord: https://discord.gg/BE5xR57DHm.
+* Live at **https://gamehub.us.com**. **Since Nov 24 2026 hosted on Cloudflare Pages** (project `gamehub`,
+  gamehub-8w2.pages.dev, output `dist/site`, no build command; every push to `main` goes live in ~2 min, free).
+  Domain registered at Porkbun, nameservers at Cloudflare (DNS: CNAME @ and www → gamehub-8w2.pages.dev, proxied).
+  The old Netlify site is disconnected from GitHub and kept only as a backup for a week. Supabase backend,
+  Google sign-in configured. Discord: https://discord.gg/BE5xR57DHm.
 * **The code lives on GitHub: https://github.com/xfg1617/gamehub (branch `main`)**, pushed Nov 23 2026. Work in a
   clone of it; after a change: `python3 build.py`, run the tests, commit (including the built `dist/site/`) and push
   `main`. Once Inna links the repo in Netlify (GITHUB-DEPLOY.md step 3), every push to `main` goes live by itself.

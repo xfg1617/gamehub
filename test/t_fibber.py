@@ -17,6 +17,7 @@ with sync_playwright() as p:
     plays = doubts = 0; shot = {'turn': False, 'reveal': False}
     for k in range(12000):
         if pg.evaluate("!GAME_MODS.fibber.engine.G || GAME_MODS.fibber.engine.G.over"): break
+        if pg.query_selector('#fb-quit:not(.hidden)'): pg.click('#fb-quit'); pg.wait_for_timeout(500); continue   # I'm out: see the results now
         if pg.query_selector('#fb-go:not([disabled])') or pg.query_selector('#fb-go'):
             n = pg.evaluate("(() => { const G = GAME_MODS.fibber.engine.G, me = G.players[G.me]; const idx = [...document.querySelectorAll('#fb-hand .fb-card')].filter(b => +b.dataset.i >= 0); const real = idx.filter(b => me.hand[+b.dataset.i].r === G.need); return (real.length ? real : idx.slice(0, 1)).slice(0, 4).map(b => +b.dataset.i); })()")
             for i in n: pg.evaluate(f"(document.querySelector('#fb-hand .fb-card[data-i=\"{i}\"]') || {{click() {{}}}}).click()")
@@ -32,7 +33,7 @@ with sync_playwright() as p:
     check(pg.evaluate("GAME_MODS.fibber.engine.G.over"), f'the game reaches the end ({plays} plays by you, {doubts} shouts)')
     pl = pg.evaluate("GAME_MODS.fibber.engine.G.places.map(q => q.name + ':' + q.hand.length).join(' ')")
     print('   finishing order:', pl)
-    check(len(pl.split()) == 3 and pl.split()[-1].split(':')[1] != '0' and all(x.split(':')[1] == '0' for x in pl.split()[:-1]), 'play goes on until only one player still has cards (1st, 2nd, 3rd, last)')
+    check(len(pl.split()) == 3 and pl.split()[0].split(':')[1] == '0' and pl.split()[-1].split(':')[1] != '0', 'everyone gets a place (1st out of cards, the rest by cards left)')
     pg.wait_for_selector('#g-modal:not(.hidden)', timeout=15000)
     check(plays > 2 and shot['reveal'], 'you played cards and saw cards turned over')
     pg.screenshot(path=S + '15_fibber_end.png')

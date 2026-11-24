@@ -39,7 +39,7 @@
     .range-arcade::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 26px; background: #F5B041; border: 3px solid var(--ink); cursor: pointer; }
     .range-arcade::-moz-range-thumb { width: 14px; height: 22px; background: #F5B041; border: 3px solid var(--ink); border-radius: 0; cursor: pointer; }
 
-    /* Hot Potato Cats cards: a coloured frame per card type, title band, pixel picture, rule text */
+    /* Kaboom Cats cards: a coloured frame per card type, title band, pixel picture, rule text */
     .kk-card { width: 92px; height: 128px; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); display: flex; flex-direction: column; align-items: stretch; padding: 0; cursor: pointer; user-select: none; transition: transform .08s; color: #050E18; text-align: center; flex-shrink: 0; background: var(--kc, #F3E3C3); overflow: hidden; }
     .kk-card:hover { transform: translateY(-6px); }
     .kk-card .nm { display: block; background: #050E18; color: var(--kc, #F3E3C3); font-family: 'Arcade Pixel', sans-serif; font-size: .74rem; line-height: 1; letter-spacing: .04em; padding: 4px 2px 3px; white-space: nowrap; overflow: hidden; }
@@ -151,7 +151,7 @@
       .tg-fan .kk-card.sm .nm { font-size: .4rem; }
     }
 
-    /* player lists in board games (Frontier Isles, Property Tycoon, Manor Mystery) in the same name-tag style:
+    /* player lists in board games (Island Settlers, Landlord, Whodunit) in the same name-tag style:
        dark tag, picture square, the player's colour as a stripe, gold outline on their turn, teal for you */
     .pl-tag { background: rgba(5, 14, 24, .82) !important; border: 2px solid #050E18 !important; border-left: 6px solid var(--pc, #9DB4CC) !important; box-shadow: none !important; padding: 6px 10px 6px 8px !important; }
     .pl-tag.me { outline: 2px solid #2DD4BF; outline-offset: -2px; }

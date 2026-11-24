@@ -636,6 +636,14 @@ One shared way to run a game table, used on this device AND online, so a game ha
 * `make_images.py` was re-run (24 banners). The welcome pop-up, music, loading screen and confetti are skipped when
   `navigator.webdriver` (tests).
 
+## 5p. Game names (Nov 24 2026, Inna's choice)
+
+* Shown names changed (ids, saved stats and file names unchanged): Color Clash → **Uno**, Property Tycoon → **Landlord**,
+  Naval Grid → **Sea Battle**, Manor Mystery → **Whodunit**, Frontier Isles → **Island Settlers**, Hot Potato Cats →
+  **Kaboom Cats**, Tunnel Trouble → **Mine Saboteurs**, Guild Masters → **Castles & Kings**, Hedge Run → **Wall Maze**,
+  Fibber → **Bullshit**. Older notes in this file still use the old names. Inna was told "Uno" is a Mattel trademark
+  and chose it anyway; no brand subtitles on tiles.
+
 ## 5d. Game setup screens, room codes, leaving a game
 
 * Every game opens on a setup screen (`setupScreen` in `core.js`). Options are `{ key, label, def,

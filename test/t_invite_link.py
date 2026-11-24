@@ -1,6 +1,6 @@
 """Invite links: a host opens a private room (the link only exists once the room is open, Nov 2026) and copies the
 short invite link (site/r/CODE); a friend opens that link in a brand-new browser tab. The friend must land IN the host's room (same table), not on a setup screen or a game of their own.
-Checked for a 2-player game (Tic-Tac-Toe), a bigger table (Dominoes, 3 seats), Chess and Naval Grid,
+Checked for a 2-player game (Tic-Tac-Toe), a bigger table (Dominoes, 3 seats), Chess and Sea Battle,
 plus an expired code. Stand-in service (the tabs share it like separate devices)."""
 import sys, time; sys.path.insert(0, 'test')
 from nplib import *
@@ -51,11 +51,11 @@ with sync_playwright() as p:
     print('   chess A:', chA, '| B:', chB)
     check('ROOM' in chB and 'ROOM' in chA, 'Chess: the friend lands in the host\'s game')
     A.evaluate("closeActiveGame()"); B.evaluate("closeActiveGame()")
-    # 4. Naval Grid (online version)
+    # 4. Sea Battle (online version)
     code = open_table(A, 'naval', 'room'); link = room_link(A)
     open_link(B, link)
     A.click('#np-start'); A.wait_for_timeout(2500)
-    check(A.query_selector('#game-root #ng-setup-grid') and B.query_selector('#game-root #ng-setup-grid'), 'Naval Grid: both players are on the fleet setup board together')
+    check(A.query_selector('#game-root #ng-setup-grid') and B.query_selector('#game-root #ng-setup-grid'), 'Sea Battle: both players are on the fleet setup board together')
     A.evaluate("closeActiveGame()"); B.evaluate("closeActiveGame()")
     # 5. an old link whose room is gone
     B.add_init_script("document.addEventListener('DOMContentLoaded', () => new MutationObserver(() => { const c = document.getElementById('toast-container'); if (c) window.__toasts = (window.__toasts || '') + ' | ' + c.textContent; }).observe(document, { subtree: true, childList: true, characterData: true }))")

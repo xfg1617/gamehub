@@ -1,5 +1,5 @@
     /* =========================================================================
-       HOT POTATO CATS card art: original pixel pictures (16x16 grids, one letter per pixel).
+       KABOOM CATS card art: original pixel pictures (16x16 grids, one letter per pixel).
        Palette letters: k ink, w white, c cream, o orange, r red, y yellow, b brown, d dark brown, g green,
        G dark green, p pink, P dark pink, u blue, U dark blue, s grey, S dark grey, t teal, m mauve, '.' empty.
        ========================================================================= */

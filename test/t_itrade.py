@@ -1,4 +1,4 @@
-"""Frontier Isles trading: you offer a deal through the panel, bots answer, cards change hands correctly;
+"""Island Settlers trading: you offer a deal through the panel, bots answer, cards change hands correctly;
 bots offer you deals too. Also a fast full game with random trading, checking no one ever goes below zero."""
 import sys, time; sys.path.insert(0, 'test')
 from tlib import *

@@ -1,4 +1,4 @@
-"""Guild Masters online: 2 players + 1 computer seat pick characters and play turns; gold, hands and towns must match
+"""Castles & Kings online: 2 players + 1 computer seat pick characters and play turns; gold, hands and towns must match
 on both screens.  Add 'real' for the real service."""
 import sys, time; sys.path.insert(0, 'test')
 from nplib import *

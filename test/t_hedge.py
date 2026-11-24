@@ -1,4 +1,4 @@
-"""Hedge Run: rules (hedges can't shut anyone in, jumping, clashes), computer-vs-computer games finish, and a real
+"""Wall Maze: rules (hedges can't shut anyone in, jumping, clashes), computer-vs-computer games finish, and a real
 game against the computer played by clicking (moves + planting a hedge), on a computer screen and a phone."""
 import sys; sys.path.insert(0, 'test')
 from nplib import *

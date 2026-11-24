@@ -1,4 +1,4 @@
-"""Manor Mystery: fast-forwarded games. Sharp detectives must never accuse wrongly; games must finish."""
+"""Whodunit: fast-forwarded games. Sharp detectives must never accuse wrongly; games must finish."""
 import sys, time; sys.path.insert(0, 'test')
 from tlib import *
 games = int(sys.argv[1]) if len(sys.argv) > 1 else 3

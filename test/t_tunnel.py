@@ -1,4 +1,4 @@
-"""Tunnel Trouble: tunnel pieces must fit and join the tunnel, a dead end stops it, reaching a goal turns it over;
+"""Mine Saboteurs: tunnel pieces must fit and join the tunnel, a dead end stops it, reaching a goal turns it over;
 a real turn by clicking (pick a tunnel card, tap a glowing square); then several fast games to the end, where both
 teams can win."""
 import sys; sys.path.insert(0, 'test')

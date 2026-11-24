@@ -1,5 +1,5 @@
     /* =========================================================================
-       PROPERTY TYCOON: roll, buy, build and bankrupt your rivals
+       LANDLORD: roll, buy, build and bankrupt your rivals
        ========================================================================= */
     (function tycoonGame() {
       const GR = { br: '#A16207', lb: '#7DD3FC', pk: '#F9A8D4', or: '#FB923C', rd: '#EF4444', yl: '#FACC15', gn: '#22C55E', bl: '#3B82F6', rail: '#94A3B8', ut: '#CBD5E1' };
@@ -709,7 +709,7 @@
         G.tall = tall; G.tileCache = {};
         bd.className = 'ty-board' + (tall ? ' tall' : '');
         bd.innerHTML = BOARD.map((t) => { const [r, c] = cellOf(t.i, tall); return `<div id="ty-t-${t.i}" class="ty-t k-${t.k} s-${sideOf(t.i, tall)} ${CORNER_NAME[t.k] ? 'corner' : ''}" style="grid-row:${r};grid-column:${c}" title="${t.n}${t.pr ? ' $' + t.pr : ''}"></div>`; }).join('') +
-          `<div class="ty-center"><div class="ty-title">PROPERTY TYCOON</div>
+          `<div class="ty-center"><div class="ty-title">LANDLORD</div>
             <div class="ty-mid"><div id="ty-deck-ch" class="ty-deck ch">${ART.chance}<span>SURPRISE</span></div><div id="ty-dice" class="ty-dice">${dieHTMLs()}</div><div id="ty-deck-mb" class="ty-deck mb">${ART.chest}<span>MYSTERY</span></div></div>
             <div id="ty-msg" class="pix text-xs text-amber min-h-[18px]">${esc(G.msg || '')}</div>
             <div id="ty-card" class="ty-card"></div>
@@ -835,7 +835,7 @@
       }
 
       const mod = {
-        id: 'tycoon', name: 'Property Tycoon', icon: 'tycoon', cats: ['board'], sub: '2-4 PLAYERS · ~15 MIN', color: '#34D399', tone: 'emerald', btn: 'emerald',
+        id: 'tycoon', name: 'Landlord', icon: 'tycoon', cats: ['board'], sub: '2-4 PLAYERS · ~15 MIN', color: '#34D399', tone: 'emerald', btn: 'emerald',
         blurb: 'Roll the dice, buy properties, build houses and hotels and bankrupt your rivals. Play 15, 25 or 40 rounds, or go all the way.',
         rules: { tag: '2-4 PLAYERS', steps: [
           '<strong class="text-bone">Roll &amp; move:</strong> Roll two dice and walk around the board. Pass <b>START</b> to collect $200. Doubles give you another go (three in a row sends you to Jail).',

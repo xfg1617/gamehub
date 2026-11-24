@@ -57,7 +57,7 @@
     ];
     const CHAT = { rooms: {}, room: null, open: false, unread: 0, next: {}, typing: {}, here: {} };
     const chatKeyFor = (view) => (view === 'game' ? (typeof NP !== 'undefined' && NP.table && CHAT.mode !== 'game' ? 't:' + NP.table : activeGame) : view === 'naval' ? 'naval' : view === 'connect4' ? 'c4' : view === 'daily' ? 'daily' : null);
-    const chatRoomName = (k) => (k === 'global' ? 'Global chat' : String(k).startsWith('t:') ? `Table ${k.slice(2)} chat` : ((GAME_MODS[k] && GAME_MODS[k].name) || { naval: 'Naval Grid', c4: 'Four-in-a-Row', daily: 'Daily Word' }[k] || 'Game') + ' room');
+    const chatRoomName = (k) => (k === 'global' ? 'Global chat' : String(k).startsWith('t:') ? `Table ${k.slice(2)} chat` : ((GAME_MODS[k] && GAME_MODS[k].name) || { naval: 'Sea Battle', c4: 'Four-in-a-Row', daily: 'Daily Word' }[k] || 'Game') + ' room');
     function chatLoad() { try { const d = JSON.parse(localStorage.getItem('ps_chat_v1') || '{}'); if (d && typeof d === 'object') CHAT.rooms = d; } catch (e) {} }
     function chatSave() { try { localStorage.setItem('ps_chat_v1', JSON.stringify(CHAT.rooms)); } catch (e) {} }
     function chatHere(k) { if (!CHAT.here[k]) CHAT.here[k] = shuffle(CHAT_PEOPLE).slice(0, k === 'global' ? 9 : 3 + rnd(3)); return CHAT.here[k]; }
@@ -225,7 +225,7 @@
     let lbGame = 'chess';
     function rankedGames() {
       const ids = ['chess'].concat(Object.values(GAME_MODS).filter((m) => m.online && m.online.ranked !== false && m.id !== 'chess').map((m) => m.id));
-      return ids.filter((id) => GAME_MODS[id]).map((id) => [id, id === 'navalnet' ? 'Naval Grid' : GAME_MODS[id].name]);
+      return ids.filter((id) => GAME_MODS[id]).map((id) => [id, id === 'navalnet' ? 'Sea Battle' : GAME_MODS[id].name]);
     }
     function netLeaderboard() {
       let box = document.getElementById('net-lb');
@@ -644,12 +644,12 @@
       pickMode();
     }
 
-    // the older games (Naval Grid, Four-in-a-Row, Daily Word) get the same setup screen, in a pop-up
+    // the older games (Sea Battle, Four-in-a-Row, Daily Word) get the same setup screen, in a pop-up
     const BASE_SETUP = {
       naval: {
-        m: { id: 'naval', name: 'Naval Grid', icon: 'naval', color: '#2DD4BF', tone: 'teal', btn: 'teal', blurb: 'Hide your fleet, then take turns firing at the enemy grid. Sink all five ships to win.' },
+        m: { id: 'naval', name: 'Sea Battle', icon: 'naval', color: '#2DD4BF', tone: 'teal', btn: 'teal', blurb: 'Hide your fleet, then take turns firing at the enemy grid. Sink all five ships to win.' },
         opts: [
-          { key: 'where', label: 'PLAY', def: 'here', when: () => typeof NET !== 'undefined' && NET.on, choices: [['here', 'vs the Computer'], ['online', 'Online · vs a person']], hint: 'Online opens Naval Grid Online: quick match (ranked) or a private room.' },
+          { key: 'where', label: 'PLAY', def: 'here', when: () => typeof NET !== 'undefined' && NET.on, choices: [['here', 'vs the Computer'], ['online', 'Online · vs a person']], hint: 'Online opens Sea Battle Online: quick match (ranked) or a private room.' },
           { key: 'ai', label: 'ENEMY ADMIRAL', def: 'smart', when: (s) => s.where !== 'online', choices: [['easy', 'Rookie'], ['smart', 'Smart']] },
           { key: 'clock', label: 'SHOT TIMER', def: 20, choices: [[15, '15 s'], [20, '20 s'], [30, '30 s']] },
           { key: 'touch', label: 'Ships may touch', toggle: true, def: 1, hint: 'Off: every ship needs open water all around it, corners too.', choices: [[1, 'Yes'], [0, 'No']] },
@@ -666,7 +666,7 @@
       },
     };
     function openSetup(key) {
-      // Naval Grid online = one setup screen (Online / Private room, the computer is added in the room)
+      // Sea Battle online = one setup screen (Online / Private room, the computer is added in the room)
       if (key === 'naval' && typeof NET !== 'undefined' && NET.on && GAME_MODS.navalnet) return openGame('navalnet');
       if (GAME_MODS[key]) return openGame(key);
       const b = BASE_SETUP[key]; if (!b) return;
@@ -852,7 +852,7 @@
 
     /* ---------- the lobby catalogue (feeds the home shelves, My Profile and the rules page) ---------- */
     const CATALOG = [
-      { id: 'naval', name: 'Naval Grid', icon: 'naval', sub: '1v1 · ~5 MIN', open: "openSetup('naval')", live: true, flag: 'HOT' },
+      { id: 'naval', name: 'Sea Battle', icon: 'naval', sub: '1v1 · ~5 MIN', open: "openSetup('naval')", live: true, flag: 'HOT' },
       { id: 'daily', name: 'Daily Word', icon: 'daily', sub: 'SOLO · ~3 MIN', open: "openSetup('daily')", live: true, flag: 'NEW', badgeId: 'card-daily-badge' },
       { id: 'dominoes', name: 'Dominoes', icon: 'dominoes', sub: '2–4 PLAYERS', open: "showToast('Dominoes is coming soon!')", live: false },
       { id: 'trivia', name: 'Trivia Rush', icon: 'trivia', sub: '2–6 PLAYERS', open: "showToast('Trivia Rush is coming soon!')", live: false },
@@ -868,7 +868,7 @@
 
     function registerGame(m) {
       GAME_MODS[m.id] = m;
-      if (m.hidden) return;   // reachable from another game's menu only (e.g. Naval Grid Online)
+      if (m.hidden) return;   // reachable from another game's menu only (e.g. Sea Battle Online)
       CATALOG.push({ id: m.id, name: m.name, icon: m.icon, sub: m.sub, open: `openGame('${m.id}')`, live: true, flag: m.flag || 'NEW', mod: m });
       const old = GAMES.findIndex((g) => g.id === m.id);
       if (old >= 0) GAMES.splice(old, 1);

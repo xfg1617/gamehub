@@ -1,5 +1,5 @@
     /* =========================================================================
-       NAVAL GRID ONLINE (id 'navalnet', no tile of its own): the SAME game as offline Naval Grid - its setup
+       SEA BATTLE ONLINE (id 'navalnet', no tile of its own): the SAME game as offline Sea Battle - its setup
        screen (drag ships, tap to turn, 60 s), its boards, missiles, explosions, banners, turn clock and summary.
        The offline screens are borrowed into this game's page while you play and handed back afterwards.
        Only the opponent is different: a real person. Each fleet stays secret: you send a shot, the other
@@ -10,13 +10,13 @@
       const $ = (id) => document.getElementById(id);
       function open(root) {
         const body = gameShell(root, mod, '', 'max-w-[1000px] mx-auto');
-        if (!(typeof NET !== 'undefined' && NET.on)) { body.innerHTML = '<div class="win p-6 text-center text-sm text-muted max-w-md mx-auto">Naval Grid Online needs the online service. You can still play Naval Grid against the computer from the main menu.</div>'; return; }
+        if (!(typeof NET !== 'undefined' && NET.on)) { body.innerHTML = '<div class="win p-6 text-center text-sm text-muted max-w-md mx-auto">Sea Battle Online needs the online service. You can still play Sea Battle against the computer from the main menu.</div>'; return; }
         setupScreen(body, mod, [
           { key: 'clock', label: 'SHOT TIMER', def: 20, choices: [[15, '15 s'], [20, '20 s'], [30, '30 s']] },
           { key: 'touch', label: 'Ships may touch', toggle: true, def: 1, hint: 'Off: every ship needs open water all around it, corners too.', choices: [[1, 'Yes'], [0, 'No']] },
         ], () => showToast('Pick Online or Private room above.', 'info'));
       }
-      // give the borrowed screens back to the offline Naval Grid page
+      // give the borrowed screens back to the offline Sea Battle page
       function giveBack() {
         if (!G || !G.home) return;
         ['ng-setup-view', 'ng-battle-view'].forEach((id) => { const el = $(id); if (el && el.parentElement !== G.home) G.home.appendChild(el); });
@@ -80,7 +80,7 @@
         } catch (e) { console.error(e); }
       }
       const mod = {
-        id: 'navalnet', name: 'Naval Grid', icon: 'naval', hidden: true, cats: ['board'], sub: '1v1 ONLINE', color: '#2DD4BF', tone: 'teal', btn: 'teal',
+        id: 'navalnet', name: 'Sea Battle', icon: 'naval', hidden: true, cats: ['board'], sub: '1v1 ONLINE', color: '#2DD4BF', tone: 'teal', btn: 'teal',
         blurb: 'Hide your fleet, then take turns firing at the enemy grid. Sink all five ships to win.',
         open, close() { stopNgTimer(); giveBack(); ngNet = null; G = null; },
         online: { seats: () => 2, ranked: true, noLocal: true, start: (body, sel, S) => start(body, sel, S).catch((e) => console.error(e)) },

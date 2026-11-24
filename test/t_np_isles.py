@@ -1,4 +1,4 @@
-"""Frontier Isles online: 2 players + 1 computer. Setup, rolls, building, an offer to the table; every
+"""Island Settlers online: 2 players + 1 computer. Setup, rolls, building, an offer to the table; every
 player's points and card counts match on both screens.  Add 'real' for the real service."""
 import sys, random; sys.path.insert(0, 'test')
 from nplib import *

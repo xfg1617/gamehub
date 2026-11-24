@@ -465,7 +465,7 @@
     .foot { position: relative; background: #0A1D31; border-top: 3px solid var(--ink); box-shadow: inset 0 3px 0 var(--rim); margin-top: 3.5rem; }
     .foot-inner { background: transparent; }
 
-    /* ==================== NAVAL GRID: ARCADE OCEAN BOARD ==================== */
+    /* ==================== SEA BATTLE: ARCADE OCEAN BOARD ==================== */
     /* The board is one big pixel-water square. Ships are drawn on top as cartoon sprites,
        and every shot gets its own explosion (hit) or splash (miss). */
     .ocean-board {
@@ -1032,7 +1032,7 @@
               <span class="flex items-center gap-2"><span class="w-2 h-2 bg-emerald animate-pulse" style="border:2px solid #050E18;box-sizing:content-box"></span>OPEN ROOMS</span>
               <span class="rtabs">
                 <button onclick="setLobbyFilter('all')" data-lf="all" class="lf-btn rtab">All</button>
-                <button onclick="setLobbyFilter('naval')" data-lf="naval" class="lf-btn rtab">Naval</button>
+                <button onclick="setLobbyFilter('naval')" data-lf="naval" class="lf-btn rtab">Sea Battle</button>
                 <button onclick="setLobbyFilter('connect4')" data-lf="connect4" class="lf-btn rtab">4-Row</button>
               </span>
             </div>
@@ -1063,7 +1063,7 @@
         </div>
         <div class="seg self-start">
           <button onclick="renderLeaderboard('overall')" data-lb="overall" class="lb-btn seg-btn">Overall Elo</button>
-          <button onclick="renderLeaderboard('naval')" data-lb="naval" class="lb-btn seg-btn">Naval Grid</button>
+          <button onclick="renderLeaderboard('naval')" data-lb="naval" class="lb-btn seg-btn">Sea Battle</button>
           <button onclick="renderLeaderboard('streak')" data-lb="streak" class="lb-btn seg-btn">Daily Streak</button>
         </div>
       </div>
@@ -1098,7 +1098,7 @@
     </section>
 
     <!-- ============================================================ -->
-    <!-- GAME VIEW 1: NAVAL GRID                                      -->
+    <!-- GAME VIEW 1: SEA BATTLE                                      -->
     <!-- ============================================================ -->
     <section id="view-naval" class="hidden space-y-6">
       <div class="panel flex flex-wrap items-center justify-between gap-3 px-4 py-3">
@@ -1106,7 +1106,7 @@
           <button onclick="navigateTo('play')" class="btn-game btn-graphite px-3.5 py-2 text-xs">← Lobby</button>
           <div>
             <div class="flex items-center gap-2.5">
-              <h2 class="text-lg font-extrabold text-bone">Naval Grid</h2>
+              <h2 class="text-lg font-extrabold text-bone">Sea Battle</h2>
               <span id="ng-room-tag" class="chip text-teal">RANKED</span>
             </div>
             <p id="ng-match-meta" class="pix text-xs text-muted">vs Admiral_AI (1250)</p>
@@ -1345,7 +1345,7 @@
     </div>
   </div>
 
-  <!-- 3. NAVAL GRID VICTORY / DEFEAT -->
+  <!-- 3. SEA BATTLE VICTORY / DEFEAT -->
   <div id="ng-summary-modal" class="hidden fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4">
     <div class="panel w-full max-w-sm p-6 pt-9 text-center space-y-5 relative">
       <div id="ng-sum-emoji" class="icon-tile absolute -top-9 left-1/2 -translate-x-1/2 w-[72px] h-[72px] bg-amber"></div>
@@ -2176,7 +2176,7 @@
     }
 
     /* =========================================================================
-       5. GAME 1: NAVAL GRID (FLAGSHIP 10x10 BATTLESHIP)
+       5. GAME 1: SEA BATTLE (FLAGSHIP 10x10 BATTLESHIP)
        ========================================================================= */
     const SHIPS_DEF = [
       { id: 'carrier', name: 'Carrier', size: 5 },
@@ -2251,7 +2251,7 @@
     }
 
     let NG_TOUCH = true; // game setting: may ships sit right next to each other?
-    // Naval Grid Online (src/games/navalnet.js) plugs in here: when set, the opponent is a real person.
+    // Sea Battle Online (src/games/navalnet.js) plugs in here: when set, the opponent is a real person.
     // ngNet.ready() / ngNet.fire(r, c) / ngNet.skip() send your moves; the other side's moves come back
     // through ngNetIncoming() and ngNetResult(). Everything you see is this same offline game.
     let ngNet = null;
@@ -3929,7 +3929,7 @@
     const BADGES = [
       { name: 'First Win', desc: 'Win any match', sprite: 'trophy', ok: (p) => p.wins >= 1 },
       { name: 'Sharpshooter', desc: 'Hit 45%+ of your Naval shots', sprite: 'anchor', ok: (p) => p.stats.naval.shots >= 40 && p.stats.naval.hits / p.stats.naval.shots >= 0.45 },
-      { name: 'Admiral', desc: 'Win 5 Naval Grid matches', sprite: 'crown', ok: (p) => p.stats.naval.wins >= 5 },
+      { name: 'Admiral', desc: 'Win 5 Sea Battle matches', sprite: 'crown', ok: (p) => p.stats.naval.wins >= 5 },
       { name: 'Word Wizard', desc: 'Solve a daily in 3 guesses or fewer', sprite: 'tile', ok: (p) => p.stats.daily.dist[0] + p.stats.daily.dist[1] + p.stats.daily.dist[2] > 0 },
       { name: 'On Fire', desc: 'Reach a 7-day Daily streak', sprite: 'flame', ok: (p) => p.stats.daily.bestStreak >= 7 },
       { name: 'Connector', desc: 'Win 3 Four-in-a-Row matches', sprite: 'disc', ok: (p) => p.stats.c4.wins >= 3 },
@@ -3951,7 +3951,7 @@
        and details() (the stats shown when you click the game). Coming-soon games just set live:false. */
     const GAMES = [
       {
-        id: 'naval', name: 'Naval Grid', icon: 'naval', color: '#2DD4BF', tone: 'teal', live: true,
+        id: 'naval', name: 'Sea Battle', icon: 'naval', color: '#2DD4BF', tone: 'teal', live: true,
         unit: 'MATCHES', play: "openSetup('naval')",
         played: (p) => p.stats.naval.played,
         details: (p) => {

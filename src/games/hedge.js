@@ -1,5 +1,5 @@
     /* =========================================================================
-       HEDGE RUN (original game, Nov 2026): race your pawn across a 9×9 garden to the far side. On your turn either
+       WALL MAZE (original game, Nov 2026): race your pawn across a 9×9 garden to the far side. On your turn either
        step one square, or plant a hedge (2 squares long) to slow a rival down. A hedge may never cut anyone off
        completely. 2 players (10 hedges each) or 4 players (5 each). Computer: Easy / Medium / Hard.
        Board: rows 0 (top) .. 8, columns 0 .. 8. Hedge "h r,c" lies between rows r and r+1 under columns c and c+1;
@@ -250,7 +250,7 @@
       }
 
       const mod = {
-        id: 'hedge', name: 'Hedge Run', icon: 'hedge', cats: ['board'], sub: '2-4 PLAYERS · ~10 MIN', color: '#34D399', tone: 'emerald', btn: 'emerald',
+        id: 'hedge', name: 'Wall Maze', icon: 'hedge', cats: ['board'], sub: '2-4 PLAYERS · ~10 MIN', color: '#34D399', tone: 'emerald', btn: 'emerald',
         blurb: 'Race your pawn across the garden. Each turn, take a step or plant a hedge to slow your rivals down.',
         rules: { tag: 'MAZE RACE · 2-4 PLAYERS', steps: [
           '<strong class="text-bone">Goal:</strong> Be the first to reach the other side of the garden (the edge marked in your colour is where you need to go).',

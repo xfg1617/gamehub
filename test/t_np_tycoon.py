@@ -1,4 +1,4 @@
-"""Property Tycoon online: 2 players + 1 computer seat. Players roll, buy or skip, bid in auctions, end their
+"""Landlord online: 2 players + 1 computer seat. Players roll, buy or skip, bid in auctions, end their
 turns; every player's cash, properties and position must match on both screens.  Add 'real' for the real service."""
 import sys, random; sys.path.insert(0, 'test')
 from nplib import *

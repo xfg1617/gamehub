@@ -1,5 +1,5 @@
     /* =========================================================================
-       COLOR CLASH: match colour or number, be first to empty your hand. Say CLASH on your last card!
+       UNO: match colour or number, be first to empty your hand. Say CLASH on your last card!
        ========================================================================= */
     (function colorClashGame() {
       const COL = ['a', 'b', 'c', 'e'];
@@ -40,7 +40,7 @@
             <div class="r-mid felt p-4 flex items-center justify-center gap-8 flex-wrap" style="min-height:190px"><div id="cc-pile" class="text-center"></div><div id="cc-top" class="text-center"></div></div></div>
             <div id="cc-prompt" class="win p-3 text-center min-h-[48px] text-sm"></div>
             <div id="cc-hand" class="flex gap-2 flex-wrap justify-center pt-2"></div></div>
-          <div class="space-y-3"><div class="win overflow-hidden"><div class="winbar amber"><span>COLOR CLASH</span></div><div class="p-3 space-y-2"><div id="cc-clock"></div><div id="cc-status" class="text-sm font-bold"></div></div></div>
+          <div class="space-y-3"><div class="win overflow-hidden"><div class="winbar amber"><span>UNO</span></div><div class="p-3 space-y-2"><div id="cc-clock"></div><div id="cc-status" class="text-sm font-bold"></div></div></div>
             <div id="cc-log" class="logbox" style="height:240px"></div><button id="cc-quit" class="btn-game btn-coral w-full py-2 text-sm">${S.online ? 'Leave table' : 'Give up'}</button></div></div>`;
         G.clock = makeClock(document.getElementById('cc-clock'));
         S.track();
@@ -250,7 +250,7 @@
       }
 
       const mod = {
-        id: 'colorclash', name: 'Color Clash', icon: 'colorclash', cats: ['card', 'party'], sub: '2-4 PLAYERS · ~5 MIN', color: '#60A5FA', tone: 'teal', btn: 'teal',
+        id: 'colorclash', name: 'Uno', icon: 'colorclash', cats: ['card', 'party'], sub: '2-4 PLAYERS · ~5 MIN', color: '#60A5FA', tone: 'teal', btn: 'teal',
         blurb: 'Match the colour or the number and be the first to empty your hand. Do not forget to shout CLASH on your last card!',
         rules: { tag: '2-4 PLAYERS', steps: [
           '<strong class="text-bone">Play a card</strong> that matches the top card by <b>colour</b> or <b>number/symbol</b>. No match? Draw one card (and play it if it fits).',

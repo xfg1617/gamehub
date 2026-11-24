@@ -9,7 +9,7 @@
       const lvl = () => Math.floor((profile.xp || 0) / 100) + 1;
       const totalWins = () => { let w = 0; Object.values(profile.stats || {}).forEach((s) => { w += (s && (s.wins || s.solved)) || 0; }); return Math.max(w, profile.wins || 0); };
       const playedGames = () => Object.values(profile.stats || {}).filter((s) => s && (s.played || 0) > 0).length;
-      const allGames = () => Object.keys(GAME_MODS).filter((id) => !GAME_MODS[id].hidden).length + 2;   // + Naval Grid and Daily Word
+      const allGames = () => Object.keys(GAME_MODS).filter((id) => !GAME_MODS[id].hidden).length + 2;   // + Sea Battle and Daily Word
       const hasAccount = () => !(typeof NET !== 'undefined' && NET.on) || !!NET.account;
       const EXTRA = [
         { av: '🐯', label: 'LV5', why: 'Reach level 5', ok: () => lvl() >= 5 },

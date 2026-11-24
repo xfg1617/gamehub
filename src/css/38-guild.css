@@ -1,4 +1,4 @@
-    /* ---------- Guild Masters (guild.js) ---------- */
+    /* ---------- Castles & Kings (guild.js) ---------- */
     .gm-towns { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
     .gm-town { background: rgba(5, 14, 24, .55); border: 3px solid #050E18; padding: 8px; }
     .gm-town.turn { outline: 3px solid #F5B041; outline-offset: -3px; }

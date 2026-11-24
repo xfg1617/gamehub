@@ -1,4 +1,4 @@
-"""Hot Potato Cats combos (Nov 2026): a pair -> the live pick (the other player's cards face down, you pick one);
+"""Kaboom Cats combos (Nov 2026): a pair -> the live pick (the other player's cards face down, you pick one);
 three of a kind -> name a card and take it; five different cats -> take any card from the discard pile.
 Also checks the new card names (no emoji art, original cat names) and that the computer player can play on."""
 import sys; sys.path.insert(0, 'test')

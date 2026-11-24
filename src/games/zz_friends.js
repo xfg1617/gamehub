@@ -5,7 +5,7 @@
        ========================================================================= */
     const FR = { list: { friends: [], incoming: [], outgoing: [] }, sel: null, unread: {}, msgs: {}, off: null, started: false, q: '', results: null };
     const frOn = () => typeof NET !== 'undefined' && NET.on;
-    const frGameName = (id) => (GAME_MODS[id] && GAME_MODS[id].name) || { naval: 'Naval Grid', navalnet: 'Naval Grid', c4: 'Four-in-a-Row', daily: 'Daily Word' }[id] || id;
+    const frGameName = (id) => (GAME_MODS[id] && GAME_MODS[id].name) || { naval: 'Sea Battle', navalnet: 'Sea Battle', c4: 'Four-in-a-Row', daily: 'Daily Word' }[id] || id;
     function friendsBadge() {
       const n = FR.list.incoming.length + Object.values(FR.unread).reduce((a, b) => a + b, 0);
       ['nav-friends-badge', 'mnav-friends-badge'].forEach((id) => { const b = document.getElementById(id); if (b) { b.textContent = n > 9 ? '9+' : n; b.classList.toggle('hidden', !n); } });

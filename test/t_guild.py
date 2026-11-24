@@ -1,4 +1,4 @@
-"""Guild Masters: a whole game against computer players, every step done by clicking: pick a character, take
+"""Castles & Kings: a whole game against computer players, every step done by clicking: pick a character, take
 gold or cards (keep 1 of 2), build. Points are counted at the end; a phone layout check."""
 import sys; sys.path.insert(0, 'test')
 from nplib import *

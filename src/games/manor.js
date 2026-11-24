@@ -1,5 +1,5 @@
     /* =========================================================================
-       MANOR MYSTERY: a deduction game. Who did it, with what, and where?
+       WHODUNIT: a deduction game. Who did it, with what, and where?
        ========================================================================= */
     (function manorMysteryGame() {
       const ABORT = { a: 1 };
@@ -322,7 +322,7 @@
       const K = '#050E18', rr = (x, y, w, h, c) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`;
       GICONS.manor = `<svg viewBox="0 0 24 24" shape-rendering="crispEdges" aria-hidden="true">${rr(3, 9, 18, 13, K)}${rr(4, 10, 16, 11, '#6B2D3F')}${rr(2, 7, 20, 3, K)}${rr(6, 3, 12, 5, K)}${rr(7, 4, 10, 4, '#4A1F2C')}${rr(10, 15, 4, 6, '#F5B041')}${rr(6, 12, 3, 3, '#F7F4EC')}${rr(15, 12, 3, 3, '#F7F4EC')}${rr(14, 1, 7, 7, K)}${rr(15, 2, 5, 5, '#2DD4BF')}${rr(19, 7, 2, 4, K)}${rr(16, 3, 2, 2, '#BFF5EC')}</svg>`;
       const mod = {
-        id: 'manor', name: 'Manor Mystery', icon: 'manor', cats: ['board', 'party'], sub: '3-6 PLAYERS · ~20 MIN', color: '#FB7185', tone: 'coral', btn: 'coral',
+        id: 'manor', name: 'Whodunit', icon: 'manor', cats: ['board', 'party'], sub: '3-6 PLAYERS · ~20 MIN', color: '#FB7185', tone: 'coral', btn: 'coral',
         blurb: 'Something happened at the manor. Walk the rooms, make suggestions and use your notebook to work out who did it, with what, and where.',
         rules: { tag: 'DEDUCTION', steps: [
           '<strong class="text-bone">The secret:</strong> One suspect, one tool and one room are hidden in an envelope. All other cards are dealt to the detectives, so the cards you hold cannot be the answer.',

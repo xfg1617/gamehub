@@ -1,5 +1,5 @@
     /* =========================================================================
-       HOT POTATO CATS: a push-your-luck card game. Don't get stuck with the hot potato!
+       KABOOM CATS: a push-your-luck card game. Don't get stuck with the hot potato!
        ========================================================================= */
     (function kittensGame() {
       // card names: familiar, generic game words (Attack, Skip, Favor, Shuffle) + our own potato, mitt and cats
@@ -60,7 +60,7 @@
             <div class="r-mid felt p-4 flex items-center justify-center gap-6 flex-wrap" style="min-height:170px"><div id="kk-pile" class="text-center"></div><div id="kk-disc" class="text-center"></div></div></div>
             <div id="kk-prompt" class="win p-3 text-center min-h-[48px]"></div>
             <div id="kk-hand" class="flex gap-2 flex-wrap justify-center pt-2"></div></div>
-          <div class="space-y-3"><div class="win overflow-hidden"><div class="winbar amber"><span>HOT POTATO CATS</span></div><div class="p-3 space-y-2"><div id="kk-clock"></div><div id="kk-status" class="text-sm font-bold"></div></div></div>
+          <div class="space-y-3"><div class="win overflow-hidden"><div class="winbar amber"><span>KABOOM CATS</span></div><div class="p-3 space-y-2"><div id="kk-clock"></div><div id="kk-status" class="text-sm font-bold"></div></div></div>
             <div id="kk-log" class="logbox" style="height:250px"></div><button id="kk-quit" class="btn-game btn-coral w-full py-2 text-sm">${S.online ? 'Leave table' : 'Give up'}</button></div></div>`;
         G.clock = makeClock(document.getElementById('kk-clock'));
         S.track();
@@ -449,7 +449,7 @@
       }
 
       const mod = {
-        id: 'kittens', name: 'Hot Potato Cats', icon: 'kittens', cats: ['card', 'party'], sub: '2-4 PLAYERS · ~6 MIN', color: '#FB7185', tone: 'coral', btn: 'coral',
+        id: 'kittens', name: 'Kaboom Cats', icon: 'kittens', cats: ['card', 'party'], sub: '2-4 PLAYERS · ~6 MIN', color: '#FB7185', tone: 'coral', btn: 'coral',
         blurb: 'A push-your-luck card game. Draw cards, dodge the hot potatoes and use sneaky tricks on your rivals. Last cat standing wins!',
         rules: { tag: '2-4 PLAYERS', steps: [
           '<strong class="text-bone">Your turn:</strong> Play as many cards as you like, then draw one card to end your turn. If you draw the <span class="text-coral font-bold">Hot Potato</span> you are out, unless you have an <span class="text-emerald font-bold">Oven Mitt</span>: then you hide the potato back in the pile, anywhere you like.',

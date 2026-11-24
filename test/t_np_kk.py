@@ -1,4 +1,4 @@
-"""Hot Potato Cats online: 2 players + 1 computer seat. Players play cards (pairs, beg, peek...), answer
+"""Kaboom Cats online: 2 players + 1 computer seat. Players play cards (pairs, beg, peek...), answer
 Nope windows and hide bombs; the draw pile and everyone's card counts must match, and the game ends on
 both screens.  Add 'real' for the real service."""
 import sys, random; sys.path.insert(0, 'test')

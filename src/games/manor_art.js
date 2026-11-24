@@ -1,5 +1,5 @@
     /* =========================================================================
-       MANOR MYSTERY ART: the house seen from above, cartoon style (ink outlines like Naval Grid's ships).
+       WHODUNIT ART: the house seen from above, cartoon style (ink outlines like Sea Battle's ships).
        MANOR_ROOM_SVG[i] = the floor + furniture of room i (viewBox 0 0 200 130), MANOR_ROOF = the roof banner.
        Furniture keeps to the middle/right so the room name (top left) and the pawns (bottom left) stay readable.
        ========================================================================= */

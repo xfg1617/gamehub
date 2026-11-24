@@ -15,7 +15,7 @@
     .fb-card.match .pcard::after { content: ''; position: absolute; left: 4px; right: 4px; bottom: 3px; height: 3px; background: #34D399; }
     .fb-card .pcard { position: relative; }
     .fb-hand { padding-top: 8px; }
-    /* the other players' face-down cards: a tight fan (like Color Clash), smaller on phones */
+    /* the other players' face-down cards: a tight fan (like Uno), smaller on phones */
     #fb-opp .tg-fan .pcard { width: 44px; height: 62px; margin-left: -32px; box-shadow: -2px 0 3px rgba(0, 0, 0, .3); }
     #fb-opp .tg-fan .pcard:first-child { margin-left: 0; }
     @media (max-width: 640px) {

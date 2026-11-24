@@ -127,7 +127,7 @@
           const b = document.createElement('button'); b.id = 'mu-btn-m'; b.className = 'pix text-xs text-muted'; b.title = 'Sound effects and music';
           m.insertAdjacentElement('afterend', b); m.style.display = 'none'; b.onclick = (e) => { e.stopPropagation(); toggle(b); };
         }
-        // the older game screens (Naval Grid, Daily Word, Four-in-a-Row) get the same ♪ button in their header
+        // the older game screens (Sea Battle, Daily Word, Four-in-a-Row) get the same ♪ button in their header
         ['view-naval', 'view-daily', 'view-connect4'].forEach((id) => {
           const panel = document.querySelector(`#${id} > .panel`);
           if (!panel || panel.querySelector('.gs-snd')) return;

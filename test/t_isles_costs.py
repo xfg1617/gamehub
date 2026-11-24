@@ -1,4 +1,4 @@
-"""Frontier Isles build buttons (Nov 2026, player feedback): each button spells out its cost with a check for what you
+"""Island Settlers build buttons (Nov 2026, player feedback): each button spells out its cost with a check for what you
 have and red for what's missing, and a grey button says why: "Need 1 Stone", or "No free spot: build a road first"
 (the player's case: enough cards for a village but no open corner)."""
 import sys, time; sys.path.insert(0, 'test')

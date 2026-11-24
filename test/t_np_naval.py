@@ -1,4 +1,4 @@
-"""Naval Grid Online = the offline Naval Grid screens with a real opponent. Naval Grid's setup offers "Online";
+"""Sea Battle Online = the offline Sea Battle screens with a real opponent. Sea Battle's setup offers "Online";
 both players get the offline setup board (drag/tap ships, Deploy), then the offline battle boards. A fires at B's
 real ships (read from B's screen), B fires at random; the defender's screen answers each shot; every hit shows on
 both screens and both get the offline summary pop-up.  Add 'real' for the real service."""
@@ -9,7 +9,7 @@ MY_TURN = "ng.phase === 'battle' && ng.playerTurn"
 with sync_playwright() as p:
     A, B = players(p, 2, REAL)
     A.evaluate("openSetup('naval')"); A.wait_for_timeout(600)
-    check(A.evaluate("activeGame") == 'navalnet' and not A.evaluate("!!document.querySelector('#bs-modal:not(.hidden)')"), 'Naval Grid opens ONE setup screen (no pop-up first)')
+    check(A.evaluate("activeGame") == 'navalnet' and not A.evaluate("!!document.querySelector('#bs-modal:not(.hidden)')"), 'Sea Battle opens ONE setup screen (no pop-up first)')
     check(A.evaluate("[...document.querySelectorAll('[data-mode]')].map(b => b.dataset.mode).join(',')") == 'quick,room', 'step 1 offers Online match / Private room')
     code = open_table(A, 'naval', 'room')
     join(B, code); A.wait_for_timeout(3000)
@@ -38,8 +38,8 @@ with sync_playwright() as p:
     print('   A:', ta, A.evaluate("document.getElementById('ng-sum-sub').textContent"), '| B:', tb)
     check(ta == 'Victory!' and tb == 'Defeat', 'the offline summary pop-up shows the right result on both screens')
     A.screenshot(path='test/shots/nn_end.png')
-    # leaving gives the screens back: offline Naval Grid still works
+    # leaving gives the screens back: offline Sea Battle still works
     A.evaluate("closeModal('ng-summary-modal'); navigateTo('play', true)"); A.wait_for_timeout(500)
     A.evaluate("BASE_SETUP.naval.go({ ai: 'smart', clock: 20, touch: 1 })"); A.wait_for_timeout(800)
-    check(A.query_selector('#view-naval #ng-setup-view:not(.hidden)') is not None, 'offline Naval Grid works again afterwards')
+    check(A.query_selector('#view-naval #ng-setup-view:not(.hidden)') is not None, 'offline Sea Battle works again afterwards')
     done(A, B)

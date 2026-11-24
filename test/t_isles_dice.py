@@ -1,4 +1,4 @@
-"""Frontier Isles dice (Nov 2026, Inna: "bigger and more noticeable"): each roll shows two big dice over the island,
+"""Island Settlers dice (Nov 2026, Inna: "bigger and more noticeable"): each roll shows two big dice over the island,
 the total pops up (7 = THE BANDIT!), and the lands with that number get an amber ring. Desktop + phone screenshots."""
 import sys, time; sys.path.insert(0, 'test')
 from tlib import *

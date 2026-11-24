@@ -1,5 +1,5 @@
     /* =========================================================================
-       TUNNEL TROUBLE (original game, Nov 2026): a hidden-team digging game for 3-6 players.
+       MINE SABOTEURS (original game, Nov 2026): a hidden-team digging game for 3-6 players.
        Everyone is secretly a DIGGER or a RASCAL. Diggers want to dig a tunnel from the entrance to the gold, which is
        under one of three hidden goal stones. Rascals pretend to help, but play dead ends, cave-ins and broken tools.
        Turn: play one card (a tunnel piece, or an action) or throw one away, then draw. Gold reached = Diggers win;
@@ -182,7 +182,7 @@
             <div class="tt-boardbox"><div id="tt-board" class="tt-board"></div></div>
             <div id="tt-prompt" class="win p-3 text-center text-sm min-h-[46px]"></div>
             <div id="tt-hand" class="tt-hand"></div></div>
-          <div class="space-y-3 min-w-0"><div class="win overflow-hidden"><div class="winbar amber"><span id="tt-status">TUNNEL TROUBLE</span><span class="pix text-xs" id="tt-deck"></span></div><div class="p-3 space-y-2" id="tt-players"></div></div>
+          <div class="space-y-3 min-w-0"><div class="win overflow-hidden"><div class="winbar amber"><span id="tt-status">MINE SABOTEURS</span><span class="pix text-xs" id="tt-deck"></span></div><div class="p-3 space-y-2" id="tt-players"></div></div>
             <div id="tt-log" class="logbox" style="height:200px"></div><button id="tt-quit" class="btn-game btn-coral w-full py-2 text-sm">${S.online ? 'Leave table' : 'Give up'}</button></div></div>`;
         S.track();
         S.onLeft = (a) => { if (!G) return; const q = G.players[a.s]; q.name += ' (CPU)'; q.av = '🤖'; log(`${nm(q)} ${a.t === '_gone' ? 'disconnected' : 'left'}. A computer player takes over.`); draw(); };
@@ -356,7 +356,7 @@
       const K = '#050E18', rr = (x, y, w, h, f) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${f}"/>`;
       GICONS.tunnel = `<svg viewBox="0 0 24 24" shape-rendering="crispEdges" aria-hidden="true">${rr(1, 1, 22, 22, K)}${rr(2, 2, 20, 20, '#6B4F35')}${rr(2, 10, 14, 4, '#E8C98E')}${rr(12, 10, 4, 11, '#E8C98E')}${rr(15, 4, 7, 6, K)}${rr(16, 5, 5, 4, '#F5B041')}${rr(17, 5, 2, 1, '#FFF3C4')}${rr(4, 15, 3, 2, '#7D5E40')}${rr(6, 4, 2, 7, '#9DB4CC')}${rr(4, 4, 6, 2, '#9DB4CC')}</svg>`;
       const mod = {
-        id: 'tunnel', name: 'Tunnel Trouble', icon: 'tunnel', cats: ['card', 'party'], sub: '3-6 PLAYERS · ~15 MIN', color: '#F5B041', tone: 'amber', btn: 'amber',
+        id: 'tunnel', name: 'Mine Saboteurs', icon: 'tunnel', cats: ['card', 'party'], sub: '3-6 PLAYERS · ~15 MIN', color: '#F5B041', tone: 'amber', btn: 'amber',
         blurb: 'Dig a tunnel to the hidden gold together... but someone at the table is a secret Rascal trying to stop you.',
         rules: { tag: 'SECRET TEAMS · 3-6 PLAYERS', steps: [
           '<strong class="text-bone">Secret teams:</strong> Most players are <b class="text-teal">Diggers</b>. Usually one or two are secret <b class="text-coral">Rascals</b> (sometimes there are none!). Only you know which one you are.',

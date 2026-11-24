@@ -1,4 +1,4 @@
-"""Hedge Run online: a private room with a friend; both screens play moves and hedges until someone wins, the
+"""Wall Maze online: a private room with a friend; both screens play moves and hedges until someone wins, the
 boards agree, and the second player's board is turned so their own pawn starts at the bottom."""
 import sys; sys.path.insert(0, 'test')
 from nplib import *

@@ -1,4 +1,4 @@
-"""Property Tycoon settings (Nov 2026, Inna): game length (15/25/40 rounds or Classic), building rule (whole colour set or
+"""Landlord settings (Nov 2026, Inna): game length (15/25/40 rounds or Classic), building rule (whole colour set or
 stand on your plot), and buy-outs (after paying rent, buy the plot for 2x (land + houses); never a plot with a hotel or
 from a full colour set). Four computer players play fast games; the log and the board are checked."""
 import sys, time; sys.path.insert(0, 'test')

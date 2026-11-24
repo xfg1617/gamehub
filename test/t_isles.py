@@ -1,4 +1,4 @@
-"""Frontier Isles: a scripted human plays a whole game (fast-forwarded) against the bots; rules are checked."""
+"""Island Settlers: a scripted human plays a whole game (fast-forwarded) against the bots; rules are checked."""
 import sys, time; sys.path.insert(0, 'test')
 from tlib import *
 w = int(sys.argv[1]) if len(sys.argv) > 1 else 1280; h = int(sys.argv[2]) if len(sys.argv) > 2 else 900

@@ -48,13 +48,13 @@
       body.in-game[data-game="tictactoe"] #gs-body > .grid { grid-template-columns: min(var(--av), calc(100vw - 460px)) var(--side) !important; }
       body.in-game[data-game="c4"] #gs-body > .grid { grid-template-columns: min(calc((var(--av) - 10px) * 7 / 6), calc(100vw - 460px)) var(--side) !important; }
       body.in-game[data-game="tictactoe"] .ttt-board, body.in-game[data-game="c4"] .c4n-board { max-width: none !important; }
-      /* Property Tycoon */
+      /* Landlord */
       body.in-game[data-game="tycoon"] #gs-body > .grid { grid-template-columns: min(calc(var(--av) - 8px), calc(100vw - 440px)) var(--side) !important; }
-      /* Frontier Isles: the island is about 1.15 times as wide as it is tall */
+      /* Island Settlers: the island is about 1.15 times as wide as it is tall */
       body.in-game[data-game="isles"] #gs-body > .grid { grid-template-columns: min(calc((var(--av) - 40px) * 1.15), calc(100vw - 440px)) var(--side) !important; }
       body.in-game[data-game="isles"] .fi-sea { height: calc(var(--av) - 90px); display: flex; align-items: center; justify-content: center; }
       body.in-game[data-game="isles"] .fi-board { max-height: none; height: 100%; width: auto; max-width: 100%; }
-      /* Manor Mystery: the map is wide, the notebook sits beside it */
+      /* Whodunit: the map is wide, the notebook sits beside it */
       body.in-game[data-game="manor"] #gs-body > .grid { grid-template-columns: min(calc((var(--av) - 150px) * 1.7), calc(100vw - 460px)) 360px !important; }
       /* tall side panels scroll inside themselves instead of making the page scroll */
       body.in-game[data-game="isles"] #gs-body > .grid > div:last-child, body.in-game[data-game="manor"] #gs-body > .grid > div:last-child, body.in-game[data-game="tycoon"] #gs-body > .grid > div:last-child { max-height: var(--av); overflow-y: auto; }
@@ -222,7 +222,7 @@
     /* =========================================================================
        GAME LAYOUT v2 (Inna, Nov 2026, approved prototype), computers only:
        controls top-left · card games: timer/status/leave panel under them · your decisions bottom centre ·
-       CHAT + emote bottom-left (zz_emotes placeChat) · players spread out · bigger cards (not Hot Potato Cats)
+       CHAT + emote bottom-left (zz_emotes placeChat) · players spread out · bigger cards (not Kaboom Cats)
        ========================================================================= */
     @media (min-width: 1024px) {
       body.in-game { --av: calc(100vh - 92px); }
@@ -248,7 +248,7 @@
       body.in-game[data-game="poker"] #pk-ctl .win > div { flex-wrap: nowrap !important; }
       body.in-game[data-game="poker"] #pk-ctl .win > div:last-child { flex: 1; }
     }
-    /* bigger cards, in two steps by screen height (not Hot Potato Cats) */
+    /* bigger cards, in two steps by screen height (not Kaboom Cats) */
     @media (min-width: 1024px) and (min-height: 820px) {
       body.in-game[data-game="poker"] #gs-body .pcard { width: 92px !important; height: 130px !important; }
       body.in-game[data-game="poker"] #gs-body .pcard .pc-mid svg { width: 50px !important; height: 50px !important; }

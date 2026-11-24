@@ -72,6 +72,6 @@ with sync_playwright() as p:
     ico = f'<div id="shot" class="icon">{info["logo"]}</div>'
     shot(ico, os.path.join(OUT, 'favicon.png'), 64, 64, 1)
     shot(ico, os.path.join(OUT, 'apple-touch-icon.png'), 64, 64, 2.8125)
-    names['navalnet'] = names.get('naval', 'Naval Grid')
+    names['navalnet'] = names.get('naval', 'Sea Battle')
     json.dump(names, open(os.path.join(OUT, 'games.json'), 'w'), indent=1)
     print('made', len(info['games']), 'game banners +', 'og/gamehub.png, favicon.png, apple-touch-icon.png, games.json')

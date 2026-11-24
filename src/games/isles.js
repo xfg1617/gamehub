@@ -1,5 +1,5 @@
     /* =========================================================================
-       FRONTIER ISLES: hex island, collect resources, build roads / villages / towns, first to N points
+       ISLAND SETTLERS: hex island, collect resources, build roads / villages / towns, first to N points
        ========================================================================= */
     (function frontierIslesGame() {
       const ABORT = { a: 1 };
@@ -559,7 +559,7 @@
       const K = '#050E18', rr = (x, y, w, h, c) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`;
       GICONS.isles = `<svg viewBox="0 0 24 24" shape-rendering="crispEdges" aria-hidden="true">${rr(0, 0, 24, 24, '#1F5F93')}${rr(4, 5, 16, 14, K)}${rr(6, 3, 12, 18, K)}${rr(5, 6, 14, 12, '#E9C352')}${rr(7, 4, 10, 16, '#E9C352')}${rr(7, 6, 5, 6, '#2E8B57')}${rr(12, 12, 5, 6, '#C8643F')}${rr(12, 6, 5, 6, '#8E9CAD')}${rr(7, 12, 5, 6, '#8BCB6A')}${rr(10, 9, 4, 4, '#F5B041')}${rr(11, 8, 2, 1, K)}</svg>`;
       const mod = {
-        id: 'isles', name: 'Frontier Isles', icon: 'isles', cats: ['board'], sub: '3-4 PLAYERS · ~25 MIN', color: '#34D399', tone: 'emerald', btn: 'emerald',
+        id: 'isles', name: 'Island Settlers', icon: 'isles', cats: ['board'], sub: '3-4 PLAYERS · ~25 MIN', color: '#34D399', tone: 'emerald', btn: 'emerald',
         blurb: 'Settle a hex island: collect timber, clay, wool, grain and stone, build roads, villages and towns, and race your rivals to the target score.',
         rules: { tag: 'BUILD & TRADE', steps: [
           '<strong class="text-bone">Setup:</strong> Everyone places 2 villages and 2 roads (the order snakes back). Villages must have a free corner all around them. Your second village gives you one card for each land it touches.',

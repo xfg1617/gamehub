@@ -1,4 +1,4 @@
-"""Color Clash online: 2 players + 1 computer seat. Both play their turns (pressing CLASH! in time);
+"""Uno online: 2 players + 1 computer seat. Both play their turns (pressing CLASH! in time);
 the top card, colour, pile size and everyone's card counts must match on both screens, and the game ends
 for both.  Add 'real' for the real service."""
 import sys; sys.path.insert(0, 'test')

@@ -443,7 +443,7 @@
     .foot { position: relative; background: #0A1D31; border-top: 3px solid var(--ink); box-shadow: inset 0 3px 0 var(--rim); margin-top: 3.5rem; }
     .foot-inner { background: transparent; }
 
-    /* ==================== NAVAL GRID: ARCADE OCEAN BOARD ==================== */
+    /* ==================== SEA BATTLE: ARCADE OCEAN BOARD ==================== */
     /* The board is one big pixel-water square. Ships are drawn on top as cartoon sprites,
        and every shot gets its own explosion (hit) or splash (miss). */
     .ocean-board {
@@ -1226,13 +1226,13 @@
       body.in-game[data-game="tictactoe"] #gs-body > .grid { grid-template-columns: min(var(--av), calc(100vw - 460px)) var(--side) !important; }
       body.in-game[data-game="c4"] #gs-body > .grid { grid-template-columns: min(calc((var(--av) - 10px) * 7 / 6), calc(100vw - 460px)) var(--side) !important; }
       body.in-game[data-game="tictactoe"] .ttt-board, body.in-game[data-game="c4"] .c4n-board { max-width: none !important; }
-      /* Property Tycoon */
+      /* Landlord */
       body.in-game[data-game="tycoon"] #gs-body > .grid { grid-template-columns: min(calc(var(--av) - 8px), calc(100vw - 440px)) var(--side) !important; }
-      /* Frontier Isles: the island is about 1.15 times as wide as it is tall */
+      /* Island Settlers: the island is about 1.15 times as wide as it is tall */
       body.in-game[data-game="isles"] #gs-body > .grid { grid-template-columns: min(calc((var(--av) - 40px) * 1.15), calc(100vw - 440px)) var(--side) !important; }
       body.in-game[data-game="isles"] .fi-sea { height: calc(var(--av) - 90px); display: flex; align-items: center; justify-content: center; }
       body.in-game[data-game="isles"] .fi-board { max-height: none; height: 100%; width: auto; max-width: 100%; }
-      /* Manor Mystery: the map is wide, the notebook sits beside it */
+      /* Whodunit: the map is wide, the notebook sits beside it */
       body.in-game[data-game="manor"] #gs-body > .grid { grid-template-columns: min(calc((var(--av) - 150px) * 1.7), calc(100vw - 460px)) 360px !important; }
       /* tall side panels scroll inside themselves instead of making the page scroll */
       body.in-game[data-game="isles"] #gs-body > .grid > div:last-child, body.in-game[data-game="manor"] #gs-body > .grid > div:last-child, body.in-game[data-game="tycoon"] #gs-body > .grid > div:last-child { max-height: var(--av); overflow-y: auto; }
@@ -1400,7 +1400,7 @@
     /* =========================================================================
        GAME LAYOUT v2 (Inna, Nov 2026, approved prototype), computers only:
        controls top-left · card games: timer/status/leave panel under them · your decisions bottom centre ·
-       CHAT + emote bottom-left (zz_emotes placeChat) · players spread out · bigger cards (not Hot Potato Cats)
+       CHAT + emote bottom-left (zz_emotes placeChat) · players spread out · bigger cards (not Kaboom Cats)
        ========================================================================= */
     @media (min-width: 1024px) {
       body.in-game { --av: calc(100vh - 92px); }
@@ -1426,7 +1426,7 @@
       body.in-game[data-game="poker"] #pk-ctl .win > div { flex-wrap: nowrap !important; }
       body.in-game[data-game="poker"] #pk-ctl .win > div:last-child { flex: 1; }
     }
-    /* bigger cards, in two steps by screen height (not Hot Potato Cats) */
+    /* bigger cards, in two steps by screen height (not Kaboom Cats) */
     @media (min-width: 1024px) and (min-height: 820px) {
       body.in-game[data-game="poker"] #gs-body .pcard { width: 92px !important; height: 130px !important; }
       body.in-game[data-game="poker"] #gs-body .pcard .pc-mid svg { width: 50px !important; height: 50px !important; }
@@ -1615,7 +1615,7 @@
     .c4n-mini { display: inline-block; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--ink); margin-right: 5px; vertical-align: -1px; }
     .c4n-mini.a { background: #F5B041; } .c4n-mini.c { background: #FB7185; }
     @media (prefers-reduced-motion: reduce) { .c4n-disc.drop { animation: none; } }
-    /* ---------- Hedge Run (hedge.js): a garden of sand-coloured squares, green hedges between them ---------- */
+    /* ---------- Wall Maze (hedge.js): a garden of sand-coloured squares, green hedges between them ---------- */
     .hr-boardcol { width: 100%; max-width: 640px; margin: 0 auto; padding: 10px; }
     .hr-board { position: relative; width: 100%; aspect-ratio: 1; background: #8C7A4E; border: 4px solid #050E18; box-shadow: 0 6px 0 #050E18, inset 0 0 0 6px #6E5E38; transition: transform .5s; }
     .hr-cell { position: absolute; background: #E3D3A2; border: 2px solid #B39D63; padding: 0; cursor: default; }
@@ -1657,7 +1657,7 @@
     .fb-card.match .pcard::after { content: ''; position: absolute; left: 4px; right: 4px; bottom: 3px; height: 3px; background: #34D399; }
     .fb-card .pcard { position: relative; }
     .fb-hand { padding-top: 8px; }
-    /* the other players' face-down cards: a tight fan (like Color Clash), smaller on phones */
+    /* the other players' face-down cards: a tight fan (like Uno), smaller on phones */
     #fb-opp .tg-fan .pcard { width: 44px; height: 62px; margin-left: -32px; box-shadow: -2px 0 3px rgba(0, 0, 0, .3); }
     #fb-opp .tg-fan .pcard:first-child { margin-left: 0; }
     @media (max-width: 640px) {
@@ -1665,7 +1665,7 @@
       #fb-opp .tg-fan .pcard { width: 30px; height: 42px; margin-left: -23px; }
       .fb-hand .pcard.sm { width: 46px; height: 66px; }
     }
-    /* ---------- Tunnel Trouble (tunnel.js) ---------- */
+    /* ---------- Mine Saboteurs (tunnel.js) ---------- */
     .tt-role { padding: 8px 12px; border: 3px solid #050E18; font-size: .85rem; color: #F7F4EC; background: #12304D; border-left: 8px solid #2DD4BF; }
     .tt-role.rascal { border-left-color: #FB7185; }
     .tt-boardbox { overflow: auto; border: 4px solid #050E18; box-shadow: 0 6px 0 #050E18; background: #2A1E14; }
@@ -1699,7 +1699,7 @@
       body.in-game[data-game="tunnel"] #gs-body > .grid { grid-template-columns: minmax(0, calc((var(--av) - 250px) * 13 / 11)) 300px !important; justify-content: center; }
       body.in-game[data-game="tunnel"] #gs-body > .grid > div:last-child { max-height: var(--av); overflow-y: auto; }
     }
-    /* ---------- Guild Masters (guild.js) ---------- */
+    /* ---------- Castles & Kings (guild.js) ---------- */
     .gm-towns { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
     .gm-town { background: rgba(5, 14, 24, .55); border: 3px solid #050E18; padding: 8px; }
     .gm-town.turn { outline: 3px solid #F5B041; outline-offset: -3px; }
@@ -1772,7 +1772,7 @@
     .range-arcade::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 26px; background: #F5B041; border: 3px solid var(--ink); cursor: pointer; }
     .range-arcade::-moz-range-thumb { width: 14px; height: 22px; background: #F5B041; border: 3px solid var(--ink); border-radius: 0; cursor: pointer; }
 
-    /* Hot Potato Cats cards: a coloured frame per card type, title band, pixel picture, rule text */
+    /* Kaboom Cats cards: a coloured frame per card type, title band, pixel picture, rule text */
     .kk-card { width: 92px; height: 128px; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); display: flex; flex-direction: column; align-items: stretch; padding: 0; cursor: pointer; user-select: none; transition: transform .08s; color: #050E18; text-align: center; flex-shrink: 0; background: var(--kc, #F3E3C3); overflow: hidden; }
     .kk-card:hover { transform: translateY(-6px); }
     .kk-card .nm { display: block; background: #050E18; color: var(--kc, #F3E3C3); font-family: 'Arcade Pixel', sans-serif; font-size: .74rem; line-height: 1; letter-spacing: .04em; padding: 4px 2px 3px; white-space: nowrap; overflow: hidden; }
@@ -1884,7 +1884,7 @@
       .tg-fan .kk-card.sm .nm { font-size: .4rem; }
     }
 
-    /* player lists in board games (Frontier Isles, Property Tycoon, Manor Mystery) in the same name-tag style:
+    /* player lists in board games (Island Settlers, Landlord, Whodunit) in the same name-tag style:
        dark tag, picture square, the player's colour as a stripe, gold outline on their turn, teal for you */
     .pl-tag { background: rgba(5, 14, 24, .82) !important; border: 2px solid #050E18 !important; border-left: 6px solid var(--pc, #9DB4CC) !important; box-shadow: none !important; padding: 6px 10px 6px 8px !important; }
     .pl-tag.me { outline: 2px solid #2DD4BF; outline-offset: -2px; }
@@ -1907,7 +1907,7 @@
     .pl-pct { font-family: 'Arcade Pixel', sans-serif; font-size: 1.15rem; min-width: 3.2rem; text-align: right; }
     @media (max-width: 640px) { .pl-bar { height: 52px; } .pl-knob { width: 38px; right: calc(var(--p, 0) * (100% - 46px) + 4px); } .pl-lab { left: 48px; font-size: .66rem; letter-spacing: .02em; } }
 
-    /* ---- Property Tycoon board: cream picture tiles, colour headers, checkered centre ---- */
+    /* ---- Landlord board: cream picture tiles, colour headers, checkered centre ---- */
     .ty-board { --tyc: 1.42fr; display: grid; grid-template-columns: var(--tyc) repeat(9, 1fr) var(--tyc); grid-template-rows: var(--tyc) repeat(9, 1fr) var(--tyc); width: 100%; aspect-ratio: 1/1; background: #F3EEDF; border: 4px solid var(--ink); box-shadow: 0 5px 0 var(--ink); gap: 0; position: relative; container-type: inline-size; }
     .ty-board.tall { --tyc: 1.32fr; grid-template-columns: var(--tyc) repeat(6, 1fr) var(--tyc); grid-template-rows: var(--tyc) repeat(12, 1fr) var(--tyc); aspect-ratio: 8 / 13.4; }
     .ty-t { position: relative; box-sizing: border-box; border: 1px solid var(--ink); background: #F3EEDF; color: #050E18; display: flex; flex-direction: column; overflow: hidden; min-width: 0; min-height: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -2180,7 +2180,7 @@
               <span class="flex items-center gap-2"><span class="w-2 h-2 bg-emerald animate-pulse" style="border:2px solid #050E18;box-sizing:content-box"></span>OPEN ROOMS</span>
               <span class="rtabs">
                 <button onclick="setLobbyFilter('all')" data-lf="all" class="lf-btn rtab">All</button>
-                <button onclick="setLobbyFilter('naval')" data-lf="naval" class="lf-btn rtab">Naval</button>
+                <button onclick="setLobbyFilter('naval')" data-lf="naval" class="lf-btn rtab">Sea Battle</button>
                 <button onclick="setLobbyFilter('connect4')" data-lf="connect4" class="lf-btn rtab">4-Row</button>
               </span>
             </div>
@@ -2211,7 +2211,7 @@
         </div>
         <div class="seg self-start">
           <button onclick="renderLeaderboard('overall')" data-lb="overall" class="lb-btn seg-btn">Overall Elo</button>
-          <button onclick="renderLeaderboard('naval')" data-lb="naval" class="lb-btn seg-btn">Naval Grid</button>
+          <button onclick="renderLeaderboard('naval')" data-lb="naval" class="lb-btn seg-btn">Sea Battle</button>
           <button onclick="renderLeaderboard('streak')" data-lb="streak" class="lb-btn seg-btn">Daily Streak</button>
         </div>
       </div>
@@ -2246,7 +2246,7 @@
     </section>
 
     <!-- ============================================================ -->
-    <!-- GAME VIEW 1: NAVAL GRID                                      -->
+    <!-- GAME VIEW 1: SEA BATTLE                                      -->
     <!-- ============================================================ -->
     <section id="view-naval" class="hidden space-y-6">
       <div class="panel flex flex-wrap items-center justify-between gap-3 px-4 py-3">
@@ -2254,7 +2254,7 @@
           <button onclick="navigateTo('play')" class="btn-game btn-graphite px-3.5 py-2 text-xs">← Lobby</button>
           <div>
             <div class="flex items-center gap-2.5">
-              <h2 class="text-lg font-extrabold text-bone">Naval Grid</h2>
+              <h2 class="text-lg font-extrabold text-bone">Sea Battle</h2>
               <span id="ng-room-tag" class="chip text-teal">RANKED</span>
             </div>
             <p id="ng-match-meta" class="pix text-xs text-muted">vs Admiral_AI (1250)</p>
@@ -2493,7 +2493,7 @@
     </div>
   </div>
 
-  <!-- 3. NAVAL GRID VICTORY / DEFEAT -->
+  <!-- 3. SEA BATTLE VICTORY / DEFEAT -->
   <div id="ng-summary-modal" class="hidden fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4">
     <div class="panel w-full max-w-sm p-6 pt-9 text-center space-y-5 relative">
       <div id="ng-sum-emoji" class="icon-tile absolute -top-9 left-1/2 -translate-x-1/2 w-[72px] h-[72px] bg-amber"></div>
@@ -3324,7 +3324,7 @@
     }
 
     /* =========================================================================
-       5. GAME 1: NAVAL GRID (FLAGSHIP 10x10 BATTLESHIP)
+       5. GAME 1: SEA BATTLE (FLAGSHIP 10x10 BATTLESHIP)
        ========================================================================= */
     const SHIPS_DEF = [
       { id: 'carrier', name: 'Carrier', size: 5 },
@@ -3399,7 +3399,7 @@
     }
 
     let NG_TOUCH = true; // game setting: may ships sit right next to each other?
-    // Naval Grid Online (src/games/navalnet.js) plugs in here: when set, the opponent is a real person.
+    // Sea Battle Online (src/games/navalnet.js) plugs in here: when set, the opponent is a real person.
     // ngNet.ready() / ngNet.fire(r, c) / ngNet.skip() send your moves; the other side's moves come back
     // through ngNetIncoming() and ngNetResult(). Everything you see is this same offline game.
     let ngNet = null;
@@ -5077,7 +5077,7 @@
     const BADGES = [
       { name: 'First Win', desc: 'Win any match', sprite: 'trophy', ok: (p) => p.wins >= 1 },
       { name: 'Sharpshooter', desc: 'Hit 45%+ of your Naval shots', sprite: 'anchor', ok: (p) => p.stats.naval.shots >= 40 && p.stats.naval.hits / p.stats.naval.shots >= 0.45 },
-      { name: 'Admiral', desc: 'Win 5 Naval Grid matches', sprite: 'crown', ok: (p) => p.stats.naval.wins >= 5 },
+      { name: 'Admiral', desc: 'Win 5 Sea Battle matches', sprite: 'crown', ok: (p) => p.stats.naval.wins >= 5 },
       { name: 'Word Wizard', desc: 'Solve a daily in 3 guesses or fewer', sprite: 'tile', ok: (p) => p.stats.daily.dist[0] + p.stats.daily.dist[1] + p.stats.daily.dist[2] > 0 },
       { name: 'On Fire', desc: 'Reach a 7-day Daily streak', sprite: 'flame', ok: (p) => p.stats.daily.bestStreak >= 7 },
       { name: 'Connector', desc: 'Win 3 Four-in-a-Row matches', sprite: 'disc', ok: (p) => p.stats.c4.wins >= 3 },
@@ -5099,7 +5099,7 @@
        and details() (the stats shown when you click the game). Coming-soon games just set live:false. */
     const GAMES = [
       {
-        id: 'naval', name: 'Naval Grid', icon: 'naval', color: '#2DD4BF', tone: 'teal', live: true,
+        id: 'naval', name: 'Sea Battle', icon: 'naval', color: '#2DD4BF', tone: 'teal', live: true,
         unit: 'MATCHES', play: "openSetup('naval')",
         played: (p) => p.stats.naval.played,
         details: (p) => {
@@ -5380,7 +5380,7 @@
     ];
     const CHAT = { rooms: {}, room: null, open: false, unread: 0, next: {}, typing: {}, here: {} };
     const chatKeyFor = (view) => (view === 'game' ? (typeof NP !== 'undefined' && NP.table && CHAT.mode !== 'game' ? 't:' + NP.table : activeGame) : view === 'naval' ? 'naval' : view === 'connect4' ? 'c4' : view === 'daily' ? 'daily' : null);
-    const chatRoomName = (k) => (k === 'global' ? 'Global chat' : String(k).startsWith('t:') ? `Table ${k.slice(2)} chat` : ((GAME_MODS[k] && GAME_MODS[k].name) || { naval: 'Naval Grid', c4: 'Four-in-a-Row', daily: 'Daily Word' }[k] || 'Game') + ' room');
+    const chatRoomName = (k) => (k === 'global' ? 'Global chat' : String(k).startsWith('t:') ? `Table ${k.slice(2)} chat` : ((GAME_MODS[k] && GAME_MODS[k].name) || { naval: 'Sea Battle', c4: 'Four-in-a-Row', daily: 'Daily Word' }[k] || 'Game') + ' room');
     function chatLoad() { try { const d = JSON.parse(localStorage.getItem('ps_chat_v1') || '{}'); if (d && typeof d === 'object') CHAT.rooms = d; } catch (e) {} }
     function chatSave() { try { localStorage.setItem('ps_chat_v1', JSON.stringify(CHAT.rooms)); } catch (e) {} }
     function chatHere(k) { if (!CHAT.here[k]) CHAT.here[k] = shuffle(CHAT_PEOPLE).slice(0, k === 'global' ? 9 : 3 + rnd(3)); return CHAT.here[k]; }
@@ -5548,7 +5548,7 @@
     let lbGame = 'chess';
     function rankedGames() {
       const ids = ['chess'].concat(Object.values(GAME_MODS).filter((m) => m.online && m.online.ranked !== false && m.id !== 'chess').map((m) => m.id));
-      return ids.filter((id) => GAME_MODS[id]).map((id) => [id, id === 'navalnet' ? 'Naval Grid' : GAME_MODS[id].name]);
+      return ids.filter((id) => GAME_MODS[id]).map((id) => [id, id === 'navalnet' ? 'Sea Battle' : GAME_MODS[id].name]);
     }
     function netLeaderboard() {
       let box = document.getElementById('net-lb');
@@ -5967,12 +5967,12 @@
       pickMode();
     }
 
-    // the older games (Naval Grid, Four-in-a-Row, Daily Word) get the same setup screen, in a pop-up
+    // the older games (Sea Battle, Four-in-a-Row, Daily Word) get the same setup screen, in a pop-up
     const BASE_SETUP = {
       naval: {
-        m: { id: 'naval', name: 'Naval Grid', icon: 'naval', color: '#2DD4BF', tone: 'teal', btn: 'teal', blurb: 'Hide your fleet, then take turns firing at the enemy grid. Sink all five ships to win.' },
+        m: { id: 'naval', name: 'Sea Battle', icon: 'naval', color: '#2DD4BF', tone: 'teal', btn: 'teal', blurb: 'Hide your fleet, then take turns firing at the enemy grid. Sink all five ships to win.' },
         opts: [
-          { key: 'where', label: 'PLAY', def: 'here', when: () => typeof NET !== 'undefined' && NET.on, choices: [['here', 'vs the Computer'], ['online', 'Online · vs a person']], hint: 'Online opens Naval Grid Online: quick match (ranked) or a private room.' },
+          { key: 'where', label: 'PLAY', def: 'here', when: () => typeof NET !== 'undefined' && NET.on, choices: [['here', 'vs the Computer'], ['online', 'Online · vs a person']], hint: 'Online opens Sea Battle Online: quick match (ranked) or a private room.' },
           { key: 'ai', label: 'ENEMY ADMIRAL', def: 'smart', when: (s) => s.where !== 'online', choices: [['easy', 'Rookie'], ['smart', 'Smart']] },
           { key: 'clock', label: 'SHOT TIMER', def: 20, choices: [[15, '15 s'], [20, '20 s'], [30, '30 s']] },
           { key: 'touch', label: 'Ships may touch', toggle: true, def: 1, hint: 'Off: every ship needs open water all around it, corners too.', choices: [[1, 'Yes'], [0, 'No']] },
@@ -5989,7 +5989,7 @@
       },
     };
     function openSetup(key) {
-      // Naval Grid online = one setup screen (Online / Private room, the computer is added in the room)
+      // Sea Battle online = one setup screen (Online / Private room, the computer is added in the room)
       if (key === 'naval' && typeof NET !== 'undefined' && NET.on && GAME_MODS.navalnet) return openGame('navalnet');
       if (GAME_MODS[key]) return openGame(key);
       const b = BASE_SETUP[key]; if (!b) return;
@@ -6175,7 +6175,7 @@
 
     /* ---------- the lobby catalogue (feeds the home shelves, My Profile and the rules page) ---------- */
     const CATALOG = [
-      { id: 'naval', name: 'Naval Grid', icon: 'naval', sub: '1v1 · ~5 MIN', open: "openSetup('naval')", live: true, flag: 'HOT' },
+      { id: 'naval', name: 'Sea Battle', icon: 'naval', sub: '1v1 · ~5 MIN', open: "openSetup('naval')", live: true, flag: 'HOT' },
       { id: 'daily', name: 'Daily Word', icon: 'daily', sub: 'SOLO · ~3 MIN', open: "openSetup('daily')", live: true, flag: 'NEW', badgeId: 'card-daily-badge' },
       { id: 'dominoes', name: 'Dominoes', icon: 'dominoes', sub: '2–4 PLAYERS', open: "showToast('Dominoes is coming soon!')", live: false },
       { id: 'trivia', name: 'Trivia Rush', icon: 'trivia', sub: '2–6 PLAYERS', open: "showToast('Trivia Rush is coming soon!')", live: false },
@@ -6191,7 +6191,7 @@
 
     function registerGame(m) {
       GAME_MODS[m.id] = m;
-      if (m.hidden) return;   // reachable from another game's menu only (e.g. Naval Grid Online)
+      if (m.hidden) return;   // reachable from another game's menu only (e.g. Sea Battle Online)
       CATALOG.push({ id: m.id, name: m.name, icon: m.icon, sub: m.sub, open: `openGame('${m.id}')`, live: true, flag: m.flag || 'NEW', mod: m });
       const old = GAMES.findIndex((g) => g.id === m.id);
       if (old >= 0) GAMES.splice(old, 1);
@@ -6921,7 +6921,7 @@
       if (m.id === 'doodle') s.mode = 'live';
       return s;
     }
-    // Naval Grid vs the computer (the offline version) with the room's settings
+    // Sea Battle vs the computer (the offline version) with the room's settings
     function npNavalVsComputer(s) {
       GT.started = false; GT.over = true;
       BASE_SETUP.naval.go({ where: 'here', ai: s.ai || 'smart', clock: s.clock || 20, touch: s.touch === undefined ? 1 : s.touch });
@@ -9403,7 +9403,7 @@
     })();
 
     /* =========================================================================
-       COLOR CLASH: match colour or number, be first to empty your hand. Say CLASH on your last card!
+       UNO: match colour or number, be first to empty your hand. Say CLASH on your last card!
        ========================================================================= */
     (function colorClashGame() {
       const COL = ['a', 'b', 'c', 'e'];
@@ -9444,7 +9444,7 @@
             <div class="r-mid felt p-4 flex items-center justify-center gap-8 flex-wrap" style="min-height:190px"><div id="cc-pile" class="text-center"></div><div id="cc-top" class="text-center"></div></div></div>
             <div id="cc-prompt" class="win p-3 text-center min-h-[48px] text-sm"></div>
             <div id="cc-hand" class="flex gap-2 flex-wrap justify-center pt-2"></div></div>
-          <div class="space-y-3"><div class="win overflow-hidden"><div class="winbar amber"><span>COLOR CLASH</span></div><div class="p-3 space-y-2"><div id="cc-clock"></div><div id="cc-status" class="text-sm font-bold"></div></div></div>
+          <div class="space-y-3"><div class="win overflow-hidden"><div class="winbar amber"><span>UNO</span></div><div class="p-3 space-y-2"><div id="cc-clock"></div><div id="cc-status" class="text-sm font-bold"></div></div></div>
             <div id="cc-log" class="logbox" style="height:240px"></div><button id="cc-quit" class="btn-game btn-coral w-full py-2 text-sm">${S.online ? 'Leave table' : 'Give up'}</button></div></div>`;
         G.clock = makeClock(document.getElementById('cc-clock'));
         S.track();
@@ -9654,7 +9654,7 @@
       }
 
       const mod = {
-        id: 'colorclash', name: 'Color Clash', icon: 'colorclash', cats: ['card', 'party'], sub: '2-4 PLAYERS · ~5 MIN', color: '#60A5FA', tone: 'teal', btn: 'teal',
+        id: 'colorclash', name: 'Uno', icon: 'colorclash', cats: ['card', 'party'], sub: '2-4 PLAYERS · ~5 MIN', color: '#60A5FA', tone: 'teal', btn: 'teal',
         blurb: 'Match the colour or the number and be the first to empty your hand. Do not forget to shout CLASH on your last card!',
         rules: { tag: '2-4 PLAYERS', steps: [
           '<strong class="text-bone">Play a card</strong> that matches the top card by <b>colour</b> or <b>number/symbol</b>. No match? Draw one card (and play it if it fits).',
@@ -10763,7 +10763,7 @@
       registerGame(mod);
     })();
     /* =========================================================================
-       GUILD MASTERS (original game, Nov 2026): build the finest town. 3-6 players.
+       CASTLES & KINGS (original game, Nov 2026): build the finest town. 3-6 players.
        Each round everyone secretly picks a character (the crown holder picks first; one character is set aside face
        down). Characters then play in number order: take 2 gold or look at 2 building cards and keep 1, then build one
        building (the Architect up to 3), and use the character's power. When someone has built the target number of
@@ -10846,7 +10846,7 @@
           <div class="space-y-3 min-w-0"><div id="gm-towns" class="gm-towns"></div>
             <div id="gm-prompt" class="win p-3 text-sm min-h-[54px]"></div>
             <div id="gm-mine"></div></div>
-          <div class="space-y-3 min-w-0"><div class="win overflow-hidden"><div class="winbar amber"><span id="gm-status">GUILD MASTERS</span><span class="pix text-xs" id="gm-round"></span></div>
+          <div class="space-y-3 min-w-0"><div class="win overflow-hidden"><div class="winbar amber"><span id="gm-status">CASTLES & KINGS</span><span class="pix text-xs" id="gm-round"></span></div>
             <div class="p-3" id="gm-roles"></div></div>
             <div id="gm-log" class="logbox" style="height:220px"></div><button id="gm-quit" class="btn-game btn-coral w-full py-2 text-sm">${S.online ? 'Leave table' : 'Give up'}</button></div></div>`;
         S.track();
@@ -11040,7 +11040,7 @@
       const K = '#050E18', rr = (x, y, w, h, f) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${f}"/>`;
       GICONS.guild = `<svg viewBox="0 0 24 24" shape-rendering="crispEdges" aria-hidden="true">${rr(1, 1, 22, 22, K)}${rr(2, 2, 20, 20, '#1A3856')}${rr(3, 12, 6, 9, K)}${rr(4, 13, 4, 8, '#60A5FA')}${rr(9, 8, 7, 13, K)}${rr(10, 9, 5, 12, '#F5B041')}${rr(11, 4, 3, 5, K)}${rr(12, 5, 1, 3, '#FB7185')}${rr(16, 14, 6, 7, K)}${rr(17, 15, 4, 6, '#34D399')}${rr(11, 16, 3, 5, K)}${rr(3, 21, 19, 1, K)}</svg>`;
       const mod = {
-        id: 'guild', name: 'Guild Masters', icon: 'guild', cats: ['card', 'board'], sub: '3-6 PLAYERS · ~20 MIN', color: '#C084FC', tone: 'amber', btn: 'amber',
+        id: 'guild', name: 'Castles & Kings', icon: 'guild', cats: ['card', 'board'], sub: '3-6 PLAYERS · ~20 MIN', color: '#C084FC', tone: 'amber', btn: 'amber',
         blurb: 'Pick a secret character each round, collect gold and build the finest town. Watch out for the Shadow and the Pickpocket!',
         rules: { tag: 'CHARACTERS & TOWNS · 3-6 PLAYERS', steps: [
           '<strong class="text-bone">Pick a character:</strong> Each round everyone secretly picks one. The player with the crown 👑 picks first.',
@@ -11056,7 +11056,7 @@
       registerGame(mod);
     })();
     /* =========================================================================
-       HEDGE RUN (original game, Nov 2026): race your pawn across a 9×9 garden to the far side. On your turn either
+       WALL MAZE (original game, Nov 2026): race your pawn across a 9×9 garden to the far side. On your turn either
        step one square, or plant a hedge (2 squares long) to slow a rival down. A hedge may never cut anyone off
        completely. 2 players (10 hedges each) or 4 players (5 each). Computer: Easy / Medium / Hard.
        Board: rows 0 (top) .. 8, columns 0 .. 8. Hedge "h r,c" lies between rows r and r+1 under columns c and c+1;
@@ -11307,7 +11307,7 @@
       }
 
       const mod = {
-        id: 'hedge', name: 'Hedge Run', icon: 'hedge', cats: ['board'], sub: '2-4 PLAYERS · ~10 MIN', color: '#34D399', tone: 'emerald', btn: 'emerald',
+        id: 'hedge', name: 'Wall Maze', icon: 'hedge', cats: ['board'], sub: '2-4 PLAYERS · ~10 MIN', color: '#34D399', tone: 'emerald', btn: 'emerald',
         blurb: 'Race your pawn across the garden. Each turn, take a step or plant a hedge to slow your rivals down.',
         rules: { tag: 'MAZE RACE · 2-4 PLAYERS', steps: [
           '<strong class="text-bone">Goal:</strong> Be the first to reach the other side of the garden (the edge marked in your colour is where you need to go).',
@@ -11596,7 +11596,7 @@
     })();
 
     /* =========================================================================
-       FRONTIER ISLES: hex island, collect resources, build roads / villages / towns, first to N points
+       ISLAND SETTLERS: hex island, collect resources, build roads / villages / towns, first to N points
        ========================================================================= */
     (function frontierIslesGame() {
       const ABORT = { a: 1 };
@@ -12156,7 +12156,7 @@
       const K = '#050E18', rr = (x, y, w, h, c) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`;
       GICONS.isles = `<svg viewBox="0 0 24 24" shape-rendering="crispEdges" aria-hidden="true">${rr(0, 0, 24, 24, '#1F5F93')}${rr(4, 5, 16, 14, K)}${rr(6, 3, 12, 18, K)}${rr(5, 6, 14, 12, '#E9C352')}${rr(7, 4, 10, 16, '#E9C352')}${rr(7, 6, 5, 6, '#2E8B57')}${rr(12, 12, 5, 6, '#C8643F')}${rr(12, 6, 5, 6, '#8E9CAD')}${rr(7, 12, 5, 6, '#8BCB6A')}${rr(10, 9, 4, 4, '#F5B041')}${rr(11, 8, 2, 1, K)}</svg>`;
       const mod = {
-        id: 'isles', name: 'Frontier Isles', icon: 'isles', cats: ['board'], sub: '3-4 PLAYERS · ~25 MIN', color: '#34D399', tone: 'emerald', btn: 'emerald',
+        id: 'isles', name: 'Island Settlers', icon: 'isles', cats: ['board'], sub: '3-4 PLAYERS · ~25 MIN', color: '#34D399', tone: 'emerald', btn: 'emerald',
         blurb: 'Settle a hex island: collect timber, clay, wool, grain and stone, build roads, villages and towns, and race your rivals to the target score.',
         rules: { tag: 'BUILD & TRADE', steps: [
           '<strong class="text-bone">Setup:</strong> Everyone places 2 villages and 2 roads (the order snakes back). Villages must have a free corner all around them. Your second village gives you one card for each land it touches.',
@@ -12173,7 +12173,7 @@
     })();
 
     /* =========================================================================
-       HOT POTATO CATS: a push-your-luck card game. Don't get stuck with the hot potato!
+       KABOOM CATS: a push-your-luck card game. Don't get stuck with the hot potato!
        ========================================================================= */
     (function kittensGame() {
       // card names: familiar, generic game words (Attack, Skip, Favor, Shuffle) + our own potato, mitt and cats
@@ -12234,7 +12234,7 @@
             <div class="r-mid felt p-4 flex items-center justify-center gap-6 flex-wrap" style="min-height:170px"><div id="kk-pile" class="text-center"></div><div id="kk-disc" class="text-center"></div></div></div>
             <div id="kk-prompt" class="win p-3 text-center min-h-[48px]"></div>
             <div id="kk-hand" class="flex gap-2 flex-wrap justify-center pt-2"></div></div>
-          <div class="space-y-3"><div class="win overflow-hidden"><div class="winbar amber"><span>HOT POTATO CATS</span></div><div class="p-3 space-y-2"><div id="kk-clock"></div><div id="kk-status" class="text-sm font-bold"></div></div></div>
+          <div class="space-y-3"><div class="win overflow-hidden"><div class="winbar amber"><span>KABOOM CATS</span></div><div class="p-3 space-y-2"><div id="kk-clock"></div><div id="kk-status" class="text-sm font-bold"></div></div></div>
             <div id="kk-log" class="logbox" style="height:250px"></div><button id="kk-quit" class="btn-game btn-coral w-full py-2 text-sm">${S.online ? 'Leave table' : 'Give up'}</button></div></div>`;
         G.clock = makeClock(document.getElementById('kk-clock'));
         S.track();
@@ -12623,7 +12623,7 @@
       }
 
       const mod = {
-        id: 'kittens', name: 'Hot Potato Cats', icon: 'kittens', cats: ['card', 'party'], sub: '2-4 PLAYERS · ~6 MIN', color: '#FB7185', tone: 'coral', btn: 'coral',
+        id: 'kittens', name: 'Kaboom Cats', icon: 'kittens', cats: ['card', 'party'], sub: '2-4 PLAYERS · ~6 MIN', color: '#FB7185', tone: 'coral', btn: 'coral',
         blurb: 'A push-your-luck card game. Draw cards, dodge the hot potatoes and use sneaky tricks on your rivals. Last cat standing wins!',
         rules: { tag: '2-4 PLAYERS', steps: [
           '<strong class="text-bone">Your turn:</strong> Play as many cards as you like, then draw one card to end your turn. If you draw the <span class="text-coral font-bold">Hot Potato</span> you are out, unless you have an <span class="text-emerald font-bold">Oven Mitt</span>: then you hide the potato back in the pile, anywhere you like.',
@@ -12640,7 +12640,7 @@
     })();
 
     /* =========================================================================
-       HOT POTATO CATS card art: original pixel pictures (16x16 grids, one letter per pixel).
+       KABOOM CATS card art: original pixel pictures (16x16 grids, one letter per pixel).
        Palette letters: k ink, w white, c cream, o orange, r red, y yellow, b brown, d dark brown, g green,
        G dark green, p pink, P dark pink, u blue, U dark blue, s grey, S dark grey, t teal, m mauve, '.' empty.
        ========================================================================= */
@@ -12697,7 +12697,7 @@
       return `<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
     }
     /* =========================================================================
-       MANOR MYSTERY: a deduction game. Who did it, with what, and where?
+       WHODUNIT: a deduction game. Who did it, with what, and where?
        ========================================================================= */
     (function manorMysteryGame() {
       const ABORT = { a: 1 };
@@ -13020,7 +13020,7 @@
       const K = '#050E18', rr = (x, y, w, h, c) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`;
       GICONS.manor = `<svg viewBox="0 0 24 24" shape-rendering="crispEdges" aria-hidden="true">${rr(3, 9, 18, 13, K)}${rr(4, 10, 16, 11, '#6B2D3F')}${rr(2, 7, 20, 3, K)}${rr(6, 3, 12, 5, K)}${rr(7, 4, 10, 4, '#4A1F2C')}${rr(10, 15, 4, 6, '#F5B041')}${rr(6, 12, 3, 3, '#F7F4EC')}${rr(15, 12, 3, 3, '#F7F4EC')}${rr(14, 1, 7, 7, K)}${rr(15, 2, 5, 5, '#2DD4BF')}${rr(19, 7, 2, 4, K)}${rr(16, 3, 2, 2, '#BFF5EC')}</svg>`;
       const mod = {
-        id: 'manor', name: 'Manor Mystery', icon: 'manor', cats: ['board', 'party'], sub: '3-6 PLAYERS · ~20 MIN', color: '#FB7185', tone: 'coral', btn: 'coral',
+        id: 'manor', name: 'Whodunit', icon: 'manor', cats: ['board', 'party'], sub: '3-6 PLAYERS · ~20 MIN', color: '#FB7185', tone: 'coral', btn: 'coral',
         blurb: 'Something happened at the manor. Walk the rooms, make suggestions and use your notebook to work out who did it, with what, and where.',
         rules: { tag: 'DEDUCTION', steps: [
           '<strong class="text-bone">The secret:</strong> One suspect, one tool and one room are hidden in an envelope. All other cards are dealt to the detectives, so the cards you hold cannot be the answer.',
@@ -13036,7 +13036,7 @@
     })();
 
     /* =========================================================================
-       MANOR MYSTERY ART: the house seen from above, cartoon style (ink outlines like Naval Grid's ships).
+       WHODUNIT ART: the house seen from above, cartoon style (ink outlines like Sea Battle's ships).
        MANOR_ROOM_SVG[i] = the floor + furniture of room i (viewBox 0 0 200 130), MANOR_ROOF = the roof banner.
        Furniture keeps to the middle/right so the room name (top left) and the pawns (bottom left) stay readable.
        ========================================================================= */
@@ -13119,7 +13119,7 @@
       return { rooms, roof };
     })();
     /* =========================================================================
-       NAVAL GRID ONLINE (id 'navalnet', no tile of its own): the SAME game as offline Naval Grid - its setup
+       SEA BATTLE ONLINE (id 'navalnet', no tile of its own): the SAME game as offline Sea Battle - its setup
        screen (drag ships, tap to turn, 60 s), its boards, missiles, explosions, banners, turn clock and summary.
        The offline screens are borrowed into this game's page while you play and handed back afterwards.
        Only the opponent is different: a real person. Each fleet stays secret: you send a shot, the other
@@ -13130,13 +13130,13 @@
       const $ = (id) => document.getElementById(id);
       function open(root) {
         const body = gameShell(root, mod, '', 'max-w-[1000px] mx-auto');
-        if (!(typeof NET !== 'undefined' && NET.on)) { body.innerHTML = '<div class="win p-6 text-center text-sm text-muted max-w-md mx-auto">Naval Grid Online needs the online service. You can still play Naval Grid against the computer from the main menu.</div>'; return; }
+        if (!(typeof NET !== 'undefined' && NET.on)) { body.innerHTML = '<div class="win p-6 text-center text-sm text-muted max-w-md mx-auto">Sea Battle Online needs the online service. You can still play Sea Battle against the computer from the main menu.</div>'; return; }
         setupScreen(body, mod, [
           { key: 'clock', label: 'SHOT TIMER', def: 20, choices: [[15, '15 s'], [20, '20 s'], [30, '30 s']] },
           { key: 'touch', label: 'Ships may touch', toggle: true, def: 1, hint: 'Off: every ship needs open water all around it, corners too.', choices: [[1, 'Yes'], [0, 'No']] },
         ], () => showToast('Pick Online or Private room above.', 'info'));
       }
-      // give the borrowed screens back to the offline Naval Grid page
+      // give the borrowed screens back to the offline Sea Battle page
       function giveBack() {
         if (!G || !G.home) return;
         ['ng-setup-view', 'ng-battle-view'].forEach((id) => { const el = $(id); if (el && el.parentElement !== G.home) G.home.appendChild(el); });
@@ -13200,7 +13200,7 @@
         } catch (e) { console.error(e); }
       }
       const mod = {
-        id: 'navalnet', name: 'Naval Grid', icon: 'naval', hidden: true, cats: ['board'], sub: '1v1 ONLINE', color: '#2DD4BF', tone: 'teal', btn: 'teal',
+        id: 'navalnet', name: 'Sea Battle', icon: 'naval', hidden: true, cats: ['board'], sub: '1v1 ONLINE', color: '#2DD4BF', tone: 'teal', btn: 'teal',
         blurb: 'Hide your fleet, then take turns firing at the enemy grid. Sink all five ships to win.',
         open, close() { stopNgTimer(); giveBack(); ngNet = null; G = null; },
         online: { seats: () => 2, ranked: true, noLocal: true, start: (body, sel, S) => start(body, sel, S).catch((e) => console.error(e)) },
@@ -14571,7 +14571,7 @@
     })();
 
     /* =========================================================================
-       TUNNEL TROUBLE (original game, Nov 2026): a hidden-team digging game for 3-6 players.
+       MINE SABOTEURS (original game, Nov 2026): a hidden-team digging game for 3-6 players.
        Everyone is secretly a DIGGER or a RASCAL. Diggers want to dig a tunnel from the entrance to the gold, which is
        under one of three hidden goal stones. Rascals pretend to help, but play dead ends, cave-ins and broken tools.
        Turn: play one card (a tunnel piece, or an action) or throw one away, then draw. Gold reached = Diggers win;
@@ -14754,7 +14754,7 @@
             <div class="tt-boardbox"><div id="tt-board" class="tt-board"></div></div>
             <div id="tt-prompt" class="win p-3 text-center text-sm min-h-[46px]"></div>
             <div id="tt-hand" class="tt-hand"></div></div>
-          <div class="space-y-3 min-w-0"><div class="win overflow-hidden"><div class="winbar amber"><span id="tt-status">TUNNEL TROUBLE</span><span class="pix text-xs" id="tt-deck"></span></div><div class="p-3 space-y-2" id="tt-players"></div></div>
+          <div class="space-y-3 min-w-0"><div class="win overflow-hidden"><div class="winbar amber"><span id="tt-status">MINE SABOTEURS</span><span class="pix text-xs" id="tt-deck"></span></div><div class="p-3 space-y-2" id="tt-players"></div></div>
             <div id="tt-log" class="logbox" style="height:200px"></div><button id="tt-quit" class="btn-game btn-coral w-full py-2 text-sm">${S.online ? 'Leave table' : 'Give up'}</button></div></div>`;
         S.track();
         S.onLeft = (a) => { if (!G) return; const q = G.players[a.s]; q.name += ' (CPU)'; q.av = '🤖'; log(`${nm(q)} ${a.t === '_gone' ? 'disconnected' : 'left'}. A computer player takes over.`); draw(); };
@@ -14928,7 +14928,7 @@
       const K = '#050E18', rr = (x, y, w, h, f) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${f}"/>`;
       GICONS.tunnel = `<svg viewBox="0 0 24 24" shape-rendering="crispEdges" aria-hidden="true">${rr(1, 1, 22, 22, K)}${rr(2, 2, 20, 20, '#6B4F35')}${rr(2, 10, 14, 4, '#E8C98E')}${rr(12, 10, 4, 11, '#E8C98E')}${rr(15, 4, 7, 6, K)}${rr(16, 5, 5, 4, '#F5B041')}${rr(17, 5, 2, 1, '#FFF3C4')}${rr(4, 15, 3, 2, '#7D5E40')}${rr(6, 4, 2, 7, '#9DB4CC')}${rr(4, 4, 6, 2, '#9DB4CC')}</svg>`;
       const mod = {
-        id: 'tunnel', name: 'Tunnel Trouble', icon: 'tunnel', cats: ['card', 'party'], sub: '3-6 PLAYERS · ~15 MIN', color: '#F5B041', tone: 'amber', btn: 'amber',
+        id: 'tunnel', name: 'Mine Saboteurs', icon: 'tunnel', cats: ['card', 'party'], sub: '3-6 PLAYERS · ~15 MIN', color: '#F5B041', tone: 'amber', btn: 'amber',
         blurb: 'Dig a tunnel to the hidden gold together... but someone at the table is a secret Rascal trying to stop you.',
         rules: { tag: 'SECRET TEAMS · 3-6 PLAYERS', steps: [
           '<strong class="text-bone">Secret teams:</strong> Most players are <b class="text-teal">Diggers</b>. Usually one or two are secret <b class="text-coral">Rascals</b> (sometimes there are none!). Only you know which one you are.',
@@ -14944,7 +14944,7 @@
       registerGame(mod);
     })();
     /* =========================================================================
-       PROPERTY TYCOON: roll, buy, build and bankrupt your rivals
+       LANDLORD: roll, buy, build and bankrupt your rivals
        ========================================================================= */
     (function tycoonGame() {
       const GR = { br: '#A16207', lb: '#7DD3FC', pk: '#F9A8D4', or: '#FB923C', rd: '#EF4444', yl: '#FACC15', gn: '#22C55E', bl: '#3B82F6', rail: '#94A3B8', ut: '#CBD5E1' };
@@ -15654,7 +15654,7 @@
         G.tall = tall; G.tileCache = {};
         bd.className = 'ty-board' + (tall ? ' tall' : '');
         bd.innerHTML = BOARD.map((t) => { const [r, c] = cellOf(t.i, tall); return `<div id="ty-t-${t.i}" class="ty-t k-${t.k} s-${sideOf(t.i, tall)} ${CORNER_NAME[t.k] ? 'corner' : ''}" style="grid-row:${r};grid-column:${c}" title="${t.n}${t.pr ? ' $' + t.pr : ''}"></div>`; }).join('') +
-          `<div class="ty-center"><div class="ty-title">PROPERTY TYCOON</div>
+          `<div class="ty-center"><div class="ty-title">LANDLORD</div>
             <div class="ty-mid"><div id="ty-deck-ch" class="ty-deck ch">${ART.chance}<span>SURPRISE</span></div><div id="ty-dice" class="ty-dice">${dieHTMLs()}</div><div id="ty-deck-mb" class="ty-deck mb">${ART.chest}<span>MYSTERY</span></div></div>
             <div id="ty-msg" class="pix text-xs text-amber min-h-[18px]">${esc(G.msg || '')}</div>
             <div id="ty-card" class="ty-card"></div>
@@ -15780,7 +15780,7 @@
       }
 
       const mod = {
-        id: 'tycoon', name: 'Property Tycoon', icon: 'tycoon', cats: ['board'], sub: '2-4 PLAYERS · ~15 MIN', color: '#34D399', tone: 'emerald', btn: 'emerald',
+        id: 'tycoon', name: 'Landlord', icon: 'tycoon', cats: ['board'], sub: '2-4 PLAYERS · ~15 MIN', color: '#34D399', tone: 'emerald', btn: 'emerald',
         blurb: 'Roll the dice, buy properties, build houses and hotels and bankrupt your rivals. Play 15, 25 or 40 rounds, or go all the way.',
         rules: { tag: '2-4 PLAYERS', steps: [
           '<strong class="text-bone">Roll &amp; move:</strong> Roll two dice and walk around the board. Pass <b>START</b> to collect $200. Doubles give you another go (three in a row sends you to Jail).',
@@ -16412,7 +16412,7 @@
        ========================================================================= */
     const FR = { list: { friends: [], incoming: [], outgoing: [] }, sel: null, unread: {}, msgs: {}, off: null, started: false, q: '', results: null };
     const frOn = () => typeof NET !== 'undefined' && NET.on;
-    const frGameName = (id) => (GAME_MODS[id] && GAME_MODS[id].name) || { naval: 'Naval Grid', navalnet: 'Naval Grid', c4: 'Four-in-a-Row', daily: 'Daily Word' }[id] || id;
+    const frGameName = (id) => (GAME_MODS[id] && GAME_MODS[id].name) || { naval: 'Sea Battle', navalnet: 'Sea Battle', c4: 'Four-in-a-Row', daily: 'Daily Word' }[id] || id;
     function friendsBadge() {
       const n = FR.list.incoming.length + Object.values(FR.unread).reduce((a, b) => a + b, 0);
       ['nav-friends-badge', 'mnav-friends-badge'].forEach((id) => { const b = document.getElementById(id); if (b) { b.textContent = n > 9 ? '9+' : n; b.classList.toggle('hidden', !n); } });
@@ -17071,7 +17071,7 @@
           const b = document.createElement('button'); b.id = 'mu-btn-m'; b.className = 'pix text-xs text-muted'; b.title = 'Sound effects and music';
           m.insertAdjacentElement('afterend', b); m.style.display = 'none'; b.onclick = (e) => { e.stopPropagation(); toggle(b); };
         }
-        // the older game screens (Naval Grid, Daily Word, Four-in-a-Row) get the same ♪ button in their header
+        // the older game screens (Sea Battle, Daily Word, Four-in-a-Row) get the same ♪ button in their header
         ['view-naval', 'view-daily', 'view-connect4'].forEach((id) => {
           const panel = document.querySelector(`#${id} > .panel`);
           if (!panel || panel.querySelector('.gs-snd')) return;
@@ -17145,7 +17145,7 @@
       const lvl = () => Math.floor((profile.xp || 0) / 100) + 1;
       const totalWins = () => { let w = 0; Object.values(profile.stats || {}).forEach((s) => { w += (s && (s.wins || s.solved)) || 0; }); return Math.max(w, profile.wins || 0); };
       const playedGames = () => Object.values(profile.stats || {}).filter((s) => s && (s.played || 0) > 0).length;
-      const allGames = () => Object.keys(GAME_MODS).filter((id) => !GAME_MODS[id].hidden).length + 2;   // + Naval Grid and Daily Word
+      const allGames = () => Object.keys(GAME_MODS).filter((id) => !GAME_MODS[id].hidden).length + 2;   // + Sea Battle and Daily Word
       const hasAccount = () => !(typeof NET !== 'undefined' && NET.on) || !!NET.account;
       const EXTRA = [
         { av: '🐯', label: 'LV5', why: 'Reach level 5', ok: () => lvl() >= 5 },

@@ -128,7 +128,7 @@
       if (m.id === 'doodle') s.mode = 'live';
       return s;
     }
-    // Naval Grid vs the computer (the offline version) with the room's settings
+    // Sea Battle vs the computer (the offline version) with the room's settings
     function npNavalVsComputer(s) {
       GT.started = false; GT.over = true;
       BASE_SETUP.naval.go({ where: 'here', ai: s.ai || 'smart', clock: s.clock || 20, touch: s.touch === undefined ? 1 : s.touch });

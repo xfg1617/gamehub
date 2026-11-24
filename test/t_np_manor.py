@@ -1,4 +1,4 @@
-"""Manor Mystery online: 2 players + 2 computer detectives. Players walk, make suggestions and show cards when
+"""Whodunit online: 2 players + 2 computer detectives. Players walk, make suggestions and show cards when
 asked; the log (who suggested what, who could not answer) and every pawn's room match on both screens, and only
 the asker sees the shown card.  Add 'real' for the real service."""
 import sys, random; sys.path.insert(0, 'test')

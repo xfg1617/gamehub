@@ -1,4 +1,4 @@
-"""Tunnel Trouble online: 2 players + 1 computer seat take turns; the map, hands and broken tools must match on
+"""Mine Saboteurs online: 2 players + 1 computer seat take turns; the map, hands and broken tools must match on
 both screens, and each screen only shows its own secret role.  Add 'real' for the real service."""
 import sys, time; sys.path.insert(0, 'test')
 from nplib import *

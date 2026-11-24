@@ -1,5 +1,5 @@
     /* =========================================================================
-       GUILD MASTERS (original game, Nov 2026): build the finest town. 3-6 players.
+       CASTLES & KINGS (original game, Nov 2026): build the finest town. 3-6 players.
        Each round everyone secretly picks a character (the crown holder picks first; one character is set aside face
        down). Characters then play in number order: take 2 gold or look at 2 building cards and keep 1, then build one
        building (the Architect up to 3), and use the character's power. When someone has built the target number of
@@ -82,7 +82,7 @@
           <div class="space-y-3 min-w-0"><div id="gm-towns" class="gm-towns"></div>
             <div id="gm-prompt" class="win p-3 text-sm min-h-[54px]"></div>
             <div id="gm-mine"></div></div>
-          <div class="space-y-3 min-w-0"><div class="win overflow-hidden"><div class="winbar amber"><span id="gm-status">GUILD MASTERS</span><span class="pix text-xs" id="gm-round"></span></div>
+          <div class="space-y-3 min-w-0"><div class="win overflow-hidden"><div class="winbar amber"><span id="gm-status">CASTLES & KINGS</span><span class="pix text-xs" id="gm-round"></span></div>
             <div class="p-3" id="gm-roles"></div></div>
             <div id="gm-log" class="logbox" style="height:220px"></div><button id="gm-quit" class="btn-game btn-coral w-full py-2 text-sm">${S.online ? 'Leave table' : 'Give up'}</button></div></div>`;
         S.track();
@@ -276,7 +276,7 @@
       const K = '#050E18', rr = (x, y, w, h, f) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${f}"/>`;
       GICONS.guild = `<svg viewBox="0 0 24 24" shape-rendering="crispEdges" aria-hidden="true">${rr(1, 1, 22, 22, K)}${rr(2, 2, 20, 20, '#1A3856')}${rr(3, 12, 6, 9, K)}${rr(4, 13, 4, 8, '#60A5FA')}${rr(9, 8, 7, 13, K)}${rr(10, 9, 5, 12, '#F5B041')}${rr(11, 4, 3, 5, K)}${rr(12, 5, 1, 3, '#FB7185')}${rr(16, 14, 6, 7, K)}${rr(17, 15, 4, 6, '#34D399')}${rr(11, 16, 3, 5, K)}${rr(3, 21, 19, 1, K)}</svg>`;
       const mod = {
-        id: 'guild', name: 'Guild Masters', icon: 'guild', cats: ['card', 'board'], sub: '3-6 PLAYERS · ~20 MIN', color: '#C084FC', tone: 'amber', btn: 'amber',
+        id: 'guild', name: 'Castles & Kings', icon: 'guild', cats: ['card', 'board'], sub: '3-6 PLAYERS · ~20 MIN', color: '#C084FC', tone: 'amber', btn: 'amber',
         blurb: 'Pick a secret character each round, collect gold and build the finest town. Watch out for the Shadow and the Pickpocket!',
         rules: { tag: 'CHARACTERS & TOWNS · 3-6 PLAYERS', steps: [
           '<strong class="text-bone">Pick a character:</strong> Each round everyone secretly picks one. The player with the crown 👑 picks first.',

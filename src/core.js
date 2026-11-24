@@ -902,8 +902,9 @@
       host.innerHTML = `<div class="hp-tabs"><span class="hp-all pix">ALL GAMES <span class="text-muted">${order.length}</span></span>${cats.map(([k]) => `<button data-cat="${k}" class="${k === sel[0] ? 'on' : ''}">${k}</button>`).join('')}</div>
         <div class="hp-grid">${ids.map((id) => {
           const c = byId[id]; let flag = '';
-          if (!c.live) flag = '<span class="flag flag-soon">SOON</span>';
-          else if (hot.has(id)) {
+          // calmer grid (Nov 2026): no NEW / SOON labels; only HOT (and Daily Word's own badge) stay
+          if (!c.live) flag = '';
+          else if (hot.has(id) && (c.flag !== 'NEW' || c.badgeId)) {
             const idAttr = c.badgeId && !seenBadge ? ` id="${c.badgeId}"` : '';
             if (c.badgeId) seenBadge = true;
             if (c.flag) flag = `<span${idAttr} class="flag ${c.flag === 'HOT' ? 'flag-hot' : ''}">${c.flag}</span>`;

@@ -20,6 +20,9 @@
         'CHAT': 'CHAT', 'ROOM': 'PHÒNG', '👥 Friends': '👥 Bạn bè', '· Built for quick matches with friends': '· Chơi nhanh cùng bạn bè',
         '© 2026 GameHub. All rights reserved.': '© 2026 GameHub. Bảo lưu mọi quyền.', 'Terms': 'Điều khoản', 'Privacy': 'Quyền riêng tư',
         // home page
+        'Play with friends': 'Chơi cùng bạn bè', 'Pick any game, get a room code, send it to your friends.': 'Chọn một trò, lấy mã phòng, gửi cho bạn bè.',
+        'JOIN': 'VÀO', '🏆 Ranked match': '🏆 Đấu xếp hạng', '· play someone at your level': '· đấu với người cùng trình độ', '💬 Discord': '💬 Discord',
+        '· find people to play with': '· tìm người chơi cùng',
         'Ready to play,': 'Sẵn sàng chơi chưa,', 'DAY STREAK': 'CHUỖI NGÀY', 'NAVAL ELO': 'ELO HẢI CHIẾN', 'Play with Friends': 'Chơi cùng bạn bè',
         'Create a room for any game and send your friends the code': 'Tạo phòng cho bất kỳ trò nào rồi gửi mã cho bạn bè', '＋ CREATE A ROOM': '＋ TẠO PHÒNG',
         'HAVE A ROOM CODE?': 'CÓ MÃ PHÒNG?', 'Join': 'Vào', 'RANKED MATCH': 'ĐẤU XẾP HẠNG',

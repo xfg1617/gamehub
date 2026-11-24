@@ -671,6 +671,14 @@ One shared way to run a game table, used on this device AND online, so a game ha
   (`src/games/zz_i18n_vi.js`, `VI_MORE`, loads just before zz_lang): game descriptions, every setup option / hint, loading
   screen lines + tips, room messages. Not yet: guides (HOWTO), in-game messages, results, toasts, Terms/Privacy. Add new lines to `VI` when you add English text. `t_lang.py`.
 
+## 5s. Home page v3 (Nov 25 2026, Inna: "more clean, less busy, bigger code input box")
+
+* Top = `.nh` bar (`#friends-banner`): left amber "Play with friends" + ＋ CREATE A ROOM (`openRoomModal`), right a big
+  code box (`.nh-code.code-row`, `#quick-room-input` + JOIN → `quickJoinFromBar`). Under it two slim links: `#rank-link`
+  (`openRankedModal`) and `#discord-link`. CSS `src/css/26-home.css`. The greeting, streak/Elo boxes, ranked arcade
+  screen and Discord box are gone (their JS updates are null-safe). Tiles show no NEW / SOON labels (HOT and Daily Word's
+  badge stay). The global chat window is hidden on home (CHAT button still opens it); open rooms are full width.
+
 ## 5d. Game setup screens, room codes, leaving a game
 
 * Every game opens on a setup screen (`setupScreen` in `core.js`). Options are `{ key, label, def,

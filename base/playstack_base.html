@@ -960,65 +960,25 @@
     <!-- ============================================================ -->
     <section id="view-play" class="space-y-9">
 
-      <!-- Title -->
-      <div class="hp-top">
-        <h1 class="hero-title text-bone">Ready to play, <span id="home-greeting-name" class="text-amber">Player</span>?</h1>
-        <div class="statline">
-          <button onclick="openDailyWord(false)" title="Open Daily Word">
-            <span class="spr w-7 h-7" data-sprite="flame"></span>
-            <span class="text-left"><span class="lab">DAY STREAK</span><span id="home-streak" class="val text-emerald">3</span></span>
-          </button>
-          <button onclick="navigateTo('leaderboard')" title="See the leaderboard">
-            <span class="spr w-7 h-7" data-sprite="trophy"></span>
-            <span class="text-left"><span class="lab">NAVAL ELO</span><span id="home-elo" class="val text-amber">1200</span></span>
-          </button>
+      <!-- Home top (Nov 2026, Inna: "more clean, less busy, bigger code input box"): one bar = create a room + join with a
+           code, then two slim links (ranked match, Discord). Greeting / streak boxes and the global chat window are gone. -->
+      <div class="nh" id="friends-banner">
+        <div class="nh-l">
+          <h1>Play with friends</h1>
+          <p>Pick any game, get a room code, send it to your friends.</p>
+          <button onclick="openRoomModal()" class="nh-create">＋ CREATE A ROOM</button>
+        </div>
+        <div class="nh-r">
+          <span class="lab">HAVE A ROOM CODE?</span>
+          <div class="nh-code code-row">
+            <input id="quick-room-input" type="text" maxlength="4" placeholder="ABCD" autocomplete="off" autocapitalize="characters" aria-label="Enter 4-letter room code" />
+            <button onclick="quickJoinFromBar()">JOIN</button>
+          </div>
         </div>
       </div>
-
-      <!-- Main banner: play with friends (create a room / join with a code). Ranked lives in the right column. -->
-      <div class="hp-row">
-      <div class="banner banner-friends" id="friends-banner">
-        <span class="flex items-center gap-4 px-5 py-4 sm:px-6 min-w-0">
-          <svg class="w-12 h-12 shrink-0" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><g fill="#050E18"><rect x="2" y="2" width="4" height="4"/><rect x="10" y="2" width="4" height="4"/><rect x="1" y="7" width="6" height="6"/><rect x="9" y="7" width="6" height="6"/><rect x="7" y="9" width="2" height="2"/></g><rect x="3" y="3" width="2" height="2" fill="#F7F4EC"/><rect x="11" y="3" width="2" height="2" fill="#F7F4EC"/><rect x="2" y="8" width="4" height="4" fill="#2DD4BF"/><rect x="10" y="8" width="4" height="4" fill="#FB7185"/></svg>
-          <span class="min-w-0">
-            <span class="block font-display font-extrabold text-xl sm:text-2xl leading-tight">Play with Friends</span>
-            <span class="block text-sm font-semibold opacity-80 leading-snug">Create a room for any game and send your friends the code</span>
-            <button onclick="openRoomModal()" class="go-block go-btn mt-2">＋ CREATE A ROOM</button>
-          </span>
-        </span>
-        <span class="join-side">
-          <span class="pix text-[11px] font-bold text-bone tracking-widest">HAVE A ROOM CODE?</span>
-          <span class="code-row w-full">
-            <input id="quick-room-input" type="text" maxlength="4" placeholder="----" aria-label="Enter 4-letter room code" />
-            <button onclick="quickJoinFromBar()">Join</button>
-          </span>
-        </span>
-      </div>
-
-      <div class="hp-side">
-          <!-- Ranked match: pick a game, get paired with a stranger at your level -->
-          <div class="win overflow-hidden">
-            <div class="winbar teal"><span>RANKED MATCH</span><span class="pix text-xs"><span id="screen-score">11 GAMES</span></span></div>
-            <button onclick="openRankedModal()" class="screen rank-screen block w-full" aria-label="Play a ranked match: choose a game"><span id="hero-screen" class="absolute inset-0 block"></span></button>
-            <div class="p-4 space-y-3">
-              <p class="text-sm text-muted leading-snug">Pick a game and get paired with a player at your level. Wins raise your ranking.</p>
-              <button onclick="openRankedModal()" class="btn-game btn-amber w-full py-2.5 text-sm">Find a Ranked Match ▶</button>
-            </div>
-          </div>
-
-          <!-- Community: the GameHub Discord server -->
-          <div class="win overflow-hidden" id="discord-box">
-            <div class="winbar amber"><span>COMMUNITY</span><span class="dots"><i></i><i></i></span></div>
-            <div class="p-4 space-y-3">
-              <div class="flex items-center gap-3">
-                <span class="dc-badge"><svg class="dc-ico" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><rect width="16" height="16" fill="#5865F2"/><g fill="#F7F4EC"><rect x="4" y="4" width="8" height="1"/><rect x="3" y="5" width="10" height="5"/><rect x="2" y="7" width="12" height="4"/><rect x="3" y="11" width="3" height="1"/><rect x="10" y="11" width="3" height="1"/></g><g fill="#5865F2"><rect x="5" y="7" width="2" height="2"/><rect x="9" y="7" width="2" height="2"/></g></svg></span>
-                <p class="text-sm text-muted leading-snug"><b class="text-bone">Join our Discord!</b> Ideas, find players, hang out.</p>
-              </div>
-              <button onclick="openDiscord()" class="btn-game btn-dc w-full py-2.5 text-sm">Join the Discord ▶</button>
-            </div>
-          </div>
-
-      </div>
+      <div class="nh-links">
+        <button id="rank-link" class="b1" onclick="openRankedModal()"><span>🏆 Ranked match <small>· play someone at your level</small></span><span>▶</span></button>
+        <button id="discord-link" class="b2" onclick="openDiscord()"><span>💬 Discord <small>· find people to play with</small></span><span>▶</span></button>
       </div>
 
       <!-- All games in one grid with category buttons (built from the game catalogue) -->

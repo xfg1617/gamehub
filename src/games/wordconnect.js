@@ -98,7 +98,10 @@
       function autoEnter() {
         const w = curWord();
         if (w.length < 3 || G.found.includes(w) || (G.bonus || []).includes(w) || !(G.wordSet.has(w) || isBonus(w))) return;
-        gTimeout(() => { if (G && !G.over && curWord() === w) submit(); }, 260);
+        // "tar" is a word, but you may be on the way to "taro" or "tarot": then wait a bit longer for the next letter
+        if (!G.cands) G.cands = [...G.wordSet].concat([...(EXTRA || [])].filter((x) => x.length <= G.L && fits(x, cnt(G.base))));
+        const longer = G.cands.some((x) => x.length > w.length && x.startsWith(w) && !G.found.includes(x) && !(G.bonus || []).includes(x));
+        gTimeout(() => { if (G && !G.over && curWord() === w) submit(); }, longer ? 1300 : 260);
       }
       function drawCur() { $('wc-cur').innerHTML = curWord().split('').map((ch) => `<span>${ch.toUpperCase()}</span>`).join(''); }
       const say = (t, cls = 'text-muted') => { const m = $('wc-msg'); m.className = `text-center text-sm min-h-[20px] ${cls}`; m.textContent = t; };

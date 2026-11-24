@@ -18,8 +18,9 @@
 
     /* the move log: hidden, or a pop-out panel when 📜 Moves is pressed */
     .gs-moves { display: none !important; }
-    #gs-wrap:has(#gs-body .logbox) .gs-moves { display: inline-flex !important; }
-    body.in-game #game-root .logbox { display: none !important; }
+    #gs-wrap:has(#gs-body .logbox:not(#ch-moves)) .gs-moves { display: inline-flex !important; }
+    body.in-game #game-root .logbox:not(#ch-moves) { display: none !important; }
+    body.in-game #ch-moves { height: 260px !important; }
     body.in-game.show-moves #game-root .logbox { display: block !important; position: fixed; right: 16px; top: 64px; width: min(340px, calc(100vw - 32px)); height: min(60vh, 460px) !important; z-index: 75; box-shadow: 0 6px 0 var(--ink); }
 
     /* ---------- the whole-table layout for card games: the table is the screen ---------- */
@@ -154,3 +155,34 @@
       /* side panels and prompts float on the felt as dark, slightly see-through panels */
       body.in-game[data-game="poker"] #gs-body .win, body.in-game[data-game="kittens"] #gs-body .win, body.in-game[data-game="colorclash"] #gs-body .win, body.in-game[data-game="dominoes"] #gs-body .win { background: rgba(9, 24, 40, .82); }
     }
+
+    /* ---------- loading screen when a game opens (core gameLoading) ---------- */
+    .gl-load { position: fixed; inset: 0; z-index: 120; background: #0B1B2B; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 20px; transition: opacity .25s; }
+    .gl-load.out { opacity: 0; pointer-events: none; }
+    .gl-icon { width: 120px; height: 120px; padding: 14px; background: #12304D; border: 4px solid var(--ink); box-shadow: 0 6px 0 var(--ink); animation: gl-bob .8s steps(2) infinite; }
+    .gl-icon svg { width: 100%; height: 100%; }
+    @keyframes gl-bob { 0% { transform: translateY(0); } 100% { transform: translateY(-6px); } }
+    .gl-load h2 { font-family: 'Arcade Pixel', monospace; font-size: 40px; color: #F5B041; letter-spacing: 2px; text-shadow: 3px 3px 0 var(--ink); text-align: center; }
+    .gl-bar { width: min(340px, 80vw); height: 22px; border: 3px solid var(--ink); background: var(--ink); display: flex; gap: 3px; padding: 3px; }
+    .gl-bar i { flex: 1; background: #12304D; animation: gl-fill .9s steps(1) both; }
+    .gl-bar i:nth-child(1) { animation-delay: 0s; } .gl-bar i:nth-child(2) { animation-delay: .07s; } .gl-bar i:nth-child(3) { animation-delay: .14s; } .gl-bar i:nth-child(4) { animation-delay: .21s; }
+    .gl-bar i:nth-child(5) { animation-delay: .28s; } .gl-bar i:nth-child(6) { animation-delay: .35s; } .gl-bar i:nth-child(7) { animation-delay: .42s; } .gl-bar i:nth-child(8) { animation-delay: .49s; }
+    .gl-bar i:nth-child(9) { animation-delay: .56s; } .gl-bar i:nth-child(10) { animation-delay: .63s; } .gl-bar i:nth-child(11) { animation-delay: .7s; } .gl-bar i:nth-child(12) { animation-delay: .77s; }
+    @keyframes gl-fill { to { background: #2DD4BF; } }
+    .gl-load p { color: #9DB4CC; font-size: 15px; } .gl-load small { color: #F7F4EC; font-size: 14px; max-width: 440px; text-align: center; }
+
+    /* ---------- phone menu (☰ + drawer) ---------- */
+    .m-burger { width: 38px; height: 34px; display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 6px 7px; background: #12304D; border: 2px solid var(--ink); box-shadow: 0 3px 0 var(--ink); }
+    .m-burger i { display: block; height: 3px; background: #F7F4EC; }
+    .m-burger:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
+    #snd-btn-m, #mu-btn-m { display: none !important; }
+    .m-drawer { position: fixed; inset: 0; z-index: 95; background: rgba(5, 14, 24, 0); transition: background .2s; }
+    .m-drawer.open { background: rgba(5, 14, 24, .7); }
+    .m-panel { position: absolute; left: 0; top: 0; bottom: 0; width: min(290px, 82vw); background: #0E2740; border-right: 3px solid var(--ink); box-shadow: 6px 0 0 var(--ink); padding: 14px; display: flex; flex-direction: column; gap: 12px; transform: translateX(-105%); transition: transform .2s ease-out; overflow-y: auto; }
+    .m-drawer.open .m-panel { transform: none; }
+    .m-head { display: flex; justify-content: space-between; align-items: center; padding-bottom: 6px; border-bottom: 2px solid rgba(247, 244, 236, .1); }
+    .m-nav { display: flex; flex-direction: column; gap: 4px; }
+    .m-item { display: flex; align-items: center; gap: 12px; padding: 10px 10px; color: #F7F4EC; font-weight: 800; font-size: 15px; text-align: left; border: 2px solid transparent; }
+    .m-item:active, .m-item:hover { background: #12304D; border-color: var(--ink); }
+    .m-item svg { width: 20px; height: 20px; flex: none; }
+    .m-foot { margin-top: auto; font-size: 12px; color: #9DB4CC; } .m-foot a { text-decoration: underline; }

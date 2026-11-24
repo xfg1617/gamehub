@@ -80,7 +80,7 @@
       }
       const inGame = () => (typeof activeGame !== 'undefined' && activeGame) || null;
       function wanted() {
-        if (!st.on || !unlocked || document.hidden) return null;
+        if (!st.on || !unlocked) return null;
         const g = inGame();
         if (g && !st.inGames) return null;
         if (st.pick === 'shuffle') return cur || ORDER[Math.floor(Math.random() * ORDER.length)];
@@ -181,7 +181,8 @@
       document.addEventListener('pointerdown', unlock, { capture: true });
       document.addEventListener('keydown', unlock, { capture: true });
       document.addEventListener('click', (e) => { const p = document.getElementById('mu-pop'); if (p && !p.contains(e.target) && !e.target.closest('.gs-snd, #mu-btn, #mu-btn-m')) p.remove(); });
-      document.addEventListener('visibilitychange', sync);
+      // switching tabs pauses the music where it is and carries on from the same spot when you come back
+      document.addEventListener('visibilitychange', () => { if (!ac) return; if (document.hidden) { try { ac.suspend(); } catch (e) {} } else { try { ac.resume(); } catch (e) {} sync(); } });
       setInterval(sync, 600);
       if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', buttons); else buttons();
       // the ♪ button in game headers (the side menu is hidden while playing) opens the same panel

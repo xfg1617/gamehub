@@ -1128,8 +1128,9 @@
 
     /* the move log: hidden, or a pop-out panel when 📜 Moves is pressed */
     .gs-moves { display: none !important; }
-    #gs-wrap:has(#gs-body .logbox) .gs-moves { display: inline-flex !important; }
-    body.in-game #game-root .logbox { display: none !important; }
+    #gs-wrap:has(#gs-body .logbox:not(#ch-moves)) .gs-moves { display: inline-flex !important; }
+    body.in-game #game-root .logbox:not(#ch-moves) { display: none !important; }
+    body.in-game #ch-moves { height: 260px !important; }
     body.in-game.show-moves #game-root .logbox { display: block !important; position: fixed; right: 16px; top: 64px; width: min(340px, calc(100vw - 32px)); height: min(60vh, 460px) !important; z-index: 75; box-shadow: 0 6px 0 var(--ink); }
 
     /* ---------- the whole-table layout for card games: the table is the screen ---------- */
@@ -1264,6 +1265,37 @@
       /* side panels and prompts float on the felt as dark, slightly see-through panels */
       body.in-game[data-game="poker"] #gs-body .win, body.in-game[data-game="kittens"] #gs-body .win, body.in-game[data-game="colorclash"] #gs-body .win, body.in-game[data-game="dominoes"] #gs-body .win { background: rgba(9, 24, 40, .82); }
     }
+
+    /* ---------- loading screen when a game opens (core gameLoading) ---------- */
+    .gl-load { position: fixed; inset: 0; z-index: 120; background: #0B1B2B; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 20px; transition: opacity .25s; }
+    .gl-load.out { opacity: 0; pointer-events: none; }
+    .gl-icon { width: 120px; height: 120px; padding: 14px; background: #12304D; border: 4px solid var(--ink); box-shadow: 0 6px 0 var(--ink); animation: gl-bob .8s steps(2) infinite; }
+    .gl-icon svg { width: 100%; height: 100%; }
+    @keyframes gl-bob { 0% { transform: translateY(0); } 100% { transform: translateY(-6px); } }
+    .gl-load h2 { font-family: 'Arcade Pixel', monospace; font-size: 40px; color: #F5B041; letter-spacing: 2px; text-shadow: 3px 3px 0 var(--ink); text-align: center; }
+    .gl-bar { width: min(340px, 80vw); height: 22px; border: 3px solid var(--ink); background: var(--ink); display: flex; gap: 3px; padding: 3px; }
+    .gl-bar i { flex: 1; background: #12304D; animation: gl-fill .9s steps(1) both; }
+    .gl-bar i:nth-child(1) { animation-delay: 0s; } .gl-bar i:nth-child(2) { animation-delay: .07s; } .gl-bar i:nth-child(3) { animation-delay: .14s; } .gl-bar i:nth-child(4) { animation-delay: .21s; }
+    .gl-bar i:nth-child(5) { animation-delay: .28s; } .gl-bar i:nth-child(6) { animation-delay: .35s; } .gl-bar i:nth-child(7) { animation-delay: .42s; } .gl-bar i:nth-child(8) { animation-delay: .49s; }
+    .gl-bar i:nth-child(9) { animation-delay: .56s; } .gl-bar i:nth-child(10) { animation-delay: .63s; } .gl-bar i:nth-child(11) { animation-delay: .7s; } .gl-bar i:nth-child(12) { animation-delay: .77s; }
+    @keyframes gl-fill { to { background: #2DD4BF; } }
+    .gl-load p { color: #9DB4CC; font-size: 15px; } .gl-load small { color: #F7F4EC; font-size: 14px; max-width: 440px; text-align: center; }
+
+    /* ---------- phone menu (☰ + drawer) ---------- */
+    .m-burger { width: 38px; height: 34px; display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 6px 7px; background: #12304D; border: 2px solid var(--ink); box-shadow: 0 3px 0 var(--ink); }
+    .m-burger i { display: block; height: 3px; background: #F7F4EC; }
+    .m-burger:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
+    #snd-btn-m, #mu-btn-m { display: none !important; }
+    .m-drawer { position: fixed; inset: 0; z-index: 95; background: rgba(5, 14, 24, 0); transition: background .2s; }
+    .m-drawer.open { background: rgba(5, 14, 24, .7); }
+    .m-panel { position: absolute; left: 0; top: 0; bottom: 0; width: min(290px, 82vw); background: #0E2740; border-right: 3px solid var(--ink); box-shadow: 6px 0 0 var(--ink); padding: 14px; display: flex; flex-direction: column; gap: 12px; transform: translateX(-105%); transition: transform .2s ease-out; overflow-y: auto; }
+    .m-drawer.open .m-panel { transform: none; }
+    .m-head { display: flex; justify-content: space-between; align-items: center; padding-bottom: 6px; border-bottom: 2px solid rgba(247, 244, 236, .1); }
+    .m-nav { display: flex; flex-direction: column; gap: 4px; }
+    .m-item { display: flex; align-items: center; gap: 12px; padding: 10px 10px; color: #F7F4EC; font-weight: 800; font-size: 15px; text-align: left; border: 2px solid transparent; }
+    .m-item:active, .m-item:hover { background: #12304D; border-color: var(--ink); }
+    .m-item svg { width: 20px; height: 20px; flex: none; }
+    .m-foot { margin-top: auto; font-size: 12px; color: #9DB4CC; } .m-foot a { text-decoration: underline; }
     /* ===== tic-tac-toe ===== */
     .ttt-board { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 6px; background: var(--ink); border: 4px solid var(--ink); box-shadow: 0 5px 0 var(--ink); aspect-ratio: 1 / 1; width: 100%; max-width: 460px; margin: 0 auto; }
     .ttt-cell { position: relative; min-width: 0; min-height: 0; overflow: hidden; background: #12314F; box-shadow: inset 0 0 0 3px #1A3856, inset 0 -6px 0 #0F2A44; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 12%; }
@@ -1770,10 +1802,13 @@
 
     <!-- Mobile top bar -->
     <header class="mhdr lg:hidden sticky top-0 z-40 h-[60px] px-4 flex items-center justify-between">
+      <span class="flex items-center gap-3">
+      <button id="m-burger" onclick="openDrawer()" class="m-burger" aria-label="Menu" title="Menu"><i></i><i></i><i></i></button>
       <button onclick="navigateTo('play')" class="flex items-center gap-2.5">
         <svg class="w-8 h-8" viewBox="0 0 40 40" fill="none" shape-rendering="crispEdges" aria-hidden="true"><path d="M8 10h24v4h4v18h-8v-4H12v4H4V14h4z" fill="#F5B041" stroke="#050E18" stroke-width="3" stroke-linejoin="miter"/><rect x="9" y="18" width="8" height="3" fill="#050E18"/><rect x="11.5" y="15.5" width="3" height="8" fill="#050E18"/><rect x="24" y="16" width="4" height="4" fill="#FB7185" stroke="#050E18" stroke-width="1.5"/><rect x="29" y="20" width="4" height="4" fill="#2DD4BF" stroke="#050E18" stroke-width="1.5"/></svg>
         <span class="font-display text-xl font-extrabold tracking-tight text-bone">Game<span class="text-amber">Hub</span></span>
       </button>
+      </span>
       <div class="flex items-center gap-3">
         <button id="snd-btn-m" onclick="toggleSound()" class="pix text-xs text-muted" title="Turn sound effects on or off">♪ ON</button>
         <button id="mnav-friends" onclick="navigateTo('friends')" class="relative w-9 h-9 grid place-items-center text-bone" title="Friends" aria-label="Friends"><svg class="w-6 h-6" viewBox="0 0 16 16" fill="currentColor" shape-rendering="crispEdges"><rect x="2" y="2" width="4" height="4"/><rect x="10" y="2" width="4" height="4"/><rect x="1" y="7" width="6" height="6"/><rect x="9" y="7" width="6" height="6"/></svg><span id="mnav-friends-badge" class="fr-navbadge hidden absolute -top-1 -right-1">0</span></button>
@@ -2116,7 +2151,7 @@
     <div class="foot-inner py-5">
       <div class="max-w-[1120px] mx-auto px-4 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-muted">
         <span class="font-display font-extrabold text-bone text-sm">Game<span class="text-amber">Hub</span> <span class="font-sans font-medium text-muted text-xs">· Built for quick matches with friends</span></span>
-        <span class="flex items-center gap-3"><a href="#" onclick="openDiscord();return false" class="hover:text-bone underline">Discord</a><span>Profile, XP, Elo, and streaks save locally in your browser.</span></span>
+        <span class="flex items-center gap-3"><a href="#" onclick="openDiscord();return false" class="hover:text-bone underline">Discord</a><span>© 2026 GameHub. All rights reserved.</span></span>
       </div>
     </div>
   </footer>
@@ -5430,6 +5465,19 @@
       const root = document.getElementById('game-root');
       root.innerHTML = '';
       m.open(root, opts || {});
+      gameLoading(m);
+    }
+    // a short loading screen (about a second) when a game opens: its icon, name, a filling bar and a tip
+    // (skipped in automated test browsers so tests don't wait for it)
+    function gameLoading(m) {
+      if (navigator.webdriver || !m) return;
+      const old = document.getElementById('gl-load'); if (old) old.remove();
+      const tip = (typeof HOWTO !== 'undefined' && HOWTO[m.id] && HOWTO[m.id].tip) || (m.rules && m.rules.tip) || '';
+      const lines = ['Shuffling the deck...', 'Setting up the table...', 'Finding a good seat...', 'Warming up...'];
+      const d = document.createElement('div'); d.id = 'gl-load'; d.className = 'gl-load';
+      d.innerHTML = `<div class="gl-icon">${GICONS[m.icon] || ''}</div><h2>${esc(m.name.toUpperCase())}</h2><div class="gl-bar">${'<i></i>'.repeat(12)}</div><p>${lines[Math.floor(Math.random() * lines.length)]}</p>${tip ? `<small>Tip: ${tip}</small>` : ''}`;
+      document.body.appendChild(d);
+      setTimeout(() => { d.classList.add('out'); setTimeout(() => d.remove(), 260); }, 950);
     }
 
     const rnd = (n) => Math.floor(Math.random() * n);
@@ -5909,6 +5957,32 @@
     const RANK_LAB = { 11: 'J', 12: 'Q', 13: 'K', 14: 'A' };
     const rankLab = (r) => RANK_LAB[r] || String(r);
     // card = { r: 2..14, s: 's'|'h'|'d'|'c' }
+    /* ---------- phone menu (Inna, Nov 2026): ☰ in the top-left opens a side drawer with everything from the computer
+       side menu, so the phone header stays tidy (sound/music moved in here) ---------- */
+    function openDrawer() {
+      let d = document.getElementById('m-drawer');
+      if (d) { d.remove(); return; }
+      d = document.createElement('div'); d.id = 'm-drawer'; d.className = 'm-drawer';
+      const items = [...document.querySelectorAll('aside.side nav button[id^="nav-"]')].map((b) => `<button class="m-item" data-on="${esc(b.getAttribute('onclick') || '')}">${b.innerHTML}</button>`).join('');
+      const signed = document.getElementById('btn-signin'), showSign = signed && getComputedStyle(signed).display !== 'none';
+      d.innerHTML = `<div class="m-panel"><div class="m-head"><span class="font-display text-xl font-extrabold text-bone">Game<span class="text-amber">Hub</span></span><button class="pix text-lg text-bone" data-close aria-label="Close">✕</button></div>
+        <nav class="m-nav">${items}<button class="m-item" data-snd>♪ <span>Sound & Music</span></button></nav>
+        ${showSign ? '<button class="btn-game btn-amber w-full py-2.5 text-sm" data-on="openAuthModal(\'signup\')">Sign up · Log in</button>' : ''}
+        <div class="m-foot"><a href="#" data-on="openLegal('terms')">Terms</a> · <a href="#" data-on="openLegal('privacy')">Privacy</a> · © 2026 GameHub</div></div>`;
+      document.body.appendChild(d);
+      requestAnimationFrame(() => d.classList.add('open'));
+      d.addEventListener('click', (e) => {
+        const b = e.target.closest('[data-on],[data-close],[data-snd]');
+        if (e.target === d || (b && b.hasAttribute('data-close'))) return closeDrawer();
+        if (!b) return;
+        e.preventDefault();
+        if (b.hasAttribute('data-snd')) { closeDrawer(); const h = document.getElementById('m-burger'); return setTimeout(() => window.openSoundPanel && openSoundPanel(h), 50); }
+        closeDrawer(); try { new Function(b.dataset.on)(); } catch (err) { console.error(err); }
+      });
+    }
+    function closeDrawer() { const d = document.getElementById('m-drawer'); if (!d) return; d.classList.remove('open'); setTimeout(() => d.remove(), 220); }
+    window.openDrawer = openDrawer; window.closeDrawer = closeDrawer;
+
     /* ---------- name tags (Inna, Nov 2026, from her reference picture): instead of a big box per player, the cards lie on
        the table and a small tag sits under them: picture, name, chips / cards, a yellow count bubble, D for the dealer.
        The tag gets a gold outline on that player's turn. */
@@ -15008,8 +15082,7 @@
         ${h('3. Playing fair and being kind')}${p('When you play or chat, you agree not to:')}${li(['harass, bully, threaten or use hateful language toward anyone;', 'share anyone’s personal information (including your own phone number or address) in chat;', 'cheat, use bots or scripts, exploit bugs, or manipulate rankings (for example by losing on purpose to a friend);', 'spam, advertise, or post links to harmful or adult content;', 'try to break, overload or hack the site.'])}
         ${p('We may remove messages, reset stats, or suspend or close accounts that break these rules.')}
         ${h('4. Chips, XP and rankings have no money value')}${p(`Chips, XP, levels, badges and rankings in ${L.site} are just for fun. They <b>cannot</b> be bought, sold, or exchanged for money or prizes. Poker and Blackjack use play chips only; ${L.site} does not offer real-money gambling.`)}
-        ${h('5. Our content')}${p(`The games, artwork, sounds and text on ${L.site} belong to us. You may play and share links to the site, but please do not copy or resell our content.`)}
-        ${h('6. Your content')}${p('You keep ownership of what you write and draw (like chat messages and Doodle Chain drawings), but you let us show it to other players as part of the games.')}
+        ${h('5. Our content and copyright')}${p(`© ${new Date().getFullYear()} ${L.owner}. All rights reserved. The ${L.site} name and logo, the games' names, rules text, artwork, characters, pixel art, sounds, music and code are owned by ${L.owner} and protected by copyright law. You may play and share links to the site, but you may not copy, download and re-host, sell, or make your own version of the site or any part of it without our written permission.`)}${p(`Our games are original: some are inspired by classic game types (for example property trading or hidden-role games), but they use their own names, rules wording, characters and art. They are not affiliated with, or endorsed by, the makers of any other game.`)}${p(`If you believe something on ${L.site} uses your work without permission, contact us at ${L.contact} and we will look into it promptly.`)}${h('6. Your content')}${p('You keep ownership of what you write and draw (like chat messages and Doodle Chain drawings), but you let us show it to other players as part of the games.')}
         ${h('7. Changes and availability')}${p(`We may update, add or remove games and features at any time. We try to keep ${L.site} running smoothly, but it may sometimes be unavailable, and online progress could occasionally be lost.`)}
         ${h('8. Disclaimer and limits')}${p(`${L.site} is provided "as is", without warranties of any kind. To the extent the law allows, we are not responsible for indirect losses, and our total liability to you is limited to $50.`)}
         ${h('9. Ending your use')}${p(`You can stop using ${L.site} at any time and ask us to delete your account at ${L.contact}. We may suspend or end access for anyone who breaks these Terms.`)}
@@ -15118,7 +15191,7 @@
       }
       const inGame = () => (typeof activeGame !== 'undefined' && activeGame) || null;
       function wanted() {
-        if (!st.on || !unlocked || document.hidden) return null;
+        if (!st.on || !unlocked) return null;
         const g = inGame();
         if (g && !st.inGames) return null;
         if (st.pick === 'shuffle') return cur || ORDER[Math.floor(Math.random() * ORDER.length)];
@@ -15219,7 +15292,8 @@
       document.addEventListener('pointerdown', unlock, { capture: true });
       document.addEventListener('keydown', unlock, { capture: true });
       document.addEventListener('click', (e) => { const p = document.getElementById('mu-pop'); if (p && !p.contains(e.target) && !e.target.closest('.gs-snd, #mu-btn, #mu-btn-m')) p.remove(); });
-      document.addEventListener('visibilitychange', sync);
+      // switching tabs pauses the music where it is and carries on from the same spot when you come back
+      document.addEventListener('visibilitychange', () => { if (!ac) return; if (document.hidden) { try { ac.suspend(); } catch (e) {} } else { try { ac.resume(); } catch (e) {} sync(); } });
       setInterval(sync, 600);
       if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', buttons); else buttons();
       // the ♪ button in game headers (the side menu is hidden while playing) opens the same panel

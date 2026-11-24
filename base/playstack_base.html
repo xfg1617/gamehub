@@ -935,10 +935,13 @@
 
     <!-- Mobile top bar -->
     <header class="mhdr lg:hidden sticky top-0 z-40 h-[60px] px-4 flex items-center justify-between">
+      <span class="flex items-center gap-3">
+      <button id="m-burger" onclick="openDrawer()" class="m-burger" aria-label="Menu" title="Menu"><i></i><i></i><i></i></button>
       <button onclick="navigateTo('play')" class="flex items-center gap-2.5">
         <svg class="w-8 h-8" viewBox="0 0 40 40" fill="none" shape-rendering="crispEdges" aria-hidden="true"><path d="M8 10h24v4h4v18h-8v-4H12v4H4V14h4z" fill="#F5B041" stroke="#050E18" stroke-width="3" stroke-linejoin="miter"/><rect x="9" y="18" width="8" height="3" fill="#050E18"/><rect x="11.5" y="15.5" width="3" height="8" fill="#050E18"/><rect x="24" y="16" width="4" height="4" fill="#FB7185" stroke="#050E18" stroke-width="1.5"/><rect x="29" y="20" width="4" height="4" fill="#2DD4BF" stroke="#050E18" stroke-width="1.5"/></svg>
         <span class="font-display text-xl font-extrabold tracking-tight text-bone">Game<span class="text-amber">Hub</span></span>
       </button>
+      </span>
       <div class="flex items-center gap-3">
         <button id="snd-btn-m" onclick="toggleSound()" class="pix text-xs text-muted" title="Turn sound effects on or off">♪ ON</button>
         <button id="mnav-friends" onclick="navigateTo('friends')" class="relative w-9 h-9 grid place-items-center text-bone" title="Friends" aria-label="Friends"><svg class="w-6 h-6" viewBox="0 0 16 16" fill="currentColor" shape-rendering="crispEdges"><rect x="2" y="2" width="4" height="4"/><rect x="10" y="2" width="4" height="4"/><rect x="1" y="7" width="6" height="6"/><rect x="9" y="7" width="6" height="6"/></svg><span id="mnav-friends-badge" class="fr-navbadge hidden absolute -top-1 -right-1">0</span></button>
@@ -1281,7 +1284,7 @@
     <div class="foot-inner py-5">
       <div class="max-w-[1120px] mx-auto px-4 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-muted">
         <span class="font-display font-extrabold text-bone text-sm">Game<span class="text-amber">Hub</span> <span class="font-sans font-medium text-muted text-xs">· Built for quick matches with friends</span></span>
-        <span class="flex items-center gap-3"><a href="#" onclick="openDiscord();return false" class="hover:text-bone underline">Discord</a><span>Profile, XP, Elo, and streaks save locally in your browser.</span></span>
+        <span class="flex items-center gap-3"><a href="#" onclick="openDiscord();return false" class="hover:text-bone underline">Discord</a><span>© 2026 GameHub. All rights reserved.</span></span>
       </div>
     </div>
   </footer>

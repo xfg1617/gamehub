@@ -424,6 +424,19 @@
       const root = document.getElementById('game-root');
       root.innerHTML = '';
       m.open(root, opts || {});
+      gameLoading(m);
+    }
+    // a short loading screen (about a second) when a game opens: its icon, name, a filling bar and a tip
+    // (skipped in automated test browsers so tests don't wait for it)
+    function gameLoading(m) {
+      if (navigator.webdriver || !m) return;
+      const old = document.getElementById('gl-load'); if (old) old.remove();
+      const tip = (typeof HOWTO !== 'undefined' && HOWTO[m.id] && HOWTO[m.id].tip) || (m.rules && m.rules.tip) || '';
+      const lines = ['Shuffling the deck...', 'Setting up the table...', 'Finding a good seat...', 'Warming up...'];
+      const d = document.createElement('div'); d.id = 'gl-load'; d.className = 'gl-load';
+      d.innerHTML = `<div class="gl-icon">${GICONS[m.icon] || ''}</div><h2>${esc(m.name.toUpperCase())}</h2><div class="gl-bar">${'<i></i>'.repeat(12)}</div><p>${lines[Math.floor(Math.random() * lines.length)]}</p>${tip ? `<small>Tip: ${tip}</small>` : ''}`;
+      document.body.appendChild(d);
+      setTimeout(() => { d.classList.add('out'); setTimeout(() => d.remove(), 260); }, 950);
     }
 
     const rnd = (n) => Math.floor(Math.random() * n);
@@ -903,6 +916,32 @@
     const RANK_LAB = { 11: 'J', 12: 'Q', 13: 'K', 14: 'A' };
     const rankLab = (r) => RANK_LAB[r] || String(r);
     // card = { r: 2..14, s: 's'|'h'|'d'|'c' }
+    /* ---------- phone menu (Inna, Nov 2026): ☰ in the top-left opens a side drawer with everything from the computer
+       side menu, so the phone header stays tidy (sound/music moved in here) ---------- */
+    function openDrawer() {
+      let d = document.getElementById('m-drawer');
+      if (d) { d.remove(); return; }
+      d = document.createElement('div'); d.id = 'm-drawer'; d.className = 'm-drawer';
+      const items = [...document.querySelectorAll('aside.side nav button[id^="nav-"]')].map((b) => `<button class="m-item" data-on="${esc(b.getAttribute('onclick') || '')}">${b.innerHTML}</button>`).join('');
+      const signed = document.getElementById('btn-signin'), showSign = signed && getComputedStyle(signed).display !== 'none';
+      d.innerHTML = `<div class="m-panel"><div class="m-head"><span class="font-display text-xl font-extrabold text-bone">Game<span class="text-amber">Hub</span></span><button class="pix text-lg text-bone" data-close aria-label="Close">✕</button></div>
+        <nav class="m-nav">${items}<button class="m-item" data-snd>♪ <span>Sound & Music</span></button></nav>
+        ${showSign ? '<button class="btn-game btn-amber w-full py-2.5 text-sm" data-on="openAuthModal(\'signup\')">Sign up · Log in</button>' : ''}
+        <div class="m-foot"><a href="#" data-on="openLegal('terms')">Terms</a> · <a href="#" data-on="openLegal('privacy')">Privacy</a> · © 2026 GameHub</div></div>`;
+      document.body.appendChild(d);
+      requestAnimationFrame(() => d.classList.add('open'));
+      d.addEventListener('click', (e) => {
+        const b = e.target.closest('[data-on],[data-close],[data-snd]');
+        if (e.target === d || (b && b.hasAttribute('data-close'))) return closeDrawer();
+        if (!b) return;
+        e.preventDefault();
+        if (b.hasAttribute('data-snd')) { closeDrawer(); const h = document.getElementById('m-burger'); return setTimeout(() => window.openSoundPanel && openSoundPanel(h), 50); }
+        closeDrawer(); try { new Function(b.dataset.on)(); } catch (err) { console.error(err); }
+      });
+    }
+    function closeDrawer() { const d = document.getElementById('m-drawer'); if (!d) return; d.classList.remove('open'); setTimeout(() => d.remove(), 220); }
+    window.openDrawer = openDrawer; window.closeDrawer = closeDrawer;
+
     /* ---------- name tags (Inna, Nov 2026, from her reference picture): instead of a big box per player, the cards lie on
        the table and a small tag sits under them: picture, name, chips / cards, a yellow count bubble, D for the dealer.
        The tag gets a gold outline on that player's turn. */

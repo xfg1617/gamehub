@@ -23,3 +23,20 @@
       #fb-opp .tg-fan .pcard { width: 30px; height: 42px; margin-left: -23px; }
       .fb-hand .pcard.sm { width: 46px; height: 66px; }
     }
+    /* computers: players spread round a big table, bigger cards (Inna, Nov 2026). With 5 players the two across from you
+       sit side by side, never stacked. */
+    #fb-opp > .r-top { flex-wrap: nowrap; }
+    @media (min-width: 1024px) {
+      body.in-game[data-game="fibber"] #gs-body > .grid > div:first-child { max-width: none !important; padding: 0 40px 0 270px; }
+      body.in-game[data-game="fibber"] #fb-opp { column-gap: 260px !important; row-gap: 40px !important; }
+      body.in-game[data-game="fibber"] #fb-opp > .r-top { gap: 180px; }
+      body.in-game[data-game="fibber"] #fb-opp > .r-mid { min-height: calc(100vh - 560px) !important; }
+      body.in-game[data-game="fibber"] #fb-prompt { max-width: 760px; margin: 0 auto; }
+      #fb-opp .tg-fan .pcard { width: 58px !important; height: 82px !important; margin-left: -42px !important; }
+      #fb-opp .tg-fan .pcard:first-child { margin-left: 0 !important; }
+      .fb-hand .pcard.sm { width: 84px !important; height: 120px !important; }
+      .fb-hand .pcard.sm .pc-mid svg { width: 44px !important; height: 44px !important; }
+      .fb-pile .pcard.sm, .fb-reveal .pcard.sm { width: 78px !important; height: 110px !important; }
+      .fb-pile { width: 84px !important; height: 116px !important; }
+      .fb-claim { font-size: 24px !important; padding: 6px 18px !important; }
+    }

@@ -18,9 +18,7 @@ with sync_playwright() as p:
             if pg.evaluate("(() => { const G = GAME_MODS.hedge.engine.G; return G && !G.over && G.S.mine(G.st.turn); })()"):
                 a = pg.evaluate("(() => { const G = GAME_MODS.hedge.engine.G; return GAME_MODS.hedge.engine.aiAction(G.st, G.me, 3); })()")
                 if a['t'] == 'wall' and walls < 4:
-                    pg.click('#hr-mwall'); pg.evaluate(f"document.querySelector('.hr-dot[data-wr=\"{a['r']}\"][data-wc=\"{a['c']}\"]').click()")
-                    if pg.evaluate("GAME_MODS.hedge.engine.G.orient") != a['o']: pg.click('#hr-turn')
-                    pg.click('#hr-place'); walls += 1
+                    w = a['o'] + str(a['r']) + ',' + str(a['c']); pg.evaluate("(w) => document.querySelector(`.hr-gap[data-w=\"${w}\"]`).click()", w); walls += 1
                 else:
                     mv = pg.evaluate("(() => { const G = GAME_MODS.hedge.engine.G, E = GAME_MODS.hedge.engine; const m = E.aiAction(Object.assign({}, G.st, { left: G.st.left.map(() => 0) }), G.me, 3); return m; })()")
                     pg.evaluate(f"document.querySelector('.hr-cell[data-r=\"{mv['r']}\"][data-c=\"{mv['c']}\"]').click()")

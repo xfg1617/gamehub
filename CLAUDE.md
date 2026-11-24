@@ -644,6 +644,17 @@ One shared way to run a game table, used on this device AND online, so a game ha
   Fibber → **Bullshit**. Older notes in this file still use the old names. Inna was told "Uno" is a Mattel trademark
   and chose it anyway; no brand subtitles on tiles.
 
+## 5q. Nov 25 2026 tweaks (Inna)
+
+* **Bullshit**: computers think 2-3 s, TIME TO SHOUT 5/7/10 s (default 7), cards stay turned over 2.8 s. On computers
+  players sit far apart round a big table, bigger cards (36-fibber.css); with 5 players the two across sit side by side
+  (`#fb-opp > .r-top` no wrap), never stacked.
+* **Wall Maze**: no Move / Plant buttons. Tap a glowing square to move; the gaps between squares are buttons (`.hr-gap`,
+  `data-w="h r,c"` / `"v r,c"`: the hedge covers the tapped gap and the next one right/down). Mouse: hovering shows the
+  hedge (`#hr-ghost`), one click plants. Touch: first tap shows it (`G.ghostW`), second tap plants.
+* **Mine Saboteurs / Castles & Kings** full-screen on computers: players panel floats left (Saboteurs) / characters
+  panel floats right (Castles); map / towns fill the rest, bigger cards and buildings.
+
 ## 5d. Game setup screens, room codes, leaving a game
 
 * Every game opens on a setup screen (`setupScreen` in `core.js`). Options are `{ key, label, def,

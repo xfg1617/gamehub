@@ -32,3 +32,13 @@
       body.in-game[data-game="tunnel"] #gs-body > .grid { grid-template-columns: minmax(0, calc((var(--av) - 250px) * 13 / 11)) 300px !important; justify-content: center; }
       body.in-game[data-game="tunnel"] #gs-body > .grid > div:last-child { max-height: var(--av); overflow-y: auto; }
     }
+    /* computers: the map fills the screen, the players panel floats at the left under the controls (Nov 2026) */
+    @media (min-width: 1024px) {
+      body.in-game[data-game="tunnel"] #gs-body > .grid { grid-template-columns: minmax(0, 1fr) !important; }
+      body.in-game[data-game="tunnel"] #gs-body > .grid > div:last-child { position: fixed; left: 14px; top: 66px; width: 250px; z-index: 40; max-height: calc(100vh - 150px); overflow: auto; }
+      body.in-game[data-game="tunnel"] #gs-body > .grid > div:first-child { padding-left: 270px; }
+      body.in-game[data-game="tunnel"] .tt-boardbox, body.in-game[data-game="tunnel"] .tt-role { max-width: calc((100vh - 250px) * 13 / 11); margin-left: auto; margin-right: auto; }
+      body.in-game[data-game="tunnel"] #tt-prompt { max-width: 900px; margin-left: auto; margin-right: auto; }
+      body.in-game[data-game="tunnel"] .tt-card { width: 76px; height: 104px; }
+      body.in-game[data-game="tunnel"] .tt-card.tun svg { width: 64px; height: 64px; }
+    }

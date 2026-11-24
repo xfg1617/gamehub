@@ -23,3 +23,9 @@
       body.in-game[data-game="hedge"] #gs-body > .grid { grid-template-columns: min(calc(var(--av) - 10px), calc(100vw - 460px)) var(--side) !important; }
       body.in-game[data-game="hedge"] .hr-boardcol { max-width: none; }
     }
+    /* the gaps between squares you can tap to plant a hedge (Nov 2026: no more Move / Plant buttons) */
+    .hr-gap { position: absolute; z-index: 4; padding: 0; border: 0; background: rgba(52, 211, 153, .22); cursor: pointer; }
+    .hr-gap::before { content: ''; position: absolute; inset: -5px; }
+    .hr-gap:hover { background: rgba(52, 211, 153, .5); }
+    .hr-board.wait .hr-gap { display: none; }
+    #hr-ghost { z-index: 5; pointer-events: none; }

@@ -42,14 +42,14 @@
         const body = gameShell(root, mod, '', 'max-w-[1200px] mx-auto');
         setupScreen(body, mod, [
           { key: 'n', label: 'PLAYERS', def: 4, choices: [[3, '3'], [4, '4'], [5, '5']] },
-          { key: 'secs', label: 'TIME TO SHOUT', def: 4, choices: [[3, '3 sec'], [4, '4 sec'], [6, '6 sec']], hint: 'How long everyone has to shout BULLSHIT! after each play.' },
+          { key: 'secs', label: 'TIME TO SHOUT', def: 7, choices: [[5, '5 sec'], [7, '7 sec'], [10, '10 sec']], hint: 'How long everyone has to shout BULLSHIT! after each play.' },
         ], (sel) => start(body, sel, npLocal([{ name: profile.username, avatar: profile.avatar }].concat(BOTS.slice(0, +sel.n - 1).map(([name, avatar]) => ({ bot: true, name, avatar }))), sel)));
       }
       function start(body, sel, S) {
         const deck = S.rng.shuffle(newDeckSorted());
         const players = S.seats.map((x, i) => ({ seat: i, name: x.name, av: x.avatar, hand: [] }));
         deck.forEach((c, k) => players[k % players.length].hand.push(c));
-        G = { S, me: S.online ? S.me : 0, players, pile: [], step: 0, cur: S.rng.rnd(players.length), need: 14, last: null, secs: +sel.secs || 4, over: false, tok: ++GT.cur, log: [], sel: new Set(), stats: { caught: 0, fooled: 0, lied: 0 } };
+        G = { S, me: S.online ? S.me : 0, players, pile: [], step: 0, cur: S.rng.rnd(players.length), need: 14, last: null, secs: +sel.secs || 7, over: false, tok: ++GT.cur, log: [], sel: new Set(), stats: { caught: 0, fooled: 0, lied: 0 } };
         GT.started = true; GT.over = false;
         body.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_250px] gap-5 items-start">
           <div class="space-y-3 min-w-0"><div id="fb-opp" class="ring4">${ringSlots('fb')}
@@ -93,7 +93,7 @@
         $('fb-status').textContent = mine ? 'YOUR TURN' : `${p.name.toUpperCase()}'S TURN`;
         G.sel.clear(); draw();
         if (mine) myPlayUI(p, k); else prompt(`<span class="text-muted">${esc(p.name)} is choosing cards...</span>`);
-        const a = await S.ask(p.seat, () => ({ t: 'play', k, cards: botPlay(p.hand, G.need, Math.random).map((i) => p.hand[i]) }), 900 + rnd(900), (x) => x.s === p.seat && x.t === 'play' && x.k === k);
+        const a = await S.ask(p.seat, () => ({ t: 'play', k, cards: botPlay(p.hand, G.need, Math.random).map((i) => p.hand[i]) }), 2000 + rnd(1000), (x) => x.s === p.seat && x.t === 'play' && x.k === k);
         if (!G || G.tok !== t) throw ABORT;
         prompt('');
         // take the named cards out of the hand (an honest table always finds them)
@@ -139,7 +139,7 @@
           return { t: 'nodoubt', k };
         };
         // with people at the table, wait the full time; with only computers, a quick look
-        const a = await S.ask(-1, botFn, people.length && !(people.length === 1 && people[0] === p) ? G.secs * 1000 + 300 : 700 + rnd(500),
+        const a = await S.ask(-1, botFn, people.length && !(people.length === 1 && people[0] === p) ? G.secs * 1000 + 300 : 1500 + rnd(800),
           (x) => x.k === k && (x.t === 'nodoubt' || (x.t === 'doubt' && others.some((q) => q.seat === x.s))));
         if (!G || G.tok !== t) throw ABORT;
         if (G.stopDoubt) { G.stopDoubt(); G.stopDoubt = null; }
@@ -155,7 +155,7 @@
         log(`${nm(caller)} shouts <b class="text-coral">BULLSHIT!</b>`);
         G.reveal = { cards, lie, caller, p };
         draw(); SFX.play('reveal');
-        await W(1900);
+        await W(2800);
         const loser = lie ? p : caller;
         if (lie) log(`It was a lie! ${nm(p)} picks up the pile (${G.pile.length} cards).`);
         else log(`It was true! ${nm(caller)} picks up the pile (${G.pile.length} cards).`);
@@ -165,7 +165,7 @@
         for (let i = 0; i < Math.min(n, 6); i++) gFly('#fb-pile', seatEl(loser), playingCardHTML(null, { cls: 'sm' }), { ms: 420, delay: i * 70, arc: 30 });
         loser.hand.push(...G.pile); G.pile = []; G.reveal = null;
         draw();
-        await W(900);
+        await W(1300);
         if (!p.hand.length) return win(p);
       }
       function win(p) { if (G.over) return; G.tok++; finish(p); }

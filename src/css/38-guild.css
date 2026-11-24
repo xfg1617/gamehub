@@ -30,3 +30,19 @@
     .gm-rl.now { outline: 2px solid #F5B041; } .gm-rl.dead { opacity: .45; text-decoration: line-through; }
     @media (max-width: 640px) { .gm-towns { grid-template-columns: 1fr; } .gm-role { width: calc(50% - 6px); } .gm-b.big { width: 72px; } }
     #gm-hand { padding-top: 12px; }
+    /* computers: the towns get the whole width, the characters panel floats at the right (Nov 2026) */
+    @media (min-width: 1024px) {
+      body.in-game[data-game="guild"] #gs-body > .grid { grid-template-columns: minmax(0, 1fr) !important; }
+      body.in-game[data-game="guild"] #gs-body > .grid > div:last-child { position: fixed; right: 14px; top: 10px; width: 270px; z-index: 40; max-height: calc(100vh - 90px); overflow: auto; }
+      body.in-game[data-game="guild"] #gs-body > .grid > div:first-child { padding-right: 290px; }
+      body.in-game[data-game="guild"] .gm-towns { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+      body.in-game[data-game="guild"] .gm-town { min-height: calc((100vh - 470px) / 2); padding: 12px; }
+      body.in-game[data-game="guild"] .gm-b { font-size: .85rem; padding: 4px 8px 4px 4px; }
+      body.in-game[data-game="guild"] .gm-b svg { width: 30px; height: 24px; }
+      body.in-game[data-game="guild"] .gm-b.big { width: 112px; }
+      body.in-game[data-game="guild"] .gm-b.big svg { width: 56px; height: 44px; }
+      body.in-game[data-game="guild"] .gm-b.big b { font-size: .8rem; }
+      body.in-game[data-game="guild"] .gm-role { width: 160px; }
+      body.in-game[data-game="guild"] .gm-role b { font-size: 1rem; }
+      body.in-game[data-game="guild"] .gm-role small { font-size: .74rem; }
+    }

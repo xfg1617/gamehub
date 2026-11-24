@@ -128,26 +128,21 @@
       }
       function start(body, sel, S) {
         const n = S.n === 4 || +sel.n === 4 ? 4 : 2;
-        G = { S, n, st: newState(n), lvl: +sel.lvl || 2, tok: ++GT.cur, over: false, mode: 'move', ghost: null, orient: 'h', lastWall: null };
+        G = { S, n, st: newState(n), lvl: +sel.lvl || 2, tok: ++GT.cur, over: false, ghostW: null, lastWall: null };
         GT.started = true; GT.over = false;
         const me = S.online ? S.me : 0;
         G.me = me; G.rot = ROT[G.st.side[me]];
         body.innerHTML = `<div class="hr-wrap grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-5 items-start">
           <div class="hr-boardcol"><div class="hr-board" id="hr-board" style="transform: rotate(${G.rot}deg)"></div></div>
           <div class="space-y-3 min-w-0">
-            <div class="win p-3 space-y-3">
-              <div class="grid grid-cols-2 gap-2"><button class="btn-game btn-teal py-2.5 text-sm" id="hr-mmove">🚶 Move</button><button class="btn-game btn-graphite py-2.5 text-sm" id="hr-mwall">🌿 Plant hedge</button></div>
-              <div id="hr-wallbar" class="hidden space-y-2"><div class="text-xs text-muted">Tap a dot between squares to choose a spot, then press Plant.</div>
-                <div class="grid grid-cols-2 gap-2"><button class="btn-game btn-graphite py-2 text-sm" id="hr-turn">↻ Turn it</button><button class="btn-game btn-amber py-2 text-sm" id="hr-place" disabled>✓ Plant</button></div></div>
+            <div class="win p-3 space-y-2">
+              <div class="pix text-xs text-amber">YOUR TURN: DO ONE</div>
+              <div class="text-sm text-bone leading-snug">🚶 Tap a <b class="text-teal">glowing square</b> to move.<br>🌿 Tap a <b class="text-emerald">gap between squares</b> to plant a hedge there.</div>
               <div id="hr-msg" class="text-sm text-muted min-h-[20px]"></div></div>
             <div class="win overflow-hidden"><div class="winbar amber"><span id="hr-status">YOUR TURN</span><span class="pix text-xs" id="hr-steps"></span></div>
               <div class="p-3 space-y-2" id="hr-players"></div></div>
             <div class="grid grid-cols-2 gap-3"><button id="hr-quit" class="btn-game btn-coral py-2.5 text-sm">Resign</button><button id="hr-new" class="btn-game btn-graphite py-2.5 text-sm">${S.online ? 'Leave' : 'New game'}</button></div>
           </div></div>`;
-        $('hr-mmove').onclick = () => setMode('move');
-        $('hr-mwall').onclick = () => setMode('wall');
-        $('hr-turn').onclick = () => { G.orient = G.orient === 'h' ? 'v' : 'h'; draw(); };
-        $('hr-place').onclick = () => { const g = G.ghost; if (!g || !myTurn()) return; const why = wallProblem(G.st, G.me, G.orient, g[0], g[1]); if (why) { SFX.play('wrong'); return say(why, true); } S.act({ t: 'wall', s: G.me, o: G.orient, r: g[0], c: g[1] }); };
         $('hr-new').onclick = () => npConfirmLeave(() => open($('game-root')));
         let sure = false;
         $('hr-quit').onclick = (e) => { if (G.over) return; if (!sure) { sure = true; e.target.textContent = 'Really resign?'; gTimeout(() => { sure = false; if (G) e.target.textContent = 'Resign'; }, 3000); return; } S.act({ t: 'resign', s: G.me }); };
@@ -158,7 +153,6 @@
       }
       const myTurn = () => G && !G.over && G.st.win < 0 && G.S.mine(G.st.turn);
       function say(t, bad) { const m = $('hr-msg'); if (m) { m.textContent = t; m.className = `text-sm min-h-[20px] ${bad ? 'text-coral' : 'text-muted'}`; } }
-      function setMode(m) { if (!G) return; G.mode = m; G.ghost = null; draw(); }
       function apply(a) {
         if (!G || G.over) return 0;
         const st = G.st;
@@ -169,14 +163,14 @@
         if (a.t === 'move') {
           if (!pawnMoves(st, a.s).some(([r, c]) => r === a.r && c === a.c)) return 0;
           const before = gSnap($('hr-board'));
-          doMove(st, a.s, a.r, a.c); SFX.play('move'); G.ghost = null; draw();
+          doMove(st, a.s, a.r, a.c); SFX.play('move'); G.ghostW = null; draw();
           const ms = gFlip($('hr-board'), before) || 0;
           if (st.win >= 0) { const tok = G.tok; gTimeout(() => { if (G && G.tok === tok) finish(st.win); }, ms + 350); return ms + 400; }
           return ms + 120;
         }
         if (a.t === 'wall') {
           if (wallProblem(st, a.s, a.o, a.r, a.c)) return 0;
-          doWall(st, a.s, a.o, a.r, a.c); if (G.S.mine(a.s)) G.mode = 'move'; G.lastWall = `${a.o}${a.r},${a.c}`; SFX.play('card'); G.ghost = null; draw(); G.lastWall = null;
+          doWall(st, a.s, a.o, a.r, a.c); G.lastWall = `${a.o}${a.r},${a.c}`; SFX.play('card'); G.ghostW = null; draw(); G.lastWall = null;
           return 420;
         }
         return 0;
@@ -188,7 +182,7 @@
       }
       function draw() {
         const st = G.st, bd = $('hr-board'); if (!bd) return;
-        const mine = myTurn(), moves = mine && G.mode === 'move' ? pawnMoves(st, G.me) : [];
+        const mine = myTurn(), moves = mine ? pawnMoves(st, G.me) : [];
         const mv = new Set(moves.map(([r, c]) => r * N + c));
         const route = st.p[G.me] ? dist(st.walls, st.p[G.me], st.side[G.me], true) || [] : [];
         const onRoute = new Set(route.slice(1).map(([r, c]) => r * N + c));
@@ -201,23 +195,38 @@
         });
         for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) {
           const k = r * N + c;
-          h += `<button class="hr-cell ${mv.has(k) ? 'can' : ''} ${onRoute.has(k) && G.mode === 'move' ? 'route' : ''}" data-r="${r}" data-c="${c}" style="left:${cellPos(c)}%;top:${cellPos(r)}%;width:${CELL}%;height:${CELL}%" aria-label="Square ${r + 1}-${c + 1}"></button>`;
+          h += `<button class="hr-cell ${mv.has(k) ? 'can' : ''} ${onRoute.has(k) ? 'route' : ''}" data-r="${r}" data-c="${c}" style="left:${cellPos(c)}%;top:${cellPos(r)}%;width:${CELL}%;height:${CELL}%" aria-label="Square ${r + 1}-${c + 1}"></button>`;
         }
         st.walls.forEach((w) => { h += wallHTML(w[0], ...w.slice(1).split(',').map(Number), w === G.lastWall ? 'grow' : ''); });
-        if (G.mode === 'wall' && mine) {
-          for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) h += `<button class="hr-dot" data-wr="${r}" data-wc="${c}" style="left:${cellPos(c + 1) - GAP / 2}%;top:${cellPos(r + 1) - GAP / 2}%" aria-label="Hedge spot"></button>`;
-          if (G.ghost) h += wallHTML(G.orient, G.ghost[0], G.ghost[1], wallProblem(st, G.me, G.orient, G.ghost[0], G.ghost[1]) ? 'ghost bad' : 'ghost');
+        // the gaps between squares: tap one to plant a hedge there (it covers this gap and the next one along)
+        if (mine && st.left[G.me] > 0) {
+          for (let r = 0; r < 8; r++) for (let c = 0; c < N; c++) h += `<button class="hr-gap" data-w="h${r},${Math.min(c, 7)}" style="left:${cellPos(c)}%;top:${cellPos(r + 1) - GAP}%;width:${CELL}%;height:${GAP}%" aria-label="Plant a hedge here"></button>`;
+          for (let r = 0; r < N; r++) for (let c = 0; c < 8; c++) h += `<button class="hr-gap" data-w="v${Math.min(r, 7)},${c}" style="left:${cellPos(c + 1) - GAP}%;top:${cellPos(r)}%;width:${GAP}%;height:${CELL}%" aria-label="Plant a hedge here"></button>`;
+          h += '<div id="hr-ghost" class="hr-wall ghost" style="display:none"></div>';
         }
         st.p.forEach((q, i) => { if (q) h += `<div class="hr-pawn ${i === st.turn && st.win < 0 ? 'turn' : ''}" data-fk="pawn${i}" style="left:${cellPos(q[1])}%;top:${cellPos(q[0])}%;width:${CELL}%;height:${CELL}%;transform:rotate(${-G.rot}deg)">${pawnSVG(COLS[i])}</div>`; });
         bd.innerHTML = h;
         bd.classList.toggle('wait', !mine);
         bd.querySelectorAll('.hr-cell.can').forEach((el) => { el.onclick = () => { if (myTurn()) G.S.act({ t: 'move', s: G.me, r: +el.dataset.r, c: +el.dataset.c }); }; });
-        bd.querySelectorAll('.hr-dot').forEach((el) => { el.onclick = () => {
-          const g = [+el.dataset.wr, +el.dataset.wc];
-          if (G.ghost && G.ghost[0] === g[0] && G.ghost[1] === g[1]) G.orient = G.orient === 'h' ? 'v' : 'h'; else G.ghost = g;
-          SFX.play('click'); draw();
-          const why = wallProblem(G.st, G.me, G.orient, g[0], g[1]); say(why || 'Press Plant to put the hedge here (tap the dot again to turn it).', !!why);
-        }; });
+        // a mouse: the hedge shows while you point at a gap and one click plants it. A finger: the first tap shows it,
+        // a second tap on the same spot plants it.
+        const parse = (w) => [w[0], ...w.slice(1).split(',').map(Number)];
+        const show = (w) => { const g = $('hr-ghost'); if (!g) return; if (!w) { g.style.display = 'none'; return; } const [o, r, c] = parse(w); const bad = !!wallProblem(G.st, G.me, o, r, c);
+          g.className = `hr-wall ${o} ghost ${bad ? 'bad' : ''}`; g.style.cssText = (o === 'h' ? `left:${cellPos(c)}%;top:${cellPos(r + 1) - GAP}%;width:${CELL * 2 + GAP}%;height:${GAP}%` : `left:${cellPos(c + 1) - GAP}%;top:${cellPos(r)}%;width:${GAP}%;height:${CELL * 2 + GAP}%`); };
+        if (G.ghostW) show(G.ghostW);
+        let pt = 'mouse';
+        bd.querySelectorAll('.hr-gap').forEach((el) => {
+          el.onpointerdown = (e) => { pt = e.pointerType || 'mouse'; };
+          el.onmouseenter = () => { if (pt === 'mouse') show(el.dataset.w); };
+          el.onmouseleave = () => { if (pt === 'mouse' && !G.ghostW) show(null); };
+          el.onclick = () => {
+            if (!myTurn()) return;
+            const w = el.dataset.w, [o, r, c] = parse(w), why = wallProblem(G.st, G.me, o, r, c);
+            if (why) { G.ghostW = null; show(w); SFX.play('wrong'); return say(why, true); }
+            if (pt !== 'mouse' && G.ghostW !== w) { G.ghostW = w; show(w); SFX.play('click'); return say('Tap the same gap again to plant the hedge there.'); }
+            G.ghostW = null; G.S.act({ t: 'wall', s: G.me, o, r, c });
+          };
+        });
         // side panel
         const S = G.S;
         $('hr-status').textContent = st.win >= 0 ? 'GAME OVER' : mine ? 'YOUR TURN' : `${S.name(st.turn).toUpperCase()}'S TURN`;
@@ -225,11 +234,6 @@
         $('hr-players').innerHTML = st.side.map((sd, i) => `<div class="pl-tag flex items-center gap-2.5 ${i === st.turn && st.win < 0 ? 'turn' : ''} ${i === G.me ? 'me' : ''}" style="--pc:${COLS[i]}">
           <span class="tg-av">${esc(S.seats[i] ? S.seats[i].avatar : '🙂')}</span><span class="min-w-0 flex-1"><b class="block truncate text-bone text-sm">${esc(S.name(i))}${S.bot(i) ? ' <small class="text-muted">CPU</small>' : ''}</b>
           <small class="text-muted text-xs">${st.p[i] ? `${dist(st.walls, st.p[i], sd)} steps · ` : ''}🌿 ${st.left[i]} hedge${st.left[i] === 1 ? '' : 's'}</small></span></div>`).join('');
-        $('hr-mmove').className = `btn-game ${G.mode === 'move' ? 'btn-teal' : 'btn-graphite'} py-2.5 text-sm`;
-        $('hr-mwall').className = `btn-game ${G.mode === 'wall' ? 'btn-amber' : 'btn-graphite'} py-2.5 text-sm`;
-        $('hr-mwall').disabled = st.left[G.me] <= 0;
-        $('hr-wallbar').classList.toggle('hidden', G.mode !== 'wall');
-        $('hr-place').disabled = !(G.ghost && mine && !wallProblem(st, G.me, G.orient, G.ghost[0], G.ghost[1]));
       }
       function wallHTML(o, r, c, cls) {
         const st = o === 'h' ? `left:${cellPos(c)}%;top:${cellPos(r + 1) - GAP}%;width:${CELL * 2 + GAP}%;height:${GAP}%` : `left:${cellPos(c + 1) - GAP}%;top:${cellPos(r)}%;width:${GAP}%;height:${CELL * 2 + GAP}%`;
@@ -254,7 +258,7 @@
         blurb: 'Race your pawn across the garden. Each turn, take a step or plant a hedge to slow your rivals down.',
         rules: { tag: 'MAZE RACE · 2-4 PLAYERS', steps: [
           '<strong class="text-bone">Goal:</strong> Be the first to reach the other side of the garden (the edge marked in your colour is where you need to go).',
-          '<strong class="text-bone">Your turn:</strong> Either <b>move</b> one square (up, down, left or right), or <b>plant a hedge</b>. Hedges are 2 squares long and nobody can walk through them.',
+          '<strong class="text-bone">Your turn:</strong> Either tap a glowing square to <b>move</b>, or tap a gap between squares to <b>plant a hedge</b>. Hedges are 2 squares long and nobody can walk through them.',
           '<strong class="text-bone">Rules for hedges:</strong> You have 10 (5 in a 4-player game). A hedge can slow someone down, but it can never shut anyone in completely: there must always be a way through.',
           '<strong class="text-bone">Meeting a pawn:</strong> If a pawn is right next to you, you can jump over it. If a hedge is behind it, step diagonally past it instead.',
         ], tip: 'Don’t spend all your hedges early. They work best when a rival is close to finishing.' },

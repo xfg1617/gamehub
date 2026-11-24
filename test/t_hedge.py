@@ -33,10 +33,10 @@ with sync_playwright() as p:
     pg.click('#su-go'); pg.wait_for_selector('.hr-cell.can', timeout=10000)
     pg.screenshot(path=S + '16_hedge_start.png')
     # plant a hedge in front of the computer
-    pg.click('#hr-mwall'); pg.wait_for_timeout(200)
-    pg.evaluate("document.querySelector('.hr-dot[data-wr=\"0\"][data-wc=\"3\"]').click()"); pg.wait_for_timeout(200)
+    pg.hover('.hr-gap[data-w="h0,3"]'); pg.wait_for_timeout(200)
     pg.screenshot(path=S + '16_hedge_plant.png')
-    pg.click('#hr-place'); pg.wait_for_timeout(300)
+    check(pg.evaluate("getComputedStyle(document.getElementById('hr-ghost')).display") != 'none', 'pointing at a gap shows the hedge there')
+    pg.click('.hr-gap[data-w="h0,3"]'); pg.wait_for_timeout(500)
     check(pg.evaluate("GAME_MODS.hedge.engine.G.st.walls.size") == 1, 'planting a hedge by clicking works')
     moves = 0
     for _ in range(200):
@@ -45,8 +45,8 @@ with sync_playwright() as p:
         if pg.evaluate("GAME_MODS.hedge.engine.G.st.turn === 0 && !!document.querySelector('.hr-cell.can')"):
             if moves == 6: pg.screenshot(path=S + '16_hedge_mid.png')
             pg.evaluate("""(() => { const G = GAME_MODS.hedge.engine.G, E = GAME_MODS.hedge.engine; const m = E.aiAction(G.st, 0, 3);
-              if (m.t === 'move') document.querySelector(`.hr-cell[data-r="${m.r}"][data-c="${m.c}"]`).click();
-              else { const c = [...document.querySelectorAll('.hr-cell.can')].sort((a, b) => a.dataset.r - b.dataset.r)[0]; c.click(); } })()""")
+              if (m.t === 'move') { const e = document.querySelector(`.hr-cell.can[data-r="${m.r}"][data-c="${m.c}"]`); if (e) e.click(); }
+              else { const c = [...document.querySelectorAll('.hr-cell.can')].sort((a, b) => a.dataset.r - b.dataset.r)[0]; if (c) c.click(); } })()""")
             moves += 1
     print('   state:', pg.evaluate("(() => { const G = GAME_MODS.hedge.engine.G; return G ? JSON.stringify({over: G.over, win: G.st.win, turn: G.st.turn, p: G.st.p, modal: !!document.querySelector('#g-modal'), cls: (document.querySelector('#g-modal')||{}).className}) : 'none'; })()"))
     pg.wait_for_selector('#g-modal:not(.hidden)', timeout=15000); pg.wait_for_timeout(400)

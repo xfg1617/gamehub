@@ -823,3 +823,6 @@ folder that was handed over, so they do not exist here.)
 * **Poker layout (1280-1920 wide)**: the table's sides were 260 px empty, which squeezed the five shared cards onto
   several rows and pushed your cards under the button bar; now 40 px sides, `.pk-board` never wraps, and on screens up to
   950 px tall Fold / Call / Raise sit on the left.
+* **Court cards** (`courtSVG(rank, suit)` in core.js): J / Q / K show a double-headed pixel-art figure in a frame (King:
+  crown, beard, sword; Queen: crown, golden hair, flower; Jack: feathered cap, halberd), drawn for GameHub (no copied deck
+  art). The hand-ranks guide uses 46x66 cards with full faces.

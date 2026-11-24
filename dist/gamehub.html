@@ -2189,6 +2189,18 @@
     .pk-rc .pc-one svg, .ht-items .pc-one svg, .pcard.xs .pc-one svg { width: 52% !important; }
     .pcard .pc-pips i { width: 20%; }
     .pcard.pc-real .pc-corner { letter-spacing: -.05em; }
+    /* J / Q / K: the court picture fills the middle of the card, like a real deck */
+    .pcard .pc-court svg { width: 66% !important; height: auto !important; display: block; margin-top: 4%; }
+    .pcard.sm .pc-court svg { width: 64% !important; }
+    /* the hand-ranks guide uses real-size cards so the faces show properly */
+    .pk-rc .pcard.sm { width: 46px !important; height: 66px !important; }
+    .pk-rc .pc-pips, .pk-rc .pc-face { display: block !important; }
+    .pk-rc .pc-face { display: flex !important; }
+    .pk-rc .pc-one { display: none !important; }
+    .pk-rc .pc-corner i { display: block !important; }
+    .pk-rc .pcard.sm .pc-corner { font-size: .8rem; }
+    .pcard .pc-court svg { width: 56% !important; margin-top: 0; }
+    .pcard.sm .pc-court svg { width: 56% !important; }
     /* ---------- Pool: pull-back power bar ---------- */
     .pl-bar { position: relative; height: 58px; background: #0A1624; border: 3px solid var(--ink); box-shadow: inset 0 3px 0 rgba(0,0,0,.4); touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; overflow: hidden; }
     .pl-bar.dragging { cursor: grabbing; }
@@ -6665,9 +6677,37 @@
       // Aces show one big suit, J / Q / K a big letter. Pip sizes follow the card's width (container units).
       const P = PC_PIPS[c.r];
       const mid = P ? `<span class="pc-pips">${P.map(([x, y]) => `<i style="left:${x}%;top:${y}%${y > 50 ? ';transform:translate(-50%,-50%) rotate(180deg)' : ''}">${suitSVG(c.s, 14)}</i>`).join('')}</span>`
-        : c.r === 14 ? `<span class="pc-mid">${suitSVG(c.s, 34)}</span>` : `<span class="pc-face"><b>${rankLab(c.r)}</b><i>${suitSVG(c.s, 14)}</i></span>`;
+        : c.r === 14 ? `<span class="pc-mid">${suitSVG(c.s, 34)}</span>` : `<span class="pc-face pc-court">${courtSVG(c.r, c.s)}</span>`;
       return `<div class="pcard pc-real ${o.cls || ''}"${fk} style="color:${col}"><span class="pc-corner">${rankLab(c.r)}<i>${suitSVG(c.s, 14)}</i></span>${mid}${P || c.r !== 14 ? `<span class="pc-one">${suitSVG(c.s, 34)}</span>` : ''}<span class="pc-corner br">${rankLab(c.r)}<i>${suitSVG(c.s, 14)}</i></span></div>`;
     }
+    // court cards in the classic double-headed layout (pixel art drawn for GameHub, Nov 2026): the top half is drawn
+    // once and turned upside down for the bottom half, inside a frame in the suit's colour
+    function courtSVG(r, su) {
+      const red = su === 'h' || su === 'd', ink = '#16212E', gold = '#F5B041', skin = '#F4CFA8', lace = '#F7F4EC';
+      const robe = red ? '#D13B55' : '#2B5C8A', trim = red ? '#2B5C8A' : '#D13B55', edge = red ? '#D13B55' : ink;
+      const R = (x, y, w, h, c) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`;
+      let top = '';
+      if (r === 13) {   // King: crown, white beard, ermine collar, sword
+        top = R(8, 2, 1, 1, gold) + R(11, 2, 2, 1, gold) + R(15, 2, 1, 1, gold) + R(8, 3, 8, 2, gold) + R(11, 3, 2, 1, '#FB7185')
+          + R(9, 5, 6, 4, skin) + R(10, 6, 1, 1, ink) + R(13, 6, 1, 1, ink) + R(8, 8, 8, 3, '#E8E4DA') + R(11, 9, 2, 1, ink)
+          + R(4, 12, 16, 6, robe) + R(6, 11, 12, 1, lace) + R(7, 11, 1, 1, ink) + R(10, 11, 1, 1, ink) + R(13, 11, 1, 1, ink) + R(16, 11, 1, 1, ink)
+          + R(11, 12, 2, 6, gold) + R(4, 12, 1, 6, trim) + R(19, 12, 1, 6, trim) + R(19, 3, 1, 9, '#9DB4CC') + R(18, 11, 3, 1, gold);
+      } else if (r === 12) {   // Queen: small crown, long golden hair, lace collar, a flower
+        top = R(9, 2, 1, 1, gold) + R(12, 2, 1, 1, gold) + R(14, 2, 1, 1, gold) + R(9, 3, 6, 1, gold) + R(12, 3, 1, 1, '#2DD4BF')
+          + R(7, 4, 10, 8, '#E0A030') + R(9, 5, 6, 5, skin) + R(10, 6, 1, 1, ink) + R(13, 6, 1, 1, ink) + R(11, 8, 2, 1, '#FB7185')
+          + R(10, 10, 4, 1, gold) + R(5, 12, 14, 6, robe) + R(7, 11, 10, 1, lace) + R(11, 12, 2, 6, gold) + R(5, 12, 1, 6, trim) + R(18, 12, 1, 6, trim)
+          + R(18, 8, 1, 6, '#34D399') + R(17, 6, 3, 2, '#FB7185') + R(18, 6, 1, 1, gold);
+      } else {   // Jack: feathered cap, brown hair, buttoned tunic, halberd
+        top = R(7, 2, 10, 3, trim) + R(6, 4, 12, 1, ink) + R(16, 1, 2, 3, '#34D399') + R(8, 5, 1, 4, '#8B5A2B') + R(15, 5, 1, 4, '#8B5A2B')
+          + R(9, 5, 6, 5, skin) + R(10, 6, 1, 1, ink) + R(13, 6, 1, 1, ink) + R(11, 8, 2, 1, '#C0392B')
+          + R(5, 11, 14, 7, robe) + R(7, 10, 10, 1, lace) + R(11, 12, 2, 1, gold) + R(11, 14, 2, 1, gold) + R(11, 16, 2, 1, gold)
+          + R(4, 3, 1, 12, '#9DB4CC') + R(3, 3, 3, 2, '#9DB4CC');
+      }
+      return `<svg viewBox="0 0 24 36" shape-rendering="crispEdges" aria-hidden="true">${R(1, 1, 22, 34, edge)}${R(2, 2, 20, 32, '#FFF8E8')}`
+        + `<svg x="2" y="2" width="20" height="16" viewBox="2 2 20 16" overflow="hidden">${top}</svg>`
+        + `<g transform="rotate(180 12 18)"><svg x="2" y="2" width="20" height="16" viewBox="2 2 20 16" overflow="hidden">${top}</svg></g>${R(2, 17.5, 20, 1, edge)}</svg>`;
+    }
+    window.courtSVG = courtSVG;
     const PC_PIPS = (() => {   // pip spots inside a frame that keeps clear of the corner numbers
       const L = 37, R = 63, M = 50, T = 25, B = 75, Y = (f) => T + (B - T) * f;
       return { 2: [[M, T], [M, B]], 3: [[M, T], [M, 50], [M, B]], 4: [[L, T], [R, T], [L, B], [R, B]],

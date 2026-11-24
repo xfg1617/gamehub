@@ -219,3 +219,15 @@
     .pk-rc .pc-one svg, .ht-items .pc-one svg, .pcard.xs .pc-one svg { width: 52% !important; }
     .pcard .pc-pips i { width: 20%; }
     .pcard.pc-real .pc-corner { letter-spacing: -.05em; }
+    /* J / Q / K: the court picture fills the middle of the card, like a real deck */
+    .pcard .pc-court svg { width: 66% !important; height: auto !important; display: block; margin-top: 4%; }
+    .pcard.sm .pc-court svg { width: 64% !important; }
+    /* the hand-ranks guide uses real-size cards so the faces show properly */
+    .pk-rc .pcard.sm { width: 46px !important; height: 66px !important; }
+    .pk-rc .pc-pips, .pk-rc .pc-face { display: block !important; }
+    .pk-rc .pc-face { display: flex !important; }
+    .pk-rc .pc-one { display: none !important; }
+    .pk-rc .pc-corner i { display: block !important; }
+    .pk-rc .pcard.sm .pc-corner { font-size: .8rem; }
+    .pcard .pc-court svg { width: 56% !important; margin-top: 0; }
+    .pcard.sm .pc-court svg { width: 56% !important; }

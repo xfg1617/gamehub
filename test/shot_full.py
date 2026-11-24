@@ -17,8 +17,14 @@ with sync_playwright() as p:
                 if pg.query_selector('#su-go'): pg.click('#su-go')
             pg.wait_for_timeout(3000)
             sw = pg.evaluate("document.documentElement.scrollWidth"); sh = pg.evaluate("document.documentElement.scrollHeight")
+            # does anything in the game reach under the floating control bar / CHAT?
+            under = pg.evaluate("""(() => { const bar = document.querySelector('#gs-wrap > .panel:first-child, #view-naval:not(.hidden) > .panel:first-child, #view-daily:not(.hidden) > .panel:first-child, #view-connect4:not(.hidden) > .panel:first-child');
+              if (!bar || getComputedStyle(bar).position !== 'fixed') return 0; const top = bar.getBoundingClientRect().top + window.scrollY;
+              const host = document.querySelector('#gs-body') || document.querySelector('#view-' + (document.querySelector('#view-naval:not(.hidden)') ? 'naval' : document.querySelector('#view-daily:not(.hidden)') ? 'daily' : 'connect4'));
+              let low = 0; host.querySelectorAll('*').forEach((el) => { const r = el.getBoundingClientRect(); if (r.width && r.height && getComputedStyle(el).position !== 'fixed') low = Math.max(low, r.bottom + window.scrollY); });
+              return Math.round(low - top); })()""")
             pg.evaluate("window.scrollTo(0, 0)")
             pg.screenshot(path=f'test/shots/full_{g}_{tag}.png')
-            print(tag, g.ljust(11), 'page height', sh, '(screen', h, ')', 'TOO WIDE ' + str(sw) if sw > w + 1 else '', pg.errs[:2])
+            print(tag, g.ljust(11), 'page height', sh, '(screen', h, ')', ('UNDER BAR by %dpx' % under) if under > 0 else '', 'TOO WIDE ' + str(sw) if sw > w + 1 else '', pg.errs[:2])
         pg.context.close()
     br.close()

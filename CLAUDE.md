@@ -574,6 +574,12 @@ One shared way to run a game table, used on this device AND online, so a game ha
   `t_np_cc.py` clicks through `evaluate` (real mouse clicks hit cards mid-animation on the slow two-tab stand-in).
 * `test/shot_full.py [games] [d|l|m]` screenshots every game at 1690×903, 1280×720 and phone; check page height.
 
+## Planned (approved, not built yet)
+
+* **Guest welcome pop-up**: `prototypes/welcome-popup.html` (Inna approved the small version): "Save your progress",
+  Progress / Avatars / Badges, Create free account, I already have an account, Maybe later. Needs unlockable avatars
+  (by level / wins) and badges to be built with it.
+
 ## 5d. Game setup screens, room codes, leaving a game
 
 * Every game opens on a setup screen (`setupScreen` in `core.js`). Options are `{ key, label, def,

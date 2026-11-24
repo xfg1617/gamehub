@@ -197,11 +197,13 @@
         hist: (profile.history || []).slice(0, 12).map((h) => [h.game, h.result, h.at || 0]) };
     }
     let psLast = '';
-    setInterval(() => {
+    const psSend = () => {
       if (typeof NET === 'undefined' || !NET.on || !NET.me || !NET.publishStats || document.hidden) return;
       const o = myPublicStats(), j = JSON.stringify(o); if (j === psLast) return;
       psLast = j; NET.publishStats(o).catch(() => { psLast = ''; });
-    }, 15000);
+    };
+    setInterval(psSend, 15000);
+    document.addEventListener('ps-online', () => setTimeout(psSend, 3000));   // first send soon after connecting
     window.openPlayerProfile = openPlayerProfile; window.myPublicStats = myPublicStats;
     window.openPlayerCard = openPlayerCard; window.renderFriends = renderFriends; window.openFriendChat = openFriendChat;
 

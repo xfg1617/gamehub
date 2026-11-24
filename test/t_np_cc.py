@@ -21,7 +21,7 @@ with sync_playwright() as p:
     join(B, code); A.wait_for_timeout(2000); start(A); A.wait_for_timeout(2500)
     check(A.query_selector('#cc-hand') and B.query_selector('#cc-hand'), 'the game started on both screens')
     same = 0; looks = 0; t0 = time.time(); acted = 0
-    while time.time() - t0 < (240 if REAL else 160):
+    while time.time() - t0 < (400 if REAL else 330):   # computer players think longer since Nov 2026
         if A.evaluate("!!(document.getElementById('g-modal') && !document.getElementById('g-modal').classList.contains('hidden'))"): break
         moved = False
         for pg in (A, B):

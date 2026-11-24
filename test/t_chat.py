@@ -1,4 +1,4 @@
-"""Chat: global chat on the main menu, a room inside a game, sending, replies, no game keys while typing."""
+"""Chat: a room inside a game (the home page has no chat since Nov 2026), sending, replies, no game keys while typing."""
 import sys; sys.path.insert(0, 'test')
 from tlib import *
 with sync_playwright() as p:
@@ -6,12 +6,7 @@ with sync_playwright() as p:
     for w, h in [(1280, 900), (390, 844)]:
         pg = open_page(br, w, h, mobile=w < 600)
         pg.wait_for_timeout(600)
-        g = pg.query_selector('#chat-global .chatbox'); g.scroll_into_view_if_needed()
-        pg.fill('#chat-global input', 'hey everyone')
-        pg.press('#chat-global input', 'Enter')
-        pg.wait_for_timeout(4500)
-        g.screenshot(path=f'test/shots/chat_global_{w}.png')
-        n_global = pg.evaluate("document.querySelectorAll('#chat-global .chat-msg').length")
+        n_global = 'none (the home page has no chat since Nov 2026)'
         fab_lobby = pg.evaluate("document.getElementById('chat-fab').classList.contains('show')")
         pg.evaluate("openDailyWord(true)"); pg.wait_for_timeout(300)
         pg.click('#chat-fab'); pg.wait_for_timeout(300)

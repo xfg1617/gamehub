@@ -105,7 +105,9 @@
       if (!NET.on) chatSave();
       chatBoxes(k).forEach((b) => chatPaint(b, m));
       const shown = chatBoxes(k).some((b) => !b.closest('#chat-panel') && b.offsetParent);   // e.g. the room's own chat is on screen
-      if (k !== 'global' && k === CHAT.room && !CHAT.open && !m.me && !shown) { CHAT.unread++; chatBadge(); chatPopup(m, () => chatToggle(true)); }
+      // at an online table the message shows as a bubble above the sender's name tag (yours too); otherwise a pop-up
+      const atSeat = k !== 'global' && k === CHAT.room && window.seatSay && window.seatSay(m);
+      if (!atSeat && k !== 'global' && k === CHAT.room && !CHAT.open && !m.me && !shown) { CHAT.unread++; chatBadge(); chatPopup(m, () => chatToggle(true)); }
     }
     // a new message pops up for a few seconds (near the chat button), then fades; the button keeps the unread count
     function chatPopup(m, onOpen) {
@@ -480,6 +482,31 @@
       if (on) { const lb = document.querySelector('#game-root .logbox'); if (lb) lb.scrollTop = lb.scrollHeight; }
     }
     window.toggleMoves = toggleMoves;
+    /* ---------- "what just happened" notices (Inna, Nov 2026) ----------
+       The move logs are hidden behind 📜 Log, so the unusual moments (3 doubles = Jail, a skipped turn, a steal, a broken
+       tool, a caught bluff...) pop up on the game screen for a few seconds. They come from the game's own log lines;
+       ordinary moves are left out by the IMPORTANT filter. */
+    const IMPORTANT = /!|\bjail\b|again|skip|revers|steal|stole|broken|fix|bandit|discard|longest|bankrupt|auction|mortgage|cave|peek|favor|shuffle|draw (two|four|2|4)|\+2|\+4|wild|lie\b|picks up|out of cards|place\b|disconnected|left\b|takes over|time is up|timed out|rent|tax|wins|winner|accus|shows|secret|exploded|burned|potato|attack|nope|no way|go to|goes to|sent|lost|loses|can.t|cannot|must|because|only/i;
+    const NOTE = { last: '', q: [], busy: false };
+    function gameNote(html) {
+      let el = document.getElementById('gm-note');
+      if (!el) { el = document.createElement('div'); el.id = 'gm-note'; el.setAttribute('aria-live', 'polite'); document.body.appendChild(el); }
+      el.innerHTML = html; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
+      clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), 4200);
+    }
+    window.gameNote = gameNote;
+    setInterval(() => {
+      if (!document.body.classList.contains('in-game')) { NOTE.last = ''; return; }
+      const lb = document.querySelector('#game-root .logbox:not(#ch-moves)'); if (!lb || !lb.lastElementChild) return;
+      const lines = [...lb.children].map((x) => x.innerHTML), last = lines[lines.length - 1];
+      if (last === NOTE.last) return;
+      const from = NOTE.last ? lines.lastIndexOf(NOTE.last) : lines.length - 1;
+      const fresh = from >= 0 ? lines.slice(from + 1) : [last];
+      NOTE.last = last;
+      if (!fresh.length) return;
+      const pick = fresh.filter((h) => IMPORTANT.test(h.replace(/<[^>]+>/g, ''))).slice(-2);
+      if (pick.length) gameNote(pick.join('<br>'));
+    }, 350);
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') toggleMoves(false); });
 
     /* ---------- word games: type with the phone's / iPad's own keyboard (Inna, Nov 2026) ---------- */

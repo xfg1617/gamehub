@@ -119,3 +119,17 @@
 .dg-pick span { font-size: 1rem; font-weight: 800; }
 /* ---- language switch in the side menu (zz_lang.js) ---- */
 #nav-lang .lang-flag { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 20px; background: #F5B041; color: #050E18; border: 2px solid #050E18; font-family: 'Arcade Pixel', monospace; font-size: 13px; line-height: 1; margin-right: 2px; }
+    /* chat at the table: a speech bubble above the sender's name tag */
+    .em-say { position: fixed; z-index: 61; max-width: 240px; padding: 6px 10px; background: #F7F4EC; color: #050E18; font-size: 14px; font-weight: 700; line-height: 1.3;
+      border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); display: none; pointer-events: none; overflow-wrap: anywhere; }
+    .em-say.on { display: block; animation: em-pop .25s steps(3) both; }
+    .em-say::after { content: ''; position: absolute; left: 50%; bottom: -10px; width: 11px; height: 11px; margin-left: -6px; background: #F7F4EC; border-right: 3px solid var(--ink); border-bottom: 3px solid var(--ink); transform: rotate(45deg); }
+    .em-say.below::after { bottom: auto; top: -10px; transform: rotate(225deg); }
+    /* phones, during a game: CHAT and the emote button shrink to small icons so they cover less of the game
+       (timers, player lists, cards) now that the bottom tab bar is gone (Inna, Nov 2026) */
+    @media (max-width: 1023px) {
+      body.in-game #chat-fab { padding: 0 !important; width: 42px; height: 42px; min-width: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; opacity: .92; }
+      body.in-game #chat-fab #chat-fab-lab { display: none; }
+      body.in-game #em-fab { width: 42px !important; height: 42px !important; opacity: .92; }
+      body.in-game #em-fab svg, body.in-game #em-fab .em-spr { width: 30px !important; height: 30px !important; }
+    }

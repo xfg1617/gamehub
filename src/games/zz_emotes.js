@@ -125,6 +125,27 @@
         clearTimeout(b.timer); b.timer = setTimeout(() => b.el.classList.remove('on'), 3000);
       }
       window.emoteShow = show;
+      // a chat message at the table pops up as a speech bubble above the sender's name tag (Inna, Nov 2026)
+      const says = {};
+      function say(seat, text) {
+        const S = table(); if (!S || !S.seats[seat]) return false;
+        const t = target(S, seat); if (!t || t.id === 'gs-body' || t.id === 'em-fab') return false;
+        let el = says[seat];
+        if (!el || !document.body.contains(el)) { el = document.createElement('div'); el.className = 'em-say'; document.body.appendChild(el); says[seat] = el; }
+        el.textContent = String(text).slice(0, 120);
+        el.classList.remove('on', 'below'); el.style.left = '0px'; el.style.top = '0px'; el.classList.add('on');
+        const r = t.getBoundingClientRect(), w = el.offsetWidth, h = el.offsetHeight;
+        let x = r.left + r.width / 2 - w / 2, y = r.top - h - 12;
+        if (y < 6) { y = r.bottom + 12; el.classList.add('below'); }
+        el.style.left = Math.max(6, Math.min(window.innerWidth - w - 6, x)) + 'px'; el.style.top = y + 'px';
+        clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), 5000);
+        return true;
+      }
+      window.seatSay = (m) => {
+        const S = table(); if (!S || !S.online) return false;
+        const seat = S.seats.findIndex((x) => x && ((m.uid && x.uid === m.uid) || (!m.uid && x.name === m.n)));
+        return seat >= 0 && say(seat, m.t);
+      };
 
       /* ---------- your emote button and menu ---------- */
       let sentAt = [];

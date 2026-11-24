@@ -41,6 +41,7 @@
         const body = gameShell(root, mod, '', 'max-w-[1200px] mx-auto');
         setupScreen(body, mod, [
           { key: 'n', label: 'PLAYERS', def: 4, choices: [[3, '3'], [4, '4'], [5, '5']] },
+          { key: 'turn', label: 'TURN TIMER', def: 30, choices: [[20, '20 sec'], [30, '30 sec'], [45, '45 sec'], [0, 'Off']], hint: 'How long each player has to put cards down. The outline of their name tag runs out like a clock.' },
           { key: 'secs', label: 'TIME TO SHOUT', def: 7, choices: [[5, '5 sec'], [7, '7 sec'], [10, '10 sec']], hint: 'How long everyone has to shout BULLSHIT! after each play.' },
         ], (sel) => start(body, sel, npLocal([{ name: profile.username, avatar: profile.avatar }].concat(BOTS.slice(0, +sel.n - 1).map(([name, avatar]) => ({ bot: true, name, avatar }))), sel)));
       }
@@ -48,7 +49,7 @@
         const deck = S.rng.shuffle(newDeckSorted());
         const players = S.seats.map((x, i) => ({ seat: i, name: x.name, av: x.avatar, hand: [] }));
         deck.forEach((c, k) => players[k % players.length].hand.push(c));
-        G = { S, me: S.online ? S.me : 0, players, pile: [], step: 0, cur: S.rng.rnd(players.length), need: ORDER[S.rng.rnd(13)], last: null, secs: +sel.secs || 7, over: false, tok: ++GT.cur, log: [], sel: new Set(), places: [], stats: { caught: 0, fooled: 0, lied: 0 } };
+        G = { S, me: S.online ? S.me : 0, players, pile: [], step: 0, cur: S.rng.rnd(players.length), need: ORDER[S.rng.rnd(13)], last: null, secs: +sel.secs || 7, turnSecs: sel.turn === undefined ? 30 : +sel.turn, over: false, tok: ++GT.cur, log: [], sel: new Set(), places: [], stats: { caught: 0, fooled: 0, lied: 0 } };
         GT.started = true; GT.over = false;
         body.innerHTML = `<div class="grid grid-cols-1 gap-5 items-start">
           <div class="space-y-3 min-w-0"><div id="fb-opp" class="ring4">${ringSlots('fb')}
@@ -56,8 +57,9 @@
             <div id="fb-prompt" class="win p-3 text-center min-h-[52px] text-sm"></div>
             <div class="text-center"><button id="fb-quit" class="hidden btn-game btn-amber py-2 px-6 text-sm">See the results now</button></div>
             <div id="fb-hand" class="fb-hand"></div></div>
-          <div class="hidden"><span id="fb-status"></span><span id="fb-step"></span><div id="fb-log" class="logbox" style="height:240px"></div></div></div>`;
+          <div class="hidden"><div id="fb-clock"></div><span id="fb-status"></span><span id="fb-step"></span><div id="fb-log" class="logbox" style="height:240px"></div></div></div>`;
         S.track();
+        G.clock = makeClock($('fb-clock'));
         S.onLeft = (a) => {
           if (!G) return; const q = G.players[a.s]; q.name += ' (CPU)'; q.av = '🤖';
           log(`${nm(q)} ${a.t === '_gone' ? 'disconnected' : 'left'}. A computer player takes the seat.`); draw();
@@ -91,8 +93,15 @@
         $('fb-status').textContent = mine ? 'YOUR TURN' : `${p.name.toUpperCase()}'S TURN`;
         G.sel.clear(); draw();
         if (mine) myPlayUI(p, k); else prompt(`<span class="text-muted">${esc(p.name)} is choosing cards...</span>`);
+        if (G.turnSecs && !S.bot(p.seat)) G.clock.start(G.turnSecs, 'Turn', () => {
+          if (!mine || !G || G.step !== k || G.over || !G.choose) return;
+          const pick = botPlay(p.hand, G.need, Math.random).slice(0, 1).map((i) => p.hand[i]);
+          G.choose = null; G.sel.clear(); prompt(''); showToast('Time is up! One card was put down for you.', 'info');
+          G.S.act({ t: 'play', s: p.seat, k, cards: pick.length ? pick : [p.hand[0]] });
+        }); else G.clock.stop();
         const a = await S.ask(p.seat, () => ({ t: 'play', k, cards: botPlay(p.hand, G.need, Math.random).map((i) => p.hand[i]) }), 2000 + rnd(1000), (x) => x.s === p.seat && x.t === 'play' && x.k === k);
         if (!G || G.tok !== t) throw ABORT;
+        G.clock.stop();
         prompt('');
         // take the named cards out of the hand (an honest table always finds them)
         let cards = (a.cards || []).map((c) => p.hand.find((h) => h.r === c.r && h.s === c.s)).filter(Boolean);
@@ -221,7 +230,7 @@
         // my hand, sorted by rank; tap to pick
         const me = G.players[G.me], picking = !!G.choose;
         const order = me.hand.map((c, i) => ({ c, i })).sort((a, b) => ORDER.indexOf(a.c.r) - ORDER.indexOf(b.c.r) || a.c.s.localeCompare(b.c.s));
-        $('fb-hand').innerHTML = `<div class="pix text-xs text-muted mb-1 text-center">YOUR CARDS · ${me.hand.length}</div><div class="flex flex-wrap justify-center gap-1.5">${order.map(({ c, i }) => `<button class="fb-card ${G.sel.has(i) ? 'sel' : ''} ${c.r === G.need ? 'match' : ''}" data-i="${i}" ${picking ? '' : 'disabled'}>${pipCard(c)}</button>`).join('')}</div>`;
+        $('fb-hand').innerHTML = `<div class="tg-mine mb-2"><div id="fb-seat-${G.me}" class="inline-block">${nameTag({ av: me.av, name: me.name, sub: G.places.includes(me) && !me.hand.length ? 'out of cards' : `${me.hand.length} card${me.hand.length === 1 ? '' : 's'}`, turn: G.players[G.cur] === me && !G.over, me: true })}</div></div><div class="flex flex-wrap justify-center gap-1.5">${order.map(({ c, i }) => `<button class="fb-card ${G.sel.has(i) ? 'sel' : ''} ${c.r === G.need ? 'match' : ''}" data-i="${i}" ${picking ? '' : 'disabled'}>${pipCard(c)}</button>`).join('')}</div>`;
         $('fb-hand').querySelectorAll('.fb-card').forEach((b) => { b.onclick = () => {
           if (!G.choose) return; const i = +b.dataset.i;
           if (G.sel.has(i)) G.sel.delete(i); else if (G.sel.size < 4) G.sel.add(i); else return showToast('You can put down at most 4 cards.', 'error');
@@ -230,7 +239,7 @@
         return 0;
       }
       async function finish(played) {
-        G.over = true; G.S.over = true; G.choose = null;
+        G.over = true; G.S.over = true; G.choose = null; if (G.clock) G.clock.stop();
         const S = G.S, me = G.players[G.me], place = G.places.indexOf(me) + 1, res = played && place === 1 ? 'win' : 'loss', tok = G.tok, winner = played ? G.places[0] : null;
         const eloRow = S.online ? await S.finish(res) : null;
         if (!G || G.tok !== tok) return;

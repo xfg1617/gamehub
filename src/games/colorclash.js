@@ -13,7 +13,7 @@
         return sh(d);
       }
       const canPlay = (card, top, color) => card.c === 'w' || card.c === color || card.v === top.v;
-      const cardHTML = (card, o = {}) => `<div class="cc-card cc-${card.c} ${o.cls || ''}" ${o.id !== undefined ? `data-id="${o.id}"` : ''} ${o.fk ? `data-fk="${o.fk}" data-face="up"` : ''}>${card.c !== 'w' ? `<span class="cn">${GL[card.c]}</span>` : ''}<span class="big">${lab(card)}</span>${card.c !== 'w' ? `<span class="cn br">${GL[card.c]}</span>` : ''}</div>`;
+      const cardHTML = (card, o = {}) => `<div class="cc-card cc-${card.c} ${o.cls || ''}" ${o.id !== undefined ? `data-id="${o.id}"` : ''} ${o.fk ? `data-fk="${o.fk}" data-face="up"` : ''}>${card.c !== 'w' ? `<span class="cn">${GL[card.c]}</span>` : ''}<span class="big ${card.v === 6 || card.v === 9 || card.v === "6" || card.v === "9" ? "u69" : ""}">${lab(card)}</span>${card.c !== 'w' ? `<span class="cn br">${GL[card.c]}</span>` : ''}</div>`;
       const backHTML = (cls = '') => `<div class="cc-card cc-back ${cls}"><span class="big" style="font-size:1rem;text-align:center;line-height:1.1">COLOR<br>CLASH</span></div>`;
       const ABORT = { a: 1 };
       let G = null;

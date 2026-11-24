@@ -31,6 +31,10 @@
         NG_TOUCH = sel.touch === undefined ? true : !!+sel.touch; NG_TURN_SECS = +sel.clock || 20;
         const oppElo = await NET.rating('naval').catch(() => ({ elo: 1200 })).then((r) => r.elo || 1200);
         initNavalGame(S.name(opp), oppElo, S.ranked ? 'RANKED' : 'FRIENDLY');
+        ng.opponentAv = S.avatar(opp); ng.mySeat = me;
+        // at the end each screen shows the other its fleet (sent twice, it is only a picture)
+        S.onPeek = (i, d) => { if (i === opp && d && d.fleet && window.ngShowEnemyFleet) ngShowEnemyFleet(d.fleet); };
+        const sendFleet = () => S.peek({ fleet: ng.playerShips.map((x) => ({ id: x.id, cells: x.cells.map((c) => ({ r: c.r, c: c.c })) })) });
         npBar('');
         const tok = G.tok, live = () => G && G.tok === tok && !G.over;
         let k = 0;
@@ -42,7 +46,7 @@
             gTimeout(() => { if (live() && ng.playerShots[r] && ng.playerShots[r][c] === 'pend') setBattleBanner('📡', 'Slow connection...', `Waiting for ${S.name(opp)}'s screen to answer. Your shot is marked on the map.`); }, 6000);
           },
           skip: () => S.act({ t: 'skip', k }),
-          over: (won, cb) => { G.over = true; S.finish(won ? 'win' : 'loss').then(cb); },
+          over: (won, cb) => { G.over = true; sendFleet(); setTimeout(sendFleet, 1500); S.finish(won ? 'win' : 'loss').then(cb); },
           back: () => { giveBack(); open(root); },
         };
         S.onLeft = (a) => {

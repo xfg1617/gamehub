@@ -1121,6 +1121,7 @@
             </div>
           </div>
           <div id="ng-turn-bar-wrap" class="timer-bar"><span id="ng-turn-bar"></span></div>
+          <div id="ng-tags" class="ng-tags"></div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1333,6 +1334,7 @@
         <button onclick="closeModal('ng-summary-modal'); navigateTo('play')" class="btn-game btn-graphite py-3 text-sm">Back to Lobby</button>
         <button id="ng-sum-again" onclick="closeModal('ng-summary-modal'); initNavalGame(ng.opponentName, ng.opponentElo, ng.roomTag)" class="btn-game btn-teal py-3 text-sm">Play Again</button>
       </div>
+      <button onclick="ngPeekBoards()" class="btn-game btn-graphite w-full py-2.5 text-sm">👁 See the boards</button>
       <div id="ng-sum-rm"></div>
     </div>
   </div>
@@ -2188,6 +2190,7 @@
 
     function initNavalGame(oppName, oppElo, roomTag) {
       stopNgTimer();
+      { const pb = document.getElementById('ng-peek-bar'); if (pb) pb.classList.add('hidden'); }
       ng = {
         phase: 'setup',
         opponentName: oppName,
@@ -2285,6 +2288,7 @@
     function stopNgTimer() {
       if (ngTimer) clearInterval(ngTimer.id);
       ngTimer = null;
+      document.body.classList.remove('clk-on', 'clk-low');
     }
 
     function startNgTimer(seconds, kind) {
@@ -2310,6 +2314,7 @@
       document.getElementById(`${pre}-timer-box`).classList.toggle('low', low);
       document.getElementById(`${pre}-bar-wrap`).classList.toggle('low', low);
       document.getElementById(`${pre}-bar`).style.width = `${(left / ngTimer.total) * 100}%`;
+      if (ngTimer.kind !== 'setup') { document.documentElement.style.setProperty('--turn-left', (left / ngTimer.total).toFixed(3)); document.body.classList.add('clk-on'); document.body.classList.toggle('clk-low', low); }
       if (left <= 0) {
         const kind = ngTimer.kind;
         stopNgTimer();
@@ -2884,6 +2889,13 @@
       const eAlive = ngNet ? 5 - ng.enemyShips.filter((s) => s.sunk).length : ng.enemyShips.filter((s) => !s.sunk).length;
       document.getElementById('ng-player-alive').textContent = `${pAlive} / 5`;
       document.getElementById('ng-enemy-alive').textContent = `${eAlive} / 5`;
+      // the two players' name tags; gold outline = whose turn it is, and on your turn the timer runs round yours
+      const tg = document.getElementById('ng-tags');
+      if (tg && typeof nameTag === 'function') {
+        const mine = ng.phase === 'battle' && ng.playerTurn, theirs = ng.phase === 'battle' && !ng.playerTurn && !ng.pendingShot;
+        const ms = ng.mySeat || 0, h = `<div id="ng-seat-${ms}">${nameTag({ av: profile.avatar, name: profile.username, sub: `${pAlive} ships left`, turn: mine, me: true })}</div><span class="pix text-xs text-muted">VS</span><div id="ng-seat-${1 - ms}">${nameTag({ av: ng.opponentAv || '🤖', name: ng.opponentName, sub: `${eAlive} ships left`, turn: theirs })}</div>`;
+        if (tg.innerHTML !== h) tg.innerHTML = h;
+      }
       updateAim();
     }
 
@@ -3124,7 +3136,31 @@
       renderNavalBattle();
     }
 
+    // after the game: hide the result pop-up to look at both boards (the enemy fleet is shown); a button brings it back
+    function ngPeekBoards() {
+      closeModal('ng-summary-modal');
+      let b = document.getElementById('ng-peek-bar');
+      if (!b) { b = document.createElement('div'); b.id = 'ng-peek-bar'; b.className = 'ng-peek-bar'; document.body.appendChild(b); }
+      b.innerHTML = '<span>Looking at the boards</span><button class="btn-game btn-amber py-1.5 px-4 text-sm">Show the result again</button>';
+      b.classList.remove('hidden');
+      b.querySelector('button').onclick = () => { b.classList.add('hidden'); document.getElementById('ng-summary-modal').classList.remove('hidden'); };
+    }
+    window.ngPeekBoards = ngPeekBoards;
+    // online: the other screen sends its fleet when the game ends, so you can see where its ships were
+    function ngShowEnemyFleet(list) {
+      if (!ngBoards || !Array.isArray(list)) return;
+      list.forEach((x) => {
+        if (!x || !Array.isArray(x.cells) || ng.enemyShips.some((s) => s.id === x.id)) return;
+        const def = SHIPS_DEF.find((d) => d.id === x.id) || SHIPS_DEF.find((d) => d.size === x.cells.length) || SHIPS_DEF[4];
+        const cells = x.cells.map((c) => ({ r: c.r | 0, c: c.c | 0 }));
+        ng.enemyShips.push({ id: def.id, name: def.name, size: cells.length, cells, r: Math.min(...cells.map((c) => c.r)), c: Math.min(...cells.map((c) => c.c)), orient: cells.length > 1 && cells[0].r === cells[1].r ? 'H' : 'V', hits: 0, sunk: false });
+      });
+      updateShips(ngBoards.enemy.shipsLayer, ng.enemyShips, true);
+    }
+    window.ngShowEnemyFleet = ngShowEnemyFleet;
+
     function finishNavalMatch(won) {
+      const pb = document.getElementById('ng-peek-bar'); if (pb) pb.classList.add('hidden');
       stopNgTimer();
       ng.phase = 'gameover';
       if (ngBoards) {

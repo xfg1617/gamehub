@@ -961,6 +961,15 @@
     .cf-mate { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-bottom: 1px solid rgba(157, 180, 204, .15); }
     .tg-tag, .pl-tag { cursor: default; }
     body.in-game .tg-tag:hover { filter: brightness(1.12); }
+    /* phones: no bottom tab bar any more (the ☰ menu has everything, Inna Nov 2026); CHAT sits in the corner */
+    .mtabs { display: none !important; }
+    @media (max-width: 1023px) {
+      body > .lg\:flex.min-h-screen { padding-bottom: 0 !important; }
+      #chat-fab { bottom: 14px; }
+      #chat-panel { bottom: 72px; }
+      #chat-pops { bottom: 72px !important; }
+      body.in-game main.flex-1 { padding-bottom: 72px !important; }
+    }
     /* ===== ONLINE TABLES: lobby seats, the bar above an online game, the private-room game picker ===== */
     .np-seats { display: grid; gap: 6px; }
     .np-seat { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: #0A1624; border: 3px solid var(--ink); color: #9DB4CC; font-size: .875rem; min-width: 0; }
@@ -1197,6 +1206,20 @@
 .dg-pick span { font-size: 1rem; font-weight: 800; }
 /* ---- language switch in the side menu (zz_lang.js) ---- */
 #nav-lang .lang-flag { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 20px; background: #F5B041; color: #050E18; border: 2px solid #050E18; font-family: 'Arcade Pixel', monospace; font-size: 13px; line-height: 1; margin-right: 2px; }
+    /* chat at the table: a speech bubble above the sender's name tag */
+    .em-say { position: fixed; z-index: 61; max-width: 240px; padding: 6px 10px; background: #F7F4EC; color: #050E18; font-size: 14px; font-weight: 700; line-height: 1.3;
+      border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); display: none; pointer-events: none; overflow-wrap: anywhere; }
+    .em-say.on { display: block; animation: em-pop .25s steps(3) both; }
+    .em-say::after { content: ''; position: absolute; left: 50%; bottom: -10px; width: 11px; height: 11px; margin-left: -6px; background: #F7F4EC; border-right: 3px solid var(--ink); border-bottom: 3px solid var(--ink); transform: rotate(45deg); }
+    .em-say.below::after { bottom: auto; top: -10px; transform: rotate(225deg); }
+    /* phones, during a game: CHAT and the emote button shrink to small icons so they cover less of the game
+       (timers, player lists, cards) now that the bottom tab bar is gone (Inna, Nov 2026) */
+    @media (max-width: 1023px) {
+      body.in-game #chat-fab { padding: 0 !important; width: 42px; height: 42px; min-width: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; opacity: .92; }
+      body.in-game #chat-fab #chat-fab-lab { display: none; }
+      body.in-game #em-fab { width: 42px !important; height: 42px !important; opacity: .92; }
+      body.in-game #em-fab svg, body.in-game #em-fab .em-spr { width: 30px !important; height: 30px !important; }
+    }
     /* =========================================================================
        FULL-SCREEN GAMES (Inna, Nov 2026): while a game is open (body.in-game) the side menu, the phone header
        and the footer step aside and the game uses the whole window. The move log hides behind "📜 Moves".
@@ -1503,6 +1526,21 @@
       body.in-game[data-game="poker"] #pk-ctl .win > div { flex-wrap: wrap !important; }
       body.in-game[data-game="poker"] #pk-ctl .win > div:first-child > * { flex: 1 1 0; }
     }
+    /* "what just happened" notice: a pill at the top of the game screen */
+    #gm-note { position: fixed; left: 50%; top: 74px; transform: translate(-50%, -8px); z-index: 60; max-width: min(620px, calc(100vw - 24px)); padding: 8px 16px;
+      background: rgba(5, 14, 24, .92); border: 2px solid #F5B041; box-shadow: 3px 3px 0 #050E18; color: #F7F4EC; font-size: 15px; line-height: 1.35; text-align: center;
+      opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; }
+    #gm-note.on { opacity: 1; transform: translate(-50%, 0); }
+    #gm-note b { color: #F5B041; }
+    @media (min-width: 1024px) { #gm-note { top: 70px; font-size: 16px; } }
+    /* Sea Battle: the two players' name tags (the turn clock runs round yours) instead of the timer box and bar */
+    .ng-tags { display: flex; align-items: center; justify-content: center; gap: 18px; padding-top: 4px; }
+    .ng-tags:empty { display: none; }
+    #ng-battle-view #ng-turn-timer-box, #ng-battle-view #ng-turn-bar-wrap { display: none !important; }
+    /* after the game: "Looking at the boards" bar with a button to bring the result back */
+    .ng-peek-bar { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 55; display: flex; align-items: center; gap: 12px; padding: 8px 12px 8px 16px;
+      background: rgba(5, 14, 24, .94); border: 2px solid #F5B041; box-shadow: 3px 3px 0 #050E18; color: #F7F4EC; font-weight: 700; font-size: 14px; }
+    .ng-peek-bar.hidden { display: none; }
     /* ---------- home page top (Nov 2026): one slim bar to create / join a room, two slim links ---------- */
     .nh { min-width: 0; max-width: 100%; box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); border: 4px solid #050E18; box-shadow: 0 6px 0 #050E18; margin-bottom: 14px; }
     .nh-l { background: #F5B041; padding: 16px 24px; display: flex; flex-direction: column; justify-content: center; gap: 8px; min-width: 0; }
@@ -2092,6 +2130,23 @@
     body.in-game[data-game="poker"] #pk-clock, body.in-game[data-game="kittens"] #kk-clock, body.in-game[data-game="colorclash"] #cc-clock { display: none !important; }
     body.in-game[data-game="kittens"] #gs-body .win:has(> .p-3 > #kk-clock), body.in-game[data-game="colorclash"] #gs-body .win:has(> .p-3 > #cc-clock) { display: none !important; }
     .tg-mine { text-align: center; margin-top: 4px; } .tg-mine .tg-tag { position: relative; }
+    /* Nov 2026 (Inna): 6 and 8 were hard to tell apart in the pixel font. Card numbers use a clear bold font; Uno's
+       6 and 9 are underlined like real cards. Poker's bets and "All in" are bigger. */
+    .pcard .pc-corner, .fb-pc .fb-face b { font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif !important; font-weight: 800 !important; letter-spacing: -.02em; }
+    .cc-card .big, .cc-card .cn { font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif !important; font-weight: 900 !important; }
+    .cc-card .big.u69 { text-decoration: underline; text-decoration-thickness: 4px; text-underline-offset: 3px; }
+    .chip-amt { font-size: 1.05rem; }
+    .tg-st { font-size: 15px; color: #F7F4EC; }
+    .tg-st:is(.allin), .tg-st.allin { color: #FB7185; }
+    @media (min-width: 1024px) { .chip-amt { font-size: 1.25rem; } .tg-st { font-size: 17px; } }
+    /* the timer ring never hides the little badges on a tag (dealer D, card count) */
+    .tg-tag .tg-d, .tg-tag .tg-n, .tg-tag .tg-badge { z-index: 4; }
+    /* the prompt above your cards (Uno, Kaboom Cats, Bullshit): a small label as wide as its text instead of a full-width
+       dark strip; invisible when empty, but it keeps its height so the cards don't jump (Inna, Nov 2026) */
+    #fb-prompt, #cc-prompt, #kk-prompt { width: fit-content; max-width: 100%; margin-left: auto !important; margin-right: auto !important; min-height: 40px !important;
+      padding: 6px 16px !important; background: rgba(5, 14, 24, .78) !important; border: 2px solid #050E18 !important; box-shadow: 2px 2px 0 rgba(5, 14, 24, .6) !important; }
+    #fb-prompt:empty, #cc-prompt:empty, #kk-prompt:empty { visibility: hidden; }
+    #fb-prompt .btn-game, #cc-prompt .btn-game, #kk-prompt .btn-game { padding-top: .35rem !important; padding-bottom: .35rem !important; }
     /* ---------- Pool: pull-back power bar ---------- */
     .pl-bar { position: relative; height: 58px; background: #0A1624; border: 3px solid var(--ink); box-shadow: inset 0 3px 0 rgba(0,0,0,.4); touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; overflow: hidden; }
     .pl-bar.dragging { cursor: grabbing; }
@@ -2473,6 +2528,7 @@
             </div>
           </div>
           <div id="ng-turn-bar-wrap" class="timer-bar"><span id="ng-turn-bar"></span></div>
+          <div id="ng-tags" class="ng-tags"></div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -2685,6 +2741,7 @@
         <button onclick="closeModal('ng-summary-modal'); navigateTo('play')" class="btn-game btn-graphite py-3 text-sm">Back to Lobby</button>
         <button id="ng-sum-again" onclick="closeModal('ng-summary-modal'); initNavalGame(ng.opponentName, ng.opponentElo, ng.roomTag)" class="btn-game btn-teal py-3 text-sm">Play Again</button>
       </div>
+      <button onclick="ngPeekBoards()" class="btn-game btn-graphite w-full py-2.5 text-sm">👁 See the boards</button>
       <div id="ng-sum-rm"></div>
     </div>
   </div>
@@ -3540,6 +3597,7 @@
 
     function initNavalGame(oppName, oppElo, roomTag) {
       stopNgTimer();
+      { const pb = document.getElementById('ng-peek-bar'); if (pb) pb.classList.add('hidden'); }
       ng = {
         phase: 'setup',
         opponentName: oppName,
@@ -3637,6 +3695,7 @@
     function stopNgTimer() {
       if (ngTimer) clearInterval(ngTimer.id);
       ngTimer = null;
+      document.body.classList.remove('clk-on', 'clk-low');
     }
 
     function startNgTimer(seconds, kind) {
@@ -3662,6 +3721,7 @@
       document.getElementById(`${pre}-timer-box`).classList.toggle('low', low);
       document.getElementById(`${pre}-bar-wrap`).classList.toggle('low', low);
       document.getElementById(`${pre}-bar`).style.width = `${(left / ngTimer.total) * 100}%`;
+      if (ngTimer.kind !== 'setup') { document.documentElement.style.setProperty('--turn-left', (left / ngTimer.total).toFixed(3)); document.body.classList.add('clk-on'); document.body.classList.toggle('clk-low', low); }
       if (left <= 0) {
         const kind = ngTimer.kind;
         stopNgTimer();
@@ -4236,6 +4296,13 @@
       const eAlive = ngNet ? 5 - ng.enemyShips.filter((s) => s.sunk).length : ng.enemyShips.filter((s) => !s.sunk).length;
       document.getElementById('ng-player-alive').textContent = `${pAlive} / 5`;
       document.getElementById('ng-enemy-alive').textContent = `${eAlive} / 5`;
+      // the two players' name tags; gold outline = whose turn it is, and on your turn the timer runs round yours
+      const tg = document.getElementById('ng-tags');
+      if (tg && typeof nameTag === 'function') {
+        const mine = ng.phase === 'battle' && ng.playerTurn, theirs = ng.phase === 'battle' && !ng.playerTurn && !ng.pendingShot;
+        const ms = ng.mySeat || 0, h = `<div id="ng-seat-${ms}">${nameTag({ av: profile.avatar, name: profile.username, sub: `${pAlive} ships left`, turn: mine, me: true })}</div><span class="pix text-xs text-muted">VS</span><div id="ng-seat-${1 - ms}">${nameTag({ av: ng.opponentAv || '🤖', name: ng.opponentName, sub: `${eAlive} ships left`, turn: theirs })}</div>`;
+        if (tg.innerHTML !== h) tg.innerHTML = h;
+      }
       updateAim();
     }
 
@@ -4476,7 +4543,31 @@
       renderNavalBattle();
     }
 
+    // after the game: hide the result pop-up to look at both boards (the enemy fleet is shown); a button brings it back
+    function ngPeekBoards() {
+      closeModal('ng-summary-modal');
+      let b = document.getElementById('ng-peek-bar');
+      if (!b) { b = document.createElement('div'); b.id = 'ng-peek-bar'; b.className = 'ng-peek-bar'; document.body.appendChild(b); }
+      b.innerHTML = '<span>Looking at the boards</span><button class="btn-game btn-amber py-1.5 px-4 text-sm">Show the result again</button>';
+      b.classList.remove('hidden');
+      b.querySelector('button').onclick = () => { b.classList.add('hidden'); document.getElementById('ng-summary-modal').classList.remove('hidden'); };
+    }
+    window.ngPeekBoards = ngPeekBoards;
+    // online: the other screen sends its fleet when the game ends, so you can see where its ships were
+    function ngShowEnemyFleet(list) {
+      if (!ngBoards || !Array.isArray(list)) return;
+      list.forEach((x) => {
+        if (!x || !Array.isArray(x.cells) || ng.enemyShips.some((s) => s.id === x.id)) return;
+        const def = SHIPS_DEF.find((d) => d.id === x.id) || SHIPS_DEF.find((d) => d.size === x.cells.length) || SHIPS_DEF[4];
+        const cells = x.cells.map((c) => ({ r: c.r | 0, c: c.c | 0 }));
+        ng.enemyShips.push({ id: def.id, name: def.name, size: cells.length, cells, r: Math.min(...cells.map((c) => c.r)), c: Math.min(...cells.map((c) => c.c)), orient: cells.length > 1 && cells[0].r === cells[1].r ? 'H' : 'V', hits: 0, sunk: false });
+      });
+      updateShips(ngBoards.enemy.shipsLayer, ng.enemyShips, true);
+    }
+    window.ngShowEnemyFleet = ngShowEnemyFleet;
+
     function finishNavalMatch(won) {
+      const pb = document.getElementById('ng-peek-bar'); if (pb) pb.classList.add('hidden');
       stopNgTimer();
       ng.phase = 'gameover';
       if (ngBoards) {
@@ -5603,7 +5694,9 @@
       if (!NET.on) chatSave();
       chatBoxes(k).forEach((b) => chatPaint(b, m));
       const shown = chatBoxes(k).some((b) => !b.closest('#chat-panel') && b.offsetParent);   // e.g. the room's own chat is on screen
-      if (k !== 'global' && k === CHAT.room && !CHAT.open && !m.me && !shown) { CHAT.unread++; chatBadge(); chatPopup(m, () => chatToggle(true)); }
+      // at an online table the message shows as a bubble above the sender's name tag (yours too); otherwise a pop-up
+      const atSeat = k !== 'global' && k === CHAT.room && window.seatSay && window.seatSay(m);
+      if (!atSeat && k !== 'global' && k === CHAT.room && !CHAT.open && !m.me && !shown) { CHAT.unread++; chatBadge(); chatPopup(m, () => chatToggle(true)); }
     }
     // a new message pops up for a few seconds (near the chat button), then fades; the button keeps the unread count
     function chatPopup(m, onOpen) {
@@ -5978,6 +6071,31 @@
       if (on) { const lb = document.querySelector('#game-root .logbox'); if (lb) lb.scrollTop = lb.scrollHeight; }
     }
     window.toggleMoves = toggleMoves;
+    /* ---------- "what just happened" notices (Inna, Nov 2026) ----------
+       The move logs are hidden behind 📜 Log, so the unusual moments (3 doubles = Jail, a skipped turn, a steal, a broken
+       tool, a caught bluff...) pop up on the game screen for a few seconds. They come from the game's own log lines;
+       ordinary moves are left out by the IMPORTANT filter. */
+    const IMPORTANT = /!|\bjail\b|again|skip|revers|steal|stole|broken|fix|bandit|discard|longest|bankrupt|auction|mortgage|cave|peek|favor|shuffle|draw (two|four|2|4)|\+2|\+4|wild|lie\b|picks up|out of cards|place\b|disconnected|left\b|takes over|time is up|timed out|rent|tax|wins|winner|accus|shows|secret|exploded|burned|potato|attack|nope|no way|go to|goes to|sent|lost|loses|can.t|cannot|must|because|only/i;
+    const NOTE = { last: '', q: [], busy: false };
+    function gameNote(html) {
+      let el = document.getElementById('gm-note');
+      if (!el) { el = document.createElement('div'); el.id = 'gm-note'; el.setAttribute('aria-live', 'polite'); document.body.appendChild(el); }
+      el.innerHTML = html; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
+      clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), 4200);
+    }
+    window.gameNote = gameNote;
+    setInterval(() => {
+      if (!document.body.classList.contains('in-game')) { NOTE.last = ''; return; }
+      const lb = document.querySelector('#game-root .logbox:not(#ch-moves)'); if (!lb || !lb.lastElementChild) return;
+      const lines = [...lb.children].map((x) => x.innerHTML), last = lines[lines.length - 1];
+      if (last === NOTE.last) return;
+      const from = NOTE.last ? lines.lastIndexOf(NOTE.last) : lines.length - 1;
+      const fresh = from >= 0 ? lines.slice(from + 1) : [last];
+      NOTE.last = last;
+      if (!fresh.length) return;
+      const pick = fresh.filter((h) => IMPORTANT.test(h.replace(/<[^>]+>/g, ''))).slice(-2);
+      if (pick.length) gameNote(pick.join('<br>'));
+    }, 350);
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') toggleMoves(false); });
 
     /* ---------- word games: type with the phone's / iPad's own keyboard (Inna, Nov 2026) ---------- */
@@ -9654,7 +9772,7 @@
         return sh(d);
       }
       const canPlay = (card, top, color) => card.c === 'w' || card.c === color || card.v === top.v;
-      const cardHTML = (card, o = {}) => `<div class="cc-card cc-${card.c} ${o.cls || ''}" ${o.id !== undefined ? `data-id="${o.id}"` : ''} ${o.fk ? `data-fk="${o.fk}" data-face="up"` : ''}>${card.c !== 'w' ? `<span class="cn">${GL[card.c]}</span>` : ''}<span class="big">${lab(card)}</span>${card.c !== 'w' ? `<span class="cn br">${GL[card.c]}</span>` : ''}</div>`;
+      const cardHTML = (card, o = {}) => `<div class="cc-card cc-${card.c} ${o.cls || ''}" ${o.id !== undefined ? `data-id="${o.id}"` : ''} ${o.fk ? `data-fk="${o.fk}" data-face="up"` : ''}>${card.c !== 'w' ? `<span class="cn">${GL[card.c]}</span>` : ''}<span class="big ${card.v === 6 || card.v === 9 || card.v === "6" || card.v === "9" ? "u69" : ""}">${lab(card)}</span>${card.c !== 'w' ? `<span class="cn br">${GL[card.c]}</span>` : ''}</div>`;
       const backHTML = (cls = '') => `<div class="cc-card cc-back ${cls}"><span class="big" style="font-size:1rem;text-align:center;line-height:1.1">COLOR<br>CLASH</span></div>`;
       const ABORT = { a: 1 };
       let G = null;
@@ -10714,6 +10832,7 @@
         const body = gameShell(root, mod, '', 'max-w-[1200px] mx-auto');
         setupScreen(body, mod, [
           { key: 'n', label: 'PLAYERS', def: 4, choices: [[3, '3'], [4, '4'], [5, '5']] },
+          { key: 'turn', label: 'TURN TIMER', def: 30, choices: [[20, '20 sec'], [30, '30 sec'], [45, '45 sec'], [0, 'Off']], hint: 'How long each player has to put cards down. The outline of their name tag runs out like a clock.' },
           { key: 'secs', label: 'TIME TO SHOUT', def: 7, choices: [[5, '5 sec'], [7, '7 sec'], [10, '10 sec']], hint: 'How long everyone has to shout BULLSHIT! after each play.' },
         ], (sel) => start(body, sel, npLocal([{ name: profile.username, avatar: profile.avatar }].concat(BOTS.slice(0, +sel.n - 1).map(([name, avatar]) => ({ bot: true, name, avatar }))), sel)));
       }
@@ -10721,7 +10840,7 @@
         const deck = S.rng.shuffle(newDeckSorted());
         const players = S.seats.map((x, i) => ({ seat: i, name: x.name, av: x.avatar, hand: [] }));
         deck.forEach((c, k) => players[k % players.length].hand.push(c));
-        G = { S, me: S.online ? S.me : 0, players, pile: [], step: 0, cur: S.rng.rnd(players.length), need: ORDER[S.rng.rnd(13)], last: null, secs: +sel.secs || 7, over: false, tok: ++GT.cur, log: [], sel: new Set(), places: [], stats: { caught: 0, fooled: 0, lied: 0 } };
+        G = { S, me: S.online ? S.me : 0, players, pile: [], step: 0, cur: S.rng.rnd(players.length), need: ORDER[S.rng.rnd(13)], last: null, secs: +sel.secs || 7, turnSecs: sel.turn === undefined ? 30 : +sel.turn, over: false, tok: ++GT.cur, log: [], sel: new Set(), places: [], stats: { caught: 0, fooled: 0, lied: 0 } };
         GT.started = true; GT.over = false;
         body.innerHTML = `<div class="grid grid-cols-1 gap-5 items-start">
           <div class="space-y-3 min-w-0"><div id="fb-opp" class="ring4">${ringSlots('fb')}
@@ -10729,8 +10848,9 @@
             <div id="fb-prompt" class="win p-3 text-center min-h-[52px] text-sm"></div>
             <div class="text-center"><button id="fb-quit" class="hidden btn-game btn-amber py-2 px-6 text-sm">See the results now</button></div>
             <div id="fb-hand" class="fb-hand"></div></div>
-          <div class="hidden"><span id="fb-status"></span><span id="fb-step"></span><div id="fb-log" class="logbox" style="height:240px"></div></div></div>`;
+          <div class="hidden"><div id="fb-clock"></div><span id="fb-status"></span><span id="fb-step"></span><div id="fb-log" class="logbox" style="height:240px"></div></div></div>`;
         S.track();
+        G.clock = makeClock($('fb-clock'));
         S.onLeft = (a) => {
           if (!G) return; const q = G.players[a.s]; q.name += ' (CPU)'; q.av = '🤖';
           log(`${nm(q)} ${a.t === '_gone' ? 'disconnected' : 'left'}. A computer player takes the seat.`); draw();
@@ -10764,8 +10884,15 @@
         $('fb-status').textContent = mine ? 'YOUR TURN' : `${p.name.toUpperCase()}'S TURN`;
         G.sel.clear(); draw();
         if (mine) myPlayUI(p, k); else prompt(`<span class="text-muted">${esc(p.name)} is choosing cards...</span>`);
+        if (G.turnSecs && !S.bot(p.seat)) G.clock.start(G.turnSecs, 'Turn', () => {
+          if (!mine || !G || G.step !== k || G.over || !G.choose) return;
+          const pick = botPlay(p.hand, G.need, Math.random).slice(0, 1).map((i) => p.hand[i]);
+          G.choose = null; G.sel.clear(); prompt(''); showToast('Time is up! One card was put down for you.', 'info');
+          G.S.act({ t: 'play', s: p.seat, k, cards: pick.length ? pick : [p.hand[0]] });
+        }); else G.clock.stop();
         const a = await S.ask(p.seat, () => ({ t: 'play', k, cards: botPlay(p.hand, G.need, Math.random).map((i) => p.hand[i]) }), 2000 + rnd(1000), (x) => x.s === p.seat && x.t === 'play' && x.k === k);
         if (!G || G.tok !== t) throw ABORT;
+        G.clock.stop();
         prompt('');
         // take the named cards out of the hand (an honest table always finds them)
         let cards = (a.cards || []).map((c) => p.hand.find((h) => h.r === c.r && h.s === c.s)).filter(Boolean);
@@ -10894,7 +11021,7 @@
         // my hand, sorted by rank; tap to pick
         const me = G.players[G.me], picking = !!G.choose;
         const order = me.hand.map((c, i) => ({ c, i })).sort((a, b) => ORDER.indexOf(a.c.r) - ORDER.indexOf(b.c.r) || a.c.s.localeCompare(b.c.s));
-        $('fb-hand').innerHTML = `<div class="pix text-xs text-muted mb-1 text-center">YOUR CARDS · ${me.hand.length}</div><div class="flex flex-wrap justify-center gap-1.5">${order.map(({ c, i }) => `<button class="fb-card ${G.sel.has(i) ? 'sel' : ''} ${c.r === G.need ? 'match' : ''}" data-i="${i}" ${picking ? '' : 'disabled'}>${pipCard(c)}</button>`).join('')}</div>`;
+        $('fb-hand').innerHTML = `<div class="tg-mine mb-2"><div id="fb-seat-${G.me}" class="inline-block">${nameTag({ av: me.av, name: me.name, sub: G.places.includes(me) && !me.hand.length ? 'out of cards' : `${me.hand.length} card${me.hand.length === 1 ? '' : 's'}`, turn: G.players[G.cur] === me && !G.over, me: true })}</div></div><div class="flex flex-wrap justify-center gap-1.5">${order.map(({ c, i }) => `<button class="fb-card ${G.sel.has(i) ? 'sel' : ''} ${c.r === G.need ? 'match' : ''}" data-i="${i}" ${picking ? '' : 'disabled'}>${pipCard(c)}</button>`).join('')}</div>`;
         $('fb-hand').querySelectorAll('.fb-card').forEach((b) => { b.onclick = () => {
           if (!G.choose) return; const i = +b.dataset.i;
           if (G.sel.has(i)) G.sel.delete(i); else if (G.sel.size < 4) G.sel.add(i); else return showToast('You can put down at most 4 cards.', 'error');
@@ -10903,7 +11030,7 @@
         return 0;
       }
       async function finish(played) {
-        G.over = true; G.S.over = true; G.choose = null;
+        G.over = true; G.S.over = true; G.choose = null; if (G.clock) G.clock.stop();
         const S = G.S, me = G.players[G.me], place = G.places.indexOf(me) + 1, res = played && place === 1 ? 'win' : 'loss', tok = G.tok, winner = played ? G.places[0] : null;
         const eloRow = S.online ? await S.finish(res) : null;
         if (!G || G.tok !== tok) return;
@@ -13493,6 +13620,10 @@
         NG_TOUCH = sel.touch === undefined ? true : !!+sel.touch; NG_TURN_SECS = +sel.clock || 20;
         const oppElo = await NET.rating('naval').catch(() => ({ elo: 1200 })).then((r) => r.elo || 1200);
         initNavalGame(S.name(opp), oppElo, S.ranked ? 'RANKED' : 'FRIENDLY');
+        ng.opponentAv = S.avatar(opp); ng.mySeat = me;
+        // at the end each screen shows the other its fleet (sent twice, it is only a picture)
+        S.onPeek = (i, d) => { if (i === opp && d && d.fleet && window.ngShowEnemyFleet) ngShowEnemyFleet(d.fleet); };
+        const sendFleet = () => S.peek({ fleet: ng.playerShips.map((x) => ({ id: x.id, cells: x.cells.map((c) => ({ r: c.r, c: c.c })) })) });
         npBar('');
         const tok = G.tok, live = () => G && G.tok === tok && !G.over;
         let k = 0;
@@ -13504,7 +13635,7 @@
             gTimeout(() => { if (live() && ng.playerShots[r] && ng.playerShots[r][c] === 'pend') setBattleBanner('📡', 'Slow connection...', `Waiting for ${S.name(opp)}'s screen to answer. Your shot is marked on the map.`); }, 6000);
           },
           skip: () => S.act({ t: 'skip', k }),
-          over: (won, cb) => { G.over = true; S.finish(won ? 'win' : 'loss').then(cb); },
+          over: (won, cb) => { G.over = true; sendFleet(); setTimeout(sendFleet, 1500); S.finish(won ? 'win' : 'loss').then(cb); },
           back: () => { giveBack(); open(root); },
         };
         S.onLeft = (a) => {
@@ -13931,7 +14062,7 @@
         return `<div id="pk-seat-${i}" class="tg-seat ${turn ? 'turn' : ''} ${p.folded ? 'tg-fold' : ''} ${p.out ? 'tg-out' : ''}">
           <div class="tg-cards">${cards}</div>
           ${nameTag({ av: p.av, name: p.name, sub: p.out ? 'OUT' : `${p.chips} chips`, turn, dealer: G.dealer === i, me: p.seat === G.me })}
-          <div class="tg-st ${win ? 'text-emerald' : ''}">${win ? 'WINS ' + G.result.won[i] : sc || p.last || ''}</div></div>`;
+          <div class="tg-st ${win ? 'text-emerald' : /^All in/.test(p.last || '') ? 'allin' : ''}">${win ? 'WINS ' + G.result.won[i] : sc || p.last || ''}</div></div>`;
       }
       // returns how long the card movement takes, so the game can wait for it
       function draw() {
@@ -16721,6 +16852,27 @@
         clearTimeout(b.timer); b.timer = setTimeout(() => b.el.classList.remove('on'), 3000);
       }
       window.emoteShow = show;
+      // a chat message at the table pops up as a speech bubble above the sender's name tag (Inna, Nov 2026)
+      const says = {};
+      function say(seat, text) {
+        const S = table(); if (!S || !S.seats[seat]) return false;
+        const t = target(S, seat); if (!t || t.id === 'gs-body' || t.id === 'em-fab') return false;
+        let el = says[seat];
+        if (!el || !document.body.contains(el)) { el = document.createElement('div'); el.className = 'em-say'; document.body.appendChild(el); says[seat] = el; }
+        el.textContent = String(text).slice(0, 120);
+        el.classList.remove('on', 'below'); el.style.left = '0px'; el.style.top = '0px'; el.classList.add('on');
+        const r = t.getBoundingClientRect(), w = el.offsetWidth, h = el.offsetHeight;
+        let x = r.left + r.width / 2 - w / 2, y = r.top - h - 12;
+        if (y < 6) { y = r.bottom + 12; el.classList.add('below'); }
+        el.style.left = Math.max(6, Math.min(window.innerWidth - w - 6, x)) + 'px'; el.style.top = y + 'px';
+        clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), 5000);
+        return true;
+      }
+      window.seatSay = (m) => {
+        const S = table(); if (!S || !S.online) return false;
+        const seat = S.seats.findIndex((x) => x && ((m.uid && x.uid === m.uid) || (!m.uid && x.name === m.n)));
+        return seat >= 0 && say(seat, m.t);
+      };
 
       /* ---------- your emote button and menu ---------- */
       let sentAt = [];
@@ -17120,6 +17272,8 @@
           ['Turns go by number', 'Character 1 plays first, then 2, and so on. On your turn, take <b>2 gold</b> or look at <b>2 building cards and keep 1</b>.'],
           ['Build', 'Tap a building card you can afford, then press <b>Build</b>. You can’t build two of the same. The Architect can build up to 3.'],
           ['Use your power', 'Each character has a power (see below). The Shadow and the Pickpocket name a character by number, without knowing who has it!'],
+          ['Why was my turn skipped?', 'If the <b>Shadow</b> named your character, you miss your whole turn. If the <b>Pickpocket</b> named it, all your gold goes to the Pickpocket when your turn starts. The <b>Captain</b> can knock down one of your buildings by paying its cost minus 1.'],
+          ['Gold from colours', 'The Monarch (gold), Abbot (blue), Merchant (green) and Captain (red) earn 1 gold for every building of their colour in their town.'],
           ['The end', 'When someone has the target number of buildings, the round is finished. Points: each building’s cost, +3 for all five colours, +4 for finishing first (+2 for the others who finish), +2 for each wonder.']],
           items: () => row([1, 2, 3, 4, 5, 6, 7, 8].map((r) => { const R = GAME_MODS.guild.engine.ROLES[r]; return [`<span class="ht-num" style="--rc:${R.col}">${r}</span>`, R.name, R.txt]; })),
           tip: 'Try to collect buildings in your character’s colour: the Monarch, Abbot, Merchant and Captain earn a gold for each one.', online: NET_TABLE },
@@ -17200,16 +17354,24 @@
           ['Rent', 'Land on someone else’s property and you pay them rent. Own a whole colour set to double the rent.'],
           ['Build', 'With a full colour set, build houses (and then a hotel) to charge much more rent. (Room setting: or build one house each time you land on your own plot.)'],
           ['Buy out (setting)', 'If the room turns it on: after paying rent you may buy that plot from its owner for 2 × (land price + its houses). Not a plot with a hotel, and not one from a full colour set.'],
-          ['Cards and jail', 'Chance and Chest squares give a card that helps or hurts. Three doubles in a row, or the Go to Jail square, sends you to Jail.'],
-          ['Short on cash?', 'Houses are sold and properties mortgaged for you automatically. If you still can’t pay, you are bankrupt.']],
+          ['START', 'Every time you pass or land on START you collect <b>$200</b>.'],
+          ['Doubles', 'Roll the same number on both dice and you move, then roll again. Roll doubles <b>three times in a row</b> and you go straight to Jail (no $200).'],
+          ['Jail', 'You go to Jail by landing on Go to Jail, by a card, or by 3 doubles. In Jail you can <b>pay $50</b>, use a <b>Get Out of Jail Free</b> card, or try to <b>roll doubles</b> (up to 3 turns; after the third miss you pay $50 and move). Just landing on the Jail square is only “visiting”.'],
+          ['Surprise and Mystery cards', 'Land on these squares to draw a card: it may pay you, make you pay, move you, or send you to Jail.'],
+          ['Railroads and utilities', 'Rent for railroads goes up with every railroad the owner has. Utilities charge a multiple of your dice roll.'],
+          ['Taxes and Free Parking', 'Tax squares make you pay the bank. With the Free Parking jackpot turned on, taxes and fines pile up in the middle and whoever lands on Free Parking takes them all.'],
+          ['Short on cash?', 'Houses are sold back for half their price and properties are mortgaged for you automatically (a mortgaged property charges no rent). If you still can’t pay, you are bankrupt and out.'],
+          ['Tap to look', 'Tap any property on the board to see its card: rent with houses, house cost and mortgage value. Tap a pawn to see where that player is standing.']],
           items: () => row([[sq('#FB7185') + sq('#FB7185') + sq('#FB7185'), 'Colour set', 'Own all of one colour'], [`<span class="ht-mark">🏠</span>`, 'House', 'More rent'], [`<span class="ht-mark">🏨</span>`, 'Hotel', 'The most rent'], [`<span class="ht-mark">🎲</span>`, 'Doubles', 'Roll again']]),
           tip: 'Railroads and the orange and red sets are great value. Build evenly across a set.', online: NET_TABLE },
         isles: { tag: '3-4 PLAYERS · BUILD AN ISLAND', goal: 'Be the first to reach the target points by building villages, towns and roads.', steps: [
           ['Start', 'Everyone places two villages and two roads. Corners touching numbers that come up often (6 and 8) are best.'],
           ['Roll', 'Each turn, roll the dice. Every land tile with that number gives its resource to anyone with a village (1 card) or town (2 cards) on its corners.'],
           ['Build', 'Spend resources: <b>Road</b> (Timber + Clay), <b>Village</b> (Timber + Clay + Wool + Grain), <b>Town</b> (2 Grain + 3 Stone, upgrades a village).'],
+          ['Where you can build', 'Roads join your own roads or buildings. A village goes on a free corner at the end of your road, and <b>no other village may be on a neighbouring corner</b> (one empty corner between villages). A grey button tells you why you can’t build yet.'],
           ['Trade', 'Trade 4 of the same card for any 1 with the bank, or offer a deal to the other players.'],
-          ['The Bandit', 'A roll of 7 moves the Bandit: it blocks a tile and steals a card. Anyone holding more than 7 cards loses half.'],
+          ['The Bandit', 'A roll of 7 pays nobody. Anyone holding <b>more than 7 cards loses half</b> of them. Then the Bandit moves to a land: that land pays nothing until the Bandit moves again, and its owner loses one random card.'],
+          ['Longest Road', 'The first player with an unbroken road of <b>5 or more</b> pieces gets Longest Road (2 points). Someone with a longer road takes it from them.'],
           ['Points', 'Village = 1 point, Town = 2 points, Longest Road = 2 points. First to the target wins.']],
           items: () => row([[sq('#1F6B42', '🌲'), 'Timber', 'From forests'], [sq('#9C4630', '🧱'), 'Clay', 'From clay pits'], [sq('#9BC97A', '🐑'), 'Wool', 'From pastures'], [sq('#E9C352', '🌾'), 'Grain', 'From fields'], [sq('#8E9CAD', '⛰️'), 'Stone', 'From mountains']]),
           tip: 'Settle next to different resources so you can always build something.', online: NET_TABLE },
@@ -17218,7 +17380,8 @@
           ['Walk', 'On your turn, walk to a room next to yours (corner rooms have secret passages to the opposite corner).'],
           ['Suggest', 'Name a suspect and a tool "in this room". The next player who holds one of those cards must secretly show you one.'],
           ['Take notes', 'Your notebook ticks cards you have seen. Cross off everything that can’t be the answer.'],
-          ['Accuse', 'When you are sure, accuse! Right and you win. Wrong and you are out (but you still show cards).']],
+          ['Who shows a card?', 'Players are asked one by one, going round the table. The first one who holds the suspect, the tool or the room shows you <b>one</b> of them (only you see it). If nobody can show anything, those cards are either in the envelope or in your own hand.'],
+          ['Accuse', 'When you are sure, accuse! Right and you win. Wrong and you are out: you can’t move or win any more, but you still show cards when asked.']],
           items: () => row([[`<span class="ht-mark text-coral">👤</span>`, '6 suspects', 'Who did it'], [`<span class="ht-mark text-teal">🔧</span>`, '6 tools', 'With what'], [`<span class="ht-mark text-amber">🚪</span>`, '9 rooms', 'Where']]),
           tip: 'Suggest cards you already hold to test the others. If nobody can show anything, the rest may be the answer!', online: 'When someone shows a card, only the player who asked gets to see it. ' + NET_TABLE },
         wordconnect: { tag: 'SOLO OR ONLINE RACE', goal: 'Find as many words as you can from the letter wheel.', steps: [
@@ -17349,6 +17512,8 @@
           ['Đi theo số thứ tự', 'Nhân vật số 1 đi trước, rồi số 2, cứ thế tiếp. Đến lượt, lấy <b>2 vàng</b> hoặc xem <b>2 lá công trình và giữ 1</b>.'],
           ['Xây dựng', 'Chạm vào lá công trình bạn đủ tiền xây, rồi bấm <b>Xây</b>. Không được xây hai công trình giống nhau. Kiến Trúc Sư được xây tối đa 3.'],
           ['Dùng năng lực', 'Mỗi nhân vật có một năng lực (xem bên dưới). Bóng Đêm và Kẻ Móc Túi gọi tên nhân vật theo số, mà không biết ai đang giữ nó!'],
+          ['Vì sao tôi bị mất lượt?', 'Nếu <b>Bóng Đêm</b> gọi đúng nhân vật của bạn, bạn mất cả lượt. Nếu <b>Kẻ Móc Túi</b> gọi đúng, toàn bộ vàng của bạn sang tay Kẻ Móc Túi khi lượt bạn bắt đầu. <b>Thuyền Trưởng</b> có thể phá một công trình của bạn bằng cách trả giá của nó trừ 1.'],
+          ['Vàng theo màu', 'Nhà Vua (vàng), Tu Viện Trưởng (xanh dương), Thương Nhân (xanh lá) và Thuyền Trưởng (đỏ) được 1 vàng cho mỗi công trình cùng màu trong thị trấn.'],
           ['Kết thúc', 'Khi có người xây đủ số công trình mục tiêu, vòng đó sẽ chơi cho xong. Điểm: giá của từng công trình, +3 nếu có đủ năm màu, +4 cho người xong đầu tiên (+2 cho những người cũng xong), +2 cho mỗi kỳ quan.']], online: ONT },
         chess: { goal: 'Vây vua đối phương để vua không còn đường thoát. Đó là chiếu hết.', steps: [
           ['Đi quân', 'Chạm vào một quân của bạn, rồi chạm vào ô được tô sáng. Bên Trắng đi trước.'],
@@ -17411,20 +17576,29 @@
           ['Tiền thuê', 'Dừng ở đất của người khác thì phải trả tiền thuê cho họ. Có đủ cả bộ màu thì tiền thuê gấp đôi.'],
           ['Xây nhà', 'Có đủ bộ màu thì xây nhà (rồi khách sạn) để thu tiền thuê cao hơn nhiều. (Cài đặt phòng: hoặc xây một nhà mỗi lần dừng ở đất của mình.)'],
           ['Mua lại đất (cài đặt)', 'Nếu phòng bật: sau khi trả tiền thuê, bạn có thể mua lại ô đó với giá 2 × (giá đất + nhà trên đó). Không áp dụng cho ô có khách sạn hoặc thuộc bộ màu đã đủ.'],
-          ['Thẻ và nhà tù', 'Ô Bất Ngờ và Hộp Bí Ẩn cho bạn một lá thẻ có thể giúp hoặc hại. Ba lần đổ đôi liên tiếp, hoặc dừng ở ô Vào Tù, sẽ bị vào tù.'],
-          ['Thiếu tiền?', 'Nhà sẽ được bán và đất được cầm cố tự động. Nếu vẫn không đủ trả, bạn phá sản.']], online: ONT },
+          ['Ô START', 'Mỗi lần đi qua hoặc dừng ở ô START bạn nhận <b>$200</b>.'],
+          ['Đổ đôi', 'Hai xúc xắc ra cùng số thì bạn đi rồi được tung tiếp. Đổ đôi <b>ba lần liền</b> thì vào thẳng Nhà tù (không nhận $200).'],
+          ['Nhà tù', 'Bạn vào tù khi dừng ở ô Vào Tù, do một lá thẻ, hoặc do đổ đôi 3 lần. Trong tù bạn có thể <b>trả $50</b>, dùng thẻ <b>Ra Tù Miễn Phí</b>, hoặc thử <b>đổ đôi</b> (tối đa 3 lượt; trượt lần thứ ba thì trả $50 rồi đi). Chỉ dừng ở ô Nhà tù thì chỉ là “thăm”.'],
+          ['Thẻ Bất Ngờ và Bí Ẩn', 'Dừng ở các ô này để rút một lá: có thể được tiền, mất tiền, bị dời chỗ, hoặc vào tù.'],
+          ['Đường sắt và tiện ích', 'Tiền thuê đường sắt tăng theo số đường sắt chủ sở hữu có. Tiện ích tính theo bội số điểm xúc xắc của bạn.'],
+          ['Thuế và Bãi Đỗ Xe', 'Ô thuế bắt bạn trả cho ngân hàng. Nếu bật hũ Bãi Đỗ Xe, thuế và tiền phạt dồn vào giữa bàn, ai dừng ở Bãi Đỗ Xe sẽ lấy hết.'],
+          ['Thiếu tiền?', 'Nhà sẽ được bán và đất được cầm cố tự động. Nếu vẫn không đủ trả, bạn phá sản.'],
+          ['Chạm để xem', 'Chạm vào một ô đất trên bàn để xem thẻ: tiền thuê theo số nhà, giá nhà, giá cầm cố. Chạm vào quân cờ để xem người đó đang đứng ở đâu.']], online: ONT },
         isles: { goal: 'Là người đầu tiên đạt số điểm mục tiêu bằng cách xây làng, thị trấn và đường.', steps: [
           ['Bắt đầu', 'Mỗi người đặt hai làng và hai con đường. Góc chạm vào những số hay ra (6 và 8) là tốt nhất.'],
           ['Tung xúc xắc', 'Mỗi lượt tung xúc xắc. Mỗi ô đất có số đó sẽ cho tài nguyên cho ai có làng (1 lá) hoặc thị trấn (2 lá) ở góc của nó.'],
           ['Xây dựng', 'Dùng tài nguyên: <b>Đường</b> (Gỗ + Đất sét), <b>Làng</b> (Gỗ + Đất sét + Len + Lúa), <b>Thị trấn</b> (2 Lúa + 3 Đá, nâng cấp từ một làng).'],
+          ['Xây ở đâu', 'Đường phải nối với đường hoặc công trình của bạn. Làng đặt ở góc trống cuối đường của bạn, và <b>góc kề bên không được có làng khác</b> (giữa hai làng phải có một góc trống). Nút màu xám cho bạn biết vì sao chưa xây được.'],
           ['Trao đổi', 'Đổi 4 lá cùng loại lấy 1 lá bất kỳ với ngân hàng, hoặc đề nghị trao đổi với người chơi khác.'],
-          ['Tên Cướp', 'Tung ra 7 thì Tên Cướp di chuyển: nó chặn một ô đất và lấy trộm một lá. Ai đang cầm hơn 7 lá phải bỏ một nửa.'],
+          ['Tên Cướp', 'Tung ra 7 thì không ai nhận tài nguyên. Ai cầm <b>hơn 7 lá phải bỏ một nửa</b>. Rồi Tên Cướp chuyển đến một ô đất: ô đó không cho gì cho đến khi Tên Cướp đi chỗ khác, và chủ của nó mất một lá ngẫu nhiên.'],
+          ['Đường dài nhất', 'Người đầu tiên có một con đường liền mạch từ <b>5 đoạn trở lên</b> được Đường dài nhất (2 điểm). Ai có đường dài hơn sẽ lấy lại.'],
           ['Điểm', 'Làng = 1 điểm, Thị trấn = 2 điểm, Đường dài nhất = 2 điểm. Ai đạt mục tiêu trước sẽ thắng.']], online: ONT },
         manor: { goal: 'Là người đầu tiên tìm ra ai đã làm, bằng gì, và ở phòng nào.', steps: [
           ['Bí mật', 'Một nghi phạm, một công cụ và một căn phòng được giấu trong phong bì. Các lá khác được chia ra, nên lá nào trên tay bạn thì không thể là đáp án.'],
           ['Đi lại', 'Đến lượt, đi sang một phòng bên cạnh (các phòng ở góc có lối đi bí mật sang góc đối diện).'],
           ['Phỏng đoán', 'Gọi tên một nghi phạm và một công cụ "ở phòng này". Người kế tiếp có một trong các lá đó phải bí mật cho bạn xem một lá.'],
           ['Ghi chép', 'Sổ tay đánh dấu những lá bạn đã thấy. Gạch bỏ mọi thứ không thể là đáp án.'],
+          ['Ai đưa lá?', 'Lần lượt từng người quanh bàn được hỏi. Người đầu tiên có nghi phạm, công cụ hoặc căn phòng đó sẽ cho bạn xem <b>một</b> lá (chỉ bạn thấy). Nếu không ai đưa được, những lá đó hoặc nằm trong phong bì, hoặc trên tay bạn.'],
           ['Buộc tội', 'Khi đã chắc chắn, hãy buộc tội! Đúng thì thắng. Sai thì bị loại (nhưng vẫn phải cho người khác xem bài).']],
           online: 'Khi ai đó đưa ra một lá, chỉ người hỏi mới được thấy. ' + ONT },
         wordconnect: { goal: 'Tìm càng nhiều từ càng tốt từ vòng chữ cái.', steps: [

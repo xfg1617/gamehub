@@ -376,7 +376,7 @@
         return `<div id="pk-seat-${i}" class="tg-seat ${turn ? 'turn' : ''} ${p.folded ? 'tg-fold' : ''} ${p.out ? 'tg-out' : ''}">
           <div class="tg-cards">${cards}</div>
           ${nameTag({ av: p.av, name: p.name, sub: p.out ? 'OUT' : `${p.chips} chips`, turn, dealer: G.dealer === i, me: p.seat === G.me })}
-          <div class="tg-st ${win ? 'text-emerald' : ''}">${win ? 'WINS ' + G.result.won[i] : sc || p.last || ''}</div></div>`;
+          <div class="tg-st ${win ? 'text-emerald' : /^All in/.test(p.last || '') ? 'allin' : ''}">${win ? 'WINS ' + G.result.won[i] : sc || p.last || ''}</div></div>`;
       }
       // returns how long the card movement takes, so the game can wait for it
       function draw() {

@@ -795,3 +795,24 @@ folder that was handed over, so they do not exist here.)
   only on https gamehub.us.com / gamehub-8w2.pages.dev; invisible unless Cloudflare wants a tap; on failure or after 20 s
   the call goes ahead without a token. Supabase: Authentication → Attack Protection → CAPTCHA (Turnstile + secret key),
   switched on only AFTER this code was live. `test/t_captcha.py` (stand-ins, no real service).
+
+## 5v. Nov 25 2026 round 3 (Inna's list)
+
+* **Bullshit turn timer**: setting TURN TIMER 20/30/45/Off (default 30); `G.clock` (makeClock on a hidden host) runs round
+  the name tag of the person choosing; on their own screen a time-out puts down one card (`botPlay`). Your own tag
+  (`#fb-seat-<me>`) replaces "YOUR CARDS". Computer turns show no ring.
+* **Prompt above your cards** (Uno, Kaboom Cats, Bullshit): a small label as wide as its text, invisible when empty
+  (keeps its height) instead of the full-width dark strip.
+* **"What just happened" notices** (`gameNote` + a 350 ms watcher in core.js): new lines in the hidden game log that
+  match `IMPORTANT` (jail, skip, steal, broken, bandit, bluff caught...) pop up at the top of the game for ~4 s.
+* **Guides**: more detail for Landlord (START, doubles, Jail options, cards, rails/utilities, taxes, Free Parking,
+  mortgages, tap to look), Island Settlers (where you can build, Bandit, Longest Road), Whodunit (who shows a card,
+  wrong accusation), Castles & Kings (why a turn was skipped, gold from colours). English + Vietnamese.
+* **Sea Battle**: name tags (you / opponent, `#ng-tags`, ids `ng-seat-N`) with the turn ring on yours; the timer box and
+  bar are hidden. Result pop-up has "👁 See the boards" (`ngPeekBoards`, bar to bring it back). Online, each screen sends
+  its fleet at the end (`S.peek({fleet})` → `ngShowEnemyFleet`), so the loser sees the winner's ships.
+* **Chat at the table**: a message from someone at an online table shows as a speech bubble above their name tag
+  (`seatSay` in zz_emotes.js, called from `chatPost`); the corner pop-up is only used when there's no tag. `t_chat_bubble.py`.
+* **Phones**: the bottom tab bar is gone (`.mtabs` hidden; ☰ menu has everything); in games CHAT and emote are small icons.
+* **Cards**: card numbers use Outfit (6 vs 8 were hard to tell in the pixel font); Uno 6 and 9 underlined (`u69`);
+  Poker bet amounts (`.chip-amt`) and status lines like "All in" (`.tg-st`, red) are bigger. Timer ring stays under badges.

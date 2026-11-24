@@ -61,3 +61,12 @@
     .cf-mate { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-bottom: 1px solid rgba(157, 180, 204, .15); }
     .tg-tag, .pl-tag { cursor: default; }
     body.in-game .tg-tag:hover { filter: brightness(1.12); }
+    /* phones: no bottom tab bar any more (the ☰ menu has everything, Inna Nov 2026); CHAT sits in the corner */
+    .mtabs { display: none !important; }
+    @media (max-width: 1023px) {
+      body > .lg\:flex.min-h-screen { padding-bottom: 0 !important; }
+      #chat-fab { bottom: 14px; }
+      #chat-panel { bottom: 72px; }
+      #chat-pops { bottom: 72px !important; }
+      body.in-game main.flex-1 { padding-bottom: 72px !important; }
+    }

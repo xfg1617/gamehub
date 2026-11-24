@@ -187,8 +187,35 @@
       /* ================= Supabase (the real service) ================= */
       function supaBackend() {
         let sb, uid;
-        const err = (e) => { const m = (e && (e.message || e.error_description)) || String(e); return new Error(/full/.test(m) ? 'That room is already full.' : /no such room/.test(m) ? 'No room with that code.' : /over/.test(m) ? 'That game is already over.' : /slow/i.test(m) ? 'Slow down a little!' : m); };
+        const err = (e) => { const m = (e && (e.message || e.error_description)) || String(e); return new Error(/full/.test(m) ? 'That room is already full.' : /no such room/.test(m) ? 'No room with that code.' : /over/.test(m) ? 'That game is already over.' : /slow/i.test(m) ? 'Slow down a little!'
+          : NETERR.test(m) ? 'Connection problem. Check your internet and try again.' : AUTHERR.test(m) ? 'Your connection to GameHub timed out. Please try again.' : m); };
         const ok = ({ data, error }) => { if (error) throw err(error); return data; };
+        // Phones and tablets that sleep or switch Wi-Fi can come back with an expired sign-in ("permission denied")
+        // or a dropped request ("Load failed" on iPad/iPhone, "Failed to fetch" elsewhere). Every server call refreshes the
+        // sign-in when it is about to expire, and retries once after refreshing / after a short wait (Inna, Nov 2026).
+        const NETERR = /load failed|failed to fetch|networkerror|network request failed|fetch failed/i, AUTHERR = /permission denied|jwt|expired|invalid claim|not authenticated/i;
+        async function fresh(force) {
+          try {
+            const { data } = await sb.auth.getSession();
+            const s = data && data.session;
+            if (!s) { const r = await sb.auth.signInAnonymously(); if (!r.error && r.data && r.data.user) uid = r.data.user.id; return; }
+            if (force || !s.expires_at || s.expires_at * 1000 - Date.now() < 60000) await sb.auth.refreshSession();
+          } catch (e) {}
+        }
+        async function rpc(name, args) {
+          await fresh(false);
+          let res;
+          try { res = await sb.rpc(name, args); } catch (e) { res = { error: e }; }
+          const m = (res.error && (res.error.message || String(res.error))) || '';
+          if (res.error && (AUTHERR.test(m) || NETERR.test(m))) {
+            await new Promise((r) => setTimeout(r, NETERR.test(m) ? 1500 : 200));
+            await fresh(true);
+            try { res = await sb.rpc(name, args); } catch (e) { res = { error: e }; }
+          }
+          return res;
+        }
+        // waking the tab up: get a fresh sign-in straight away
+        document.addEventListener('visibilitychange', () => { if (!document.hidden && sb) fresh(false); });
         const withP = (rows) => rows.map((m) => ({ id: m.id, room: m.room, uid: m.user_id, text: m.text, at: Date.parse(m.created_at), name: (m.profiles || {}).name || '?', avatar: (m.profiles || {}).avatar || '🙂' }));
         const pcache = {};
         const B = {
@@ -248,9 +275,9 @@
             const ch = sb.channel('lobby', { config: { presence: { key: uid } } });
             ch.on('presence', { event: 'sync' }, () => { const ids = Object.keys(ch.presenceState()); NET.onlineIds = new Set(ids); setCount(ids.length); }).subscribe((st) => { if (st === 'SUBSCRIBED') ch.track({ at: Date.now() }); });
           },
-          async create(game, settings, pub, code) { return ok(await sb.rpc('create_room', { p_game: game, p_settings: settings || {}, p_public: !!pub, p_code: code || null })); },
-          async join(code) { return ok(await sb.rpc('join_room', { p_code: code.toUpperCase() })); },
-          async quick(game, settings) { return ok(await sb.rpc('quick_match', { p_game: game, p_settings: settings || {} })); },
+          async create(game, settings, pub, code) { return ok(await rpc('create_room', { p_game: game, p_settings: settings || {}, p_public: !!pub, p_code: code || null })); },
+          async join(code) { return ok(await rpc('join_room', { p_code: code.toUpperCase() })); },
+          async quick(game, settings) { return ok(await rpc('quick_match', { p_game: game, p_settings: settings || {} })); },
           async get(code) { const r = ok(await sb.from('rooms').select('*').eq('code', code).maybeSingle()); return r; },
           // a live channel for one table: instant messages (broadcast) + who is here (presence); no database rows
           channel(name, meta) {
@@ -269,17 +296,17 @@
             B.get(code).then((r) => { if (r) fn(conv(r)); });
             return () => sb.removeChannel(ch);
           },
-          async move(code, mv, idx) { return ok(await sb.rpc('add_move', { p_code: code, p_move: mv, p_index: idx })); },
-          async ping(code) { await sb.rpc('room_ping', { p_code: code }); },
-          async leave(code) { await sb.rpc('leave_room', { p_code: code }); },
-          async result(code, res) { return ok(await sb.rpc('report_result', { p_code: code, p_result: res })); },
-          async openRooms() { return ok(await sb.rpc('open_rooms')) || []; },
+          async move(code, mv, idx) { return ok(await rpc('add_move', { p_code: code, p_move: mv, p_index: idx })); },
+          async ping(code) { await rpc('room_ping', { p_code: code }); },
+          async leave(code) { await rpc('leave_room', { p_code: code }); },
+          async result(code, res) { return ok(await rpc('report_result', { p_code: code, p_result: res })); },
+          async openRooms() { return ok(await rpc('open_rooms')) || []; },
           async leaderboard(game) { return (ok(await sb.from('ratings').select('user_id,elo,games,wins,losses,draws,profiles(name,avatar)').eq('game', game).gt('games', 0).order('elo', { ascending: false }).limit(50)) || []).map((r) => ({ id: r.user_id, elo: r.elo, games: r.games, wins: r.wins, losses: r.losses, draws: r.draws, name: (r.profiles || {}).name || '?', avatar: (r.profiles || {}).avatar || '🙂' })); },
           async rating(game) { return ok(await sb.from('ratings').select('elo,games').eq('user_id', uid).eq('game', game).maybeSingle()) || { elo: 1200, games: 0 }; },
           async profileOf(id) { if (pcache[id]) return pcache[id]; const p = ok(await sb.from('profiles').select('name,avatar').eq('id', id).maybeSingle()) || { name: 'Player', avatar: '🙂' }; pcache[id] = p; return p; },
           /* friends (backend/friends.sql) */
-          async searchPlayers(q) { if (String(q || '').trim().length < 2) return []; return ok(await sb.rpc('search_players', { q: String(q).trim() })) || []; },
-          async playerCard(id) { return ok(await sb.rpc('player_card', { p_id: id })); },
+          async searchPlayers(q) { if (String(q || '').trim().length < 2) return []; return ok(await rpc('search_players', { q: String(q).trim() })) || []; },
+          async playerCard(id) { return ok(await rpc('player_card', { p_id: id })); },
           async friends() {
             const rows = ok(await sb.from('friend_requests').select('from_id,to_id,status')) || [];
             const pr = async (id) => Object.assign({ id }, await B.profileOf(id));
@@ -403,6 +430,7 @@
       NET.createRoom = (game, settings, pub, code) => B.create(game, settings, pub, code);
       NET.joinRoom = (code) => B.join(code);
       NET.channel = (name, meta) => B.channel(name, meta);
+      NET._B = B;   // for tests
       NET.sendMove = (code, mv, idx) => B.move(code, mv, idx);
       NET.ping = (code) => B.ping(code).catch(() => {});
       NET.leave = (code) => B.leave(code).catch(() => {});

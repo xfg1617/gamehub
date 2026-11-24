@@ -296,6 +296,11 @@ Inna found the games too fast and glitchy, so every game now shares one calm pac
   service so ordinary tests never create junk players; only `test/t_online_real.py` connects on purpose, as
   "Test Pilot A/B" (passed: chat, presence, quick match, checkmate, Elo 1216/1184, leaderboard; a guest
   account editing `ratings` directly gets "permission denied"). Supabase-js is pinned at 2.118.0.
+* **Waking up / flaky connections (Nov 2026, Inna's iPad: "permission denied for function quick_match", "TypeError: Load
+  failed")**: every server call goes through `rpc()` in net.js: it refreshes the sign-in when it expires within a minute,
+  and on a sign-in error (anon role → permission denied) or a dropped request it refreshes / waits 1.5 s and retries once.
+  Still failing → plain messages ("Connection problem. Check your internet and try again." / "Your connection to GameHub
+  timed out. Please try again."). The tab also refreshes the sign-in when it becomes visible. `test/t_net_recover.py`.
 * Online identity is per browser (anonymous account): clearing site data or switching device = a new player.
   The local stand-in (`test/t_online.py`) shares localStorage between tabs, which Chromium syncs between
   renderer processes with a lag, so it can be flaky (duplicate names, lost result reports). Trust

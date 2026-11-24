@@ -29,3 +29,4 @@
     .gm-rl .gm-rn { float: none; font-size: 15px; }
     .gm-rl.now { outline: 2px solid #F5B041; } .gm-rl.dead { opacity: .45; text-decoration: line-through; }
     @media (max-width: 640px) { .gm-towns { grid-template-columns: 1fr; } .gm-role { width: calc(50% - 6px); } .gm-b.big { width: 72px; } }
+    #gm-hand { padding-top: 12px; }

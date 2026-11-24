@@ -132,9 +132,10 @@ built with `SFX.def(name, fn)` using `SFX.tone({type,f1,f2,t,d,v})` and `SFX.noi
 In `base/` (older, not in `GAME_MODS`): **Naval Grid** and **Daily Word** (offline versions). Four-in-a-Row now
 lives in `src/games/fourinarow.js`; online versions: `navalnet.js` (hidden tile) and `wordduel.js`.
 
-In `src/games/` (16, all registered through `registerGame`): Chess, Checkers, **Pool**, Poker,
+In `src/games/` (all registered through `registerGame`): Chess, Checkers, **Pool**, Poker,
 Blackjack, Bowling, Word Connect, Find the Impostor, Hot Potato Cats, Color Clash, Property Tycoon,
-Doodle Chain, **Tic-Tac-Toe**, **Dominoes**, **Frontier Isles**, **Manor Mystery**.
+Doodle Guess (was Doodle Chain), **Tic-Tac-Toe**, **Dominoes**, **Frontier Isles**, **Manor Mystery**, and since
+Nov 24 2026 **Hedge Run**, **Fibber**, **Tunnel Trouble**, **Guild Masters** (see 5o).
 
 Like Property Tycoon (our Monopoly-style game), **Frontier Isles** (Catan-style) and **Manor Mystery**
 (Clue-style) are *original* games in a familiar genre: own names, art, suspects, tools and rooms. Never use
@@ -597,14 +598,43 @@ One shared way to run a game table, used on this device AND online, so a game ha
   them inside the chat window (`NET.dmHistory` / `dmSend`, refreshes every 4 s); "← Room" goes back.
 * **Pool live aiming**: `S.peek(d)` / `S.onPeek(i, d)` (netplay, channel event `peek`, not stored): the shooter sends
   aim + power ~12×/s; other screens glide the cue to it (`G.peekAim`, `G.peekPow`). `engine.G` exposed for tests.
-* Still to do from the list: name tags in other games, animations for the other games, player cards / profile page
-  (needs SQL for public stats), welcome pop-up + avatars + badges, Pool feel tuning, guide rewrite, draw-and-guess + 4 new games.
 
-## Planned (approved, not built yet)
+## 5o. Nov 24 2026 big update, part 2 (rest of Inna's list, all live)
 
-* **Guest welcome pop-up**: `prototypes/welcome-popup.html` (Inna approved the small version): "Save your progress",
-  Progress / Avatars / Badges, Create free account, I already have an account, Maybe later. Needs unlockable avatars
-  (by level / wins) and badges to be built with it.
+* **Board-game player lists** (Isles, Tycoon, Manor) use the name-tag style (`.pl-tag`, `--pc` = player colour).
+* **Welcome pop-up + rewards** (`zz_rewards.js`): guests see the approved small pop-up (`prototypes/welcome-popup.html`)
+  once on their first visit (never when arriving by invite link; `ps_welcome_v1`), and once more after their first win.
+  6 extra avatars unlock by level 5/10/15/20, 50 wins, playing every game (online they need an account; locked ones show
+  a 🔒 and the reason). Badges = the site's existing `BADGES` list (base page + core.js); a toast says when a new one is
+  earned (`REWARDS.earned()`). Don't add a second badge list.
+* **Player cards + profile page** (`zz_friends.js`, `backend/player-stats.sql`): every browser publishes a small summary
+  of its stats every 15 s when it changed (`publish_stats`: level, games, wins per game, earned badges, last 12 results;
+  never an email). A player card shows Level / Games / Win %, plus "IN <GAME>" numbers when opened during a game, and
+  "View full profile" (overview, badges, games played table with rating, recent games). `t_pstats.py`.
+  **Supabase: run `backend/player-stats.sql` once** (until then cards just say "No games played yet").
+* **Guides** (`zz_howto.js`): online texts describe the new room flow (Online match / Private room / computer players).
+* **Pool feel**: sounds scale with how hard balls hit (`poolSnd`: ball, rail, pocket, cue); the cue follows through and
+  fades after a shot (`G.follow`).
+* **New original games** (all with computer players, online tables, guides, tests, link-preview banners):
+  - **Hedge Run** (`hedge.js`, Quoridor-style): 9×9 garden, step or plant a 2-square hedge; a hedge may never shut anyone in
+    (`wallProblem`). 2 players (10 hedges) or 4 (5). Computer Easy/Medium/Hard (`aiAction`: shortest paths). Your board is
+    turned so your pawn starts at the bottom. `t_hedge.py`, `t_np_hedge.py`.
+  - **Fibber** (`fibber.js`, bluffing card game): put 1-4 cards face down as the current rank (A, 2 ... K), anyone can shout
+    FIBBER! within a few seconds (first tap wins, `S.ask(-1, ...)`); liar or wrong shouter takes the pile. 3-5 players.
+    The doubt countdown must be stopped when the window closes (`G.stopDoubt`), or it wipes the next turn's buttons.
+    `t_fibber.py`, `t_np_fibber.py`.
+  - **Tunnel Trouble** (`tunnel.js`, Saboteur-style): secret Diggers vs Rascals, tunnel pieces must fit and join the tunnel,
+    break/fix pick & lamp, treasure map peek, cave-in. Roles dealt from n+1 cards (sometimes no Rascal). Computer games come
+    out about 50/50 (`t_tunnel.py` plays 10). `t_np_tunnel.py`.
+  - **Guild Masters** (`guild.js`, Citadels-style): pick one of 8 characters each round (Shadow, Pickpocket, Trader, Monarch,
+    Abbot, Merchant, Architect, Captain), take 2 gold or keep 1 of 2 cards, build; game ends at 6/7/8 buildings.
+    `t_guild.py`, `t_np_guild.py`.
+* **Doodle Guess** (was Doodle Chain, id still `doodle`): main mode is live **Draw & Guess**: the drawer picks 1 of 3 words,
+  strokes stream live over `S.peek` (`{k, n, c, s, p}` pieces, `u` = undo, `x` = clear), guesses go through `S.act`, the
+  host's `tick` ends the turn / plays computer guesses; computer drawers animate a built-in doodle (`DOODLES`). Solo
+  "Guess the Doodle" kept; the old chain code is still in the file but unreachable. `t_doodle_live.py`.
+* `make_images.py` was re-run (24 banners). The welcome pop-up, music, loading screen and confetti are skipped when
+  `navigator.webdriver` (tests).
 
 ## 5d. Game setup screens, room codes, leaving a game
 

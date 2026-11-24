@@ -529,6 +529,15 @@
       animation: aimBlink 0.8s steps(2, jump-none) infinite;
     }
     @keyframes aimBlink { 0% { opacity: 1; } 100% { opacity: 0.35; } }
+    /* "click again" tag over the locked target, so new players know the first click only aims */
+    .icell.aim::before {
+      content: 'FIRE!'; position: absolute; left: 50%; bottom: calc(100% + 3px); transform: translateX(-50%); z-index: 6;
+      font-family: 'Arcade Pixel', monospace; font-size: 13px; line-height: 1; letter-spacing: .04em; white-space: nowrap;
+      padding: 3px 6px; background: #F5B041; color: #050E18; border: 2px solid #050E18; box-shadow: 2px 2px 0 #050E18; pointer-events: none;
+    }
+    .icell.aim.aim-top::before { bottom: auto; top: calc(100% + 3px); }
+    /* online: my missile is on its way (waiting for the other screen to say hit or miss) */
+    .fx-pend { position: absolute; inset: 14%; border: 3px dashed #F5B041; animation: aimBlink 0.5s steps(2, jump-none) infinite; pointer-events: none; }
     .icell.pv-ok { background: rgba(52, 211, 153, 0.38); outline: 2px solid #34D399; outline-offset: -2px; }
     .icell.pv-bad { background: rgba(251, 113, 133, 0.42); outline: 2px solid #FB7185; outline-offset: -2px; }
 
@@ -2549,6 +2558,7 @@
       if (st === 'hit') return `${boom}<div class="fx-persist fx-fire">${FLAME_SVG}</div>`;
       if (st === 'sunk' && prev === 'hit') return `<div class="fx-persist fx-smoke">${SMOKE_HTML}</div>`;
       if (st === 'sunk') return `${boom}<div class="fx-persist fx-smoke">${SMOKE_HTML}</div>`;
+      if (st === 'pend') return '<div class="fx-pend"></div>';
       return '';
     }
 
@@ -2681,7 +2691,7 @@
           el.dataset.state = st;
           el.innerHTML = fxMarkup(prev, st);
           refs.cells[i].dataset.shot = st ? '1' : '';
-          if (st !== 'miss' && prev === '') boom = true;
+          if (st !== 'miss' && st !== 'pend' && (prev === '' || prev === 'pend')) boom = true;
         }
       }
       if (boom) {
@@ -2883,6 +2893,7 @@
       ngBoards.enemy.cells.forEach((cell, i) => {
         const p = ng.pendingShot;
         cell.classList.toggle('aim', !!p && p.r * 10 + p.c === i);
+        cell.classList.toggle('aim-top', !!p && p.r === 0 && p.r * 10 + p.c === i);
       });
     }
 
@@ -2942,7 +2953,7 @@
       renderNavalBattle();
       setBattleBanner('🚀', 'Missile away!', 'Waiting for the splash...');
       SFX.play('whoosh');
-      if (ngNet) return ngNet.fire(r, c);
+      if (ngNet) { ng.playerShots[r][c] = 'pend'; renderNavalBattle(); return ngNet.fire(r, c); }
       setTimeout(() => resolvePlayerShot(r, c), 320);
     }
 

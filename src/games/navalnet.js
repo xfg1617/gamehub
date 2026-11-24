@@ -36,7 +36,11 @@
         let k = 0;
         ngNet = {
           ready: () => S.act({ t: 'ready', key: 'ready' }),
-          fire: (r, c) => S.act({ t: 'shot', k, r, c }),
+          fire: (r, c) => {
+            S.act({ t: 'shot', k, r, c });
+            // the shot is marked at once; if the answer is slow, say so instead of leaving the player guessing
+            gTimeout(() => { if (live() && ng.playerShots[r] && ng.playerShots[r][c] === 'pend') setBattleBanner('📡', 'Slow connection...', `Waiting for ${S.name(opp)}'s screen to answer. Your shot is marked on the map.`); }, 6000);
+          },
           skip: () => S.act({ t: 'skip', k }),
           over: (won, cb) => { G.over = true; S.finish(won ? 'win' : 'loss').then(cb); },
           back: () => { giveBack(); open(root); },

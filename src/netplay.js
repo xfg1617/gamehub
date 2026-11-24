@@ -325,20 +325,42 @@
     function npOnline(o) {
       const ch = o.ch, me = NET.me.id;
       let host = 0; const log = []; let next = 0; const buf = {}; let asked = 0;
-      const S = npSession({ online: true, code: o.code, seats: o.seats, me: o.me, seed: o.seed, sel: o.sel, ranked: o.ranked, send: (a) => { if (S.isHost) seq(a); else ch.send('req', a); } });
+      // a guest's decision carries an id and is sent again until it comes back as a table move, so a lost
+      // message can't freeze or skip a turn (the host ignores repeats); see the resend timer below
+      const seen = new Set(), pending = {}; let reqN = 0;
+      const S = npSession({ online: true, code: o.code, seats: o.seats, me: o.me, seed: o.seed, sel: o.sel, ranked: o.ranked, send: (a) => {
+        if (S.isHost) return seq(a);
+        a._id = me.slice(0, 8) + '.' + (++reqN) + '.' + Math.floor(Math.random() * 1e6);
+        pending[a._id] = { a, at: Date.now(), tries: 1 }; ch.send('req', a);
+      } });
       NP.S = S;
       const humanUp = (i) => S.seats[i] && !S.seats[i].bot && !S.seats[i].left;
       const pickHost = () => { for (let i = 0; i < S.n; i++) if (humanUp(i)) return i; return -1; };
-      function seq(a) { a._n = log.length; log.push(a); next = log.length; ch.send('act', a); S._push(a); }
+      const mark = (a) => { if (a && a._id) { seen.add(a._id); delete pending[a._id]; } };
+      function seq(a) { if (a._id && seen.has(a._id)) return; mark(a); a._n = log.length; log.push(a); next = log.length; ch.send('act', a); S._push(a); }
       function take(a) {
         if (a._n < next) return;
         if (a._n > next) { buf[a._n] = a; if (Date.now() - asked > 1500) { asked = Date.now(); ch.send('sync', { from: next }); } return; }
-        log.push(a); next++; S._push(a);
-        while (buf[next]) { const b = buf[next]; delete buf[next]; log.push(b); next++; S._push(b); }
+        mark(a); log.push(a); next++; S._push(a);
+        while (buf[next]) { const b = buf[next]; delete buf[next]; mark(b); log.push(b); next++; S._push(b); }
       }
       ch.on('act', (a) => { if (!S.isHost) take(a); });
       ch.on('acts', (d) => { if (!S.isHost) (d.list || []).forEach(take); });
-      ch.on('sync', (d) => { if (S.isHost) ch.send('acts', { list: log.slice(d.from || 0) }); });
+      ch.on('sync', (d) => { if (S.isHost && log.length > (d.from || 0)) ch.send('acts', { list: log.slice(d.from || 0) }); });
+      // every 3 s: send again any of my decisions the table hasn't confirmed yet, and ask whether I missed the
+      // latest move (a lost last message used to go unnoticed until the next one arrived)
+      const resend = gInterval(() => {
+        if (S.over || S._left) return;
+        const now = Date.now();
+        for (const id in pending) {
+          const p = pending[id];
+          if (p.tries >= 12) { delete pending[id]; continue; }
+          if (now - p.at < 2500) continue;
+          p.at = now; p.tries++;
+          if (S.isHost) { delete pending[id]; seq(p.a); } else ch.send('req', p.a);
+        }
+        if (!S.isHost) ch.send('sync', { from: next });
+      }, 3000);
       ch.on('req', (a, from) => {
         if (!S.isHost || !a) return;
         const st = S.seats[a.s]; if (!st || st.uid !== from) return;          // you can only act for your own seat
@@ -381,7 +403,7 @@
       // leaving: tell the table, then the seat becomes a computer player (2 players: the other one wins)
       S.leave = () => {
         if (S._left) return; S._left = true;
-        gClearInt(watch);
+        gClearInt(watch); gClearInt(resend);
         if (!S.over) { ch.send(S.isHost ? 'act' : 'req', S.isHost ? { t: '_left', s: S.me, _n: log.length } : { t: '_left', s: S.me }); if (S.ranked) NET.reportResult(S.code, 'loss').catch(() => {}); }
         setTimeout(() => ch.close(), 400);
         if (NP.S === S) NP.S = null;

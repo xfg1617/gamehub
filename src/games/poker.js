@@ -172,7 +172,11 @@
       function apply(i, kind, amt) {
         const p = G.players[i], toCall = Math.min(G.curBet - p.bet, p.chips);
         p.acted = true;
-        if (kind === 'fold') { p.folded = true; p.last = 'Fold'; SFX.play('card'); log(`<b>${esc(p.name)}</b> folds.`); }
+        if (kind === 'fold') {
+          const cardsEl = $p('pk-seat-' + G.players.indexOf(p)) && $p('pk-seat-' + G.players.indexOf(p)).querySelector('.tg-cards');
+          if (cardsEl && cardsEl.children.length) [...cardsEl.children].forEach((c, k) => gFly(c, '#pk-deck', playingCardHTML(null, { cls: 'sm' }), { ms: 520, delay: k * 90, arc: 70, spin: 300 + k * 40, endScale: 0.8 }));
+          p.folded = true; p.last = 'Fold'; SFX.play('card'); log(`<b>${esc(p.name)}</b> folds.`);
+        }
         else if (kind === 'check' || (kind === 'call' && toCall === 0)) { p.last = 'Check'; SFX.play('click'); log(`<b>${esc(p.name)}</b> checks.`); }
         else if (kind === 'call') { p.chips -= toCall; p.bet += toCall; p.total += toCall; betFly(i, toCall); if (p.chips === 0) p.allIn = true; p.last = p.allIn ? 'All in' : 'Call ' + toCall; SFX.play('chip'); log(`<b>${esc(p.name)}</b> calls ${toCall}${p.allIn ? ' (all in)' : ''}.`); }
         else { // raise to amt
@@ -203,26 +207,28 @@
         const seat = $p('pk-seat-' + i);
         const land = () => { if (!G) return; G.pend[i] = Math.max(0, (G.pend[i] || 0) - amt); paintBet(i); };
         if (!seat) return land();
-        gFly(seat, $p('pk-bet-' + i) || seat, stackSVG(amt, { scale: 1.1, per: 7 }), { ms: 480 }).then(land);
+        const t = chipStream(seat.querySelector('.tg-tag') || seat, $p('pk-bet-' + i) || seat, amt, { ms: 420, gap: 60, max: 6 });
+        gTimeout(land, t);
       }
       // end of a betting round: every bet slides into the pot. Returns how long that takes.
       function sweep() {
-        let lag = 0;
+        let lag = 0, lagMs = 0;
         G.players.forEach((p, i) => {
           if (p.bet <= 0) return;
           const el = $p('pk-bet-' + i);
-          if (el) { gFly(el, '#pk-pot', stackSVG(p.bet, { scale: 1.1, per: 7 }), { ms: 520, delay: i * 70 }); el.style.visibility = 'hidden'; }
+          if (el) { const t = chipStream(el, '#pk-pot', p.bet, { ms: 480, gap: 55, max: 6, delay: i * 90 }); lagMs = Math.max(lagMs, t); el.style.visibility = 'hidden'; }
           lag += p.bet;
         });
         if (!lag) return 0;
-        G.pend = []; G.potLag = lag; SFX.play('chip');
-        const tok = G.tok; gTimeout(() => { if (G && G.tok === tok) { G.potLag = 0; paintPot(); } }, 520 + 3 * 70);
-        return 520 + 3 * 70 + 60;
+        G.pend = []; G.potLag = lag;
+        const tok = G.tok; gTimeout(() => { if (G && G.tok === tok) { G.potLag = 0; paintPot(); } }, lagMs);
+        return lagMs + 60;
       }
       // the pot slides over to the winner(s)
       function payOut(list) {
         G.potPaid = true; paintPot();
-        list.forEach(([i, amt], k) => gFly('#pk-pot', '#pk-seat-' + i, stackSVG(amt, { scale: 1.1, per: 7 }), { ms: 640, delay: k * 160 }));
+        // the pot pours over to the winner(s), chip by chip
+        list.forEach(([i, amt], k) => { const s = $p('pk-seat-' + i); chipStream('#pk-pot', (s && s.querySelector('.tg-tag')) || '#pk-seat-' + i, amt, { ms: 560, gap: 55, max: 12, delay: k * 300, arc: 50 }); });
         SFX.play('coin');
       }
 
@@ -362,7 +368,7 @@
       function seatHTML(p, i) {
         const showCards = p.seat === G.me || (G.showdown && !p.folded);
         const wc = G.showdown && G.result && G.result.winCards;
-        const cards = p.hole.length ? p.hole.map((c) => playingCardHTML(c, { down: !showCards, cls: 'sm' + (wc && showCards ? (wc.has(gKey(c)) ? ' pk-win' : ' pk-lose') : ''), fk: gKey(c) })).join('') : '';
+        const cards = p.hole.length && !(p.folded && !G.showdown) ? p.hole.map((c) => playingCardHTML(c, { down: !showCards, cls: 'sm' + (wc && showCards ? (wc.has(gKey(c)) ? ' pk-win' : ' pk-lose') : ''), fk: gKey(c) })).join('') : '';
         const sc = G.showdown && G.result && G.result.sc && !p.folded && G.result.sc[i] >= 0 ? handName(G.result.sc[i]) : '';
         const win = G.result && G.result.won && G.result.won[i] > 0;
         const turn = G.toAct === i && !G.showdown && !p.folded && !p.out && !G.over;

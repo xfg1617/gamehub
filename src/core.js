@@ -398,6 +398,20 @@
       return new Promise((res) => { const done = () => { f.remove(); res(tok === GT.cur); }; anim.onfinish = done; setTimeout(done, ms + (opt.delay || 0) + 500); });
     }
 
+    // chips move one by one (a little stream with a "clack" for each) instead of the whole stack jumping at once
+    // (Inna, Nov 2026). Returns how long it takes. amount picks the chip colours; n = how many chips fly.
+    function chipStream(from, to, amount, opt = {}) {
+      const den = [500, 100, 25, 5].find((d) => amount >= d * 2) || 5;
+      const n = Math.max(2, Math.min(opt.max || 7, Math.ceil(amount / den)));
+      const gap = opt.gap || 70, ms = opt.ms || 460, delay = opt.delay || 0, tok = GT.cur;
+      for (let k = 0; k < n; k++) {
+        gFly(from, to, chipSVG(den, opt.size || 26), { ms, delay: delay + k * gap, arc: opt.arc === undefined ? 28 : opt.arc });
+        if (opt.sound !== false) setTimeout(() => { if (tok === GT.cur) SFX.play('chip'); }, delay + k * gap + ms - 40);
+      }
+      return delay + (n - 1) * gap + ms;
+    }
+    window.chipStream = chipStream;
+
     function closeActiveGame() {
       const id = activeGame;
       if (typeof NP !== 'undefined' && NP.S) { try { NP.S.leave(); } catch (e) {} NP.S = null; }

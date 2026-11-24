@@ -661,11 +661,15 @@ One shared way to run a game table, used on this device AND online, so a game ha
   `src/games/doodle_words.js` = `DOODLE_WORDS[en|vi][easy|medium|hard]` (~500 words). The drawer gets one word of each
   level (×1 / ×1.5 / ×2 points); guessers see `KHÓ · _ _ _` (level + dashes). Room setting WORDS = English / Tiếng Việt
   (`sel.lang`). Guesses ignore accents and đ (`norm`). Drawing time defaults to 60 s. `t_doodle_live.py`.
+* **Word Connect words** (Nov 25): must-find words = common words only (`tools/make_words.py` writes `src/dict.json` from
+  `src/dict_source.json` + SCOWL sizes 10-35, `DROP3` removes odd 3-letter words); bonus words up to size 55 (e.g. taro).
+  `autoEnter` waits 1.3 s instead of 0.26 s when the letters so far could still become a longer word (tar → taro).
 * **Language** (`src/games/zz_lang.js`): `LANG.code` ('en' | 'vi', saved in `ps_lang`), switch = `#nav-lang` in the side
   menu (the phone ☰ menu copies it), `setLang()` reloads. Vietnamese works by swapping exact English lines (`VI` table)
   and a few patterns (`PAT`) as they appear (MutationObserver); chat messages, guesses and logs are skipped. Stage 1 =
-  menus, home, tiles, setup/room screens, profile, friends, leaderboard, common game buttons. Not yet: game rules and
-  guides, in-game messages, toasts. Add new lines to `VI` when you add English text. `t_lang.py`.
+  menus, home, tiles, setup/room screens, profile, friends, leaderboard, common game buttons. Part 1
+  (`src/games/zz_i18n_vi.js`, `VI_MORE`, loads just before zz_lang): game descriptions, every setup option / hint, loading
+  screen lines + tips, room messages. Not yet: guides (HOWTO), in-game messages, results, toasts, Terms/Privacy. Add new lines to `VI` when you add English text. `t_lang.py`.
 
 ## 5d. Game setup screens, room codes, leaving a game
 

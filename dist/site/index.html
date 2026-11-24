@@ -16983,6 +16983,142 @@
       document.getElementById('ht-play').onclick = () => { const fn = c.open; if (GAME_MODS[c.id]) openGame(c.id); else openSetup(c.id); };
     }
     /* =========================================================================
+       VIETNAMESE, part 1 (Nov 2026): game descriptions, setup options and hints, loading-screen lines and tips.
+       Merged into the table in zz_lang.js (this file loads just before it). Keys are the exact English lines.
+       ========================================================================= */
+    window.VI_MORE = {
+      // loading screen
+      'Shuffling the deck...': 'Đang xáo bài...', 'Setting up the table...': 'Đang dọn bàn...', 'Finding a good seat...': 'Đang tìm chỗ ngồi đẹp...', 'Warming up...': 'Đang khởi động...',
+      // shared setup words
+      'On': 'Bật', 'Off': 'Tắt', 'Easy': 'Dễ', 'Medium': 'Vừa', 'Hard': 'Khó', 'Smart': 'Giỏi', 'Normal': 'Thường', 'Slow': 'Chậm', 'Fast': 'Nhanh', 'Quick': 'Nhanh',
+      'PLAYERS': 'SỐ NGƯỜI', '2 players': '2 người', '3 players': '3 người', '4 players': '4 người', '5 players': '5 người', '6 players': '6 người',
+      'DIFFICULTY': 'ĐỘ KHÓ', 'MOVE TIMER': 'ĐỒNG HỒ NƯỚC ĐI', 'TURN TIMER': 'ĐỒNG HỒ LƯỢT', 'SHOT TIMER': 'ĐỒNG HỒ CÚ ĐÁNH', 'DECISION TIMER': 'ĐỒNG HỒ QUYẾT ĐỊNH',
+      'HINT TIMER': 'ĐỒNG HỒ GỢI Ý', 'ACTION TIMER': 'ĐỒNG HỒ LƯỢT', '2 min': '2 phút', '3 min': '3 phút', 'No limit': 'Không giới hạn', 'MODE': 'CHẾ ĐỘ',
+      'OPPONENT': 'ĐỐI THỦ', 'vs Computer': 'Đấu với máy', 'Pass & Play': 'Chơi chung máy', 'COMPUTER LEVEL': 'TRÌNH ĐỘ MÁY', 'WHO STARTS': 'AI ĐI TRƯỚC',
+      'Me': 'Tôi', 'Opponent': 'Đối thủ', 'Take turns': 'Lần lượt', 'BOTS': 'NGƯỜI CHƠI MÁY', 'RULES': 'LUẬT', 'Classic': 'Cổ điển', 'Pro': 'Chuyên nghiệp',
+      // Blackjack
+      'Beat the dealer to 21 without going over. Your chip bank is saved on this device.': 'Đánh bại nhà cái để gần 21 nhất mà không bị quá. Số chip của bạn được lưu trên máy này.',
+      'DECKS IN THE SHOE': 'SỐ BỘ BÀI', '1 deck': '1 bộ', '2 decks': '2 bộ', '6 decks': '6 bộ', 'DEALER ON SOFT 17': 'NHÀ CÁI KHI CÓ 17 MỀM',
+      'Soft 17 is 17 with an Ace counted as 11.': '17 mềm là 17 có lá Át được tính là 11.', 'Stands': 'Dừng', 'Hits': 'Rút thêm', 'HANDS TO PLAY': 'SỐ VÁN',
+      'Online everyone starts with 1,000 table chips. Most chips at the end wins.': 'Khi chơi online, mỗi người bắt đầu với 1.000 chip. Ai nhiều chip nhất khi kết thúc sẽ thắng.',
+      '5 hands': '5 ván', '8 hands': '8 ván', '12 hands': '12 ván', 'Show hand totals': 'Hiện tổng điểm', 'Turn off to count the cards yourself.': 'Tắt để tự đếm điểm.',
+      'Always stand on 17 or more. Double on 11 when the dealer shows a small card.': 'Luôn dừng khi có 17 trở lên. Nhân đôi khi có 11 và nhà cái lật lá nhỏ.',
+      // Bowling
+      'Step up to the lane. Grab the ball, flick it at the pins and watch them fly. Full 10-frame scoring with strikes and spares.': 'Bước lên làn bóng. Cầm bóng, vuốt về phía các con ki và xem chúng bay. Tính điểm đủ 10 frame với strike và spare.',
+      '2 players in a quick match is ranked. Empty seats get computer bowlers.': 'Trận ghép nhanh 2 người có xếp hạng. Ghế trống sẽ có người chơi máy.',
+      'Solo (beat your best)': 'Chơi một mình (phá kỷ lục)', 'Match vs Casual Bot': 'Đấu với máy (dễ)', 'Match vs Pro Bot': 'Đấu với máy (giỏi)', 'BALL WEIGHT': 'ĐỘ NẶNG BÓNG',
+      'Light balls are easy to throw fast but bounce off the pins more. Heavy balls plough through.': 'Bóng nhẹ dễ ném nhanh nhưng hay nảy ra khỏi ki. Bóng nặng thì lao thẳng qua.',
+      'Light 10 lb': 'Nhẹ 10 lb', 'Medium 14 lb': 'Vừa 14 lb', 'Heavy 16 lb': 'Nặng 16 lb', 'Aim guide': 'Đường ngắm', 'AIM GUIDE': 'ĐƯỜNG NGẮM',
+      'A dotted line down the lane while you line up your throw.': 'Một đường chấm dọc làn bóng khi bạn ngắm.',
+      'Aim just to the side of the front pin (the "pocket") with a little hook for the best chance of a strike.': 'Nhắm vào sát bên con ki đầu (khe "pocket") và cho bóng xoáy nhẹ để dễ strike nhất.',
+      // Checkers
+      'Classic American checkers. Captures are forced, you can chain jumps, and kings move both ways. Three AI levels.': 'Cờ đam kiểu Mỹ. Bắt buộc ăn quân, được nhảy liên tiếp, quân vua đi được hai chiều. Máy có ba mức độ.',
+      'BOARD COLOURS': 'MÀU BÀN CỜ', 'Ocean': 'Đại dương', 'Forest': 'Rừng xanh', 'Wood': 'Gỗ', 'Move hints': 'Gợi ý nước đi',
+      'Glow on pieces that can move, dots where they can land.': 'Quân đi được sẽ sáng lên, chấm ở ô có thể đến.',
+      'Keep your back row filled as long as you can. It stops the other side from getting kings.': 'Giữ hàng cuối càng lâu càng tốt. Như vậy đối thủ khó phong vua.',
+      // Chess
+      'The classic. Full rules including castling, en passant and promotion, against an AI with three strength levels.': 'Cờ vua đầy đủ luật: nhập thành, bắt tốt qua đường và phong cấp, đấu với máy ba mức độ.',
+      'PLAY AS': 'CẦM QUÂN', 'White': 'Trắng', 'Black': 'Đen', 'Random': 'Ngẫu nhiên', 'Show where the picked piece can go.': 'Hiện các ô quân đang chọn có thể đi.',
+      'Get your knights and bishops out early, and castle to keep your king safe.': 'Ra mã và tượng sớm, và nhập thành để giữ vua an toàn.',
+      // Uno
+      'Match the colour or the number and be the first to empty your hand. Do not forget to shout CLASH on your last card!': 'Đánh lá cùng màu hoặc cùng số, ai hết bài trước sẽ thắng. Nhớ hô CLASH khi còn lá cuối!',
+      'On this device the other seats are computer players. Online, empty seats get computer players.': 'Trên máy này các ghế khác là người chơi máy. Khi online, ghế trống sẽ có người chơi máy.',
+      'STARTING HAND': 'SỐ LÁ BAN ĐẦU', '5 cards': '5 lá', '7 cards': '7 lá', '9 cards': '9 lá', 'Say CLASH! rule': 'Luật hô CLASH!',
+      'Forget to call CLASH on your last card and you draw 2.': 'Quên hô CLASH khi còn lá cuối thì phải rút 2 lá.',
+      'Each colour also has a symbol (★ ◆ ♥ ♣), so you can tell them apart without colours.': 'Mỗi màu còn có một ký hiệu (★ ◆ ♥ ♣), nên không cần nhìn màu vẫn phân biệt được.',
+      // Dominoes
+      'Classic double-six dominoes. Match the numbers at either end of the line, go out first and score the pips left in your rivals’ hands.': 'Domino 6 nút cổ điển. Nối số ở hai đầu hàng, ai hết quân trước được cộng số nút còn trên tay đối thủ.',
+      'Draw: if you cannot play, take tiles from the boneyard. Block: you just pass.': 'Bốc: không đánh được thì bốc quân. Chặn: không đánh được thì bỏ lượt.',
+      'Draw game': 'Kiểu bốc', 'Block game': 'Kiểu chặn', 'PLAY TO': 'CHƠI ĐẾN', 'One round': 'Một ván', '100 points': '100 điểm', '150 points': '150 điểm',
+      'Play your big tiles early so you are not caught holding them.': 'Đánh quân lớn trước để không bị kẹt lại trên tay.',
+      // Doodle Guess
+      'Take turns drawing a secret word while everyone races to guess it. The faster you guess, the more points you get.': 'Lần lượt vẽ một từ bí mật để mọi người thi nhau đoán. Đoán càng nhanh càng nhiều điểm.',
+      'WORDS': 'NGÔN NGỮ TỪ', 'English': 'Tiếng Anh', 'Tiếng Việt': 'Tiếng Việt', 'In each round, everyone draws once.': 'Mỗi vòng, ai cũng được vẽ một lần.',
+      '60 sec': '60 giây', '80 sec': '80 giây', '100 sec': '100 giây', 'Draw the most important shape first, big and simple. Details can wait.': 'Vẽ hình quan trọng nhất trước, to và đơn giản. Chi tiết để sau.',
+      'Take turns drawing a word while everyone else races to guess it. Play with friends: create a room and send them the link.': 'Lần lượt vẽ một từ để mọi người thi nhau đoán. Chơi cùng bạn bè: tạo phòng và gửi link cho họ.',
+      // Bullshit
+      'Put cards down face down and say what they are. Bluff if you have to, but if someone shouts BULLSHIT! and you are caught, you take the whole pile.': 'Úp bài xuống và nói đó là lá gì. Có thể nói xạo, nhưng nếu ai đó hô NÓI XẠO! và bắt được, bạn phải ôm cả chồng bài.',
+      'TIME TO SHOUT': 'THỜI GIAN HÔ', 'How long everyone has to shout BULLSHIT! after each play.': 'Thời gian để mọi người hô NÓI XẠO! sau mỗi lượt đánh.',
+      '5 sec': '5 giây', '7 sec': '7 giây', '10 sec': '10 giây', 'BULLSHIT!': 'NÓI XẠO!',
+      'There are only four of each rank. If you hold three Sevens and someone says "two Sevens", they must be bluffing.': 'Mỗi loại chỉ có bốn lá. Nếu bạn cầm ba lá 7 mà ai đó nói "hai lá 7" thì chắc chắn họ đang xạo.',
+      // Four-in-a-Row
+      'Drop discs and line up four in a row: across, down or diagonal. Play the computer, a friend on this screen, or someone online.': 'Thả quân và xếp bốn quân thành hàng: ngang, dọc hoặc chéo. Chơi với máy, bạn bè hoặc người chơi online.',
+      'The middle column is the strongest. More lines of four go through it than any other column.': 'Cột giữa là mạnh nhất. Nhiều hàng bốn đi qua nó hơn bất kỳ cột nào khác.',
+      // Castles & Kings
+      'Pick a secret character each round, collect gold and build the finest town. Watch out for the Shadow and the Pickpocket!': 'Mỗi vòng chọn một nhân vật bí mật, thu vàng và xây thị trấn đẹp nhất. Cẩn thận Bóng Đêm và Kẻ Móc Túi!',
+      'GAME ENDS AT': 'KẾT THÚC KHI CÓ', 'The round finishes once someone has built this many.': 'Vòng chơi kết thúc khi có người xây đủ số này.',
+      '6 buildings': '6 công trình', '7 buildings': '7 công trình', '8 buildings': '8 công trình',
+      'Try to collect buildings in your character’s colour: the Monarch, Abbot, Merchant and Captain earn a gold for each one.': 'Hãy gom công trình cùng màu nhân vật: Quốc Vương, Tu Viện Trưởng, Thương Gia và Đội Trưởng được 1 vàng cho mỗi công trình.',
+      // Wall Maze
+      'Race your pawn across the garden. Each turn, take a step or plant a hedge to slow your rivals down.': 'Đưa quân của bạn băng qua khu vườn. Mỗi lượt, đi một bước hoặc trồng hàng rào để cản đối thủ.',
+      'The panel shows how many steps everyone still needs. Save your hedges for when a rival is close to the finish.': 'Bảng bên cạnh cho biết mỗi người còn bao nhiêu bước. Hãy để dành hàng rào cho lúc đối thủ sắp về đích.',
+      // Find the Impostor
+      'Everyone gets the same secret word except one player. Give hints, then vote out the impostor!': 'Mọi người nhận cùng một từ bí mật, trừ một người. Hãy đưa gợi ý rồi bỏ phiếu loại kẻ giả mạo!',
+      'If you think you might be the impostor, copy the style of the other hints.': 'Nếu nghĩ mình là kẻ giả mạo, hãy bắt chước kiểu gợi ý của người khác.',
+      // Island Settlers
+      'Settle a hex island: collect timber, clay, wool, grain and stone, build roads, villages and towns, and race your rivals to the target score.': 'Khai hoang hòn đảo: thu gỗ, đất sét, len, lúa và đá, xây đường, làng và thị trấn, đua với đối thủ đến số điểm mục tiêu.',
+      'POINTS TO WIN': 'ĐIỂM ĐỂ THẮNG', '8 (shorter)': '8 (ngắn hơn)', '10 (classic)': '10 (cổ điển)', 'BANK TRADE': 'ĐỔI VỚI NGÂN HÀNG', '4 for 1': '4 đổi 1',
+      '3 for 1 (friendly)': '3 đổi 1 (dễ hơn)', 'Relaxed': 'Thoải mái', 'Sharp': 'Sắc bén',
+      'Settle next to different resources so you can always build something.': 'Hãy định cư cạnh nhiều loại tài nguyên để lúc nào cũng xây được thứ gì đó.',
+      // Kaboom Cats
+      'A push-your-luck card game. Draw cards, dodge the hot potatoes and use sneaky tricks on your rivals. Last cat standing wins!': 'Trò bài thử vận may. Rút bài, né khoai nóng và giở mẹo với đối thủ. Chú mèo cuối cùng còn trụ lại sẽ thắng!',
+      '4 + Oven Mitt': '4 + Găng lò nướng', '7 + Oven Mitt': '7 + Găng lò nướng', 'No Way cards': 'Lá Không Đời Nào',
+      'Turn off for a simpler game with no cancelling.': 'Tắt để chơi đơn giản hơn, không ai hủy được lá bài.',
+      'Peek before you draw. If the Hot Potato is next, play Skip or Attack so you don’t have to draw it. Save your Oven Mitt: when someone asks with three cats, they usually name it!': 'Xem trước khi rút. Nếu sắp tới là Khoai Nóng, hãy đánh Bỏ Lượt hoặc Tấn Công để khỏi phải rút. Giữ Găng lò nướng: ai xin bằng ba lá mèo thường sẽ gọi đúng lá đó!',
+      // Whodunit
+      'Something happened at the manor. Walk the rooms, make suggestions and use your notebook to work out who did it, with what, and where.': 'Có chuyện xảy ra ở dinh thự. Đi qua các phòng, đưa ra phỏng đoán và dùng sổ tay để tìm ra ai làm, bằng gì và ở đâu.',
+      'DETECTIVES': 'THÁM TỬ', 'On this device the others are computer detectives. Online, empty seats get computer detectives.': 'Trên máy này các thám tử khác là máy. Khi online, ghế trống sẽ có thám tử máy.',
+      'RIVAL DETECTIVES': 'THÁM TỬ ĐỐI THỦ', 'Sharp detectives use every clue, including who could not show a card.': 'Thám tử sắc bén dùng mọi manh mối, kể cả việc ai không đưa ra được lá bài.',
+      'Hasty': 'Vội vàng', 'Auto-fill notebook': 'Tự điền sổ tay', 'Ticks your own cards, cards shown to you, and crosses for players who could not answer.': 'Tự đánh dấu lá của bạn, lá được cho xem, và gạch chéo cho người không trả lời được.',
+      'Suggest cards you already hold to test the others. If nobody can show anything, the rest may be the answer!': 'Hãy phỏng đoán bằng lá bạn đang giữ để thử người khác. Nếu không ai đưa ra được lá nào, phần còn lại có thể là đáp án!',
+      // Poker
+      "Texas Hold'em against three bots. Everyone starts with 1000 chips and the blinds keep rising. Last one standing wins.": "Texas Hold'em với ba người chơi máy. Mỗi người có 1000 chip và mức cược mù tăng dần. Người cuối cùng còn chip sẽ thắng.",
+      'BLIND LEVELS': 'MỨC CƯỢC MÙ', 'STARTING CHIPS': 'CHIP KHỞI ĐẦU', 'BOT STYLE': 'KIỂU CHƠI CỦA MÁY', 'Wild bots bluff and raise a lot more.': 'Máy "liều" sẽ tố và nâng cược nhiều hơn.',
+      'Careful': 'Cẩn thận', 'Mixed': 'Pha trộn', 'Wild': 'Liều',
+      'You don’t have to play every hand. Folding weak cards early saves chips for the good ones.': 'Không cần ván nào cũng theo. Bỏ bài yếu sớm để dành chip cho bài đẹp.',
+      // Pool
+      '8-ball pool against an AI with real ball physics. Drag to aim, choose where to hit the cue ball, pull the power bar back and let go.': 'Bi-a 8 bóng với máy, bóng lăn như thật. Kéo để ngắm, chọn điểm chạm bi cái, kéo thanh lực về sau rồi thả.',
+      'Classic: aim line, ghost ball and two short arrows for where both balls head. Pro: no arrows. Off: just a short line.': 'Cổ điển: đường ngắm, bóng mờ và hai mũi tên ngắn chỉ hướng hai bóng. Chuyên nghiệp: không có mũi tên. Tắt: chỉ một đường ngắn.',
+      'Don’t hit every shot hard. A softer shot keeps the white ball under control for your next turn.': 'Đừng cú nào cũng đánh mạnh. Đánh nhẹ giúp giữ bi trắng ở vị trí tốt cho lượt sau.',
+      // Tic-Tac-Toe
+      'Three in a row wins. Play a quick game or a best-of match against the computer or a friend on the same screen.': 'Ba quân thẳng hàng là thắng. Chơi nhanh một ván hoặc đấu nhiều ván với máy hay bạn bè.',
+      'Unbeatable': 'Bất bại', 'MATCH': 'TRẬN ĐẤU', 'One game': 'Một ván', 'Best of 3': 'Thắng 2/3', 'Best of 5': 'Thắng 3/5',
+      'Take the centre if you can. If your opponent takes it, take a corner.': 'Chiếm ô giữa nếu được. Nếu đối thủ chiếm rồi thì lấy một góc.',
+      // Mine Saboteurs
+      'Dig a tunnel to the hidden gold together... but someone at the table is a secret Rascal trying to stop you.': 'Cùng nhau đào đường hầm đến kho vàng giấu kín... nhưng trong bàn có một Kẻ Phá Hoại bí mật đang tìm cách ngăn bạn.',
+      'Watch who plays dead ends and who breaks tools. That is probably a Rascal!': 'Để ý xem ai đặt đường cụt và ai làm hỏng dụng cụ. Đó có lẽ là Kẻ Phá Hoại!',
+      // Landlord
+      'Roll the dice, buy properties, build houses and hotels and bankrupt your rivals. Play 15, 25 or 40 rounds, or go all the way.': 'Tung xúc xắc, mua đất, xây nhà và khách sạn, làm đối thủ phá sản. Chơi 15, 25 hoặc 40 vòng, hoặc đến khi có người phá sản.',
+      'GAME LENGTH': 'ĐỘ DÀI VÁN', 'With a round limit, the richest player at the end wins.': 'Nếu giới hạn số vòng, người giàu nhất khi kết thúc sẽ thắng.',
+      'Short (15 rounds)': 'Ngắn (15 vòng)', 'Medium (25 rounds)': 'Vừa (25 vòng)', 'Long (40 rounds)': 'Dài (40 vòng)', 'Classic (to bankruptcy)': 'Cổ điển (đến khi phá sản)',
+      'BUILDING HOUSES': 'XÂY NHÀ', 'Whole colour: build once you own every plot of a colour. Stand on your plot: land on a plot you own to add one house there.': 'Cả bộ màu: xây khi bạn có đủ các ô cùng màu. Đứng trên đất: dừng ở ô của mình để xây thêm một nhà ở đó.',
+      'Own the whole colour': 'Có đủ cả bộ màu', 'Stand on your plot': 'Đứng trên đất của mình', 'STARTING CASH': 'TIỀN KHỞI ĐẦU', 'Auctions': 'Đấu giá',
+      'If a player skips a property, everyone can bid on it.': 'Nếu ai đó không mua một ô đất, mọi người có thể đấu giá ô đó.', 'Buy out land': 'Mua lại đất',
+      'After paying rent you may buy that plot from its owner for 2x (land price + its houses). Not plots with a hotel, not plots from a full colour set.': 'Sau khi trả tiền thuê, bạn có thể mua lại ô đó với giá gấp đôi (giá đất + nhà trên đó). Không áp dụng cho ô có khách sạn hoặc ô thuộc bộ màu đã đủ.',
+      'Free Parking jackpot': 'Hũ tiền Bãi Đỗ Xe', 'Taxes and fines pile up on Free Parking. Land there to take it all.': 'Tiền thuế và tiền phạt dồn vào Bãi Đỗ Xe. Dừng ở đó để lấy hết.',
+      'Railroads and the orange and red sets are great value. Build evenly across a set.': 'Đường sắt và bộ màu cam, đỏ rất đáng mua. Hãy xây nhà đều trên cả bộ.',
+      // Word Connect
+      'Swipe across the letter wheel to make as many words as you can before time runs out. Find the word that uses every letter for a big bonus.': 'Vuốt qua vòng chữ cái để ghép càng nhiều từ càng tốt trước khi hết giờ. Tìm được từ dùng hết các chữ sẽ được thưởng lớn.',
+      'LETTERS': 'SỐ CHỮ CÁI', '6 letters': '6 chữ', '7 letters': '7 chữ', 'TIME': 'THỜI GIAN',
+      'Online it is a race: everyone gets the same letters, most points when time runs out wins.': 'Khi online là một cuộc đua: ai cũng có cùng chữ cái, nhiều điểm nhất khi hết giờ sẽ thắng.',
+      'HINTS': 'GỢI Ý', 'None': 'Không', '3 hints': '3 gợi ý', '5 hints': '5 gợi ý', 'Look for little words first (3 letters), then add an -S or -ED.': 'Tìm từ ngắn trước (3 chữ), rồi thêm -S hoặc -ED.',
+      // Word Duel
+      'Daily Word, head to head: everyone guesses the same secret word at once. You see their colours, not their letters. First to find it wins.': 'Chữ Mỗi Ngày phiên bản đối đầu: mọi người cùng đoán một từ bí mật. Bạn thấy màu của đối thủ, không thấy chữ. Ai tìm ra trước sẽ thắng.',
+      'COMPUTER SPEED': 'TỐC ĐỘ CỦA MÁY', 'How many seconds the computer takes for each guess.': 'Số giây máy cần cho mỗi lần đoán.', 'Hard mode': 'Chế độ khó',
+      'Letters you have found must be used in every next guess.': 'Các chữ đã tìm được phải dùng trong mọi lần đoán tiếp theo.',
+      'Lots of green on a rival’s board? Take a risky guess instead of a safe one!': 'Bảng của đối thủ nhiều ô xanh? Hãy đoán liều thay vì đoán an toàn!',
+      // rooms and online tables (netplay)
+      'Could not connect.': 'Không kết nối được.', 'Leaving an online game counts as a loss, and your opponent wins.': 'Rời trận online sẽ tính là thua, và đối thủ thắng.',
+      'No friend around? Add a computer opponent.': 'Không có bạn? Thêm đối thủ máy.', 'Open seat · a computer player fills it if nobody joins': 'Ghế trống · người chơi máy sẽ ngồi nếu không ai vào',
+      'Ranked Elo': 'Elo xếp hạng', 'Rematch! Setting up the table...': 'Chơi lại! Đang dọn bàn...', 'Results did not match: no change': 'Kết quả không khớp: không thay đổi',
+      'Start game (computer players fill the empty seats)': 'Bắt đầu (người chơi máy ngồi vào ghế trống)', 'That code is for a different game.': 'Mã này là của trò khác.',
+      'That game started without you.': 'Ván đó đã bắt đầu mà không có bạn.', 'That table is full.': 'Bàn đã đủ người.', 'The host changed the game settings.': 'Chủ phòng đã đổi cài đặt.',
+      'The rematch room did not open.': 'Phòng chơi lại chưa mở được.', 'Waiting for at least one more player...': 'Đang chờ thêm ít nhất một người...',
+      'Waiting for your opponent...': 'Đang chờ đối thủ...', 'You are in the room. The host starts the game.': 'Bạn đã vào phòng. Chủ phòng sẽ bắt đầu.',
+      'You are now hosting this table.': 'Bây giờ bạn là chủ bàn.', 'Password changed!': 'Đã đổi mật khẩu!',
+      'Password not changed: it needs at least 8 characters.': 'Chưa đổi mật khẩu: cần ít nhất 8 ký tự.', 'Choose a new password (at least 8 characters):': 'Chọn mật khẩu mới (ít nhất 8 ký tự):',
+    };
+    /* =========================================================================
        LANGUAGE: English / Tiếng Việt (Nov 2026, Inna; stage 1). The page is written in English; when Vietnamese is
        picked, every piece of text that exactly matches a line in VI below is swapped as it appears on screen (a
        MutationObserver), plus a few patterns ("3-6 PLAYERS · ~20 MIN"). Things people type (chat, names) are never
@@ -17078,6 +17214,7 @@
         'Choose a word to draw:': 'Chọn một từ để vẽ:', 'Type your guess...': 'Nhập từ bạn đoán...', 'Guess': 'Đoán', 'GUESSES': 'LƯỢT ĐOÁN', 'Undo': 'Hoàn tác',
         'Clear': 'Xóa hết', 'Thin': 'Mảnh', 'Fat': 'Đậm', 'YOUR TURN TO DRAW': 'ĐẾN LƯỢT BẠN VẼ', 'Time left': 'Còn lại',
       };
+      Object.keys(window.VI_MORE || {}).forEach((k) => { if (!(k in VI)) VI[k] = window.VI_MORE[k]; });   // part 1: zz_i18n_vi.js
       const PAT = [
         [/^(\d+)[–-](\d+) PLAYERS/, (m, a, b) => `${a}-${b} NGƯỜI`], [/(\d+) PLAYERS\b/g, '$1 NGƯỜI'], [/~(\d+) MIN\b/g, '~$1 PHÚT'], [/(\d+) MIN\b/g, '$1 PHÚT'],
         [/\bSOLO\b/g, 'CHƠI ĐƠN'], [/\bCHIPS\b/g, 'CHIP'], [/^(\d+) GAMES$/, '$1 TRÒ'], [/^● (\d+) online$/, '● $1 online'], [/^(\d+) chatting$/, '$1 đang trò chuyện'],
@@ -17085,7 +17222,11 @@
         [/^\? How to play (.+)$/, (m, g) => `? Cách chơi ${VI[g] || g}`], [/^(\d+)\/(\d+) XP to Lv (\d+)$/, '$1/$2 XP lên Cấp $3'], [/^Your Rank: #(\d+)$/, 'Hạng của bạn: #$1'],
         [/^(\d+) games · (\d+)% win rate$/, '$1 trận · $2% thắng'], [/^(\d+) games · (\d+)% WR$/, '$1 trận · $2% thắng'], [/^(\d+) ONLINE · (\d+)$/, '$1 ONLINE · $2'],
         [/^(.+)'S TURN$/, 'LƯỢT CỦA $1'], [/^RANKED ONLINE · (.+)$/, (m, g) => `XẾP HẠNG ONLINE · ${(VI[g.charAt(0) + g.slice(1).toLowerCase()] || g).toUpperCase()}`],
-        [/^(\d+) PLAYERS$/, '$1 NGƯỜI'], [/^(\d+) online now$/, '$1 đang online'],
+        [/^(\d+) PLAYERS$/, '$1 NGƯỜI'], [/^Tip: (.+)$/, (m, t) => `Mẹo: ${VI[t] || t}`],
+        [/^(.+) ONLINE$/, (m, g) => { const k = Object.keys(VI).find((x) => x.toUpperCase() === g); return k ? `${VI[k].toUpperCase()} ONLINE` : m; }],
+        [/^Invite friends or add computer players \(at least (\d+) players\)\.$/, 'Mời bạn bè hoặc thêm người chơi máy (ít nhất $1 người).'],
+        [/^Waiting for friends to join \(at least (\d+) players\)\.\.\.$/, 'Đang chờ bạn bè vào phòng (ít nhất $1 người)...'],
+        [/^Waiting for (.+)\.\.\.$/, 'Đang chờ $1...'], [/^(\d+) online now$/, '$1 đang online'],
       ];
       // only exact lines are swapped, so names and chat stay as typed
       const SKIP = '.chat-msg, #dg-feed, .logbox, .cf-list, #fr-chatwin .chat-list, input, textarea, script, style, [data-no-tr]';

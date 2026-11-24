@@ -94,6 +94,7 @@
         'Choose a word to draw:': 'Chọn một từ để vẽ:', 'Type your guess...': 'Nhập từ bạn đoán...', 'Guess': 'Đoán', 'GUESSES': 'LƯỢT ĐOÁN', 'Undo': 'Hoàn tác',
         'Clear': 'Xóa hết', 'Thin': 'Mảnh', 'Fat': 'Đậm', 'YOUR TURN TO DRAW': 'ĐẾN LƯỢT BẠN VẼ', 'Time left': 'Còn lại',
       };
+      Object.keys(window.VI_MORE || {}).forEach((k) => { if (!(k in VI)) VI[k] = window.VI_MORE[k]; });   // part 1: zz_i18n_vi.js
       const PAT = [
         [/^(\d+)[–-](\d+) PLAYERS/, (m, a, b) => `${a}-${b} NGƯỜI`], [/(\d+) PLAYERS\b/g, '$1 NGƯỜI'], [/~(\d+) MIN\b/g, '~$1 PHÚT'], [/(\d+) MIN\b/g, '$1 PHÚT'],
         [/\bSOLO\b/g, 'CHƠI ĐƠN'], [/\bCHIPS\b/g, 'CHIP'], [/^(\d+) GAMES$/, '$1 TRÒ'], [/^● (\d+) online$/, '● $1 online'], [/^(\d+) chatting$/, '$1 đang trò chuyện'],
@@ -101,7 +102,11 @@
         [/^\? How to play (.+)$/, (m, g) => `? Cách chơi ${VI[g] || g}`], [/^(\d+)\/(\d+) XP to Lv (\d+)$/, '$1/$2 XP lên Cấp $3'], [/^Your Rank: #(\d+)$/, 'Hạng của bạn: #$1'],
         [/^(\d+) games · (\d+)% win rate$/, '$1 trận · $2% thắng'], [/^(\d+) games · (\d+)% WR$/, '$1 trận · $2% thắng'], [/^(\d+) ONLINE · (\d+)$/, '$1 ONLINE · $2'],
         [/^(.+)'S TURN$/, 'LƯỢT CỦA $1'], [/^RANKED ONLINE · (.+)$/, (m, g) => `XẾP HẠNG ONLINE · ${(VI[g.charAt(0) + g.slice(1).toLowerCase()] || g).toUpperCase()}`],
-        [/^(\d+) PLAYERS$/, '$1 NGƯỜI'], [/^(\d+) online now$/, '$1 đang online'],
+        [/^(\d+) PLAYERS$/, '$1 NGƯỜI'], [/^Tip: (.+)$/, (m, t) => `Mẹo: ${VI[t] || t}`],
+        [/^(.+) ONLINE$/, (m, g) => { const k = Object.keys(VI).find((x) => x.toUpperCase() === g); return k ? `${VI[k].toUpperCase()} ONLINE` : m; }],
+        [/^Invite friends or add computer players \(at least (\d+) players\)\.$/, 'Mời bạn bè hoặc thêm người chơi máy (ít nhất $1 người).'],
+        [/^Waiting for friends to join \(at least (\d+) players\)\.\.\.$/, 'Đang chờ bạn bè vào phòng (ít nhất $1 người)...'],
+        [/^Waiting for (.+)\.\.\.$/, 'Đang chờ $1...'], [/^(\d+) online now$/, '$1 đang online'],
       ];
       // only exact lines are swapped, so names and chat stay as typed
       const SKIP = '.chat-msg, #dg-feed, .logbox, .cf-list, #fr-chatwin .chat-list, input, textarea, script, style, [data-no-tr]';

@@ -518,6 +518,23 @@ One shared way to run a game table, used on this device AND online, so a game ha
   rules in 40-shared-cards.css; guides keep their small cards). Hot Potato Cats and Color Clash keep their original card
   and table sizes (Inna tried a bigger board and wanted the old size back). `test/shot_tables.py` takes screenshots.
 
+## 5l. Music and emotes (Nov 24 2026)
+
+* **Music** (`src/games/zz_music.js`, CSS in `src/css/24-music-emotes.css`): four tunes made by the browser (Web Audio,
+  no files): Harbor Lights (calm), Arcade Morning (upbeat), Card Room (jazzy swing), Island Breeze (sunny). A Music button
+  is added next to Sound (sidebar `#mu-btn`, phone header `#mu-btn-m`) and opens `#mu-pop`: on/off, volume, which music
+  (Auto = follows the game via `AUTO`, one tune, or Shuffle) and "music during games". Saved in `ps_music_v1`; default
+  **on at 35 %** (off in automated test browsers: `navigator.webdriver`, or two test tabs of music slow the online
+  tests enough to time out), starting on the first tap (browsers block sound before). Stops when the tab is hidden. `window.MUSIC`.
+* **Emotes** (`src/games/zz_emotes.js`): 10 silent emotes (LOL, GG, RAGE, SOB, WHAT?!, HMM, BORED, OOPS, NICE!, HOT!) drawn
+  as 16×16 pixel art for **13 characters**: one per profile picture (`AVS`: 🦊🐙🐻🦉🦈🐼🦁🐸🦖🚀⚡🎯) + 🤖 for computer
+  players; other emojis borrow a character (`LIKE`, else a hash). At any netplay table (`NP.S.game === activeGame`, not
+  in the lobby) a face button `#em-fab` (bottom right) opens `#em-menu`; it stays open while you tap (spam allowed, a
+  streak counter x2, x3...), closes on an outside tap; "Mute others" (`ps_emote_mute`). Bubbles are fixed-position above
+  the player's seat (`[id$="-seat-N"]`, `[id$="-pl-N"]`, else the `#np-bar` chip, else the button) for 3 s.
+  Online they go over the table channel as `emo` (`S.emote` in `npOnline`, max 5/s to the network), not as game moves.
+  Chess (own online system) has no emotes yet. Inna tried emote voices and asked for them silent. `test/t_emotes_music.py`.
+
 ## 5d. Game setup screens, room codes, leaving a game
 
 * Every game opens on a setup screen (`setupScreen` in `core.js`). Options are `{ key, label, def,

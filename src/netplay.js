@@ -26,7 +26,7 @@
       const S = {
         online: !!o.online, code: o.code || null, seats: o.seats, me: o.me, n: o.seats.length, sel: o.sel || {},
         ranked: !!o.ranked, isHost: o.online ? o.me === 0 : true, rng: seeded(o.seed >>> 0), seed: o.seed >>> 0,
-        version: 0, over: false, tok: GT.cur,
+        version: 0, over: false, tok: GT.cur, game: typeof activeGame !== 'undefined' ? activeGame : null,
       };
       S.bot = (i) => !!(S.seats[i] && S.seats[i].bot);
       S.human = (i) => !S.bot(i);
@@ -346,6 +346,9 @@
         seq(a);
       });
       ch.on('hi', () => {});   // late lobby messages
+      // emotes ride on the same live channel but are not game moves (no ordering, nothing to replay)
+      S.emote = (id) => ch.send('emo', { id });
+      ch.on('emo', (d, from) => { const i = S.seats.findIndex((x) => x && x.uid === from); if (i >= 0 && i !== S.me && d && window.emoteShow) window.emoteShow(i, d.id); });
       // after every action: re-check who the host is (the first player still at the table)
       const origPush = S._push;
       S._push = (a) => { origPush(a); const h = pickHost(); if (h !== host) { host = h; const was = S.isHost; S.isHost = h === S.me; if (S.isHost && !was) { next = log.length; showToast('You are now hosting this table.', 'info'); S._kick(); } } if (S.script) S._maybeBot(); };

@@ -1045,6 +1045,68 @@
     .ht-piece svg { width: 100%; height: 100%; }
     .ht-ball { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--ink); display: inline-flex; align-items: center; justify-content: center; }
     .ht-ball i { font-style: normal; font-size: .65rem; font-weight: 900; background: #F7F4EC; color: #050E18; border-radius: 50%; width: 15px; height: 15px; display: inline-flex; align-items: center; justify-content: center; }
+    /* ---------- music panel (zz_music.js) ---------- */
+    .mu-pop { position: fixed; z-index: 90; width: 310px; background: #0F2A44; border: 3px solid var(--ink); box-shadow: 0 5px 0 var(--ink); color: #F7F4EC; }
+    .mu-hd { background: #2DD4BF; color: var(--ink); font-family: 'Arcade Pixel', monospace; font-size: 16px; padding: 4px 10px; display: flex; justify-content: space-between; align-items: center; }
+    .mu-bd { padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+    .mu-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; }
+    .mu-row small { display: block; color: #9DB4CC; font-weight: 400; font-size: 12px; }
+    .mu-sw { width: 52px; height: 28px; border: 3px solid var(--ink); background: #3A4F66; position: relative; flex-shrink: 0; }
+    .mu-sw i { position: absolute; left: 2px; top: 2px; width: 18px; height: 18px; background: #F7F4EC; border: 2px solid var(--ink); }
+    .mu-sw.on { background: #34D399; } .mu-sw.on i { left: auto; right: 2px; }
+    .mu-lab { font-family: 'Arcade Pixel', monospace; font-size: 13px; color: #9DB4CC; letter-spacing: 1px; margin-bottom: 6px; }
+    .mu-range { width: 100%; accent-color: #F5B041; }
+    .mu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .mu-ch { text-align: left; border: 2px solid var(--ink); background: #12304D; box-shadow: 0 2px 0 var(--ink); padding: 6px; font-size: 12px; font-weight: 700; color: #F7F4EC; }
+    .mu-ch small { display: block; font-weight: 400; color: #9DB4CC; font-size: 11px; }
+    .mu-ch.sel { background: #F5B041; color: var(--ink); } .mu-ch.sel small { color: #3A2A08; }
+    .mu-now { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #9DB4CC; border-top: 2px dashed rgba(247, 244, 236, .15); padding-top: 10px; }
+    .mu-now b { color: #F7F4EC; }
+    .mu-eq { display: flex; gap: 2px; align-items: flex-end; height: 14px; }
+    .mu-eq i { width: 4px; background: #2DD4BF; animation: mu-eq .8s steps(3) infinite; }
+    .mu-eq i:nth-child(2) { animation-delay: -.2s; } .mu-eq i:nth-child(3) { animation-delay: -.5s; } .mu-eq i:nth-child(4) { animation-delay: -.35s; }
+    @keyframes mu-eq { 0% { height: 4px; } 50% { height: 14px; } 100% { height: 8px; } }
+
+    /* ---------- emotes (zz_emotes.js) ---------- */
+    .em-fab { position: fixed; right: 22px; bottom: 22px; z-index: 55; width: 54px; height: 54px; padding: 5px; background: #F5B041; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); }
+    .em-fab:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+    .em-fab svg { width: 100%; height: 100%; display: block; }
+    @media (max-width: 1023px) { .em-fab { right: 12px; bottom: 84px; width: 48px; height: 48px; } }
+    .em-menu { position: fixed; right: 22px; bottom: 90px; z-index: 70; width: 340px; background: #0F2A44; border: 3px solid var(--ink); box-shadow: 0 5px 0 var(--ink); }
+    @media (max-width: 1023px) { .em-menu { left: 8px; right: 8px; width: auto; bottom: 144px; } body.em-open #chat-fab { visibility: hidden; } }
+    .em-hd { background: #F5B041; color: var(--ink); font-family: 'Arcade Pixel', monospace; font-size: 15px; padding: 3px 10px; display: flex; justify-content: space-between; }
+    .em-hint { font-size: 12px; opacity: .7; }
+    .em-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; padding: 8px; }
+    .em-it { background: #12304D; border: 2px solid var(--ink); box-shadow: 0 2px 0 var(--ink); padding: 4px 0 2px; display: flex; flex-direction: column; align-items: center; }
+    .em-it:active { transform: translateY(2px); box-shadow: none; }
+    .em-it .em-spr { width: 42px; height: 42px; }
+    .em-it .emx { display: none; }
+    .em-lab { font-family: 'Arcade Pixel', monospace; font-size: 11px; color: #2DD4BF; }
+    .em-ft { font-size: 11px; color: #9DB4CC; padding: 0 8px 8px; display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+    .em-mute { color: #F7F4EC; font-weight: 700; font-size: 11px; border: 2px solid var(--ink); background: #12304D; padding: 2px 6px; }
+    .em-spr { position: relative; display: block; }
+    .em-spr svg { width: 100%; height: 100%; display: block; overflow: visible; }
+    .emx { position: absolute; font-family: 'Arcade Pixel', monospace; color: var(--ink); pointer-events: none; line-height: 1; }
+    .em-bub { position: fixed; z-index: 60; width: 70px; height: 70px; padding: 4px; background: #F7F4EC; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); display: none; pointer-events: none; }
+    .em-bub.on { display: block; animation: em-pop .25s steps(3) both; }
+    .em-bub::after { content: ''; position: absolute; left: 50%; bottom: -10px; width: 11px; height: 11px; background: #F7F4EC; border-right: 3px solid var(--ink); border-bottom: 3px solid var(--ink); transform: translateX(-50%) rotate(45deg); }
+    .em-bub.below::after { bottom: auto; top: -10px; transform: translateX(-50%) rotate(225deg); }
+    .em-bub .em-spr { width: 56px; height: 56px; }
+    .em-count { position: absolute; right: -12px; top: -12px; background: #FB7185; color: var(--ink); border: 2px solid var(--ink); font-family: 'Arcade Pixel', monospace; font-size: 15px; padding: 0 4px; line-height: 1.2; }
+    @keyframes em-pop { 0% { transform: scale(.3); } 70% { transform: scale(1.15); } 100% { transform: scale(1); } }
+    .em-a-shake svg { animation: em-shake .35s steps(2) infinite; } @keyframes em-shake { 0% { transform: translate(-2px, 0); } 100% { transform: translate(2px, 0); } }
+    .em-a-bob svg { animation: em-bob 1s steps(2) infinite; } @keyframes em-bob { 0% { transform: translateY(0); } 100% { transform: translateY(-4px); } }
+    .em-a-laugh svg { animation: em-laugh .3s steps(2) infinite; } @keyframes em-laugh { 0% { transform: translateY(0) rotate(-4deg); } 100% { transform: translateY(-3px) rotate(4deg); } }
+    .em-a-pulse svg { animation: em-pulse .6s steps(2) infinite; } @keyframes em-pulse { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+    .em-a-tilt svg { animation: em-tilt 1.4s steps(2) infinite; } @keyframes em-tilt { 0% { transform: rotate(-6deg); } 100% { transform: rotate(6deg); } }
+    .em-a-jump svg { animation: em-jump .7s steps(3) infinite; } @keyframes em-jump { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-8px) scale(1.08); } }
+    .em-a-tremble svg { animation: em-tremble .18s steps(2) infinite; } @keyframes em-tremble { 0% { transform: translateX(-1px); } 100% { transform: translateX(1px); } }
+    .em-zz { right: -6px; top: -8px; font-size: 18px; color: #7CC4F0; text-shadow: 1px 1px 0 #050E18; animation: em-zz 1.6s steps(4) infinite; }
+    @keyframes em-zz { 0% { transform: translate(0, 6px); opacity: 0; } 30% { opacity: 1; } 100% { transform: translate(8px, -14px); opacity: 0; } }
+    .em-dots { right: -10px; top: -12px; font-size: 22px; color: #F7F4EC; text-shadow: 1px 1px 0 #050E18; animation: em-dots 1.2s steps(3) infinite; }
+    @keyframes em-dots { 0% { clip-path: inset(0 66% 0 0); } 50% { clip-path: inset(0 33% 0 0); } 100% { clip-path: inset(0 0 0 0); } }
+    .em-gg { right: -10px; bottom: -6px; font-size: 18px; background: #F5B041; border: 2px solid #050E18; padding: 0 3px; animation: em-bob .5s steps(2) infinite; }
+    .em-puff { animation: em-puffa .5s steps(2) infinite; } @keyframes em-puffa { 0% { opacity: 1; } 100% { opacity: .3; } }
     /* ===== tic-tac-toe ===== */
     .ttt-board { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 6px; background: var(--ink); border: 4px solid var(--ink); box-shadow: 0 5px 0 var(--ink); aspect-ratio: 1 / 1; width: 100%; max-width: 460px; margin: 0 auto; }
     .ttt-cell { position: relative; min-width: 0; min-height: 0; overflow: hidden; background: #12314F; box-shadow: inset 0 0 0 3px #1A3856, inset 0 -6px 0 #0F2A44; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 12%; }
@@ -6111,7 +6173,7 @@
       const S = {
         online: !!o.online, code: o.code || null, seats: o.seats, me: o.me, n: o.seats.length, sel: o.sel || {},
         ranked: !!o.ranked, isHost: o.online ? o.me === 0 : true, rng: seeded(o.seed >>> 0), seed: o.seed >>> 0,
-        version: 0, over: false, tok: GT.cur,
+        version: 0, over: false, tok: GT.cur, game: typeof activeGame !== 'undefined' ? activeGame : null,
       };
       S.bot = (i) => !!(S.seats[i] && S.seats[i].bot);
       S.human = (i) => !S.bot(i);
@@ -6431,6 +6493,9 @@
         seq(a);
       });
       ch.on('hi', () => {});   // late lobby messages
+      // emotes ride on the same live channel but are not game moves (no ordering, nothing to replay)
+      S.emote = (id) => ch.send('emo', { id });
+      ch.on('emo', (d, from) => { const i = S.seats.findIndex((x) => x && x.uid === from); if (i >= 0 && i !== S.me && d && window.emoteShow) window.emoteShow(i, d.id); });
       // after every action: re-check who the host is (the first player still at the table)
       const origPush = S._push;
       S._push = (a) => { origPush(a); const h = pickHost(); if (h !== host) { host = h; const was = S.isHost; S.isHost = h === S.me; if (S.isHost && !was) { next = log.length; showToast('You are now hosting this table.', 'info'); S._kick(); } } if (S.script) S._maybeBot(); };
@@ -14070,6 +14135,177 @@
       registerGame(mod);
     })();
     /* =========================================================================
+       EMOTES (Inna, Nov 2026): at a game table, the face button (bottom right) opens a menu of 10 emotes. Each
+       profile picture has its own pixel character (computer players are robots). Emotes are silent, can be sent as
+       fast as you like (a counter shows a streak) and pop up above that player's seat for everyone at the table;
+       the menu stays open until you tap outside it. "Mute others" hides other players' emotes (saved).
+       Online they travel on the table's live channel ('emo'), not as game moves.
+       ========================================================================= */
+    (() => {
+      const PAL = { k:'#050E18', o:'#F59E3B', r:'#E4572E', R:'#C23A2A', w:'#F7F4EC', u:'#7CC4F0', U:'#3C7FC0', s:'#B9C7D6', p:'#FB9DB0', P:'#E05A7A', y:'#F5D041', d:'#7A4E2A', g:'#34D399' };
+      const pts = (c, list) => list.map(([x, y]) => [x, y, c]);
+      const line = (c, x1, x2, y) => Array.from({ length: x2 - x1 + 1 }, (_, i) => [x1 + i, y, c]);
+      const col = (c, x, y1, y2) => Array.from({ length: y2 - y1 + 1 }, (_, i) => [x, y1 + i, c]);
+      const cheeks = pts('p', [[3, 9], [12, 9]]);
+      const EMOTES = [
+        { id:'lol', name:'LOL', anim:'a-laugh', face:'o', px:[
+            ...pts('k', [[4,7],[5,6],[6,7],[9,7],[10,6],[11,7]]),
+            ...line('k',6,9,9), ...pts('k',[[6,10],[9,10]]), ...line('k',6,9,11), ...pts('r',[[7,10],[8,10]]),
+            ...pts('u', [[3,8],[3,9],[2,10],[12,8],[12,9],[13,10]]) ] },
+        { id:'gg', name:'GG', anim:'a-bob', face:'o', extra:'<span class="emx em-gg">GG</span>', px:[
+            ...line('k',3,12,6), ...line('k',3,6,7), ...line('k',9,12,7), ...line('k',4,5,8), ...line('k',10,11,8), ...pts('w',[[4,7],[9,7]]),
+            ...pts('k',[[7,11],[8,11],[9,11],[10,10]]), ...cheeks ] },
+        { id:'rage', name:'RAGE', anim:'a-shake', face:'r', px:[
+            ...pts('k',[[4,5],[5,6],[6,6],[11,5],[10,6],[9,6]]), ...pts('k',[[5,7],[10,7]]),
+            ...line('k',5,10,10), ...line('w',5,10,11), ...pts('k',[[7,11]]), ...line('k',5,10,12),
+            ...pts('s',[[0,3],[1,2],[0,1],[15,3],[14,2],[15,1]]).map((p) => p.concat('puff')) ] },
+        { id:'cry', name:'SOB', anim:'a-tremble', face:'o', px:[
+            ...pts('k',[[4,6],[5,7],[6,6],[9,6],[10,7],[11,6]]), ...col('u',5,8,13), ...col('u',10,8,13),
+            ...pts('k',[[6,11],[7,10],[8,10],[9,11]]) ] },
+        { id:'shock', name:'WHAT?!', anim:'a-jump', face:'o', px:[
+            ...line('w',4,6,6), ...line('w',4,6,7), ...line('w',4,6,8), ...line('w',9,11,6), ...line('w',9,11,7), ...line('w',9,11,8),
+            ...pts('k',[[5,7],[10,7]]), ...pts('k',[[7,10],[8,10],[6,11],[9,11],[7,12],[8,12]]), ...pts('d',[[7,11],[8,11]]) ] },
+        { id:'think', name:'HMM...', anim:'a-tilt', face:'o', extra:'<span class="emx em-dots">...</span>', px:[
+            ...line('k',4,6,7), ...line('k',9,11,5), ...pts('k',[[10,7]]), ...pts('k',[[6,11],[7,11],[8,11],[9,10]]), ...cheeks ] },
+        { id:'zzz', name:'BORED', anim:'a-bob', face:'o', extra:'<span class="emx em-zz">z Z</span>', px:[
+            ...line('k',4,6,7), ...line('k',9,11,7), ...pts('k',[[7,10],[8,10],[7,11],[8,11]]), ...pts('d',[]), ...pts('u',[[9,12]]) ] },
+        { id:'oops', name:'OOPS', anim:'a-shake', face:'o', px:[
+            ...pts('k',[[5,7],[10,7]]), ...pts('k',[[5,11],[6,10],[7,11],[8,10],[9,11],[10,10]]),
+            ...pts('u',[[13,3],[12,4],[13,4],[14,4],[13,5]]), ...cheeks ] },
+        { id:'love', name:'NICE!', anim:'a-pulse', face:'o', px:[
+            ...pts('P',[[2,6],[3,6],[5,6],[6,6]]), ...line('P',2,6,7), ...line('P',3,5,8), ...pts('P',[[4,9]]),
+            ...pts('P',[[9,6],[10,6],[12,6],[13,6]]), ...line('P',9,13,7), ...line('P',10,12,8), ...pts('P',[[11,9]]),
+            ...pts('k',[[6,11],[7,12],[8,12],[9,11]]) ] },
+        { id:'potato', name:'HOT!', anim:'a-tremble', face:'y', px:[
+            ...pts('k',[[4,7],[6,7],[5,6],[9,7],[11,7],[10,6]]), ...line('k',6,9,10), ...line('r',6,9,11), ...line('k',6,9,12),
+            ...pts('r',[[2,1],[2,0],[13,1],[13,0]]).map((p) => p.concat('puff')), ...pts('u',[[1,6],[14,6]]) ] },
+      ];
+      const AVS = {
+        '🦊': { name:'Fox', F:'#F59E3B', pal:{ c:'#FFF3E0' }, decor:{ 0:'..k.....', 1:'..kk....', 2:'..kck...', 3:'.kkcck..', 10:'.kcc....', 11:'.kccc...', 12:'..kccc..', 13:'...kccc.' } },
+        '🐙': { name:'Octopus', F:'#FB7185', pal:{ c:'#FDB3BF' }, decor:{ 1:'....kkkk', 2:'...kFFFF', 3:'..kFcFFF', 13:'..kFFkFF', 14:'.kFk.kFk', 15:'..k...k.' } },
+        '🐻': { name:'Bear', F:'#B07A45', pal:{ c:'#E8C28E' }, decor:{ 0:'..kkk...', 1:'.kFFFk..', 2:'.kFcFk..', 3:'.kkFFkkk', 9:'.....ccc', 10:'....cccc', 11:'....cccc', 12:'.....ccc' } },
+        '🦉': { name:'Owl', F:'#9C6B3F', pal:{ c:'#E8D3B0', y:'#F5B041' }, decor:{ 0:'..k.....', 1:'..kk....', 2:'..kFk...', 3:'..kFFkkk', 5:'..cccc..', 6:'.kcccccc', 7:'.kcccccc', 8:'..cccc..', 9:'.......y', 10:'.......y' } },
+        '🦈': { name:'Shark', F:'#7FA6C7', pal:{ c:'#F7F4EC' }, decor:{ 0:'.......k', 1:'......kF', 2:'.....kFF', 10:'.kcc....', 11:'.kccc...', 12:'..kccccc', 13:'...kcccc' } },
+        '🐼': { name:'Panda', F:'#F7F4EC', pal:{ S:'#7A8DA3' }, decor:{ 0:'..kkk...', 1:'.kkkkk..', 2:'.kkkkk..', 6:'...SSS..', 7:'..SSSS..', 8:'..SSS...' } },
+        '🦁': { name:'Lion', F:'#F5C04A', pal:{ m:'#C9661F' }, decor:{ 0:'...kkkkk', 1:'..kmmmmm', 2:'.kmmmmmm', 3:'kmmmkkkk', 4:'kmmk....', 5:'kmk.....', 6:'kmk.....', 7:'kmk.....', 8:'kmk.....', 9:'kmk.....', 10:'kmk.....', 11:'kmmk....', 12:'.kmmk...', 13:'.kmmmk..', 14:'..kmmmkk', 15:'...kkkkk' } },
+        '🐸': { name:'Frog', F:'#34D399', pal:{ G:'#1F8A5E' }, decor:{ 1:'..kkk...', 2:'.kFFFk..', 3:'.kFFFkkk', 12:'..kGFFFF' } },
+        '🦖': { name:'Dino', F:'#4CC38A', pal:{ y:'#F5B041' }, decor:{ 0:'......k.', 1:'...k.kyk', 2:'..kyk.ky', 3:'.kkkkkkk' }, extra:[[13,9,'k'],[13,10,'k'],[14,9,'k']] },
+        '🚀': { name:'Rocket', F:'#DDE5EE', pal:{ R:'#E4572E', y:'#F5D041', O:'#F59E3B' }, decor:{ 0:'.......k', 1:'......kR', 2:'.....kRR', 3:'...kkRRR', 11:'kR......', 12:'kRk.....', 13:'kRRk....', 14:'kkkkk...', 15:'......Oy' } },
+        '⚡': { name:'Bolt', F:'#F5D041', pal:{ O:'#F59E3B' }, decor:{ 0:'..k...k.', 1:'.kOk.kOk', 2:'kOOOkOOO', 3:'.kFFFFFF' } },
+        '🎯': { name:'Target', F:'#F7F4EC', pal:{ R:'#E4572E' }, decor:{ 4:'..kRRRRR', 5:'.kRR....', 6:'.kR.....', 7:'.kR.....', 8:'.kR.....', 9:'.kR.....', 10:'.kR.....', 11:'.kRR....', 12:'..kRRRRR' }, extra:[[13,0,'d'],[12,1,'d'],[11,2,'d'],[14,0,'R'],[13,1,'R'],[14,1,'R']] },
+        '🤖': { name:'Robot', F:'#B9C7D6', pal:{ y:'#F5D041', S:'#6E8299' }, decor:{ 0:'.......y', 1:'.......k', 2:'.......k', 7:'y.......', 8:'y.......', 12:'....SSSS' } },
+      };
+      // other profile pictures borrow the closest character; computer players are robots
+      const LIKE = { '🐺': '🦊', '🐶': '🦊', '🐱': '🦊', '🐭': '🐼', '🐦': '🦉', '🐧': '🦉', '🐢': '🐸', '🦄': '⚡', '🐯': '🦁', '🐳': '🦈', '🐬': '🦈' };
+      const ROBOTS = ['🤖', '🦾', '👾', '🛰️', '⚙️', '🔩', '🧩'];
+      function charFor(av) {
+        if (AVS[av]) return av; if (LIKE[av]) return LIKE[av]; if (ROBOTS.includes(av)) return '🤖';
+        const keys = Object.keys(AVS); let h = 0; for (const ch of String(av || '')) h = (h * 31 + ch.codePointAt(0)) >>> 0; return keys[h % keys.length];
+      }
+      function headRows(a) {
+        const rows = []; for (let y = 0; y < 16; y++) rows.push('................'.split(''));
+        const put = (y, str) => str.split('').forEach((c, x) => { rows[y][x] = c; });
+        put(3, '...kkkkkkkkkk...'); put(4, '..k' + 'F'.repeat(10) + 'k..');
+        for (let y = 5; y <= 11; y++) put(y, '.k' + 'F'.repeat(12) + 'k.');
+        put(12, '..k' + 'F'.repeat(10) + 'k..'); put(13, '...k' + 'F'.repeat(8) + 'k...'); put(14, '....kkkkkkkk....');
+        Object.entries(a.decor || {}).forEach(([y, half]) => { half.split('').forEach((c, x) => { if (c === '.') return; const v = c === '_' ? '.' : c; rows[+y][x] = v; rows[+y][15 - x] = v; }); });
+        (a.extra || []).forEach(([x, y, c]) => { rows[y][x] = c; });
+        return rows;
+      }
+      const cache = {};
+      function svg(e, av) {
+        const ck = av + e.id; if (cache[ck]) return cache[ck];
+        const a = AVS[charFor(av)], pal = Object.assign({}, PAL, a.pal), face = e.face === 'o' ? a.F : PAL[e.face];
+        let r = '';
+        headRows(a).forEach((row, y) => row.forEach((c, x) => { if (c !== '.') r += `<rect x="${x}" y="${y}" width="1" height="1" fill="${c === 'F' ? face : pal[c]}"/>`; }));
+        e.px.forEach(([x, y, c, cls]) => { r += `<rect x="${x}" y="${y}" width="1" height="1" fill="${PAL[c]}"${cls ? ` class="em-${cls}"` : ''}/>`; });
+        return (cache[ck] = `<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`);
+      }
+      const BY = {}; EMOTES.forEach((e) => { BY[e.id] = e; });
+      const sprite = (e, av) => `<span class="em-spr em-${e.anim}">${svg(e, av)}${e.extra || ''}</span>`;
+      let muted = false; try { muted = localStorage.getItem('ps_emote_mute') === '1'; } catch (e) {}
+
+      // is there a game table on screen right now?
+      const table = () => {
+        const S = typeof NP !== 'undefined' && NP.S;
+        if (!S || S.over || !S.game || S.game !== activeGame) return null;
+        if (!document.getElementById('gs-body') || document.getElementById('np-lob')) return null;
+        return S;
+      };
+      const myAv = (S) => (S.seats[S.me] && S.seats[S.me].avatar) || (typeof profile !== 'undefined' && profile.avatar) || '🦊';
+
+      /* ---------- the bubble above a player's seat ---------- */
+      const bubbles = {};
+      function target(S, seat) {
+        const root = document.getElementById('game-root'); if (!root) return null;
+        const els = [...root.querySelectorAll(`[id$="-seat-${seat}"], [id$="-pl-${seat}"]`)].filter((el) => el.getBoundingClientRect().width > 0);
+        if (els.length) return els[0];
+        const chip = document.querySelectorAll('#np-bar .np-chip')[seat]; if (chip && chip.getBoundingClientRect().width > 0) return chip;
+        return seat === S.me ? document.getElementById('em-fab') : null;
+      }
+      function show(seat, id) {
+        const S = table(), e = BY[id]; if (!S || !e || !S.seats[seat]) return;
+        if (seat !== S.me && muted) return;
+        const t = target(S, seat); if (!t) return;
+        let b = bubbles[seat];
+        if (!b || !document.body.contains(b.el)) { const el = document.createElement('div'); el.className = 'em-bub'; document.body.appendChild(el); b = bubbles[seat] = { el, last: null, n: 0, timer: 0 }; }
+        b.n = b.last === id && b.el.classList.contains('on') ? b.n + 1 : 1; b.last = id;
+        b.el.innerHTML = sprite(e, S.seats[seat].avatar) + (b.n > 1 ? `<span class="em-count">x${b.n}</span>` : '');
+        b.el.classList.remove('on'); void b.el.offsetWidth; b.el.classList.add('on');
+        const r = t.getBoundingClientRect(), w = 70, h = 70;
+        let x = r.left + r.width / 2 - w / 2, y = r.top - h - 12, below = false;
+        if (y < 6) { y = r.bottom + 12; below = true; }
+        x = Math.max(6, Math.min(window.innerWidth - w - 6, x));
+        b.el.style.left = x + 'px'; b.el.style.top = y + 'px'; b.el.classList.toggle('below', below);
+        clearTimeout(b.timer); b.timer = setTimeout(() => b.el.classList.remove('on'), 3000);
+      }
+      window.emoteShow = show;
+
+      /* ---------- your emote button and menu ---------- */
+      let sentAt = [];
+      function send(id) {
+        const S = table(); if (!S) return;
+        show(S.me, id);
+        // the network gets at most 5 a second (tapping faster still shows on your own screen)
+        if (S.online && S.emote) { const now = Date.now(); sentAt = sentAt.filter((t) => now - t < 1000); if (sentAt.length < 5) { sentAt.push(now); S.emote(id); } }
+      }
+      function menuHTML(S) {
+        const av = myAv(S);
+        return `<div class="em-hd"><span>SEND AN EMOTE</span><span class="em-hint">tap outside to close</span></div>
+          <div class="em-grid">${EMOTES.map((e) => `<button class="em-it" data-em="${e.id}" title="${e.name}">${sprite(e, av)}<span class="em-lab">${e.name}</span></button>`).join('')}</div>
+          <div class="em-ft"><span>Everyone at the table sees it</span><button class="em-mute" data-mute>${muted ? '🔈 Show others' : '🔇 Mute others'}</button></div>`;
+      }
+      function closeMenu() { const m = document.getElementById('em-menu'); if (m) m.remove(); document.body.classList.remove('em-open'); }
+      function openMenu() {
+        const S = table(); if (!S) return;
+        if (document.getElementById('em-menu')) return closeMenu();
+        const m = document.createElement('div'); m.id = 'em-menu'; m.className = 'em-menu'; m.innerHTML = menuHTML(S); document.body.appendChild(m);
+        document.body.classList.add('em-open');
+        m.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          const b = ev.target.closest('[data-em]'); if (b) return send(b.dataset.em);
+          if (ev.target.closest('[data-mute]')) {
+            muted = !muted; try { localStorage.setItem('ps_emote_mute', muted ? '1' : '0'); } catch (e) {}
+            m.innerHTML = menuHTML(S);
+            if (muted) Object.keys(bubbles).forEach((k) => { if (+k !== S.me) bubbles[k].el.classList.remove('on'); });
+          }
+        });
+      }
+      document.addEventListener('click', (ev) => { const m = document.getElementById('em-menu'); if (m && !m.contains(ev.target) && !ev.target.closest('#em-fab')) closeMenu(); });
+      function syncFab() {
+        const S = table();
+        let f = document.getElementById('em-fab');
+        if (!S) { if (f) f.remove(); closeMenu(); Object.values(bubbles).forEach((b) => b.el.classList.remove('on')); return; }
+        if (!f) {
+          f = document.createElement('button'); f.id = 'em-fab'; f.className = 'em-fab'; f.title = 'Emotes'; f.setAttribute('aria-label', 'Emotes'); document.body.appendChild(f);
+          f.onclick = (ev) => { ev.stopPropagation(); openMenu(); };
+        }
+        if (f.dataset.av !== myAv(S)) { f.innerHTML = svg(BY.gg, myAv(S)); f.dataset.av = myAv(S); }
+      }
+      setInterval(syncFab, 500);
+      window.EMOTE = { send, show, list: EMOTES.map((e) => e.id), chars: AVS, charFor, sync: syncFab };
+    })();
+    /* =========================================================================
        FRIENDS (Nov 2026, Inna): look up players, player cards, friend requests, a friends list with who is
        online, 1-to-1 friend chat, and inviting friends to your room. Needs the online service
        (backend/friends.sql). Emails are never shown: cards only have name, avatar, member since, rankings.
@@ -14519,6 +14755,183 @@
       const h = (location.hash || '').slice(1);
       if (h === 'terms' || h === 'privacy') setTimeout(() => openLegal(h), 300);
     })();
+    /* =========================================================================
+       MUSIC (Inna, Nov 2026): four retro tunes made by the browser itself (no music files), with a Music button
+       next to Sound (sidebar; ♫ in the phone header) that opens a small panel: on/off, volume, which music
+       (Auto = follows what you are doing, one tune, or Shuffle) and "music during games". Saved per browser. Starts ON (quiet) for people; automated test browsers start with it off.
+       Browsers only allow sound after the first tap, so the music starts then.
+       ========================================================================= */
+    const MUSIC = (() => {
+      const KEY = 'ps_music_v1';
+      const Q = { M: [0, 4, 7, 12], m: [0, 3, 7, 12], '7': [0, 4, 7, 10], m7: [0, 3, 7, 10], maj7: [0, 4, 7, 11] };
+      const TRACKS = {
+        harbor: { name: 'Harbor Lights', mood: 'Calm', bpm: 84, lead: 'triangle', arpWave: 'square', swing: 0,
+          chords: [[48, 'M'], [45, 'm'], [41, 'M'], [43, 'M'], [48, 'M'], [45, 'm'], [41, 'M'], [43, 'M']], arp: [0, 1, 2, 3, 2, 1, 2, 1],
+          mel: [76, 0, 79, 0, 84, 0, 83, 79, 81, 0, 0, 79, 76, 0, 0, 0, 77, 0, 81, 0, 84, 0, 81, 77, 79, 0, 0, 0, 74, 0, 0, 0,
+            72, 0, 76, 79, 0, 76, 72, 0, 76, 0, 72, 0, 69, 0, 0, 0, 69, 72, 77, 0, 76, 0, 74, 0, 74, 0, 79, 0, 0, 0, 0, 0], drum: 'k...s...' },
+        arcade: { name: 'Arcade Morning', mood: 'Upbeat', bpm: 128, lead: 'square', arpWave: 'square', swing: 0,
+          chords: [[43, 'M'], [38, 'M'], [40, 'm'], [36, 'M'], [43, 'M'], [38, 'M'], [40, 'm'], [36, 'M']], arp: [0, 2, 1, 2, 3, 2, 1, 2],
+          mel: [79, 0, 78, 79, 0, 74, 0, 71, 74, 0, 78, 0, 81, 0, 78, 0, 79, 0, 76, 0, 71, 0, 74, 76, 72, 0, 76, 0, 79, 0, 0, 0,
+            71, 74, 79, 74, 71, 74, 79, 83, 81, 0, 78, 0, 74, 0, 0, 0, 76, 79, 83, 79, 76, 79, 83, 86, 84, 0, 0, 79, 0, 76, 0, 0], drum: 'khshkksh' },
+        card: { name: 'Card Room', mood: 'Jazzy', bpm: 100, lead: 'triangle', arpWave: 'triangle', swing: 0.33, walk: true,
+          chords: [[43, 'm7'], [36, '7'], [41, 'maj7'], [38, 'm7'], [43, 'm7'], [36, '7'], [41, 'maj7'], [38, 'm7']], arp: [1, 2, 3, 2, 1, 2, 3, 2],
+          mel: [82, 0, 81, 79, 0, 77, 0, 74, 76, 0, 79, 0, 82, 81, 79, 0, 81, 0, 0, 77, 0, 72, 0, 0, 74, 77, 81, 84, 0, 81, 0, 0,
+            79, 0, 82, 0, 86, 0, 84, 82, 81, 0, 79, 0, 76, 0, 72, 0, 77, 0, 81, 84, 88, 0, 84, 0, 86, 0, 0, 0, 0, 0, 0, 0], drum: 'h.hhh.hh' },
+        island: { name: 'Island Breeze', mood: 'Sunny', bpm: 108, lead: 'square', arpWave: 'triangle', swing: 0,
+          chords: [[50, 'M'], [47, 'm'], [43, 'M'], [45, 'M'], [50, 'M'], [47, 'm'], [43, 'M'], [45, 'M']], arp: [0, 1, 2, 1, 3, 1, 2, 1],
+          mel: [78, 0, 81, 83, 81, 0, 78, 76, 74, 0, 0, 78, 0, 76, 74, 0, 71, 74, 76, 0, 78, 0, 81, 0, 76, 0, 0, 0, 0, 0, 73, 76,
+            86, 0, 83, 81, 0, 78, 81, 0, 83, 0, 78, 0, 74, 0, 0, 0, 79, 0, 78, 76, 0, 74, 0, 71, 73, 0, 76, 0, 81, 0, 0, 0], drum: 'k..hk.s.' },
+      };
+      const ORDER = ['harbor', 'arcade', 'card', 'island'];
+      // Auto: what plays where
+      const AUTO = { poker: 'card', blackjack: 'card', kittens: 'card', colorclash: 'card', isles: 'island', pool: 'island', bowling: 'island', tycoon: 'island',
+        impostor: 'arcade', doodle: 'arcade', dominoes: 'arcade', tictactoe: 'arcade', c4: 'arcade' };
+      const st = Object.assign({ on: !navigator.webdriver, vol: 0.35, pick: 'auto', inGames: true }, (() => { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { return {}; } })());
+      const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} };
+      let ac = null, master = null, noiseBuf = null, timer = null, step = 0, nextT = 0, cur = null, shuffleAt = 0, unlocked = false;
+      const hz = (m) => 440 * Math.pow(2, (m - 69) / 12);
+      function setup() {
+        if (ac) return true;
+        try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return false; }
+        master = ac.createGain(); master.gain.value = 0; master.connect(ac.destination);
+        noiseBuf = ac.createBuffer(1, ac.sampleRate * 0.5, ac.sampleRate);
+        const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+        return true;
+      }
+      function tone(wave, f, t, dur, v) {
+        const o = ac.createOscillator(), g = ac.createGain(); o.type = wave; o.frequency.value = f;
+        g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(v, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        o.connect(g); g.connect(master); o.start(t); o.stop(t + dur + 0.02);
+      }
+      function noise(t, dur, v, type, f) {
+        const s = ac.createBufferSource(), fl = ac.createBiquadFilter(), g = ac.createGain();
+        s.buffer = noiseBuf; fl.type = type; fl.frequency.value = f;
+        g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        s.connect(fl); fl.connect(g); g.connect(master); s.start(t); s.stop(t + dur + 0.02);
+      }
+      function kick(t) {
+        const o = ac.createOscillator(), g = ac.createGain();
+        o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(45, t + 0.12);
+        g.gain.setValueAtTime(0.5, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
+        o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.2);
+      }
+      function playStep(tr, i, t) {
+        const sd = 60 / tr.bpm / 2, bar = Math.floor(i / 8) % tr.chords.length, s = i % 8;
+        const [root, q] = tr.chords[bar], tones = Q[q];
+        if (tr.swing && s % 2 === 1) t += sd * tr.swing;
+        tone(tr.arpWave, hz(root + 12 + tones[tr.arp[s]]), t, sd * 0.9, 0.035);
+        if (tr.walk) { if (s % 2 === 0) tone('triangle', hz(root - 12 + [0, tones[1], tones[2], tones[3] - 12][s / 2]), t, sd * 1.8, 0.16); }
+        else if (s === 0 || s === 4) tone('triangle', hz(root - 12), t, sd * 3.5, 0.16);
+        else if (s === 6) tone('triangle', hz(root - 12 + 7), t, sd * 1.5, 0.12);
+        const m = tr.mel[i % tr.mel.length];
+        if (m) { let len = 1; while (len < 4 && !tr.mel[(i + len) % tr.mel.length]) len++; tone(tr.lead, hz(m), t, sd * len * 0.95, tr.lead === 'square' ? 0.05 : 0.11); }
+        const d = tr.drum[s];
+        if (d === 'k') kick(t); else if (d === 's') noise(t, 0.12, 0.18, 'bandpass', 1800); else if (d === 'h') noise(t, 0.04, 0.07, 'highpass', 7000);
+      }
+      function tick() {
+        if (!cur || !ac) return;
+        const tr = TRACKS[cur], sd = 60 / tr.bpm / 2;
+        if (nextT < ac.currentTime) nextT = ac.currentTime + 0.05;   // after a pause, carry on instead of rushing to catch up
+        while (nextT < ac.currentTime + 0.15) { playStep(tr, step, nextT); step++; nextT += sd; }
+        if (st.pick === 'shuffle' && step >= shuffleAt) { const k = ORDER.indexOf(cur); start(ORDER[(k + 1) % ORDER.length]); }
+      }
+      const inGame = () => (typeof activeGame !== 'undefined' && activeGame) || null;
+      function wanted() {
+        if (!st.on || !unlocked || document.hidden) return null;
+        const g = inGame();
+        if (g && !st.inGames) return null;
+        if (st.pick === 'shuffle') return cur || ORDER[Math.floor(Math.random() * ORDER.length)];
+        if (TRACKS[st.pick]) return st.pick;
+        return (g && AUTO[g]) || 'harbor';
+      }
+      function start(id) {
+        if (!setup()) return;
+        cur = id; step = 0; nextT = ac.currentTime + 0.1; shuffleAt = TRACKS[id].mel.length * 4;
+        if (!timer) timer = setInterval(tick, 25);
+        master.gain.cancelScheduledValues(ac.currentTime); master.gain.setValueAtTime(0, ac.currentTime); master.gain.linearRampToValueAtTime(st.vol * 0.6, ac.currentTime + 0.8);
+        paint();
+      }
+      function stopAll() {
+        if (timer) { clearInterval(timer); timer = null; }
+        if (ac && master) { master.gain.cancelScheduledValues(ac.currentTime); master.gain.setValueAtTime(master.gain.value, ac.currentTime); master.gain.linearRampToValueAtTime(0, ac.currentTime + 0.3); }
+        cur = null; paint();
+      }
+      // checked a few times a second: start, change or stop the music to match the settings and where you are
+      function sync() {
+        const w = wanted();
+        if (!w) { if (cur) stopAll(); return; }
+        if (ac && ac.state === 'suspended') ac.resume();
+        if (w !== cur) start(w);
+      }
+      function set(k, v) {
+        st[k] = v; save();
+        if (k === 'vol' && ac && master && cur) { master.gain.cancelScheduledValues(ac.currentTime); master.gain.setValueAtTime(st.vol * 0.6, ac.currentTime); }
+        if (k === 'pick') { cur = null; if (timer) { clearInterval(timer); timer = null; } }   // switch tune at once
+        sync(); paint();
+      }
+
+      /* ---------- the button and the panel ---------- */
+      const NOTE = '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><rect x="5" y="2" width="9" height="2"/><rect x="5" y="2" width="2" height="9"/><rect x="12" y="2" width="2" height="8"/><rect x="2" y="10" width="5" height="4"/><rect x="9" y="9" width="5" height="4"/></svg>';
+      function buttons() {
+        const snd = document.getElementById('snd-btn');
+        if (snd && !document.getElementById('mu-btn')) {
+          const b = document.createElement('button'); b.id = 'mu-btn'; b.className = snd.className; b.setAttribute('style', snd.getAttribute('style') || ''); b.title = 'Music settings';
+          b.innerHTML = `${NOTE}<span id="mu-label">Music</span>`; snd.insertAdjacentElement('afterend', b);
+          b.onclick = (e) => { e.stopPropagation(); toggle(b); };
+        }
+        const m = document.getElementById('snd-btn-m');
+        if (m && !document.getElementById('mu-btn-m')) {
+          const b = document.createElement('button'); b.id = 'mu-btn-m'; b.className = 'pix text-xs text-muted'; b.title = 'Music settings';
+          m.insertAdjacentElement('afterend', b); b.onclick = (e) => { e.stopPropagation(); toggle(b); };
+        }
+        paint();
+      }
+      function panelHTML() {
+        const sw = (k) => `<button class="mu-sw ${st[k] ? 'on' : ''}" data-mu="${k}" role="switch" aria-checked="${st[k] ? 'true' : 'false'}"><i></i></button>`;
+        const choice = (id, name, mood) => `<button class="mu-ch ${st.pick === id ? 'sel' : ''}" data-pick="${id}">${name}<small>${mood}</small></button>`;
+        return `<div class="mu-hd"><span>♫ MUSIC</span><button data-mu="close" aria-label="Close">✕</button></div>
+          <div class="mu-bd">
+            <div class="mu-row"><span>Music<small>Background tunes, separate from sound effects</small></span>${sw('on')}</div>
+            <div><div class="mu-lab">VOLUME</div><input id="mu-vol" class="mu-range" type="range" min="0" max="100" value="${Math.round(st.vol * 100)}" aria-label="Music volume"></div>
+            <div><div class="mu-lab">WHICH MUSIC</div><div class="mu-grid">${choice('auto', 'Auto', 'Changes with the game')}${ORDER.map((k) => choice(k, TRACKS[k].name, TRACKS[k].mood)).join('')}${choice('shuffle', 'Shuffle', 'All of them')}</div></div>
+            <div class="mu-row"><span>Music during games<small>Off = only on the menus</small></span>${sw('inGames')}</div>
+            <div class="mu-now" id="mu-now"></div>
+          </div>`;
+      }
+      function toggle(anchor) {
+        let p = document.getElementById('mu-pop');
+        if (p) { p.remove(); return; }
+        unlock();
+        p = document.createElement('div'); p.id = 'mu-pop'; p.className = 'mu-pop'; p.innerHTML = panelHTML(); document.body.appendChild(p);
+        const r = anchor.getBoundingClientRect();
+        if (window.innerWidth >= 1024) { p.style.left = (r.right + 12) + 'px'; p.style.top = Math.max(10, Math.min(window.innerHeight - p.offsetHeight - 10, r.bottom - p.offsetHeight)) + 'px'; }
+        else { p.style.left = '10px'; p.style.right = '10px'; p.style.top = (r.bottom + 10) + 'px'; }
+        p.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const b = e.target.closest('[data-mu],[data-pick]'); if (!b) return;
+          if (b.dataset.mu === 'close') return p.remove();
+          if (b.dataset.mu) { set(b.dataset.mu, !st[b.dataset.mu]); p.innerHTML = panelHTML(); wire(p); }
+          else { set('pick', b.dataset.pick); p.innerHTML = panelHTML(); wire(p); }
+        });
+        wire(p); paint();
+      }
+      function wire(p) { const v = p.querySelector('#mu-vol'); if (v) v.oninput = () => set('vol', +v.value / 100); paint(); }
+      function paint() {
+        const lab = document.getElementById('mu-label'); if (lab) lab.textContent = 'Music: ' + (st.on ? 'On' : 'Off');
+        const m = document.getElementById('mu-btn-m'); if (m) { m.textContent = st.on ? '♫ ON' : '♫ OFF'; m.style.color = st.on ? '#2DD4BF' : ''; }
+        const now = document.getElementById('mu-now');
+        if (now) now.innerHTML = cur ? `<span class="mu-eq"><i></i><i></i><i></i><i></i></span>Now playing: <b>${TRACKS[cur].name}</b>` : (st.on ? (unlocked ? 'Quiet here (music during games is off)' : 'Starts when you tap anywhere') : 'Music is off');
+      }
+      function unlock() { if (unlocked) return; unlocked = true; setup(); if (ac && ac.state === 'suspended') ac.resume(); sync(); }
+      document.addEventListener('pointerdown', unlock, { capture: true });
+      document.addEventListener('keydown', unlock, { capture: true });
+      document.addEventListener('click', (e) => { const p = document.getElementById('mu-pop'); if (p && !p.contains(e.target)) p.remove(); });
+      document.addEventListener('visibilitychange', sync);
+      setInterval(sync, 600);
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', buttons); else buttons();
+      return { set, state: () => Object.assign({ playing: cur }, st), tracks: TRACKS, sync, _unlock: unlock };
+    })();
+    window.MUSIC = MUSIC;
     /* =========================================================================
        8. KEYBOARD LISTENERS & BOOTSTRAP
        ========================================================================= */

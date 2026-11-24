@@ -746,7 +746,7 @@
         $('ty-players').innerHTML = G.players.map((p) => {
           const props = BOARD.filter((t) => S.own[t.i] === p.i).sort((a, b) => a.i - b.i);
           const fl = G.flash[p.i] && performance.now() < G.flash[p.i].until ? G.flash[p.i].dir : '';
-          return `<div id="ty-pl-${p.i}" class="ty-pl ${cur === p && !G.over ? 'turn' : ''} ${p.out ? 'out' : ''} ${fl}"><div class="flex items-center justify-between gap-2"><span class="text-sm font-display font-extrabold"><span style="display:inline-block;width:12px;height:12px;border:2px solid var(--ink);border-radius:50%;background:${p.col}"></span> ${p.av} ${esc(p.name)}${p.jail > 0 ? ' 🔒' : ''}${p.free ? ' 🎟️' : ''}</span><span id="ty-cash-${p.i}" class="ty-cash pix text-sm text-amber">${p.out ? 'OUT' : money(G.shown[p.i])}</span></div>
+          return `<div id="ty-pl-${p.i}" class="ty-pl pl-tag ${cur === p && !G.over ? 'turn' : ''} ${p.out ? 'out' : ''} ${p.i === G.me ? 'me' : ''} ${fl}" style="--pc:${p.col}"><div class="flex items-center justify-between gap-2"><span class="text-sm font-display font-extrabold flex items-center gap-2 min-w-0"><span class="tg-av">${p.av}</span><span class="truncate">${esc(p.name)}</span>${p.jail > 0 ? ' 🔒' : ''}${p.free ? ' 🎟️' : ''}</span><span id="ty-cash-${p.i}" class="ty-cash pix text-sm text-amber">${p.out ? 'OUT' : money(G.shown[p.i])}</span></div>
             <div class="mt-1 flex flex-wrap gap-0.5 min-h-[12px]">${props.map((t) => `<span class="ty-dot ${S.mort[t.i] ? 'm' : ''}" style="background:${GR[t.g]}" title="${t.n}"></span>`).join('')}</div></div>`;
         }).join('');
         syncCash();

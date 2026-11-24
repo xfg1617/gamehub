@@ -1707,6 +1707,14 @@
       .tg-fan .kk-card.sm .art svg { width: 20px; height: 20px; }
       .tg-fan .kk-card.sm .nm { font-size: .4rem; }
     }
+
+    /* player lists in board games (Frontier Isles, Property Tycoon, Manor Mystery) in the same name-tag style:
+       dark tag, picture square, the player's colour as a stripe, gold outline on their turn, teal for you */
+    .pl-tag { background: rgba(5, 14, 24, .82) !important; border: 2px solid #050E18 !important; border-left: 6px solid var(--pc, #9DB4CC) !important; box-shadow: none !important; padding: 6px 10px 6px 8px !important; }
+    .pl-tag.me { outline: 2px solid #2DD4BF; outline-offset: -2px; }
+    .pl-tag.turn { outline: 3px solid #F5B041 !important; outline-offset: -1px; }
+    .pl-tag .tg-av { width: 28px; height: 28px; font-size: 17px; }
+    .mm-seat.pl-tag { display: inline-flex; align-items: center; gap: 6px; }
     /* ---------- Pool: pull-back power bar ---------- */
     .pl-bar { position: relative; height: 58px; background: #0A1624; border: 3px solid var(--ink); box-shadow: inset 0 3px 0 rgba(0,0,0,.4); touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; overflow: hidden; }
     .pl-bar.dragging { cursor: grabbing; }
@@ -10975,7 +10983,7 @@
         const cancel = $('fi-cancel'); if (cancel) cancel.onclick = () => { if (G.pick) { const r = G.pick.res; G.pick = null; prompt(''); r(-1); } };
         // side panel
         const lens = G.players.map((_, i) => longest(G, i));
-        $('fi-players').innerHTML = G.players.map((p) => `<div id="fi-pl-${p.i}" class="fi-pl ${G.cur === p.i && !G.over ? 'turn' : ''}"><div class="flex items-center justify-between gap-2"><span class="font-display font-extrabold text-sm"><span class="fi-sw" style="background:${p.col}"></span>${p.av} ${esc(p.name)}</span><span class="pix text-amber">${vp(G, p.i)} / ${G.goal}</span></div>
+        $('fi-players').innerHTML = G.players.map((p) => `<div id="fi-pl-${p.i}" class="fi-pl pl-tag ${G.cur === p.i && !G.over ? 'turn' : ''} ${p.i === G.me ? 'me' : ''}" style="--pc:${p.col}"><div class="flex items-center justify-between gap-2"><span class="font-display font-extrabold text-sm flex items-center gap-2 min-w-0"><span class="tg-av">${p.av}</span><span class="truncate">${esc(p.name)}</span></span><span class="pix text-amber">${vp(G, p.i)} / ${G.goal}</span></div>
           <div class="text-xs text-muted mt-1">🂠 ${total(p)} cards · 🏠 ${count(G, p.i, 1)} · 🏰 ${count(G, p.i, 2)} · road ${lens[p.i]}${G.lr === p.i ? ' <b class="text-emerald">LONGEST</b>' : ''}</div></div>`).join('');
         const me = G.players[G.me];
         $('fi-res').innerHTML = RES.map((r) => `<div class="fi-rc" id="fi-r-${r}" title="${RN[r]}">${resIcon(r, 30)}<span class="pix">${me.res[r]}</span><span class="fi-rn">${RN[r]}</span></div>`).join('');
@@ -11861,7 +11869,7 @@
         area.querySelectorAll('.mm-room.go').forEach((el) => { el.onclick = () => { if (G.pickRoom) G.pickRoom(+el.dataset.r); }; });
         gFlip(area, before, { enter: false });
         $('mm-hand').innerHTML = me.hand.map((c) => cardHTML(c)).join('');
-        $('mm-players').innerHTML = G.players.map((p) => `<div id="mm-seat-${p.i}" class="mm-seat ${G.cur === p.i && !G.over ? 'turn' : ''} ${p.out ? 'out' : ''}"><span class="mm-sw" style="background:${p.col}"></span>${p.av} <b>${esc(p.name)}</b> <span class="text-muted text-xs">${p.hand.length} cards${p.out ? ' · OUT' : ''}</span></div>`).join('');
+        $('mm-players').innerHTML = G.players.map((p) => `<div id="mm-seat-${p.i}" class="mm-seat pl-tag ${G.cur === p.i && !G.over ? 'turn' : ''} ${p.out ? 'out' : ''} ${p.i === G.me ? 'me' : ''}" style="--pc:${p.col}"><span class="tg-av">${p.av}</span> <b>${esc(p.name)}</b> <span class="text-muted text-xs">${p.hand.length} cards${p.out ? ' · OUT' : ''}</span></div>`).join('');
         // notebook: one column per detective
         const mark = (pi, c) => { const a = G.note[pi][c]; if (a === 1) return '<b class="mm-yes">✓</b>'; if (a === -1) return '<b class="mm-no">✗</b>'; const m = G.marks[pi + ':' + c]; return m ? `<span class="mm-m">${m}</span>` : ''; };
         const head = `<tr><th></th>${G.players.map((p) => `<th title="${esc(p.name)}"><span class="mm-sw" style="background:${p.col}"></span></th>`).join('')}</tr>`;
@@ -14151,7 +14159,7 @@
         $('ty-players').innerHTML = G.players.map((p) => {
           const props = BOARD.filter((t) => S.own[t.i] === p.i).sort((a, b) => a.i - b.i);
           const fl = G.flash[p.i] && performance.now() < G.flash[p.i].until ? G.flash[p.i].dir : '';
-          return `<div id="ty-pl-${p.i}" class="ty-pl ${cur === p && !G.over ? 'turn' : ''} ${p.out ? 'out' : ''} ${fl}"><div class="flex items-center justify-between gap-2"><span class="text-sm font-display font-extrabold"><span style="display:inline-block;width:12px;height:12px;border:2px solid var(--ink);border-radius:50%;background:${p.col}"></span> ${p.av} ${esc(p.name)}${p.jail > 0 ? ' 🔒' : ''}${p.free ? ' 🎟️' : ''}</span><span id="ty-cash-${p.i}" class="ty-cash pix text-sm text-amber">${p.out ? 'OUT' : money(G.shown[p.i])}</span></div>
+          return `<div id="ty-pl-${p.i}" class="ty-pl pl-tag ${cur === p && !G.over ? 'turn' : ''} ${p.out ? 'out' : ''} ${p.i === G.me ? 'me' : ''} ${fl}" style="--pc:${p.col}"><div class="flex items-center justify-between gap-2"><span class="text-sm font-display font-extrabold flex items-center gap-2 min-w-0"><span class="tg-av">${p.av}</span><span class="truncate">${esc(p.name)}</span>${p.jail > 0 ? ' 🔒' : ''}${p.free ? ' 🎟️' : ''}</span><span id="ty-cash-${p.i}" class="ty-cash pix text-sm text-amber">${p.out ? 'OUT' : money(G.shown[p.i])}</span></div>
             <div class="mt-1 flex flex-wrap gap-0.5 min-h-[12px]">${props.map((t) => `<span class="ty-dot ${S.mort[t.i] ? 'm' : ''}" style="background:${GR[t.g]}" title="${t.n}"></span>`).join('')}</div></div>`;
         }).join('');
         syncCash();

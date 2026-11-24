@@ -307,7 +307,7 @@
         area.querySelectorAll('.mm-room.go').forEach((el) => { el.onclick = () => { if (G.pickRoom) G.pickRoom(+el.dataset.r); }; });
         gFlip(area, before, { enter: false });
         $('mm-hand').innerHTML = me.hand.map((c) => cardHTML(c)).join('');
-        $('mm-players').innerHTML = G.players.map((p) => `<div id="mm-seat-${p.i}" class="mm-seat ${G.cur === p.i && !G.over ? 'turn' : ''} ${p.out ? 'out' : ''}"><span class="mm-sw" style="background:${p.col}"></span>${p.av} <b>${esc(p.name)}</b> <span class="text-muted text-xs">${p.hand.length} cards${p.out ? ' · OUT' : ''}</span></div>`).join('');
+        $('mm-players').innerHTML = G.players.map((p) => `<div id="mm-seat-${p.i}" class="mm-seat pl-tag ${G.cur === p.i && !G.over ? 'turn' : ''} ${p.out ? 'out' : ''} ${p.i === G.me ? 'me' : ''}" style="--pc:${p.col}"><span class="tg-av">${p.av}</span> <b>${esc(p.name)}</b> <span class="text-muted text-xs">${p.hand.length} cards${p.out ? ' · OUT' : ''}</span></div>`).join('');
         // notebook: one column per detective
         const mark = (pi, c) => { const a = G.note[pi][c]; if (a === 1) return '<b class="mm-yes">✓</b>'; if (a === -1) return '<b class="mm-no">✗</b>'; const m = G.marks[pi + ':' + c]; return m ? `<span class="mm-m">${m}</span>` : ''; };
         const head = `<tr><th></th>${G.players.map((p) => `<th title="${esc(p.name)}"><span class="mm-sw" style="background:${p.col}"></span></th>`).join('')}</tr>`;

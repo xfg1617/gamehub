@@ -522,7 +522,7 @@
         const cancel = $('fi-cancel'); if (cancel) cancel.onclick = () => { if (G.pick) { const r = G.pick.res; G.pick = null; prompt(''); r(-1); } };
         // side panel
         const lens = G.players.map((_, i) => longest(G, i));
-        $('fi-players').innerHTML = G.players.map((p) => `<div id="fi-pl-${p.i}" class="fi-pl ${G.cur === p.i && !G.over ? 'turn' : ''}"><div class="flex items-center justify-between gap-2"><span class="font-display font-extrabold text-sm"><span class="fi-sw" style="background:${p.col}"></span>${p.av} ${esc(p.name)}</span><span class="pix text-amber">${vp(G, p.i)} / ${G.goal}</span></div>
+        $('fi-players').innerHTML = G.players.map((p) => `<div id="fi-pl-${p.i}" class="fi-pl pl-tag ${G.cur === p.i && !G.over ? 'turn' : ''} ${p.i === G.me ? 'me' : ''}" style="--pc:${p.col}"><div class="flex items-center justify-between gap-2"><span class="font-display font-extrabold text-sm flex items-center gap-2 min-w-0"><span class="tg-av">${p.av}</span><span class="truncate">${esc(p.name)}</span></span><span class="pix text-amber">${vp(G, p.i)} / ${G.goal}</span></div>
           <div class="text-xs text-muted mt-1">🂠 ${total(p)} cards · 🏠 ${count(G, p.i, 1)} · 🏰 ${count(G, p.i, 2)} · road ${lens[p.i]}${G.lr === p.i ? ' <b class="text-emerald">LONGEST</b>' : ''}</div></div>`).join('');
         const me = G.players[G.me];
         $('fi-res').innerHTML = RES.map((r) => `<div class="fi-rc" id="fi-r-${r}" title="${RN[r]}">${resIcon(r, 30)}<span class="pix">${me.res[r]}</span><span class="fi-rn">${RN[r]}</span></div>`).join('');

@@ -150,3 +150,11 @@
       .tg-fan .kk-card.sm .art svg { width: 20px; height: 20px; }
       .tg-fan .kk-card.sm .nm { font-size: .4rem; }
     }
+
+    /* player lists in board games (Frontier Isles, Property Tycoon, Manor Mystery) in the same name-tag style:
+       dark tag, picture square, the player's colour as a stripe, gold outline on their turn, teal for you */
+    .pl-tag { background: rgba(5, 14, 24, .82) !important; border: 2px solid #050E18 !important; border-left: 6px solid var(--pc, #9DB4CC) !important; box-shadow: none !important; padding: 6px 10px 6px 8px !important; }
+    .pl-tag.me { outline: 2px solid #2DD4BF; outline-offset: -2px; }
+    .pl-tag.turn { outline: 3px solid #F5B041 !important; outline-offset: -1px; }
+    .pl-tag .tg-av { width: 28px; height: 28px; font-size: 17px; }
+    .mm-seat.pl-tag { display: inline-flex; align-items: center; gap: 6px; }

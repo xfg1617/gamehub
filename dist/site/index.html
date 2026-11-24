@@ -1377,6 +1377,14 @@
       body.in-game[data-game="poker"] #gs-body .pcard.sm { width: 84px !important; height: 120px !important; }
       body.in-game[data-game="colorclash"] #gs-body #cc-hand .cc-card, body.in-game[data-game="colorclash"] #gs-body #cc-top .cc-card, body.in-game[data-game="colorclash"] #gs-body #cc-pile .cc-card { width: 108px !important; height: 158px !important; }
     }
+
+    /* win celebration: square pixel confetti falling (core celebrate) */
+    .g-confetti { position: fixed; inset: 0; pointer-events: none; z-index: 80; overflow: hidden; }
+    .g-confetti i { position: absolute; top: -20px; border: 2px solid #050E18; animation: g-fall linear both; }
+    @keyframes g-fall { 0% { transform: translate(0, 0) rotate(0); opacity: 1; } 85% { opacity: 1; } 100% { transform: translate(var(--dx), 105vh) rotate(var(--r)); opacity: 0; } }
+    /* page changes fade in a little */
+    #view-play:not(.hidden), #view-leaderboard:not(.hidden), #view-rules:not(.hidden), #view-profile:not(.hidden), #view-friends:not(.hidden), #view-game:not(.hidden) { animation: g-viewin .22s ease-out both; }
+    @keyframes g-viewin { from { opacity: 0; } to { opacity: 1; } }
     /* ===== tic-tac-toe ===== */
     .ttt-board { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 6px; background: var(--ink); border: 4px solid var(--ink); box-shadow: 0 5px 0 var(--ink); aspect-ratio: 1 / 1; width: 100%; max-width: 460px; margin: 0 auto; }
     .ttt-cell { position: relative; min-width: 0; min-height: 0; overflow: hidden; background: #12314F; box-shadow: inset 0 0 0 3px #1A3856, inset 0 -6px 0 #0F2A44; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 12%; }
@@ -5913,8 +5921,22 @@
       if (o.xp) awardXP(o.xp); else saveProfileToStorage();
     }
 
+    // a short burst of square pixel confetti when you win (Inna, Nov 2026)
+    function celebrate() {
+      if (navigator.webdriver || motionOff()) return;
+      const cols = ['#F5B041', '#2DD4BF', '#FB7185', '#34D399', '#F7F4EC', '#7CC4F0'];
+      const box = document.createElement('div'); box.className = 'g-confetti'; document.body.appendChild(box);
+      for (let k = 0; k < 70; k++) {
+        const c = document.createElement('i'), x = Math.random() * 100, d = 1.4 + Math.random() * 1.1, sz = 6 + Math.floor(Math.random() * 3) * 3;
+        c.style.cssText = `left:${x}vw;width:${sz}px;height:${sz}px;background:${cols[k % cols.length]};animation-duration:${d}s;animation-delay:${Math.random() * 0.35}s;--dx:${(Math.random() - 0.5) * 160}px;--r:${(Math.random() - 0.5) * 720}deg`;
+        box.appendChild(c);
+      }
+      setTimeout(() => box.remove(), 3000);
+    }
+    window.celebrate = celebrate;
     function gameResult(o) {
       GT.over = true;
+      if (o && (o.tone || 'amber') === 'amber' && /win|won|victory|tycoon|champion|first|last cat|best/i.test(o.title || '') && !/lose|lost|gave up/i.test(o.title || '')) setTimeout(celebrate, 250);
       let el = document.getElementById('g-modal');
       if (!el) { el = document.createElement('div'); el.id = 'g-modal'; el.className = 'hidden fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4'; document.body.appendChild(el); }
       const tone = o.tone || 'amber';

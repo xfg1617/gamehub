@@ -267,3 +267,11 @@
       body.in-game[data-game="poker"] #gs-body .pcard.sm { width: 84px !important; height: 120px !important; }
       body.in-game[data-game="colorclash"] #gs-body #cc-hand .cc-card, body.in-game[data-game="colorclash"] #gs-body #cc-top .cc-card, body.in-game[data-game="colorclash"] #gs-body #cc-pile .cc-card { width: 108px !important; height: 158px !important; }
     }
+
+    /* win celebration: square pixel confetti falling (core celebrate) */
+    .g-confetti { position: fixed; inset: 0; pointer-events: none; z-index: 80; overflow: hidden; }
+    .g-confetti i { position: absolute; top: -20px; border: 2px solid #050E18; animation: g-fall linear both; }
+    @keyframes g-fall { 0% { transform: translate(0, 0) rotate(0); opacity: 1; } 85% { opacity: 1; } 100% { transform: translate(var(--dx), 105vh) rotate(var(--r)); opacity: 0; } }
+    /* page changes fade in a little */
+    #view-play:not(.hidden), #view-leaderboard:not(.hidden), #view-rules:not(.hidden), #view-profile:not(.hidden), #view-friends:not(.hidden), #view-game:not(.hidden) { animation: g-viewin .22s ease-out both; }
+    @keyframes g-viewin { from { opacity: 0; } to { opacity: 1; } }

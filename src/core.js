@@ -790,8 +790,22 @@
       if (o.xp) awardXP(o.xp); else saveProfileToStorage();
     }
 
+    // a short burst of square pixel confetti when you win (Inna, Nov 2026)
+    function celebrate() {
+      if (navigator.webdriver || motionOff()) return;
+      const cols = ['#F5B041', '#2DD4BF', '#FB7185', '#34D399', '#F7F4EC', '#7CC4F0'];
+      const box = document.createElement('div'); box.className = 'g-confetti'; document.body.appendChild(box);
+      for (let k = 0; k < 70; k++) {
+        const c = document.createElement('i'), x = Math.random() * 100, d = 1.4 + Math.random() * 1.1, sz = 6 + Math.floor(Math.random() * 3) * 3;
+        c.style.cssText = `left:${x}vw;width:${sz}px;height:${sz}px;background:${cols[k % cols.length]};animation-duration:${d}s;animation-delay:${Math.random() * 0.35}s;--dx:${(Math.random() - 0.5) * 160}px;--r:${(Math.random() - 0.5) * 720}deg`;
+        box.appendChild(c);
+      }
+      setTimeout(() => box.remove(), 3000);
+    }
+    window.celebrate = celebrate;
     function gameResult(o) {
       GT.over = true;
+      if (o && (o.tone || 'amber') === 'amber' && /win|won|victory|tycoon|champion|first|last cat|best/i.test(o.title || '') && !/lose|lost|gave up/i.test(o.title || '')) setTimeout(celebrate, 250);
       let el = document.getElementById('g-modal');
       if (!el) { el = document.createElement('div'); el.id = 'g-modal'; el.className = 'hidden fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4'; document.body.appendChild(el); }
       const tone = o.tone || 'amber';

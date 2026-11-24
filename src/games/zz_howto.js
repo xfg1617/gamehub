@@ -11,8 +11,8 @@
       const ball = (c, n, stripe) => `<span class="ht-ball" style="background:${stripe ? '#F7F4EC' : c};${stripe ? `box-shadow: inset 0 9px 0 ${c}, inset 0 -9px 0 ${c}` : ''}">${n ? `<i>${n}</i>` : ''}</span>`;
       const card = (r, s) => (typeof playingCardHTML === 'function' ? playingCardHTML({ r, s }, { cls: 'sm' }) : '');
       const ship = (id, n) => (typeof shipSVG === 'function' ? `<span style="display:inline-block;width:${n * 22}px;height:22px">${shipSVG({ id, size: n }, 'H')}</span>` : '');
-      const NET_2P = 'Pick <b>Online · quick match</b> to play a stranger (it is <b>ranked</b>: winning raises your Elo), or <b>Private room</b> to get a code for a friend. Leaving an online game counts as a loss.';
-      const NET_TABLE = 'Pick <b>Online · quick match</b> to join an open table, or <b>Private room</b> to get a code for your friends. The host presses Start; empty seats get computer players. If someone leaves, a computer player takes their seat.';
+      const NET_2P = 'Pick <b>Online match</b> to play someone new (it is <b>ranked</b>: a win raises your rating, a loss lowers it). Pick <b>Private room</b> to play a friend: send them the code or link from the room. No one to play? Add a computer player in the room. Leaving a game early counts as a loss.';
+      const NET_TABLE = 'Pick <b>Online match</b> to join a table with other players, or <b>Private room</b> to play with friends: send them the code or link from the room. The host presses Start. Empty seats can be filled with computer players. If someone leaves, a computer player takes over their seat.';
       const G = {
         naval: { tag: '1v1 · 10×10 GRID', goal: 'Sink all five of the enemy’s ships before they sink yours.', steps: [
           ['Hide your fleet', 'Drag each ship onto your grid. Tap a ship to turn it. Ships can’t overlap (and in some games they can’t touch either). Press <b>Ready</b> when you like your layout.'],
@@ -20,21 +20,21 @@
           ['Hunt the ship down', 'After a hit, try the squares next to it: ships are straight lines, so the rest of it is up, down, left or right.'],
           ['Win', 'When every square of a ship is hit, it sinks. Sink all five to win.']],
           items: () => row([[ship('carrier', 5), 'Carrier', '5 squares long'], [ship('battleship', 4), 'Battleship', '4 squares'], [ship('cruiser', 3), 'Cruiser', '3 squares'], [ship('submarine', 3), 'Submarine', '3 squares'], [ship('destroyer', 2), 'Destroyer', '2 squares, the hardest to find']]),
-          tip: 'Shoot in a checkerboard pattern at first: every ship is at least 2 squares long, so you will still find them all with half the shots.', online: 'In Naval Grid’s setup choose <b>Online · vs a person</b>. Your fleet stays secret on your own screen. ' + NET_2P },
+          tip: 'Shoot in a checkerboard pattern at first: every ship is at least 2 squares long, so you will still find them all with half the shots.', online: 'Your ships stay secret: only your own screen knows where they are. ' + NET_2P },
         daily: { tag: 'SOLO · ONE WORD A DAY', goal: 'Guess the secret five-letter word in six tries or fewer.', steps: [
           ['Type a word', 'Type any real five-letter word and press Enter.'],
           ['Read the colours', 'Each letter turns a colour to tell you how close you are (see below).'],
           ['Use what you learned', 'Your next guess should use the green letters in the same spots and try the amber letters somewhere new.'],
           ['Come back tomorrow', 'Everyone gets the same word each day. Solve it every day to grow your streak. "Practice word" gives unlimited extra puzzles.']],
           items: () => row([[tile('S', 'tile-correct'), 'Green', 'Right letter, right spot'], [tile('T', 'tile-present'), 'Amber', 'In the word, but somewhere else'], [tile('O', 'tile-absent'), 'Grey', 'Not in the word at all']]),
-          tip: 'Start with a word that has common letters, like CRANE or SLATE.', online: 'Daily Word is a solo puzzle. To play it against someone, pick <b>Word Duel</b> in its setup screen.' },
+          tip: 'Start with a word that has common letters, like CRANE or SLATE.', online: 'Daily Word is a puzzle you play alone. Want to race someone? Play <b>Word Duel</b>: same idea, same secret word for everyone.' },
         wordduel: { tag: '2-4 PLAYERS · WORD RACE', goal: 'Be the first to find the secret five-letter word.', steps: [
           ['Same word for everyone', 'Every player guesses the same secret word on their own board, all at the same time.'],
           ['Read your colours', 'Just like Daily Word: green = right spot, amber = in the word somewhere else, grey = not in the word.'],
           ['Watch your rivals', 'On the right you see everyone’s colours (but not their letters), so you know who is close.'],
           ['Win', 'The first player to get all five letters green wins. Everyone has six guesses.']],
           items: () => row([[tile('W', 'tile-correct'), 'Green', 'Right letter, right spot'], [tile('O', 'tile-present'), 'Amber', 'In the word, wrong spot'], [tile('R', 'tile-absent'), 'Grey', 'Not in the word']]),
-          tip: 'Lots of green on a rival’s board? Take a risky guess instead of a safe one!', online: 'On this device you race the computer. Online, pick quick match or a private room for up to 4 players.' },
+          tip: 'Lots of green on a rival’s board? Take a risky guess instead of a safe one!', online: 'Pick <b>Online match</b> to race strangers, or <b>Private room</b> to race up to 3 friends. Alone in the room? Add a computer player to race.' },
         c4: { tag: '1v1 · 7 COLUMNS', goal: 'Get four of your discs in a line: across, up and down, or diagonally.', steps: [
           ['Drop a disc', 'On your turn, tap a column. Your disc falls to the lowest empty space.'],
           ['Take turns', 'Players take turns dropping one disc each. Watch the timer.'],
@@ -56,7 +56,7 @@
           ['Special moves', '<b>Castling</b>: king and rook swap sides in one move. <b>Promotion</b>: a pawn that reaches the far side becomes a queen (or another piece). <b>En passant</b>: a special pawn capture.'],
           ['Win or draw', 'Checkmate wins. If a player has no legal move but is not in check, it is a draw (stalemate).']],
           items: () => { const p = A('chess').piece; return p ? row([[`<span class="ht-piece">${p('K')}</span>`, 'King', 'One square any way. Protect it!'], [`<span class="ht-piece">${p('Q')}</span>`, 'Queen', 'Any distance, any direction'], [`<span class="ht-piece">${p('R')}</span>`, 'Rook', 'Straight lines'], [`<span class="ht-piece">${p('B')}</span>`, 'Bishop', 'Diagonals'], [`<span class="ht-piece">${p('N')}</span>`, 'Knight', 'An L shape. Can jump over pieces'], [`<span class="ht-piece">${p('P')}</span>`, 'Pawn', 'Forward one (two on its first move), takes diagonally']]) : ''; },
-          tip: 'Get your knights and bishops out early, and castle to keep your king safe.', online: 'In the setup screen pick <b>Online · ranked</b> or <b>Friend · room code</b>. ' + NET_2P },
+          tip: 'Get your knights and bishops out early, and castle to keep your king safe.', online: NET_2P },
         checkers: { tag: '1v1 · 8×8', goal: 'Capture all your opponent’s pieces, or leave them with no moves.', steps: [
           ['Move', 'Pieces move one square diagonally forward, onto dark squares. Tap a piece, then a highlighted square.'],
           ['Jump', 'Hop over an enemy piece into the empty square behind it to capture it. If you can capture, you <b>must</b>.'],
@@ -72,7 +72,7 @@
           ['Fouls', 'Sinking the white ball, hitting the wrong ball first, or no ball touching a cushion is a foul. Your opponent then gets "ball in hand" and can place the white anywhere.'],
           ['Win', 'Once your group is gone, sink the 8-ball. Sinking it too early loses the game!']],
           items: () => row([[ball('#F7F4EC'), 'Cue ball', 'The white one you hit'], [ball('#F5B041', 1), 'Solids 1-7', 'One full colour'], [ball('#FB7185', 11, true), 'Stripes 9-15', 'A coloured band'], [ball('#111A24', 8), '8-ball', 'Last!']]),
-          tip: 'Don’t hit every shot hard. A softer shot keeps the white ball under control for your next turn.', online: 'The player taking the shot decides where the balls stop, so both screens always agree. ' + NET_2P },
+          tip: 'Don’t hit every shot hard. A softer shot keeps the white ball under control for your next turn.', online: 'You can watch your opponent aim and pull back the cue live. ' + NET_2P },
         bowling: { tag: '1-4 PLAYERS · 10 FRAMES', goal: 'Knock down as many pins as you can in 10 frames.', steps: [
           ['Grab the ball', 'Press on the ball and hold it. Slide left or right low on the screen to choose where you stand.'],
           ['Throw', 'Flick upward and let go. A faster flick throws faster but is harder to aim.'],
@@ -80,7 +80,7 @@
           ['Frames', 'You get two throws per frame to knock down all ten pins.'],
           ['Scoring', '<b>Strike (X)</b>: all ten on the first throw, worth 10 plus your next two throws. <b>Spare (/)</b>: all ten in two throws, worth 10 plus your next throw.']],
           items: () => row([[`<span class="ht-mark">X</span>`, 'Strike', 'All 10 pins, first throw'], [`<span class="ht-mark">/</span>`, 'Spare', 'All 10 pins, two throws'], [`<span class="ht-mark">-</span>`, 'Miss', 'No pins']]),
-          tip: 'Aim just to the side of the front pin (the "pocket") with a little hook for the best chance of a strike.', online: 'Players take turns on the same lane; everyone watches every throw. Two players in a quick match is ranked. ' },
+          tip: 'Aim just to the side of the front pin (the "pocket") with a little hook for the best chance of a strike.', online: 'Players take turns on the same lane; everyone watches every throw. A 2-player online match is ranked. ' },
         poker: { tag: '2-4 PLAYERS · TEXAS HOLD\'EM', goal: 'Win everyone’s chips. The last player with chips wins.', steps: [
           ['Your cards', 'You get two private cards. Five shared cards come out in the middle: three (the flop), then one (the turn), then one (the river).'],
           ['Betting', 'On your turn: <b>Fold</b> (give up the hand), <b>Check/Call</b> (stay in by matching the bet) or <b>Raise</b> (bet more).'],
@@ -95,7 +95,7 @@
           ['Dealer’s turn', 'The dealer keeps drawing until reaching 17 or more.'],
           ['Results', 'Closer to 21 than the dealer wins your bet back doubled. Over 21 is a bust and loses. An Ace + a 10 card on the first two cards is a <b>blackjack</b> and pays 3 to 2.']],
           items: () => row([[`${card(14, 's')}${card(13, 'd')}`, 'Blackjack!', 'Ace + a 10-value card'], [`${card(10, 'c')}${card(6, 'h')}`, '16', 'A tough hand: hit or stand?'], [`${typeof chipSVG === 'function' ? chipSVG(25, 36) : ''}`, 'Chips', 'Your bet']]),
-          tip: 'Always stand on 17 or more. Double on 11 when the dealer shows a small card.', online: 'Online is a shared table: everyone starts with 1,000 table chips and plays the same dealer for a set number of hands. Most chips at the end wins.' },
+          tip: 'Always stand on 17 or more. Double on 11 when the dealer shows a small card.', online: 'Online, everyone sits at the same table against one dealer. Each player starts with 1,000 chips just for this table. After the last hand, whoever has the most chips wins.' },
         kittens: { tag: '2-4 PLAYERS · PUSH YOUR LUCK', goal: 'Don’t get stuck with the Hot Potato. The last cat standing wins!', steps: [
           ['Your turn', 'Play as many cards from your hand as you like (or none), then draw one card from the pile to end your turn.'],
           ['The Hot Potato', 'Hot Potatoes are hidden in the pile. Draw one and you are out, unless you have an Oven Mitt.'],
@@ -146,21 +146,21 @@
           ['Take notes', 'Your notebook ticks cards you have seen. Cross off everything that can’t be the answer.'],
           ['Accuse', 'When you are sure, accuse! Right and you win. Wrong and you are out (but you still show cards).']],
           items: () => row([[`<span class="ht-mark text-coral">👤</span>`, '6 suspects', 'Who did it'], [`<span class="ht-mark text-teal">🔧</span>`, '6 tools', 'With what'], [`<span class="ht-mark text-amber">🚪</span>`, '9 rooms', 'Where']]),
-          tip: 'Suggest cards you already hold to test the others. If nobody can show anything, the rest may be the answer!', online: 'Only the player who asked sees the card that was shown. ' + NET_TABLE },
+          tip: 'Suggest cards you already hold to test the others. If nobody can show anything, the rest may be the answer!', online: 'When someone shows a card, only the player who asked gets to see it. ' + NET_TABLE },
         wordconnect: { tag: 'SOLO OR ONLINE RACE', goal: 'Find as many words as you can from the letter wheel.', steps: [
           ['Make a word', 'Tap letters on the wheel in order. As soon as they spell a word you haven’t found yet, it goes in by itself.'],
           ['Fix a mistake', 'Tap the last letter again (or ⌫ Back) to remove it. Clear starts over.'],
           ['The big word', 'At least one word uses every letter. Finding it scores the most.'],
           ['Stars', 'Find more of the hidden words to earn up to three stars. Hints show the first letters but cost points.']],
           items: () => row([[`<span class="ht-mark">🔀</span>`, 'Shuffle', 'Mix up the wheel to see new words'], [`<span class="ht-mark">💡</span>`, 'Hint', 'Shows the start of a word']]),
-          tip: 'Look for little words first (3 letters), then add an -S or -ED.', online: 'Online is a race: everyone gets the same letters and sees each other’s score live. Most points when time runs out wins.' },
+          tip: 'Look for little words first (3 letters), then add an -S or -ED.', online: 'Online is a race: everyone gets the same letters and you can see each other’s scores as you go. Most points when time runs out wins.' },
         impostor: { tag: '4-6 PLAYERS · PARTY', goal: 'Civilians: find the impostor. Impostor: blend in and don’t get caught.', steps: [
           ['Secret words', 'Everyone gets the same secret word except one player, the impostor, who gets a similar but different word. Nobody knows who it is, not even the impostor!'],
           ['Hints', 'Taking turns, each player types one word as a hint about their word. Clear enough for your team, vague enough to fool the impostor.'],
           ['Vote', 'Everyone votes for who they think the impostor is.'],
           ['Last chance', 'A caught impostor gets one guess at the group’s word. Guess right and they still win! A tied vote lets the impostor escape.']],
           items: () => row([[`<span class="ht-mark">🕵️</span>`, 'Impostor', 'Has a different word'], [`<span class="ht-mark">🗳️</span>`, 'Vote', 'Point at the odd one out']]),
-          tip: 'If you think you might be the impostor, copy the style of the other hints.', online: 'Everyone types their own hint and votes at the same time. ' + NET_TABLE },
+          tip: 'If you think you might be the impostor, copy the style of the other hints.', online: 'Everyone types their hint on their own screen, then everyone votes at the same time. ' + NET_TABLE },
         doodle: { tag: '3-6 PLAYERS · DRAW & GUESS', goal: 'Have fun watching a drawing go wonderfully wrong as it is passed around.', steps: [
           ['Write', 'Everyone writes a silly thing to draw, like "a dragon afraid of fire".'],
           ['Draw', 'You get someone else’s prompt. Draw it as well as you can.'],

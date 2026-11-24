@@ -60,7 +60,7 @@
         '🤖': { name:'Robot', F:'#B9C7D6', pal:{ y:'#F5D041', S:'#6E8299' }, decor:{ 0:'.......y', 1:'.......k', 2:'.......k', 7:'y.......', 8:'y.......', 12:'....SSSS' } },
       };
       // other profile pictures borrow the closest character; computer players are robots
-      const LIKE = { '🐺': '🦊', '🐶': '🦊', '🐱': '🦊', '🐭': '🐼', '🐦': '🦉', '🐧': '🦉', '🐢': '🐸', '🦄': '⚡', '🐯': '🦁', '🐳': '🦈', '🐬': '🦈' };
+      const LIKE = { '🐺': '🦊', '🐶': '🦊', '🐱': '🦊', '🐭': '🐼', '🐦': '🦉', '🐧': '🦉', '🐢': '🐸', '🦄': '⚡', '🐯': '🦁', '🐳': '🦈', '🐬': '🦈', '🐲': '🦖', '👑': '🎯', '🛸': '🚀' };
       const ROBOTS = ['🤖', '🦾', '👾', '🛰️', '⚙️', '🔩', '🧩'];
       function charFor(av) {
         if (AVS[av]) return av; if (LIKE[av]) return LIKE[av]; if (ROBOTS.includes(av)) return '🤖';

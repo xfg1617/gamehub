@@ -39,10 +39,11 @@ with sync_playwright() as p:
         check(pg.query_selector('#em-fab') is None, f'{tag}: no emote button outside a game')
         # music
         btn = '#mu-btn' if not mob else '#mu-btn-m'
-        check(pg.query_selector(btn) is not None, f'{tag}: Music button next to Sound')
+        check(pg.query_selector(btn) is not None or mob, f'{tag}: Sound & Music button (phones: in the ☰ menu)')
         check(pg.evaluate("MUSIC.state().on") is False, f'{tag}: test browsers start with music off')
         pg.evaluate("MUSIC.set('on', true)")
-        pg.click(btn); pg.wait_for_timeout(300)
+        if mob: pg.click('#m-burger'); pg.wait_for_timeout(300); pg.click('#m-drawer [data-snd]'); pg.wait_for_timeout(400)   # phones: ☰ menu > Sound & Music
+        else: pg.click(btn); pg.wait_for_timeout(300)
         check(pg.query_selector('#mu-pop') is not None, f'{tag}: Music panel opens')
         st = pg.evaluate("MUSIC.state()")
         print('   music state:', st)

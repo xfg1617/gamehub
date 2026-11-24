@@ -179,8 +179,8 @@
         const c = document.getElementById('chat-fab'), p = document.getElementById('chat-panel'), bar = gameBar();
         if (!c) return;
         if (!bar) { c.style.left = c.style.bottom = ''; if (p) { p.style.left = p.style.bottom = ''; } return; }
-        const r = bar.getBoundingClientRect();
-        c.style.left = Math.round(r.right + 10) + 'px'; c.style.bottom = Math.round(window.innerHeight - r.bottom) + 'px';
+        // the game controls are top-left now; CHAT sits in the bottom-left corner
+        c.style.left = '16px'; c.style.bottom = '14px';
         if (p) { const cr = c.getBoundingClientRect(); p.style.left = Math.max(8, Math.min(window.innerWidth - 350, cr.left)) + 'px'; p.style.bottom = Math.round(window.innerHeight - cr.top + 10) + 'px'; }
       }
       function place(f) {

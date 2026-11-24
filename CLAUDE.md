@@ -574,6 +574,24 @@ One shared way to run a game table, used on this device AND online, so a game ha
   `t_np_cc.py` clicks through `evaluate` (real mouse clicks hit cards mid-animation on the slow two-tab stand-in).
 * `test/shot_full.py [games] [d|l|m]` screenshots every game at 1690×903, 1280×720 and phone; check page height.
 
+## 5n. Nov 24 2026 big update, part 1 (Inna's list)
+
+* **Music** pauses on tab switch and continues from the same spot (`ac.suspend/resume`, no restart).
+* **Chess move list** shows again (`#ch-moves` is excluded from the hidden move logs).
+* **Copyright**: footer "© 2026 GameHub. All rights reserved."; Terms §5 "Our content and copyright" (all rights, original
+  games not affiliated with others, contact for claims).
+* **Loading screen** when a game opens (`gameLoading` in core, ~1 s, icon + name + filling bar + tip; skipped when
+  `navigator.webdriver`).
+* **Phone menu**: ☰ (`#m-burger`) top-left opens `#m-drawer` (built from the sidebar nav + Sound & Music + sign up +
+  Terms/Privacy); the phone sound buttons are hidden.
+* **Home page**: `.hp-top` (title + stats in one line), `.hp-row` = Play with Friends + `.hp-side` (Ranked, Discord bar),
+  `#shelves` = ALL GAMES grid with category buttons (`renderShelves`, `shelfCat`), `.hp-bottom` = open rooms + global chat.
+* **Game layout v2 (computers)**: controls bar fixed top-left; card games' side panel floats top-left under it; Poker's
+  `#pk-ctl` is a bottom-centre bar; CHAT + emote bottom-left; `.ring4` column gaps; bigger Poker / Color Clash / Dominoes /
+  Blackjack cards by screen height (Hot Potato Cats unchanged).
+* Still to do from the list: name tags in other games, play animations, friends in the game chat, player cards / profile
+  page, welcome pop-up + avatars + badges, Pool live aiming, guide rewrite, draw-and-guess + 4 new games.
+
 ## Planned (approved, not built yet)
 
 * **Guest welcome pop-up**: `prototypes/welcome-popup.html` (Inna approved the small version): "Save your progress",

@@ -1328,6 +1328,55 @@
       .hp-bottom { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
     }
     .hp-side .btn-dc { background: #5865F2 !important; color: #F7F4EC !important; }
+
+    /* =========================================================================
+       GAME LAYOUT v2 (Inna, Nov 2026, approved prototype), computers only:
+       controls top-left · card games: timer/status/leave panel under them · your decisions bottom centre ·
+       CHAT + emote bottom-left (zz_emotes placeChat) · players spread out · bigger cards (not Hot Potato Cats)
+       ========================================================================= */
+    @media (min-width: 1024px) {
+      body.in-game { --av: calc(100vh - 92px); }
+      body.in-game main.flex-1 { padding: 66px 18px 14px !important; }
+      body.in-game #gs-wrap > .panel:first-child,
+      body.in-game #view-naval > .panel:first-child, body.in-game #view-daily > .panel:first-child, body.in-game #view-connect4 > .panel:first-child {
+        left: 14px !important; top: 10px !important; bottom: auto !important; transform: none !important; max-width: calc(100vw - 28px) !important;
+      }
+      /* card tables: the table gets the whole width; the side panel floats top-left under the controls */
+      body.in-game[data-game="poker"] #gs-body > .grid, body.in-game[data-game="kittens"] #gs-body > .grid, body.in-game[data-game="colorclash"] #gs-body > .grid, body.in-game[data-game="dominoes"] #gs-body > .grid { grid-template-columns: minmax(0, 1fr) !important; }
+      body.in-game[data-game="poker"] #gs-body > .grid > div:last-child, body.in-game[data-game="kittens"] #gs-body > .grid > div:last-child, body.in-game[data-game="colorclash"] #gs-body > .grid > div:last-child, body.in-game[data-game="dominoes"] #gs-body > .grid > div:last-child {
+        position: fixed; left: 14px; top: 66px; width: 240px; z-index: 40;
+      }
+      body.in-game[data-game="kittens"] #gs-body > .grid > div:first-child, body.in-game[data-game="colorclash"] #gs-body > .grid > div:first-child, body.in-game[data-game="dominoes"] #gs-body > .grid > div:first-child { max-width: min(1300px, calc(100vw - 560px)); width: 100%; margin: 0 auto; }
+      body.in-game .ring4 { column-gap: 120px !important; }
+      /* Poker: the table fills the screen, your Fold / Call / Raise bar sits at the bottom centre */
+      body.in-game[data-game="poker"] #pk-table { min-height: calc(100vh - 82px) !important; padding: 0 260px 80px !important; }
+      body.in-game[data-game="poker"] #pk-table .ring4 { column-gap: 140px !important; row-gap: 4px !important; }
+      body.in-game[data-game="poker"] #pk-ctl { position: fixed; left: 50%; bottom: 12px; transform: translateX(-50%); width: min(820px, calc(100vw - 420px)); z-index: 45; }
+      body.in-game[data-game="poker"] #pk-ctl:empty { display: none; }
+      body.in-game[data-game="poker"] #pk-ctl .win { display: flex; gap: 14px; align-items: center; padding: 10px 14px !important; }
+      body.in-game[data-game="poker"] #pk-ctl .win > * { margin: 0 !important; }
+      body.in-game[data-game="poker"] #pk-ctl .win > div { flex-wrap: nowrap !important; }
+      body.in-game[data-game="poker"] #pk-ctl .win > div:last-child { flex: 1; }
+    }
+    /* bigger cards, in two steps by screen height (not Hot Potato Cats) */
+    @media (min-width: 1024px) and (min-height: 820px) {
+      body.in-game[data-game="poker"] #gs-body .pcard { width: 92px !important; height: 130px !important; }
+      body.in-game[data-game="poker"] #gs-body .pcard .pc-mid svg { width: 50px !important; height: 50px !important; }
+      body.in-game[data-game="poker"] #gs-body .pcard.sm { width: 72px !important; height: 102px !important; }
+      body.in-game[data-game="poker"] #gs-body .pcard.sm .pc-mid svg { width: 38px !important; height: 38px !important; }
+      body.in-game[data-game="colorclash"] #gs-body #cc-hand .cc-card, body.in-game[data-game="colorclash"] #gs-body #cc-top .cc-card, body.in-game[data-game="colorclash"] #gs-body #cc-pile .cc-card { width: 96px !important; height: 140px !important; }
+      body.in-game[data-game="colorclash"] #gs-body .cc-card:not(.cc-back) .big { font-size: 3.3rem !important; }
+      body.in-game[data-game="colorclash"] #gs-body #cc-pile .cc-back .big { font-size: 1.35rem !important; }
+      body.in-game[data-game="colorclash"] #gs-body .cc-ring { width: 146px !important; height: 194px !important; }
+      body.in-game[data-game="dominoes"] #gs-body .dm-tile.big { width: 52px !important; height: 104px !important; }
+      body.in-game[data-game="blackjack"] #gs-body .pcard { width: 104px !important; height: 148px !important; }
+      body.in-game[data-game="blackjack"] #gs-body .pcard .pc-mid svg { width: 56px !important; height: 56px !important; }
+    }
+    @media (min-width: 1024px) and (min-height: 1000px) {
+      body.in-game[data-game="poker"] #gs-body .pcard { width: 104px !important; height: 148px !important; }
+      body.in-game[data-game="poker"] #gs-body .pcard.sm { width: 84px !important; height: 120px !important; }
+      body.in-game[data-game="colorclash"] #gs-body #cc-hand .cc-card, body.in-game[data-game="colorclash"] #gs-body #cc-top .cc-card, body.in-game[data-game="colorclash"] #gs-body #cc-pile .cc-card { width: 108px !important; height: 158px !important; }
+    }
     /* ===== tic-tac-toe ===== */
     .ttt-board { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 6px; background: var(--ink); border: 4px solid var(--ink); box-shadow: 0 5px 0 var(--ink); aspect-ratio: 1 / 1; width: 100%; max-width: 460px; margin: 0 auto; }
     .ttt-cell { position: relative; min-width: 0; min-height: 0; overflow: hidden; background: #12314F; box-shadow: inset 0 0 0 3px #1A3856, inset 0 -6px 0 #0F2A44; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 12%; }
@@ -14684,8 +14733,8 @@
         const c = document.getElementById('chat-fab'), p = document.getElementById('chat-panel'), bar = gameBar();
         if (!c) return;
         if (!bar) { c.style.left = c.style.bottom = ''; if (p) { p.style.left = p.style.bottom = ''; } return; }
-        const r = bar.getBoundingClientRect();
-        c.style.left = Math.round(r.right + 10) + 'px'; c.style.bottom = Math.round(window.innerHeight - r.bottom) + 'px';
+        // the game controls are top-left now; CHAT sits in the bottom-left corner
+        c.style.left = '16px'; c.style.bottom = '14px';
         if (p) { const cr = c.getBoundingClientRect(); p.style.left = Math.max(8, Math.min(window.innerWidth - 350, cr.left)) + 'px'; p.style.bottom = Math.round(window.innerHeight - cr.top + 10) + 'px'; }
       }
       function place(f) {

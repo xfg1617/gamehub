@@ -6695,6 +6695,7 @@
       S.act = (a) => { if (a.s === undefined) a.s = S.me; if (o.send) o.send(a); else S._push(a); };
       S.finish = async () => null;   // ranked Elo (online only), replaced below
       S.leave = () => {};
+      S.peek = () => {};
       return S;
     }
     // a table on this device: seat 0 is you, the others are computer players (or friends on the same screen)
@@ -6951,6 +6952,9 @@
       ch.on('hi', () => {});   // late lobby messages
       // emotes ride on the same live channel but are not game moves (no ordering, nothing to replay)
       S.emote = (id) => ch.send('emo', { id });
+      // live "what I'm doing right now" (e.g. Pool aim + pull-back), sent often, never stored or replayed
+      S.peek = (d) => ch.send('peek', d);
+      ch.on('peek', (d, from) => { const i = S.seats.findIndex((x) => x && x.uid === from); if (i >= 0 && i !== S.me && S.onPeek) S.onPeek(i, d); });
       ch.on('emo', (d, from) => { const i = S.seats.findIndex((x) => x && x.uid === from); if (i >= 0 && i !== S.me && d && window.emoteShow) window.emoteShow(i, d.id); });
       // after every action: re-check who the host is (the first player still at the table)
       const origPush = S._push;
@@ -12856,7 +12860,8 @@
       /* ---------- turns ---------- */
       function beginTurn() {
         if (G.over) return;
-        G.phase = 'aim'; G.cueVis = true; G.cuePull = 8; G.predKey = '';
+        G.phase = 'aim'; G.cueVis = true; G.cuePull = 8; G.predKey = ''; G.peekAim = undefined; G.peekPow = 0; G.peekPowT = 0;
+        G.S.onPeek = (i, d) => { if (G && G.phase === 'aim' && i === G.turn && d && isFinite(d.a)) { G.peekAim = +d.a; G.peekPowT = Math.max(0, Math.min(1, +d.p || 0)); } };
         const me = myTurn(), c = G.balls[0];
         if (G.bih && me) { G.placing = true; say('Foul! You have the cue ball in hand: click the table to place it.'); }
         panels(); setPower(0);
@@ -12991,9 +12996,13 @@
           if ((ev.snd || ev.pocketSound) && now - G.lastSnd > 55) { SFX.play(ev.pocketSound ? 'pocket' : ev.ballHit ? 'ball' : 'rail'); G.lastSnd = now; ev.snd = 0; ev.pocketSound = false; ev.ballHit = false; }
           if (!moving(G.balls)) settle();
         } else if (G.phase === 'aim' && myTurn() && !G.placing) {
+          // online: the other screens watch you aim and pull back live (about 12 times a second)
+          if (G.S.online && ts - (G.peekT || 0) > 80) { const k = G.aim.toFixed(3) + '|' + G.power.toFixed(2); if (k !== G.peekK) { G.peekK = k; G.peekT = ts; G.S.peek({ a: +G.aim.toFixed(4), p: +G.power.toFixed(3) }); } }
           const pw = G.power > 0.02 ? G.power : G.lastPower, key = [G.aim.toFixed(4), G.spin.a.toFixed(2), G.spin.b.toFixed(2), pw.toFixed(2), G.balls[0].x | 0, G.balls[0].y | 0].join('|');
           if (key !== G.predKey) { G.predKey = key; G.pred = predict(G.balls, G.aim, speedOf(pw), G.spin.a, G.spin.b); }
         }
+        // watching someone else aim: glide towards their live aim so it looks smooth
+        if (G.phase === 'aim' && !myTurn() && G.peekAim !== undefined) { let d = G.peekAim - G.aim; d = Math.atan2(Math.sin(d), Math.cos(d)); G.aim += d * 0.35; G.peekPow += ((G.peekPowT || 0) - (G.peekPow || 0)) * 0.35; }
         draw();
         gRaf(loop);
       }
@@ -13181,6 +13190,7 @@
         if (G.cueVis && c.on && !G.placing && !G.over) {
           let pull = G.cuePull;
           if (G.phase === 'aim' && myTurn()) pull = 8 + G.power * 120;
+          else if (G.phase === 'aim' && G.peekAim !== undefined) pull = 8 + (G.peekPow || 0) * 120;
           else if (G.phase === 'stroke') { const t = clamp((now - G.strokeT0) / 130, 0, 1); pull = G.cueFrom + (4 - G.cueFrom) * t * t; }
           const dx = Math.cos(G.aim), dy = Math.sin(G.aim), off = (G.phase === 'aim' || G.phase === 'stroke') && myTurn() ? (G.spin.a || 0) * BR : 0;
           const tx = c.x - dy * 0 + (-dy) * off, ty = c.y + dx * off, d0 = BR + pull;
@@ -13207,7 +13217,7 @@
         extraRows: (s) => srow('Fouls', s.fouls || 0) + srow('Won with the 8-ball', s.eightWins || 0),
         online: { seats: () => 2, ranked: true, start: (body, sel, S) => start(body, sel, S) },
         state: () => G,
-        engine: { rack, step, run, planShots, legalSet, groupOf, POCKETS, BR, rayFirst, predict, applyStrike, speedOf, spinBall, newBall, moving, SEGS, TIPS, PXM, DT, VMAX, HEAD, FOOT, fixedFrame: 0, state: () => G, fire, launch, drawBall }, open, close() { G = null; },
+        engine: { get G() { return G; }, rack, step, run, planShots, legalSet, groupOf, POCKETS, BR, rayFirst, predict, applyStrike, speedOf, spinBall, newBall, moving, SEGS, TIPS, PXM, DT, VMAX, HEAD, FOOT, fixedFrame: 0, state: () => G, fire, launch, drawBall }, open, close() { G = null; },
       };
       registerGame(mod);
     })();

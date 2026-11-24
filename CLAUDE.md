@@ -589,8 +589,16 @@ One shared way to run a game table, used on this device AND online, so a game ha
 * **Game layout v2 (computers)**: controls bar fixed top-left; card games' side panel floats top-left under it; Poker's
   `#pk-ctl` is a bottom-centre bar; CHAT + emote bottom-left; `.ring4` column gaps; bigger Poker / Color Clash / Dominoes /
   Blackjack cards by screen height (Hot Potato Cats unchanged).
-* Still to do from the list: name tags in other games, play animations, friends in the game chat, player cards / profile
-  page, welcome pop-up + avatars + badges, Pool live aiming, guide rewrite, draw-and-guess + 4 new games.
+* **Animations**: `chipStream(from, to, amount, opt)` in core (chips fly one by one, a "chip" sound each); Poker bets / sweeps
+  / pot payouts and Blackjack chips use it; a Poker fold throws the two cards onto `#pk-deck` (folded seats show no
+  cards); `celebrate()` = pixel confetti on win results (gameResult); views fade in (opacity only: a transform would
+  move the fixed game bar).
+* **Friends in the game chat** (`zz_chatfriends.js`): "👥 Friends" in the chat header lists friends; tap one to message
+  them inside the chat window (`NET.dmHistory` / `dmSend`, refreshes every 4 s); "← Room" goes back.
+* **Pool live aiming**: `S.peek(d)` / `S.onPeek(i, d)` (netplay, channel event `peek`, not stored): the shooter sends
+  aim + power ~12×/s; other screens glide the cue to it (`G.peekAim`, `G.peekPow`). `engine.G` exposed for tests.
+* Still to do from the list: name tags in other games, animations for the other games, player cards / profile page
+  (needs SQL for public stats), welcome pop-up + avatars + badges, Pool feel tuning, guide rewrite, draw-and-guess + 4 new games.
 
 ## Planned (approved, not built yet)
 

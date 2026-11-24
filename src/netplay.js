@@ -92,6 +92,7 @@
       S.act = (a) => { if (a.s === undefined) a.s = S.me; if (o.send) o.send(a); else S._push(a); };
       S.finish = async () => null;   // ranked Elo (online only), replaced below
       S.leave = () => {};
+      S.peek = () => {};
       return S;
     }
     // a table on this device: seat 0 is you, the others are computer players (or friends on the same screen)
@@ -348,6 +349,9 @@
       ch.on('hi', () => {});   // late lobby messages
       // emotes ride on the same live channel but are not game moves (no ordering, nothing to replay)
       S.emote = (id) => ch.send('emo', { id });
+      // live "what I'm doing right now" (e.g. Pool aim + pull-back), sent often, never stored or replayed
+      S.peek = (d) => ch.send('peek', d);
+      ch.on('peek', (d, from) => { const i = S.seats.findIndex((x) => x && x.uid === from); if (i >= 0 && i !== S.me && S.onPeek) S.onPeek(i, d); });
       ch.on('emo', (d, from) => { const i = S.seats.findIndex((x) => x && x.uid === from); if (i >= 0 && i !== S.me && d && window.emoteShow) window.emoteShow(i, d.id); });
       // after every action: re-check who the host is (the first player still at the table)
       const origPush = S._push;

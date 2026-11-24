@@ -331,7 +331,17 @@
     }
     @media (min-width: 1024px) and (max-height: 780px) {
       body.in-game[data-game="poker"] #gs-body .pcard:not(.sm) { width: 50px !important; height: 72px !important; }
-      body.in-game[data-game="poker"] #gs-body .pcard .pc-corner { font-size: 1rem !important; }
+      body.in-game[data-game="poker"] #gs-body .pcard .pc-corner { font-size: .85rem !important; }
       body.in-game[data-game="poker"] #pk-table .tg-fan .pcard, body.in-game[data-game="poker"] #pk-table .pcard.sm { width: 40px !important; height: 58px !important; }
       body.in-game[data-game="poker"] .chip-spot { min-height: 34px !important; }
+    }
+    /* Poker's smaller table cards on shorter screens: corner numbers and pictures scaled to fit */
+    @media (min-width: 1024px) and (max-height: 950px) {
+      body.in-game[data-game="poker"] #gs-body .pcard.pc-real:not(.sm) .pc-corner { font-size: 1rem !important; left: 3px; top: 2px; }
+      body.in-game[data-game="poker"] #gs-body .pcard.pc-real:not(.sm) .pc-corner.br { left: auto; top: auto; right: 3px; bottom: 2px; }
+      body.in-game[data-game="poker"] #gs-body .pcard.pc-real .pc-court svg { width: 50% !important; }
+    }
+    @media (min-width: 1024px) and (max-height: 780px) {
+      body.in-game[data-game="poker"] #gs-body .pcard.pc-real:not(.sm) .pc-corner { font-size: .8rem !important; }
+      body.in-game[data-game="poker"] #gs-body .pcard.pc-real .pc-corner i svg { width: 7px !important; height: 7px !important; }
     }

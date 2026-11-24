@@ -239,3 +239,9 @@
     /* the bet number in Blackjack: a little bigger, clear font */
     #bj-bet { font-family: 'Outfit', sans-serif; font-weight: 800; }
     @media (min-width: 1024px) { .chip-amt { font-size: 1.05rem; } .tg-st { font-size: 14.5px; } }
+    /* the Ace's big symbol is sized from the card (it used fixed pixel sizes, so it fell out of smaller cards) */
+    .pcard.pc-real .pc-mid { position: absolute; inset: 0; display: flex !important; align-items: center; justify-content: center; }
+    .pcard.pc-real .pc-mid svg { width: 46% !important; height: auto !important; }
+    .pcard.pc-real.sm .pc-mid svg { width: 50% !important; }
+    body.in-game[data-game] #gs-body .pcard.pc-real .pc-mid svg, #gs-body .pcard.pc-real .pc-mid svg { width: 46% !important; height: auto !important; }
+    body.in-game[data-game] #gs-body .pcard.pc-real.sm .pc-mid svg { width: 50% !important; }

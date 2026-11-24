@@ -124,3 +124,5 @@
 .dg-pick { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 130px; }
 .dg-pick small { font-family: 'Arcade Pixel', monospace; font-size: 12px; opacity: .85; }
 .dg-pick span { font-size: 1rem; font-weight: 800; }
+/* ---- language switch in the side menu (zz_lang.js) ---- */
+#nav-lang .lang-flag { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 20px; background: #F5B041; color: #050E18; border: 2px solid #050E18; font-family: 'Arcade Pixel', monospace; font-size: 13px; line-height: 1; margin-right: 2px; }

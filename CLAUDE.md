@@ -655,6 +655,18 @@ One shared way to run a game table, used on this device AND online, so a game ha
 * **Mine Saboteurs / Castles & Kings** full-screen on computers: players panel floats left (Saboteurs) / characters
   panel floats right (Castles); map / towns fill the rest, bigger cards and buildings.
 
+## 5r. Doodle Guess words + Vietnamese, stage 1 (Nov 25 2026, Inna)
+
+* **Doodle Guess** is people-only now (`online.bots: false`, no Solo, offline Start just says to make a room).
+  `src/games/doodle_words.js` = `DOODLE_WORDS[en|vi][easy|medium|hard]` (~500 words). The drawer gets one word of each
+  level (×1 / ×1.5 / ×2 points); guessers see `KHÓ · _ _ _` (level + dashes). Room setting WORDS = English / Tiếng Việt
+  (`sel.lang`). Guesses ignore accents and đ (`norm`). Drawing time defaults to 60 s. `t_doodle_live.py`.
+* **Language** (`src/games/zz_lang.js`): `LANG.code` ('en' | 'vi', saved in `ps_lang`), switch = `#nav-lang` in the side
+  menu (the phone ☰ menu copies it), `setLang()` reloads. Vietnamese works by swapping exact English lines (`VI` table)
+  and a few patterns (`PAT`) as they appear (MutationObserver); chat messages, guesses and logs are skipped. Stage 1 =
+  menus, home, tiles, setup/room screens, profile, friends, leaderboard, common game buttons. Not yet: game rules and
+  guides, in-game messages, toasts. Add new lines to `VI` when you add English text. `t_lang.py`.
+
 ## 5d. Game setup screens, room codes, leaving a game
 
 * Every game opens on a setup screen (`setupScreen` in `core.js`). Options are `{ key, label, def,

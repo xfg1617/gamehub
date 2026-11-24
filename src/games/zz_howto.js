@@ -71,6 +71,14 @@
           ['Who wins', 'When the tunnel reaches the gold, the Diggers win. If everyone runs out of cards first, the Rascals win.']],
           items: () => row([[GAME_MODS.tunnel.art.card({ k: 'tun', e: 15 }), 'Tunnel', 'Join it to the tunnel'], [GAME_MODS.tunnel.art.card({ k: 'tun', e: 5, dead: true }), 'Dead end', 'The tunnel stops here'], [GAME_MODS.tunnel.art.card({ k: 'break', tool: 'pick' }), 'Break', 'Stops someone digging'], [GAME_MODS.tunnel.art.card({ k: 'map' }), 'Map', 'Peek under a stone']]),
           tip: 'Watch who plays dead ends and who breaks tools. That is probably a Rascal!', online: NET_TABLE },
+        guild: { tag: '3-6 PLAYERS · CHARACTERS & TOWNS', goal: 'Build the town worth the most points.', steps: [
+          ['Pick a character', 'Each round, everyone secretly picks one character. The player with the crown 👑 picks first, so the best ones may be gone by your turn.'],
+          ['Turns go by number', 'Character 1 plays first, then 2, and so on. On your turn, take <b>2 gold</b> or look at <b>2 building cards and keep 1</b>.'],
+          ['Build', 'Tap a building card you can afford, then press <b>Build</b>. You can’t build two of the same. The Architect can build up to 3.'],
+          ['Use your power', 'Each character has a power (see below). The Shadow and the Pickpocket name a character by number, without knowing who has it!'],
+          ['The end', 'When someone has the target number of buildings, the round is finished. Points: each building’s cost, +3 for all five colours, +4 for finishing first (+2 for the others who finish), +2 for each wonder.']],
+          items: () => row([1, 2, 3, 4, 5, 6, 7, 8].map((r) => [GAME_MODS.guild.art.role(r), GAME_MODS.guild.engine.ROLES[r].name, GAME_MODS.guild.engine.ROLES[r].txt])),
+          tip: 'Try to collect buildings in your character’s colour: the Monarch, Abbot, Merchant and Captain earn a gold for each one.', online: NET_TABLE },
         chess: { tag: '1v1 · CLASSIC', goal: 'Trap the other king so it cannot escape. That is checkmate.', steps: [
           ['Move a piece', 'Tap one of your pieces, then a highlighted square. White moves first.'],
           ['Capture', 'Move onto an enemy piece to take it off the board.'],

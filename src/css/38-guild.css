@@ -1,0 +1,31 @@
+    /* ---------- Guild Masters (guild.js) ---------- */
+    .gm-towns { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+    .gm-town { background: rgba(5, 14, 24, .55); border: 3px solid #050E18; padding: 8px; }
+    .gm-town.turn { outline: 3px solid #F5B041; outline-offset: -3px; }
+    .gm-town.mine { background: #12304D; border-left: 6px solid #2DD4BF; }
+    .gm-th { display: flex; align-items: center; gap: 6px; color: #F7F4EC; font-size: .85rem; margin-bottom: 6px; min-width: 0; }
+    .gm-th .tg-av { width: 26px; height: 26px; font-size: 15px; display: inline-flex; align-items: center; justify-content: center; background: #050E18; flex: none; }
+    .gm-chip { font-size: .72rem; background: #050E18; padding: 2px 6px; color: #F7F4EC; white-space: nowrap; }
+    .gm-city { display: flex; flex-wrap: wrap; gap: 4px; min-height: 40px; align-items: center; }
+    .gm-b { display: inline-flex; align-items: center; gap: 4px; background: #0A1F33; border: 2px solid #050E18; border-bottom: 4px solid var(--bc); padding: 2px 6px 2px 3px; font-size: .7rem; color: #F7F4EC; position: relative; }
+    .gm-b svg { width: 20px; height: 16px; flex: none; }
+    .gm-b i { font-style: normal; font-family: 'Arcade Pixel', monospace; color: #F5B041; font-size: 13px; margin-left: 2px; }
+    .gm-b.big { flex-direction: column; width: 84px; padding: 6px 4px 4px; gap: 2px; text-align: center; border-bottom-width: 6px; }
+    .gm-b.big svg { width: 40px; height: 32px; }
+    .gm-b.big b { font-size: .68rem; line-height: 1.1; min-height: 1.6em; }
+    .gm-b.big i { position: absolute; top: 2px; right: 4px; font-size: 15px; }
+    .gm-b.can { cursor: pointer; box-shadow: 0 0 0 2px #34D399; } .gm-b.can:hover { transform: translateY(-3px); }
+    .gm-b.no { opacity: .5; } .gm-b.sel { transform: translateY(-8px); box-shadow: 0 0 0 3px #F5B041; opacity: 1; }
+    .gm-b.pick { cursor: pointer; } .gm-b.pick:hover { box-shadow: 0 0 0 3px #F5B041; }
+    .gm-town.kd .gm-b[data-j] { cursor: crosshair; } .gm-town.kd .gm-b[data-j]:hover, .gm-b.kdsel { box-shadow: 0 0 0 3px #FB7185; }
+    .gm-rolepick { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: stretch; }
+    .gm-rolepick > .gm-role { align-self: stretch; display: flex; flex-direction: column; justify-content: flex-start; }
+    .gm-role { width: 132px; text-align: left; background: #0A1F33; border: 3px solid #050E18; border-top: 6px solid var(--rc); padding: 6px 8px; color: #F7F4EC; box-shadow: 0 4px 0 #050E18; position: relative; cursor: pointer; }
+    .gm-role:hover { transform: translateY(-3px); }
+    .gm-role b { display: block; font-size: .85rem; } .gm-role small { display: block; font-size: .66rem; color: #9DB4CC; line-height: 1.25; margin-top: 2px; }
+    .gm-role .gm-rn, .gm-rl .gm-rn { font-family: 'Arcade Pixel', monospace; color: var(--rc); font-size: 18px; float: right; }
+    .gm-role.mini { width: 112px; } .gm-role.mini small { display: none; }
+    .gm-rl { display: flex; align-items: center; gap: 8px; padding: 4px 8px; background: #0A1F33; border-left: 5px solid var(--rc); font-size: .8rem; color: #F7F4EC; }
+    .gm-rl .gm-rn { float: none; font-size: 15px; }
+    .gm-rl.now { outline: 2px solid #F5B041; } .gm-rl.dead { opacity: .45; text-decoration: line-through; }
+    @media (max-width: 640px) { .gm-towns { grid-template-columns: 1fr; } .gm-role { width: calc(50% - 6px); } .gm-b.big { width: 72px; } }

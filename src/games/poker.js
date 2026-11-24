@@ -97,8 +97,8 @@
         players.forEach((p) => { p.chips = +sel.chips || 1000; p.out = false; });
         G = { S, me: S.online ? S.me : 0, body, players, secs: +sel.clock, every: +sel.speed, hand: 0, dealer: -1, lvl: 0, finishOrder: [], tok: ++GT.cur, over: false, handsWon: 0, bigPot: 0, log: [] };
         body.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_260px] gap-5 items-start">
-          <div class="space-y-3"><div id="pk-table" class="felt p-4 sm:p-5 space-y-4"></div><div id="pk-ctl" class="space-y-2"></div></div>
-          <div class="space-y-3"><div class="win overflow-hidden"><div class="winbar teal"><span>TABLE</span><span id="pk-blinds" class="pix text-xs"></span></div><div class="p-3 space-y-2"><div id="pk-clock"></div><div id="pk-place" class="text-xs text-muted"></div></div></div>
+          <div class="space-y-3"><div id="pk-table" class="felt p-4 sm:p-5 space-y-4"></div></div>
+          <div class="space-y-3"><div id="pk-ctl" class="space-y-2"></div><div class="win overflow-hidden"><div class="winbar teal"><span>TABLE</span><span id="pk-blinds" class="pix text-xs"></span></div><div class="p-3 space-y-2"><div id="pk-clock"></div><div id="pk-place" class="text-xs text-muted"></div></div></div>
           <div id="pk-log" class="logbox" style="height:260px"></div>
           <button id="pk-quit" class="btn-game btn-coral w-full py-2 text-sm">Leave table</button></div></div>`;
         G.clock = makeClock(document.getElementById('pk-clock'));

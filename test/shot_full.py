@@ -2,7 +2,7 @@
 import sys; sys.path.insert(0, 'test')
 from tlib import *
 GAMES = sys.argv[1].split(',') if len(sys.argv) > 1 and sys.argv[1] else ['blackjack', 'bowling', 'checkers', 'chess', 'colorclash', 'doodle', 'dominoes', 'impostor', 'isles', 'kittens', 'manor', 'poker', 'pool', 'tictactoe', 'tycoon', 'wordconnect', 'c4', 'naval', 'daily']
-SIZES = [(1690, 903, 'd'), (1280, 720, 'l'), (390, 844, 'm')]
+SIZES = [(1920, 1080, 'w'), (1690, 903, 'd'), (1366, 768, 'l'), (390, 844, 'm')]
 if len(sys.argv) > 2: SIZES = [s for s in SIZES if s[2] in sys.argv[2]]
 with sync_playwright() as p:
     br = launch(p)

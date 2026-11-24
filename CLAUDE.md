@@ -547,6 +547,14 @@ One shared way to run a game table, used on this device AND online, so a game ha
   `toggleSound` still works), phone header "♪ SOUND", ♪ in every game header and the older game screens
   (`openSoundPanel(anchor)`); the panel has Sound effects + Music switches, volume, which music, music during games.
 * The emote button sits right of the CHAT button (`place()` in `zz_emotes.js`); the menu opens above them.
+* **Round 2 (Inna: "proportions awkward", Poker buttons under CHAT)**: a strip at the bottom is reserved for CHAT +
+  emote (`main` padding-bottom 72 px; `--av = 100vh - 150px`), so nothing sits under them. Each game is a centred group:
+  board sized by height + a 340 px side panel next to it (chess/checkers/ttt/c4/tycoon/isles/manor; ttt and c4 boards
+  have no max width in full screen); card tables capped at ~1.4–1.75 × the height so they aren't long thin strips;
+  **Poker's Fold/Call/Raise moved to the top of the side panel** (`#pk-ctl`, poker.js). Cards/tiles grow in two steps by
+  screen height (≥820, ≥1000 px): Color Clash, Hot Potato Cats, Poker, Dominoes, Word Connect wheel (transform scale),
+  Daily Word (zoom). Checked at 1920×1080, 1690×903, 1366×768 (some games scroll a little) and 390 px phones.
+  `test/shot_poker_turn.py` checks the Poker buttons never overlap CHAT/emote.
 * `test/shot_full.py [games] [d|l|m]` screenshots every game at 1690×903, 1280×720 and phone; check page height.
 
 ## 5d. Game setup screens, room codes, leaving a game

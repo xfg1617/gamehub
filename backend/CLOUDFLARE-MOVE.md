@@ -9,11 +9,14 @@ the site can be patchy for a few minutes to a few hours.
 
 ---
 
-## Step 0 — Tell Claude first (5 minutes, Claude's part)
+## Step 0 — Claude's part (already done)
 
-Say: **"I'm starting the Cloudflare move."** Claude adds the Cloudflare version of the link-preview
-program (the part that makes links say "Play Chess with Inna") and sends it to GitHub.
-Wait until Claude says it's ready.
+The Cloudflare version of the link-preview program (the part that makes links say "Play Chess with Inna")
+is already in your GitHub project, in the `functions` folder. Cloudflare finds it by itself.
+
+**Before you connect Cloudflare:** in Netlify, open your site → **Build and deploy** → **Repository** →
+**Disconnect** the GitHub repository. Your live site stays exactly as it is, and from then on new
+updates no longer use Netlify credits. Then tell Claude, so the waiting update can be sent to GitHub.
 
 ## Step 1 — Make a Cloudflare account (5 minutes)
 

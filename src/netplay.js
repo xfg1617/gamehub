@@ -202,8 +202,9 @@
         const humans = seats.length, total = humans + nbV;
         const canStart = isHost && (quick ? humans >= minH : total >= Math.max(2, minTable));
         const cap = botsCap();
-        const botsUI = !quick && isHost && (cap > 0 || nb > 0) ? `<div class="np-bots"><div class="flex items-center justify-between gap-3"><span class="pix text-xs tracking-wider text-muted">${max === 2 ? 'COMPUTER OPPONENT' : 'COMPUTER PLAYERS'}</span>
-            <span class="np-step"><button id="np-bm" class="btn-game btn-graphite" ${nb <= 0 ? 'disabled' : ''} aria-label="One less computer player">−</button><b id="np-bn">${nb}</b><button id="np-bp" class="btn-game btn-graphite" ${nb >= cap ? 'disabled' : ''} aria-label="One more computer player">+</button></span></div>
+        const botsUI = !quick && isHost && (cap > 0 || nb > 0) ? `<div class="np-bots np-bots-hi"><div class="np-bots-h"><span>${max === 2 ? 'PLAY THE COMPUTER' : 'ADD COMPUTER PLAYERS'}</span></div>
+            <div class="flex items-center justify-between gap-3"><span class="text-sm text-bone leading-snug">${max === 2 ? 'No friend around? Add a computer opponent.' : 'Not enough friends? Computer players fill the empty seats.'}</span>
+            <span class="np-step"><button id="np-bm" class="btn-game btn-graphite" ${nb <= 0 ? 'disabled' : ''} aria-label="One less computer player">−</button><b id="np-bn">${nb}</b><button id="np-bp" class="btn-game btn-amber" ${nb >= cap ? 'disabled' : ''} aria-label="One more computer player">+</button></span></div>
             ${lvOpt && nb > 0 ? `<div class="pix text-xs tracking-wider text-muted mt-3 mb-1.5 text-left">${esc(lvOpt.label)}</div><div class="seg w-full">${lvOpt.choices.map((c) => `<button data-lv="${esc(c[0])}" class="seg-btn flex-1 ${String(c[0]) === String(lvl) ? 'on' : ''}">${esc(c[1])}</button>`).join('')}</div>` : ''}</div>` : '';
         // the game's settings: the host can change them while everyone is in the room (talk it over in the chat)
         const cur = hostSel || settings, rsel = Object.assign({}, cur, { net: sel.net });

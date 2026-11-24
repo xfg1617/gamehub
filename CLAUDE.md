@@ -474,6 +474,29 @@ One shared way to run a game table, used on this device AND online, so a game ha
   ~5 s, Blackjack table results 4.4 s, Tic-Tac-Toe between games 2.6 s.
 * Supabase: run `backend/friends.sql` (plus `backend/link-preview.sql` from before).
 
+## 5j. Nov 24 2026 update (held until Netlify is disconnected; goes live via Cloudflare)
+
+* **Computer players box** in rooms stands out: amber header "ADD COMPUTER PLAYERS" / "PLAY THE COMPUTER", a line of
+  explanation, bigger stepper (`.np-bots-hi`, also in Chess's room).
+* **Word games use the device keyboard** (`deviceKeys(host, onKey, {tapTarget, button})` + `devkbButton()` in core):
+  a hidden text box (two-space sentinel: shorter = Backspace, longer = letters; Enter as a real key) so Android
+  keyboards that send no key events work too. "⌨ Use my keyboard" shows on touch screens only; tapping the board also
+  opens it; the on-screen keys hide while typing (`body.devkb-on`). Daily Word, Word Duel, Word Connect. `t_devkb.py`.
+* **Bigger word lists** (`tools/make_words.py` → `src/words.json`, SCOWL, licence in `src/WORDS-LICENSE.txt`; build.py
+  puts them in their own `<script>` in `<head>` so they exist before the page code): ~4,900 accepted 5-letter guesses
+  (`WORD_SET`), ~1,600 answers (`DW_ALL_ANSWERS` = old `WORD_DICT` + common new words; no plurals/-ed). **Daily puzzles
+  up to #330 keep their old words** (`DW_SWITCH`); later days walk a fixed shuffled order (`DW_ORDER`, no repeats).
+  Word Connect: puzzles still come from `src/dict.json`; ~14,000 rarer words count as **BONUS words** (`WC_EXTRA`,
+  `G.bonus`, length×2 points, not needed to finish). Rude words blocked by exact form (`BLOCKED`) + a few strong
+  substrings (`STRONG`); innocent words like grape/skill/canal stay. `t_words.py`.
+* **Frontier Isles build buttons**: costs in words with ✓ / red, and why a button is grey ("Need 2 Stone",
+  "No free spot: build a road first", "All 5 built"). `engine.render` exposed for tests. `t_isles_costs.py`.
+* **Names**: saving your profile checks the online name at once ("already taken", box stays open); the auto-numbered
+  name at start-up is saved with `saveProfileToStorage` (it used to call the profile-box `saveProfile`). `t_names.py`.
+* **Cloudflare Pages preview**: `functions/r/[code].js` (made by build.py, same logic as the Netlify edge function,
+  reads the page through `env.ASSETS`). Guide: `backend/CLOUDFLARE-MOVE.md`.
+* Not done yet (Inna to decide): security fixes (room lock, CAPTCHA, hidden cards), copy protection.
+
 ## 5d. Game setup screens, room codes, leaving a game
 
 * Every game opens on a setup screen (`setupScreen` in `core.js`). Options are `{ key, label, def,

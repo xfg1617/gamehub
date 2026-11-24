@@ -7,7 +7,11 @@
         if (DICT) return;
         DICT = []; for (const k in WC_WORDS) WC_WORDS[k].split(' ').forEach((w) => { if (w) DICT.push(w); });
         BASE = WC_BASE.split(' ').filter(Boolean);
+        EXTRA = new Set((typeof WC_EXTRA === 'string' ? WC_EXTRA : '').split(' ').filter(Boolean));
       }
+      // bonus words: real but less common words. They score points, but you don't need them to finish the puzzle.
+      let EXTRA = null;
+      const isBonus = (w) => !!(EXTRA && EXTRA.has(w) && G && fits(w, cnt(G.base)) && !G.wordSet.has(w));
       const cnt = (w) => { const c = {}; for (const ch of w) c[ch] = (c[ch] || 0) + 1; return c; };
       function fits(w, have) { const c = cnt(w); for (const k in c) if ((have[k] || 0) < c[k]) return false; return true; }
       function solve(letters) { prep(); const have = cnt(letters), L = letters.length; return DICT.filter((w) => w.length >= 3 && w.length <= L && fits(w, have)).sort((a, b) => a.length - b.length || (a < b ? -1 : 1)); }
@@ -39,12 +43,12 @@
         if (S && !+sel.time) sel = Object.assign({}, sel, { time: 120 });
         let letters = shuffle(pz.base.split(''));
         const pangrams = pz.words.filter((w) => w.length === L);
-        G = { S, race: S ? S.seats.map((x) => ({ name: x.name, av: x.avatar, score: 0, n: 0, done: false })) : null, body, L, base: pz.base, words: pz.words, wordSet: new Set(pz.words), pangrams, letters, found: [], score: 0, path: [], tok: ++GT.cur, over: false, hints: 0, maxHints: sel.hints === undefined ? 5 : +sel.hints, hinted: {}, time: +sel.time, total: pz.words.reduce((a, w) => a + pts(w, L), 0) };
+        G = window.__wcG = { S, race: S ? S.seats.map((x) => ({ name: x.name, av: x.avatar, score: 0, n: 0, done: false })) : null, body, L, base: pz.base, words: pz.words, wordSet: new Set(pz.words), pangrams, letters, found: [], score: 0, path: [], tok: ++GT.cur, over: false, hints: 0, maxHints: sel.hints === undefined ? 5 : +sel.hints, hinted: {}, time: +sel.time, total: pz.words.reduce((a, w) => a + pts(w, L), 0) };
         body.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-[320px_minmax(0,1fr)] gap-6 items-start">
           <div class="space-y-4"><div class="flex items-center justify-between gap-3"><div id="wc-clock" class="flex-1"></div></div>
             <div class="grid grid-cols-3 gap-2"><div class="stat"><div class="lab">Score</div><div id="wc-score" class="val text-amber">0</div></div><div class="stat"><div class="lab">Words</div><div id="wc-count" class="val text-emerald">0</div></div><div class="stat"><div class="lab">Stars</div><div id="wc-stars" class="val text-amber"><span style="opacity:.22">★</span><span style="opacity:.22">★</span><span style="opacity:.22">★</span></div></div></div>
             <div id="wc-cur" class="wc-cur"></div><div id="wc-msg" class="text-center text-sm min-h-[20px] text-muted"></div>
-            <div id="wc-wheel" class="wc-wheel"></div>
+            <div id="wc-wheel" class="wc-wheel"></div><div id="wc-devkb" class="flex justify-center"></div>
             <div class="flex gap-2 justify-center flex-wrap"><button id="wc-shuf" class="btn-game btn-graphite py-2 px-4 text-sm">🔀 Shuffle</button><button id="wc-back" class="btn-game btn-graphite py-2 px-4 text-sm" aria-label="Remove last letter">⌫ Back</button><button id="wc-clr" class="btn-game btn-graphite py-2 px-4 text-sm">Clear</button><button id="wc-hint" class="btn-game btn-teal py-2 px-4 text-sm" ${G.maxHints ? '' : 'style="display:none"'}>💡 Hint (-5)</button></div>
             ${S ? '<div id="wc-race" class="win p-3 space-y-1.5"></div>' : ''}
             <button id="wc-end" class="btn-game btn-coral w-full py-2 text-sm">${S ? 'Leave race' : 'Finish round'}</button></div>
@@ -55,6 +59,7 @@
         $('wc-hint').onclick = hint; $('wc-end').onclick = () => { if (S) return npConfirmLeave(() => open($('game-root'))); if (!G.over) finish(true); };
         if (S) { S.on(raceApply); npBar(''); drawRace(); }
         gOn(document, 'keydown', onKey);
+        { const dk = $('wc-devkb'); if (dk) { dk.innerHTML = devkbButton(); deviceKeys(dk, (k) => onKey({ key: k === 'ENTER' ? 'Enter' : k === '⌫' ? 'Backspace' : k.toLowerCase(), target: null, preventDefault() {} }), { button: dk.querySelector('button'), enter: 'done' }); } }
         if (G.time) G.clock.start(G.time, 'Time left', () => finish(false), 15); else G.clock.idle('No limit', '∞');
       }
 
@@ -92,7 +97,7 @@
       // (a moment later, so you see the last letter land first)
       function autoEnter() {
         const w = curWord();
-        if (w.length < 3 || G.found.includes(w) || !G.wordSet.has(w)) return;
+        if (w.length < 3 || G.found.includes(w) || (G.bonus || []).includes(w) || !(G.wordSet.has(w) || isBonus(w))) return;
         gTimeout(() => { if (G && !G.over && curWord() === w) submit(); }, 260);
       }
       function drawCur() { $('wc-cur').innerHTML = curWord().split('').map((ch) => `<span>${ch.toUpperCase()}</span>`).join(''); }
@@ -117,6 +122,15 @@
         const reject = (m) => { say(m, 'text-coral'); SFX.play('wrong'); const c = $('wc-cur'); c.classList.remove('wc-shake'); void c.offsetWidth; c.classList.add('wc-shake'); gTimeout(() => { drawCur(); }, 450); gTimeout(() => { if ($('wc-cur')) { G.path = []; $('wc-cur').innerHTML = ''; } }, 450); };
         if (w.length < 3) return reject('Words need at least 3 letters.');
         if (G.found.includes(w)) return reject(`You already found ${w.toUpperCase()}.`);
+        if ((G.bonus || []).includes(w)) return reject(`You already found ${w.toUpperCase()}.`);
+        if (!G.wordSet.has(w) && isBonus(w)) {
+          G.bonus = G.bonus || []; G.bonus.push(w); const bp = w.length * 2; G.score += bp; SFX.play('coin');
+          say(`BONUS WORD! ${w.toUpperCase()}  +${bp}`, 'text-teal font-bold');
+          $('wc-cur').innerHTML = w.split('').map((ch) => `<span style="background:#2DD4BF">${ch.toUpperCase()}</span>`).join('');
+          gTimeout(() => { if ($('wc-cur') && !G.path.length) $('wc-cur').innerHTML = ''; }, 600);
+          update(); if (G.S) G.S.act({ t: 'score', score: G.score, n: G.found.length });
+          return;
+        }
         if (!G.wordSet.has(w)) return reject(`"${w.toUpperCase()}" is not in the word list.`);
         G.found.push(w); const p = pts(w, G.L); G.score += p;
         const big = w.length === G.L; SFX.play(big ? 'win' : 'word');

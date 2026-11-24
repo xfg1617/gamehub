@@ -326,7 +326,7 @@
           let name = profile.username, r = await B.setName(name, profile.avatar);
           for (let k = 0; r.error === 'taken' && k < 6; k++) { name = profile.username.slice(0, 16) + Math.floor(10 + Math.random() * 989); r = await B.setName(name, profile.avatar); }
           if (r.error) throw new Error(r.error);
-          if (name !== profile.username) { profile.username = name; if (typeof saveProfile === 'function') saveProfile(); showToast(`That name was taken online, so you are ${name}.`, 'info'); }
+          if (name !== profile.username) { profile.username = name; if (typeof saveProfileToStorage === 'function') saveProfileToStorage(); showToast(`That name was taken online, so you are ${name}.`, 'info'); }
           NET.me.name = name; NET.on = true;
           B.presence();
           document.dispatchEvent(new Event('ps-online'));

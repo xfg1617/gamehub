@@ -445,6 +445,44 @@
       return document.getElementById('gs-body');
     }
 
+    /* ---------- word games: type with the phone's / iPad's own keyboard (Inna, Nov 2026) ---------- */
+    // A hidden text box sits in the game; tapping the board (or the "Use my keyboard" button) focuses it, which opens
+    // the device keyboard. Phone keyboards don't send normal key presses for letters, so we read what was typed:
+    // the box always holds two spaces; more text = letters typed, less = Backspace. Enter comes as a real key.
+    // onKey gets 'A'..'Z', '⌫' or 'ENTER'. Returns { focus, el }.
+    const SENT = '  ';
+    function deviceKeys(host, onKey, opts = {}) {
+      if (!host) return null;
+      const box = document.createElement('input');
+      box.type = 'text'; box.className = 'devkb-input'; box.dataset.devkb = '1'; box.value = SENT;
+      ['autocomplete', 'autocorrect', 'autocapitalize'].forEach((a) => box.setAttribute(a, 'off'));
+      box.setAttribute('spellcheck', 'false'); box.setAttribute('enterkeyhint', opts.enter || 'go'); box.setAttribute('aria-label', 'Type letters');
+      if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
+      host.appendChild(box);
+      const reset = () => { box.value = SENT; try { box.setSelectionRange(SENT.length, SENT.length); } catch (e) {} };
+      box.addEventListener('input', () => {
+        const v = box.value;
+        if (v.length < SENT.length) { for (let k = v.length; k < SENT.length; k++) onKey('⌫'); }
+        else (v.startsWith(SENT) ? v.slice(SENT.length) : v.replace(/\s/g, '')).toUpperCase().replace(/[^A-Z]/g, '').split('').forEach((ch) => onKey(ch));
+        reset();
+      });
+      box.addEventListener('keydown', (e) => {
+        e.stopPropagation();   // the page's own keyboard shortcuts must not see these keys too
+        if (e.key === 'Enter') { e.preventDefault(); onKey('ENTER'); }
+        else if (e.key === 'Escape') box.blur();
+      });
+      box.addEventListener('focus', () => { reset(); document.body.classList.add('devkb-on'); });
+      box.addEventListener('blur', () => document.body.classList.remove('devkb-on'));
+      const focus = () => { box.focus({ preventScroll: true }); reset(); };
+      // on touch screens: tapping the board opens the keyboard, plus a clear button for it
+      if (opts.tapTarget) opts.tapTarget.addEventListener('click', () => { if (matchMedia('(pointer: coarse)').matches) focus(); });
+      if (opts.button) { opts.button.classList.add('devkb-btn'); opts.button.onclick = (e) => { e.preventDefault(); focus(); }; }
+      return { focus, el: box };
+    }
+    window.deviceKeys = deviceKeys;
+    const devkbButton = () => '<button type="button" class="devkb-show btn-game btn-graphite py-1.5 px-4 text-xs">⌨ Use my keyboard</button>';
+    window.devkbButton = devkbButton;
+
     /* ---------- a menu screen: title, a few option rows, and a start button ---------- */
     // opts: [{key,label,choices:[[value,label]], def}]
     // settings you picked last time are remembered per game

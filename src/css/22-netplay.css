@@ -68,3 +68,17 @@
     #fr-chatwin .chatbox { height: 420px; }
     .chat-msg button.who { cursor: pointer; } .chat-msg button.who:hover { text-decoration: underline; }
     @media (max-width: 1023px) { .np-room-chat .chatbox { height: 330px; } }
+
+    /* the computer players box stands out (Inna: "a little more noticeable") */
+    .np-bots-hi { background: #122A40; border: 3px solid #050E18; box-shadow: 0 4px 0 #050E18, inset 0 0 0 2px #F5B041; padding: 0 .9rem .85rem; }
+    .np-bots-h { margin: 0 -.9rem .7rem; padding: .4rem .9rem; background: #F5B041; color: #231505; border-bottom: 3px solid #050E18; font-family: 'Arcade Pixel', sans-serif; font-weight: 700; font-size: .85rem; letter-spacing: .1em; display: flex; align-items: center; gap: .5rem; }
+    .np-bots-h::before { content: ''; width: 14px; height: 14px; background: #050E18; box-shadow: inset 3px 3px 0 #F5B041, inset -3px -3px 0 #F5B041; flex: none; }
+    .np-bots-hi .np-step button { width: 44px; height: 40px; font-size: 1.4rem; }
+    .np-bots-hi .np-step b { font-size: 1.7rem; }
+
+    /* word games: the phone/iPad keyboard (hidden text box + a button; the button only shows on touch screens) */
+    .devkb-input { position: absolute; left: 0; top: 0; width: 1px; height: 1px; opacity: 0; border: 0; padding: 0; font-size: 16px; pointer-events: none; caret-color: transparent; }
+    .devkb-show { display: none; }
+    @media (pointer: coarse) { .devkb-show { display: inline-flex; } }
+    /* while the device keyboard is open, the on-screen letter keys step aside so the board stays visible */
+    body.devkb-on #dw-keyboard, body.devkb-on #wd-kb { display: none; }

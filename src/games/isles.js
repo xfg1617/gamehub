@@ -516,7 +516,19 @@
         $('fi-vp').textContent = `${vp(G, G.me)} / ${G.goal} POINTS`;
         drawDice(false);
         const can = G.building && !G.over, L = can ? legal(G, me) : { road: [], village: [], town: [] };
-        $('fi-build').innerHTML = [['road', 'Road'], ['village', 'Village'], ['town', 'Town']].map(([k, lab]) => `<button data-b="${k}" class="btn-game ${L[k].length ? 'btn-amber' : 'btn-graphite'} py-1.5 px-1 text-xs flex flex-col items-center gap-1" ${can ? '' : 'disabled'}><span class="text-sm">${lab}</span><span class="fi-cost">${Object.keys(COST[k]).map((r) => `${'<i></i>'.repeat(0)}${resIcon(r, 13).repeat(COST[k][r])}`).join('')}</span></button>`).join('');
+        // each button spells out its cost (✓ = you have it, red = how many more you need) and, when it can't be used
+        // right now, why (Inna's player feedback: the old tiny pictures didn't say what was missing)
+        const why = (k) => {
+          const miss = Object.keys(COST[k]).filter((r) => me.res[r] < COST[k][r]).map((r) => `${COST[k][r] - me.res[r]} ${RN[r]}`);
+          if (miss.length) return `Need ${miss.join(', ')}`;
+          if (k === 'road' && roads(G, me.i) >= LIMIT.road || k !== 'road' && count(G, me.i, k === 'village' ? 1 : 2) >= LIMIT[k]) return `All ${LIMIT[k]} built`;
+          if (k === 'village') return 'No free spot: build a road first';
+          if (k === 'town') return 'Build a village first';
+          return 'No free spot';
+        };
+        $('fi-build').innerHTML = [['road', 'Road'], ['village', 'Village'], ['town', 'Town']].map(([k, lab]) => `<button data-b="${k}" class="btn-game ${L[k].length ? 'btn-amber' : 'btn-graphite'} fi-bbtn" ${can ? '' : 'disabled'}><span class="text-sm font-extrabold">${lab}</span>
+          <span class="fi-costs">${Object.keys(COST[k]).map((r) => `<span class="fi-c ${me.res[r] >= COST[k][r] ? 'ok' : 'no'}">${resIcon(r, 12)}${COST[k][r]} ${RN[r]}${me.res[r] >= COST[k][r] ? ' ✓' : ''}</span>`).join('')}</span>
+          ${can && !L[k].length ? `<span class="fi-why">${why(k)}</span>` : ''}</button>`).join('');
         $('fi-build').querySelectorAll('[data-b]').forEach((b) => { b.onclick = () => { if (G.act) G.act(b.dataset.b); }; });
         $('fi-trade').innerHTML = `<div class="flex items-center gap-2 flex-wrap text-xs"><span class="pix text-muted">BANK ${G.rate}:1</span><select id="fi-give" class="fi-sel"><option value="" disabled ${RES.some((r) => me.res[r] >= G.rate) ? '' : 'selected'}>Give…</option>${RES.map((r) => `<option value="${r}" ${me.res[r] >= G.rate ? '' : 'disabled'}>${G.rate} ${RN[r]}</option>`).join('')}</select><span>→</span><select id="fi-get" class="fi-sel">${RES.map((r) => `<option value="${r}">1 ${RN[r]}</option>`).join('')}</select><button id="fi-do" class="btn-game btn-graphite py-1 px-3 text-xs" ${can ? '' : 'disabled'}>Trade</button></div>
           <button id="fi-ptrade" class="btn-game btn-teal w-full py-1.5 text-sm mt-2" ${can ? '' : 'disabled'}>🤝 Trade with players</button>`;
@@ -545,7 +557,7 @@
         profileTiles: (s) => [['WINS', s.wins, 'text-amber'], ['GAMES', s.played, 'text-bone'], ['BEST SCORE', s.best || 0, 'text-emerald'], ['TOWNS BUILT', s.towns || 0, 'text-teal']],
         extraRows: (s) => srow('Longest Road held at the end', s.longest || 0) + srow('Trades with players', s.trades || 0),
         online: { seats: (sel) => +sel.n || 3, min: 2, ranked: false, start: (body, sel, S) => start(body, sel, S) },
-        engine: { makeIsland, canVillage, canRoad, longest, vp, wants, botAccepts, state: () => G }, open, close() { G = null; },
+        engine: { makeIsland, canVillage, canRoad, longest, vp, wants, botAccepts, state: () => G, render: () => render() }, open, close() { G = null; },
       };
       registerGame(mod);
     })();

@@ -1204,6 +1204,7 @@
           </div>
         </div>
 
+        <div id="dw-devkb" class="w-full flex justify-center"></div>
         <div id="dw-keyboard" class="w-full space-y-2 select-none pt-1"></div>
       </div>
     </section>
@@ -1985,13 +1986,20 @@
     function toggleEmail(btn) { const el = document.getElementById('prof-email'); if (!el) return; const show = btn.textContent === 'SHOW'; el.textContent = show ? el.dataset.full : maskEmail(el.dataset.full); btn.textContent = show ? 'HIDE' : 'SHOW'; }
     // a player name can't be an email address or a phone number (names are public)
     function namePrivacyProblem(n) { return /@|\.(com|net|org|edu)\b/i.test(n) ? 'Your player name is public, so it can\'t be an email address.' : /\d{7,}/.test(n.replace(/[\s().-]/g, '')) ? 'Your player name is public, so it can\'t be a phone number.' : ''; }
-    function saveProfile() {
+    async function saveProfile() {
       const name = document.getElementById('prof-username-input').value.trim();
       if (!name) {
         showToast('Please enter a display name', 'error');
         return;
       }
       if (namePrivacyProblem(name)) { showToast(namePrivacyProblem(name), 'error'); return; }
+      // online, names are unique: check right away (not on the next visit) and keep the box open if it's taken
+      if (typeof NET !== 'undefined' && NET.on && (name !== NET.me.name || draftAvatar !== NET.me.avatar)) {
+        const btn = document.querySelector('#profile-modal [onclick*="saveProfile"]'); if (btn) btn.disabled = true;
+        const r = await NET.setName(name, draftAvatar).catch((e) => ({ error: e && e.message }));
+        if (btn) btn.disabled = false;
+        if (r && r.error) { showToast(r.error === 'taken' ? `"${name}" is already taken. Try another name.` : 'Could not save your name online. Try again.', 'error'); return; }
+      }
       profile.username = name;
       profile.avatar = draftAvatar;
       saveProfileToStorage();
@@ -3245,7 +3253,10 @@
       'WORST', 'WORTH', 'WOULD', 'WOUND', 'WRIST', 'WRITE', 'WRONG', 'WROTE', 'YIELD', 'YOUNG',
       'YOUTH', 'ZEBRA',
     ];
-    const WORD_SET = new Set(WORD_DICT);
+    // Bigger word lists (Nov 2026): every 5-letter word players may type, and many more answers.
+    // DW_ALL_ANSWERS = the original answers + common new ones (for practice, Word Duel and future daily puzzles).
+    const DW_ALL_ANSWERS = (() => { const seen = new Set(WORD_DICT), out = WORD_DICT.slice(); (typeof DW_MORE_ANSWERS === 'string' ? DW_MORE_ANSWERS : '').split(' ').forEach((w) => { if (w && !seen.has(w)) { seen.add(w); out.push(w); } }); return out; })();
+    const WORD_SET = new Set(WORD_DICT.concat(DW_ALL_ANSWERS, (typeof DW_GUESSES === 'string' ? DW_GUESSES : '').split(' ').filter(Boolean)));
 
     const KB_ROWS = [
       ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
@@ -3263,16 +3274,20 @@
       flipRow: -1,
     };
 
-    function getDeterministicDailyWord() {
-      const idx = getDailyPuzzleNumber() * 19;
-      return WORD_DICT[idx % WORD_DICT.length];
+    // Every puzzle up to #330 keeps the word it always had. After that, the bigger answer list is used in a fixed
+    // shuffled order (the same on every device), so no word repeats until all of them have been used.
+    const DW_SWITCH = 330;
+    const DW_ORDER = (() => { const a = DW_ALL_ANSWERS.slice(); let x = 20261124; const r = () => { x = (x * 1103515245 + 12345) % 2147483648; return x / 2147483648; }; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; })();
+    function getDeterministicDailyWord(n = getDailyPuzzleNumber()) {
+      if (n <= DW_SWITCH) return WORD_DICT[(n * 19) % WORD_DICT.length];
+      return DW_ORDER[(n - DW_SWITCH - 1) % DW_ORDER.length];
     }
 
     function openDailyWord(practice = false) {
       navigateTo('daily');
       dw = {
         isPractice: practice,
-        target: practice ? WORD_DICT[Math.floor(Math.random() * WORD_DICT.length)] : getDeterministicDailyWord(),
+        target: practice ? DW_ALL_ANSWERS[Math.floor(Math.random() * DW_ALL_ANSWERS.length)] : getDeterministicDailyWord(),
         guesses: [],
         current: '',
         status: 'playing',
@@ -3289,6 +3304,12 @@
 
       renderWordBoard();
       renderWordKeyboard();
+      // phones and iPads: type with the device keyboard (tap the board or the button)
+      const dk = document.getElementById('dw-devkb');
+      if (dk && typeof deviceKeys === 'function' && !dk.dataset.on) {
+        dk.dataset.on = '1'; dk.innerHTML = devkbButton();
+        deviceKeys(dk, (k) => { if (activeView === 'daily' && dw && dw.status === 'playing') handleWordInput(k); }, { tapTarget: document.getElementById('dw-grid'), button: dk.querySelector('button') });
+      }
     }
 
     const DW_FLIP_MS = 520, DW_FLIP_GAP = 260, DW_REVEAL = DW_FLIP_GAP * 4 + DW_FLIP_MS + 120;

@@ -13,8 +13,8 @@
       }
       // the computer: always guesses a word that fits everything it has seen so far
       function botGuess(rows) {
-        const ok = WORD_DICT.filter((w) => rows.every((r) => score(r.w, w).join() === r.ev.join()));
-        return pick(ok.length ? ok : WORD_DICT);
+        const ok = DW_ALL_ANSWERS.filter((w) => rows.every((r) => score(r.w, w).join() === r.ev.join()));
+        return pick(ok.length ? ok : DW_ALL_ANSWERS);
       }
       let G = null;
       const $ = (id) => document.getElementById(id);
@@ -26,16 +26,17 @@
         ], (sel) => start(body, sel, npLocal([{ name: profile.username, avatar: profile.avatar }, { bot: true, name: 'Word Bot', avatar: '🤖' }], sel)));
       }
       function start(body, sel, S) {
-        const target = S.rng.pick(WORD_DICT);
+        const target = S.rng.pick(DW_ALL_ANSWERS);
         G = { S, me: S.online ? S.me : 0, target, hard: !!+sel.hard, speed: +sel.lvl || 9, cur: '', tok: ++GT.cur, over: false, done: false, keys: {},
           ps: S.seats.map((x) => ({ name: x.name, av: x.avatar, rows: [], solved: false, out: false, left: false })), order: [] };
         body.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-6 items-start">
           <div class="space-y-3 w-full mx-auto" style="max-width:340px"><div id="wd-msg" class="text-center text-sm min-h-[20px] text-muted">Same secret word for everyone. First to find it wins!</div>
-            <div id="wd-board" class="grid grid-rows-6 gap-2"></div><div id="wd-kb" class="space-y-1.5 pt-2"></div></div>
+            <div id="wd-board" class="grid grid-rows-6 gap-2"></div><div id="wd-devkb" class="flex justify-center"></div><div id="wd-kb" class="space-y-1.5 pt-2"></div></div>
           <div class="space-y-3"><div class="win overflow-hidden"><div class="winbar emerald"><span>WORD DUEL</span><span class="pix text-xs">${S.n} PLAYERS</span></div><div id="wd-opp" class="p-3 space-y-3"></div></div>
             <button id="wd-quit" class="btn-game btn-coral w-full py-2 text-sm">${S.online ? 'Leave duel' : 'Give up'}</button></div></div>`;
         $('wd-quit').onclick = () => { if (S.online) return npConfirmLeave(() => open($('game-root'))); if (!G.over) S.act({ t: 'giveup', s: 0 }); };
-        gOn(document, 'keydown', (e) => { if (e.ctrlKey || e.metaKey || e.altKey) return; const k = e.key === 'Enter' ? 'ENTER' : e.key === 'Backspace' ? '⌫' : /^[a-z]$/i.test(e.key) ? e.key.toUpperCase() : null; if (k) { e.preventDefault(); press(k); } });
+        gOn(document, 'keydown', (e) => { if (e.ctrlKey || e.metaKey || e.altKey || (e.target && e.target.dataset && e.target.dataset.devkb)) return; const k = e.key === 'Enter' ? 'ENTER' : e.key === 'Backspace' ? '⌫' : /^[a-z]$/i.test(e.key) ? e.key.toUpperCase() : null; if (k) { e.preventDefault(); press(k); } });
+        { const dk = $('wd-devkb'); dk.innerHTML = devkbButton(); deviceKeys(dk, (k) => press(k), { tapTarget: $('wd-board'), button: dk.querySelector('button') }); }
         S.on(apply, drive);
         paint(); npBar('');
       }

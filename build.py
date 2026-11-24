@@ -36,6 +36,17 @@ def dict_js():
             "    const WC_BASE = '" + ' '.join(sorted(d['base'])) + "';\n")
 
 
+def more_words_js():
+    """The bigger word lists (src/words.json, made by tools/make_words.py from SCOWL; licence in src/WORDS-LICENSE.txt)."""
+    f = os.path.join(SRC, 'words.json')
+    if not os.path.exists(f): return "    var DW_MORE_ANSWERS = '', DW_GUESSES = '', WC_EXTRA = '';\n"
+    w = json.load(open(f, encoding='utf-8'))
+    return ("    /* bigger word lists: SCOWL (c) Kevin Atkinson, used under its permissive licence (src/WORDS-LICENSE.txt) */\n"
+            "    var DW_MORE_ANSWERS = '" + ' '.join(w['answers']).upper() + "';\n"
+            "    var DW_GUESSES = '" + ' '.join(w['guesses']).upper() + "';\n"
+            "    var WC_EXTRA = '" + ' '.join(w['wc_extra']) + "';\n")
+
+
 def build(game_order=None):
     page = read(os.path.join(ROOT, 'base', 'playstack_base.html'))
     assert page.count(CSS_MARK) == 1 and page.count(JS_MARK) == 1, 'base page is missing an insertion point'
@@ -50,6 +61,8 @@ def build(game_order=None):
           ''.join(read(os.path.join(SRC, f)) for f in ('net.js', 'netplay.js') if os.path.exists(os.path.join(SRC, f))) +
           read(os.path.join(SRC, 'icons.js')) + dict_js() + '\n' + ''.join(read(f) for f in games))
     page = page.replace(CSS_MARK, css + CSS_MARK).replace(JS_MARK, js + JS_MARK)
+    i = page.index('</head>')
+    page = page[:i] + '  <script>\n' + more_words_js() + '  </script>\n' + page[i:]
     return page
 
 
@@ -148,6 +161,36 @@ export default async (request, context) => {
 export const config = { path: '/r/*' };
 """
 
+# the same preview, as a Cloudflare Pages Function (used after the move to Cloudflare; Netlify ignores it)
+CF_FN = r"""// Cloudflare Pages Function (made by build.py, don't edit by hand): link previews for room invites.
+// gamehub.us.com/r/CODE serves the GameHub page; this only changes what a chat app SHOWS for the link:
+// the game's banner and "Play Chess with Inna" (host with an account) or "Play Chess together" (guest host).
+const SUPA = __SUPA__, KEY = __KEY__, SITE = __SITE__, GAMES = __GAMES__;
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+export async function onRequest(context) {
+  const { request, env, params } = context;
+  const page = await env.ASSETS.fetch(new Request(new URL('/', request.url), { headers: request.headers }));
+  const code = String(params.code || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+  if (!code || !(page.headers.get('content-type') || '').includes('text/html')) return page;
+  let info = null;
+  try {
+    const r = await fetch(`${SUPA}/rest/v1/rpc/room_preview`, { method: 'POST', headers: { apikey: KEY, Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_code: code }) });
+    if (r.ok) info = await r.json();
+  } catch (e) {}
+  const id = info && info.game, name = (id && GAMES[id]) || null;
+  const title = name ? (info.host_account && info.host_name ? `Play ${name} with ${info.host_name}` : `Play ${name} together`) : 'Join my game on GameHub';
+  const desc = name ? `Tap to join room ${code} on GameHub. Free, right in your browser.` : 'Play games with your friends on GameHub. Free, right in your browser.';
+  const img = `${SITE}/og/${name ? (id === 'navalnet' ? 'naval' : id) : 'gamehub'}.png`;
+  let html = await page.text();
+  const set = (prop, val) => { html = html.replace(new RegExp(`(<meta (?:property|name)="${prop}" content=")[^"]*(")`), `$1${esc(val)}$2`); };
+  set('og:title', title); set('twitter:title', title);
+  set('og:description', desc); set('twitter:description', desc); set('description', desc);
+  set('og:image', img); set('twitter:image', img); set('og:url', `${SITE}/r/${code}`);
+  html = html.replace(/<title>[^<]*<\/title>/, `<title>${esc(title)} · GameHub</title>`);
+  return new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=60' } });
+}
+"""
+
 def write_site(page, online):
     """dist/site = exactly what Netlify publishes (netlify.toml points here)."""
     import shutil
@@ -165,6 +208,10 @@ def write_site(page, online):
             .replace('__SITE__', json.dumps(SITE)).replace('__GAMES__', json.dumps(games)))
     os.makedirs(os.path.join(ROOT, 'netlify', 'edge-functions'), exist_ok=True)
     with open(os.path.join(ROOT, 'netlify', 'edge-functions', 'room-preview.js'), 'w', encoding='utf-8') as f: f.write(edge)
+    cf = (CF_FN.replace('__SUPA__', json.dumps(online.get('url', ''))).replace('__KEY__', json.dumps(online.get('key', '')))
+          .replace('__SITE__', json.dumps(SITE)).replace('__GAMES__', json.dumps(games)))
+    os.makedirs(os.path.join(ROOT, 'functions', 'r'), exist_ok=True)
+    with open(os.path.join(ROOT, 'functions', 'r', '[code].js'), 'w', encoding='utf-8') as f: f.write(cf)
 
 
 if __name__ == '__main__':

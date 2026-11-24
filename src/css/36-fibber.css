@@ -1,0 +1,25 @@
+    /* ---------- Fibber (fibber.js) ---------- */
+    .fb-pile { position: relative; width: 64px; height: 90px; margin: 0 auto; }
+    .fb-empty { width: 60px; height: 86px; border: 3px dashed rgba(247, 244, 236, .35); display: flex; align-items: center; justify-content: center; font-family: 'Arcade Pixel', monospace; color: rgba(247, 244, 236, .5); font-size: 13px; }
+    .fb-claim { font-family: 'Arcade Pixel', monospace; font-size: 18px; color: #F7F4EC; background: rgba(5, 14, 24, .7); border: 2px solid #050E18; padding: 4px 12px; text-align: center; }
+    .fb-claim b { color: #F5B041; font-weight: normal; }
+    .fb-claim span { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; }
+    .fb-reveal { text-align: center; padding: 8px 10px; background: rgba(5, 14, 24, .55); border: 3px solid #050E18; }
+    .fb-reveal.lie { border-color: #FB7185; } .fb-reveal.true { border-color: #34D399; }
+    .fb-reveal .bad .pcard { outline: 3px solid #FB7185; } .fb-reveal .ok .pcard { outline: 3px solid #34D399; }
+    .fb-card { padding: 0; background: none; border: 0; transition: transform .12s; }
+    .fb-card:not([disabled]) { cursor: pointer; }
+    .fb-card:not([disabled]):hover { transform: translateY(-4px); }
+    .fb-card.sel { transform: translateY(-14px); }
+    .fb-card.sel .pcard { outline: 3px solid #F5B041; }
+    .fb-card.match .pcard::after { content: ''; position: absolute; left: 4px; right: 4px; bottom: 3px; height: 3px; background: #34D399; }
+    .fb-card .pcard { position: relative; }
+    .fb-hand { padding-top: 8px; }
+    /* the other players' face-down cards: a tight fan (like Color Clash), smaller on phones */
+    #fb-opp .tg-fan .pcard { width: 44px; height: 62px; margin-left: -32px; box-shadow: -2px 0 3px rgba(0, 0, 0, .3); }
+    #fb-opp .tg-fan .pcard:first-child { margin-left: 0; }
+    @media (max-width: 640px) {
+      #fb-opp .tg-fan { min-height: 44px; }
+      #fb-opp .tg-fan .pcard { width: 30px; height: 42px; margin-left: -23px; }
+      .fb-hand .pcard.sm { width: 46px; height: 66px; }
+    }

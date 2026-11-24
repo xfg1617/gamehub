@@ -63,6 +63,14 @@
           ['Who picks up', 'If any card was wrong, the fibber picks up the whole pile. If they were all true, the person who shouted picks it up. Get rid of your last card (without being caught) to win.']],
           items: () => row([[card(7, 'h'), 'A true card', 'Matches the rank everyone is on'], [card(12, 's'), 'A fib', 'Any other card played as that rank'], [`<span class="btn-game btn-coral" style="padding:6px 10px;font-size:12px">FIBBER!</span>`, 'Shout', 'Turn the last cards over']]),
           tip: 'There are only four of each rank. If you hold three Sevens and someone says "two Sevens", they must be fibbing.', online: NET_TABLE },
+        tunnel: { tag: '3-6 PLAYERS · SECRET TEAMS', goal: 'Diggers: dig a tunnel from the entrance to the gold. Rascals: secretly stop them.', steps: [
+          ['Find out your team', 'At the start, a banner tells you if you are a <b class="text-teal">Digger</b> or a <b class="text-coral">Rascal</b>. Nobody else can see it.'],
+          ['Play a card', 'On your turn, tap a card in your hand. A tunnel piece goes on a glowing square (↻ turns it around). It must fit the pieces next to it and join the tunnel.'],
+          ['Action cards', 'Break a player’s pick or lamp (they can’t dig until it’s fixed), fix one, use a treasure map to secretly peek under a ? stone, or cause a cave-in to remove a tunnel piece.'],
+          ['Can’t help? Throw one away', 'Press 🗑 Throw away. You always draw a new card after your turn while the deck lasts.'],
+          ['Who wins', 'When the tunnel reaches the gold, the Diggers win. If everyone runs out of cards first, the Rascals win.']],
+          items: () => row([[GAME_MODS.tunnel.art.card({ k: 'tun', e: 15 }), 'Tunnel', 'Join it to the tunnel'], [GAME_MODS.tunnel.art.card({ k: 'tun', e: 5, dead: true }), 'Dead end', 'The tunnel stops here'], [GAME_MODS.tunnel.art.card({ k: 'break', tool: 'pick' }), 'Break', 'Stops someone digging'], [GAME_MODS.tunnel.art.card({ k: 'map' }), 'Map', 'Peek under a stone']]),
+          tip: 'Watch who plays dead ends and who breaks tools. That is probably a Rascal!', online: NET_TABLE },
         chess: { tag: '1v1 · CLASSIC', goal: 'Trap the other king so it cannot escape. That is checkmate.', steps: [
           ['Move a piece', 'Tap one of your pieces, then a highlighted square. White moves first.'],
           ['Capture', 'Move onto an enemy piece to take it off the board.'],

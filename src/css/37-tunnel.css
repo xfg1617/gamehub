@@ -1,0 +1,34 @@
+    /* ---------- Tunnel Trouble (tunnel.js) ---------- */
+    .tt-role { padding: 8px 12px; border: 3px solid #050E18; font-size: .85rem; color: #F7F4EC; background: #12304D; border-left: 8px solid #2DD4BF; }
+    .tt-role.rascal { border-left-color: #FB7185; }
+    .tt-boardbox { overflow: auto; border: 4px solid #050E18; box-shadow: 0 6px 0 #050E18; background: #2A1E14; }
+    .tt-board { display: grid; grid-template-columns: repeat(13, minmax(34px, 1fr)); gap: 2px; padding: 6px; min-width: 470px; }
+    .tt-cell { aspect-ratio: 1; background: #3B2A1C; position: relative; }
+    .tt-cell svg { width: 100%; height: 100%; display: block; }
+    .tt-cell.ok { background: #1E5C4F; box-shadow: inset 0 0 0 2px #2DD4BF; cursor: pointer; }
+    .tt-cell.ok:hover { background: #2B7A68; }
+    .tt-ghost { opacity: .45; pointer-events: none; }
+    .tt-cell.ok:hover .tt-ghost { opacity: .8; }
+    .tt-cell.tgt { cursor: pointer; outline: 3px solid #F5B041; outline-offset: -3px; z-index: 1; }
+    .tt-cell.last::after { content: ''; position: absolute; inset: 0; box-shadow: inset 0 0 0 2px #F5B041; pointer-events: none; }
+    .tt-hand { padding-top: 4px; }
+    .tt-card { width: 64px; height: 88px; border: 3px solid #050E18; background: #12304D; box-shadow: 0 4px 0 #050E18; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: default; transition: transform .12s; }
+    .tt-card.tun { background: #4A3523; padding: 4px; }
+    .tt-card.tun svg { width: 52px; height: 52px; }
+    .tt-card.live { cursor: pointer; } .tt-card.live:hover { transform: translateY(-4px); }
+    .tt-card.sel { transform: translateY(-12px); outline: 3px solid #F5B041; }
+    .tt-dead { position: absolute; bottom: 2px; left: 0; right: 0; text-align: center; font-style: normal; font-family: 'Arcade Pixel', monospace; font-size: 10px; color: #FB7185; }
+    .tt-card.act .tt-ic { font-size: 26px; position: relative; line-height: 1.1; }
+    .tt-card.act .tt-lab { font-size: .62rem; font-weight: 800; color: #F7F4EC; text-align: center; line-height: 1.1; margin-top: 4px; padding: 0 2px; }
+    .tt-card.break { background: #5A2230; } .tt-card.fix { background: #1E4D3A; } .tt-card.map { background: #4D3F1E; } .tt-card.rock { background: #3A3A44; }
+    .tt-x { position: absolute; right: -8px; bottom: -4px; color: #FB7185; font-size: 18px; } .tt-ok { position: absolute; right: -8px; bottom: -4px; color: #34D399; font-size: 18px; }
+    .tt-pl[disabled] { cursor: default; }
+    .tt-pl.tgt { outline: 3px dashed #F5B041 !important; cursor: pointer; }
+    .tt-tools { display: flex; gap: 3px; } .tt-tools i { font-style: normal; font-size: 15px; } .tt-tools i.bad { filter: grayscale(1); opacity: .5; position: relative; }
+    .tt-tools i.bad::after { content: '✕'; position: absolute; left: 2px; top: -3px; color: #FB7185; font-size: 16px; font-weight: 900; }
+    .tt-rl { font-family: 'Arcade Pixel', monospace; font-size: 11px; padding: 0 4px; } .tt-rl.rascal { color: #FB7185; } .tt-rl.digger { color: #2DD4BF; }
+    @media (max-width: 640px) { .tt-card { width: 52px; height: 74px; } .tt-card.tun svg { width: 42px; height: 42px; } .tt-card.act .tt-ic { font-size: 20px; } }
+    @media (min-width: 1024px) {
+      body.in-game[data-game="tunnel"] #gs-body > .grid { grid-template-columns: minmax(0, calc((var(--av) - 250px) * 13 / 11)) 300px !important; justify-content: center; }
+      body.in-game[data-game="tunnel"] #gs-body > .grid > div:last-child { max-height: var(--av); overflow-y: auto; }
+    }

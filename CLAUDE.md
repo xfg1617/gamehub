@@ -785,3 +785,8 @@ folder that was handed over, so they do not exist here.)
   (FIRE!, USE ME) switch via `html[lang="vi"]`. Move logs and chat stay untranslated.
 * Not done (need Inna): CAPTCHA (needs a Cloudflare Turnstile site key + Supabase setting, in that order) and truly
   secret hidden cards (needs a server-side dealer per game).
+* **Turn timer = the name tag's outline** (Inna, Nov 2026): `makeClock` (core.js) also sets `--turn-left` (0-1) on the page
+  and `body.clk-on` / `clk-low`; the `.tg-tag.turn` / `.pl-tag.turn` outline is a gold line that runs out round the tag
+  (red and blinking for the last seconds). Poker / Uno / Kaboom Cats hide their timer boxes (Uno and Kaboom Cats lost
+  that side panel entirely); Uno and Kaboom Cats now show your own name tag above your hand (`#cc-me`, `#kk-me`).
+* Home page has no chat (CHAT button hidden there); `t_online.py` chats in a game's room instead.

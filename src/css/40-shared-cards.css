@@ -158,3 +158,20 @@
     .pl-tag.turn { outline: 3px solid #F5B041 !important; outline-offset: -1px; }
     .pl-tag .tg-av { width: 28px; height: 28px; font-size: 17px; }
     .mm-seat.pl-tag { display: inline-flex; align-items: center; gap: 6px; }
+    /* the turn clock is the outline of the name tag whose turn it is: a gold line that runs out round the tag, red at
+       the end (Inna, Nov 2026). --turn-left (0-1) is set by makeClock in core.js; the big timer boxes are hidden. */
+    body.clk-on .tg-tag.turn { box-shadow: none; border-color: #050E18; }
+    body.clk-on .tg-tag.turn::after, body.clk-on .pl-tag.turn::after {
+      content: ''; position: absolute; inset: -6px; padding: 4px; pointer-events: none; z-index: 2;
+      background: conic-gradient(from 0deg, var(--clk-c, #F5B041) calc(var(--turn-left, 1) * 360deg), rgba(5, 14, 24, .7) 0);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+      mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    }
+    body.clk-on .pl-tag.turn { outline: none !important; position: relative; }
+    body.clk-low { --clk-c: #FB7185; }
+    body.clk-low .tg-tag.turn::after, body.clk-low .pl-tag.turn::after { animation: clkLow .5s steps(2, jump-none) infinite; }
+    @keyframes clkLow { 0% { opacity: 1; } 100% { opacity: .45; } }
+    /* card games: no separate timer box any more (the tag shows it) */
+    body.in-game[data-game="poker"] #pk-clock, body.in-game[data-game="kittens"] #kk-clock, body.in-game[data-game="colorclash"] #cc-clock { display: none !important; }
+    body.in-game[data-game="kittens"] #gs-body .win:has(> .p-3 > #kk-clock), body.in-game[data-game="colorclash"] #gs-body .win:has(> .p-3 > #cc-clock) { display: none !important; }
+    .tg-mine { text-align: center; margin-top: 4px; } .tg-mine .tg-tag { position: relative; }

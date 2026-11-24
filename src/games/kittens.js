@@ -59,7 +59,7 @@
           <div class="space-y-3 min-w-0"><div id="kk-opp" class="ring4">${ringSlots('kk')}
             <div class="r-mid felt p-4 flex items-center justify-center gap-6 flex-wrap" style="min-height:170px"><div id="kk-pile" class="text-center"></div><div id="kk-disc" class="text-center"></div></div></div>
             <div id="kk-prompt" class="win p-3 text-center min-h-[48px]"></div>
-            <div id="kk-hand" class="flex gap-2 flex-wrap justify-center pt-2"></div></div>
+            <div id="kk-me" class="tg-mine"></div><div id="kk-hand" class="flex gap-2 flex-wrap justify-center pt-2"></div></div>
           <div class="space-y-3"><div class="win overflow-hidden"><div class="p-3 space-y-2"><div id="kk-clock"></div><div id="kk-status" class="text-sm font-bold"></div></div></div>
             <div id="kk-log" class="logbox" style="height:250px"></div><button id="kk-quit" class="btn-game btn-coral w-full py-2 text-sm">${S.online ? 'Leave table' : 'Give up'}</button></div></div>`;
         G.clock = makeClock(document.getElementById('kk-clock'));
@@ -444,6 +444,7 @@
         const top = G.discard[G.discard.length - 1];
         document.getElementById('kk-disc').innerHTML = top ? `${cardHTML(top, { cls: 'dim' })}<div class="pix text-xs text-bone mt-2">DISCARD</div>` : '<div class="pix text-xs text-bone/60">DISCARD<br>EMPTY</div>';
         const me = G.players[G.me];
+        { const mt = document.getElementById('kk-me'), cur = G.players[G.cur]; if (mt) mt.innerHTML = `<div id="kk-seat-${G.me}" class="inline-block">${nameTag({ av: me.av || me.avatar, name: me.name, sub: me.out ? 'burned' : `${me.hand.length} cards`, turn: cur === me && !G.over && !me.out, me: true })}</div>`; }
         document.getElementById('kk-hand').innerHTML = me.out ? '<div class="pix text-sm text-coral">You got burned. Watch the rest!</div>' : me.hand.map((t, i) => cardHTML(t, { id: i })).join('');
         document.querySelectorAll('#kk-hand .kk-card').forEach((el) => { el.onclick = () => { if (G.choose) G.choose(+el.dataset.id); }; });
       }

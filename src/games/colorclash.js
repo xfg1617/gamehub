@@ -39,7 +39,7 @@
           <div class="space-y-3 min-w-0"><div id="cc-opp" class="ring4">${ringSlots('cc')}
             <div class="r-mid felt p-4 flex items-center justify-center gap-8 flex-wrap" style="min-height:190px"><div id="cc-pile" class="text-center"></div><div id="cc-top" class="text-center"></div></div></div>
             <div id="cc-prompt" class="win p-3 text-center min-h-[48px] text-sm"></div>
-            <div id="cc-hand" class="flex gap-2 flex-wrap justify-center pt-2"></div></div>
+            <div id="cc-me" class="tg-mine"></div><div id="cc-hand" class="flex gap-2 flex-wrap justify-center pt-2"></div></div>
           <div class="space-y-3"><div class="win overflow-hidden"><div class="p-3 space-y-2"><div id="cc-clock"></div><div id="cc-status" class="text-sm font-bold"></div></div></div>
             <div id="cc-log" class="logbox" style="height:240px"></div><button id="cc-quit" class="btn-game btn-coral w-full py-2 text-sm">${S.online ? 'Leave table' : 'Give up'}</button></div></div>`;
         G.clock = makeClock(document.getElementById('cc-clock'));
@@ -242,6 +242,7 @@
         const me = G.players[G.me];
         const sorted = me.hand.map((c, i) => ({ c, i })).sort((a, b) => (a.c.c === b.c.c ? String(a.c.v).localeCompare(String(b.c.v), 'en', { numeric: true }) : a.c.c.localeCompare(b.c.c)));
         const myTurn = G.players[G.cur] === me && !G.over && G.choose;
+        { const mp = G.players[G.me], mt = document.getElementById('cc-me'); if (mt && mp) mt.innerHTML = `<div id="cc-seat-${G.me}" class="inline-block">${nameTag({ av: mp.av || mp.avatar, name: mp.name, sub: `${mp.hand.length} cards`, turn: myTurn && !G.over, me: true })}</div>`; }
         document.getElementById('cc-hand').innerHTML = sorted.map(({ c, i }) => cardHTML(c, { id: i, fk: gKey(c), cls: myTurn ? (canPlay(c, t, G.color) ? 'ok' : 'no') : '' })).join('');
         document.querySelectorAll('#cc-hand .cc-card').forEach((el) => { el.onclick = () => { if (G.choose) G.choose(+el.dataset.id); }; });
         const dr = document.getElementById('cc-draw'); if (dr) dr.onclick = () => { if (G.choose) G.choose('pile'); };

@@ -25,10 +25,11 @@ with sync_playwright() as p:
     A.wait_for_timeout(5500)
     check(A.evaluate("document.getElementById('online-count').textContent") == '2', 'online count shows 2 real players')
     # chat
-    A.fill('#chat-global input', 'hello from window A'); A.press('#chat-global input', 'Enter'); B.wait_for_timeout(800)
-    check('hello from window A' in B.evaluate("document.getElementById('chat-global').innerText"), 'a chat message reaches the other window')
-    A.fill('#chat-global input', 'what the shit'); A.press('#chat-global input', 'Enter'); B.wait_for_timeout(600)
-    check('shit' not in B.evaluate("document.getElementById('chat-global').innerText"), 'swear words are filtered')
+    for pg in (A, B): pg.evaluate("openGame('chess'); chatToggle(true)"); pg.wait_for_timeout(1200)   # the home page has no chat since Nov 2026: use a game's chat room
+    A.fill('#chat-panel input', 'hello from window A'); A.press('#chat-panel input', 'Enter'); B.wait_for_timeout(800)
+    check('hello from window A' in B.evaluate("document.getElementById('chat-panel').innerText"), 'a chat message reaches the other window')
+    A.fill('#chat-panel input', 'what the shit'); A.press('#chat-panel input', 'Enter'); B.wait_for_timeout(600)
+    check('shit' not in B.evaluate("document.getElementById('chat-panel').innerText"), 'swear words are filtered')
     # quick match
     for pg in (A, B):
         pg.evaluate("openGame('chess')"); pg.wait_for_timeout(300)

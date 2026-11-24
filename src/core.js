@@ -416,7 +416,7 @@
       const id = activeGame;
       if (typeof NP !== 'undefined' && NP.S) { try { NP.S.leave(); } catch (e) {} NP.S = null; }
       if (typeof NP !== 'undefined') NP.table = null;
-      activeGame = null; delete document.body.dataset.game;
+      activeGame = null; delete document.body.dataset.game; document.body.classList.remove('clk-on', 'clk-low');
       GT.cur++;
       GT.timers.forEach((t) => clearTimeout(t.id)); GT.timers.clear();
       GT.ints.forEach((t) => clearInterval(t.id)); GT.ints.clear();
@@ -751,8 +751,12 @@
       const q = (s) => host.querySelector(s);
       let t = null;
       const look = (txt, pc, low) => { q('.clk-val').textContent = txt; q('.clk-bar').style.width = pc + '%'; q('.clk-box').classList.toggle('low', low); q('.clk-wrap').classList.toggle('low', low); };
+      // the turn clock also runs round the outline of the player's name tag whose turn it is (Inna, Nov 2026): the
+      // time left goes into --turn-left on the page, so a tag that is redrawn mid-turn picks it up straight away
+      const ring = (frac, low) => { const r = document.documentElement; r.style.setProperty('--turn-left', frac.toFixed(3)); document.body.classList.add('clk-on'); document.body.classList.toggle('clk-low', !!low); };
+      const ringOff = () => { document.body.classList.remove('clk-on', 'clk-low'); };
       const api = {
-        stop() { if (t) gClearInt(t.id); t = null; },
+        stop() { if (t) gClearInt(t.id); t = null; ringOff(); },
         idle(label, txt) { api.stop(); q('.clk-lab').textContent = label; look(txt || '...', 0, false); },
         start(sec, label, onOut, lowAt = 5) {
           api.stop();
@@ -764,6 +768,7 @@
             if (low && s > 0 && s !== t.last) SFX.play('tick');
             t.last = s;
             look(`${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`, (left / total) * 100, low);
+            ring(left / total, low);
             if (left <= 0) { api.stop(); onOut && onOut(); }
           };
           t.id = gInterval(tick, 200);

@@ -790,3 +790,8 @@ folder that was handed over, so they do not exist here.)
   (red and blinking for the last seconds). Poker / Uno / Kaboom Cats hide their timer boxes (Uno and Kaboom Cats lost
   that side panel entirely); Uno and Kaboom Cats now show your own name tag above your hand (`#cc-me`, `#kk-me`).
 * Home page has no chat (CHAT button hidden there); `t_online.py` chats in a game's room instead.
+* **CAPTCHA (Cloudflare Turnstile)**: site key in `src/online.json` (`turnstile`, public; the SECRET key only goes into
+  Supabase). `captcha()` / `withCaptcha()` in net.js add `captchaToken` to the guest sign-in, log in and password reset,
+  only on https gamehub.us.com / gamehub-8w2.pages.dev; invisible unless Cloudflare wants a tap; on failure or after 20 s
+  the call goes ahead without a token. Supabase: Authentication → Attack Protection → CAPTCHA (Turnstile + secret key),
+  switched on only AFTER this code was live. `test/t_captcha.py` (stand-ins, no real service).

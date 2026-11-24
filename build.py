@@ -56,7 +56,7 @@ def build(game_order=None):
         games = [os.path.join(SRC, 'games', n + '.js') for n in game_order]
     online = {}
     if os.path.exists(os.path.join(SRC, 'online.json')):
-        online = {k: v for k, v in json.load(open(os.path.join(SRC, 'online.json'), encoding='utf-8')).items() if k in ('url', 'key') and v}
+        online = {k: v for k, v in json.load(open(os.path.join(SRC, 'online.json'), encoding='utf-8')).items() if k in ('url', 'key', 'turnstile') and v}
     js = (f"    window.PS_ONLINE = {json.dumps(online)};\n" + read(os.path.join(SRC, 'core.js')) +
           ''.join(read(os.path.join(SRC, f)) for f in ('net.js', 'netplay.js') if os.path.exists(os.path.join(SRC, f))) +
           read(os.path.join(SRC, 'icons.js')) + dict_js() + '\n' + ''.join(read(f) for f in games))

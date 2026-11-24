@@ -5495,7 +5495,7 @@
       root.querySelectorAll('[data-sprite]').forEach((el) => { el.innerHTML = SPRITES[el.dataset.sprite] || ''; });
     }
 
-    window.PS_ONLINE = {"url": "https://kfydkerunjjdpcsjgmmw.supabase.co", "key": "sb_publishable_tzwFBYzQ8bPoPLKgUMLqzQ_7kw7TCsk"};
+    window.PS_ONLINE = {"url": "https://kfydkerunjjdpcsjgmmw.supabase.co", "key": "sb_publishable_tzwFBYzQ8bPoPLKgUMLqzQ_7kw7TCsk", "turnstile": "0x4AAAAAAGRUValuZxNS9wBz"};
     /* =========================================================================
        9. MORE GAMES: shared framework (registry, lobby shelves, stats, timers, sounds)
        ========================================================================= */
@@ -6720,11 +6720,29 @@
         // or a dropped request ("Load failed" on iPad/iPhone, "Failed to fetch" elsewhere). Every server call refreshes the
         // sign-in when it is about to expire, and retries once after refreshing / after a short wait (Inna, Nov 2026).
         const NETERR = /load failed|failed to fetch|networkerror|network request failed|fetch failed/i, AUTHERR = /permission denied|jwt|expired|invalid claim|not authenticated/i;
+        // CAPTCHA (Cloudflare Turnstile, Nov 2026): Supabase can require a token for the guest sign-in, logging in and
+        // password resets (Inna turns that on in Supabase AFTER this is live). The check is invisible unless Cloudflare
+        // wants a tap. Only on our own web address (the site key is tied to it); anywhere else, and if the check fails or
+        // takes too long, the call goes ahead without a token (fine while Supabase's CAPTCHA setting is off).
+        const TS_KEY = cfg.turnstile || '';
+        let tsLoad = null;
+        function captcha() {
+          if (!TS_KEY || location.protocol !== 'https:' || !/(^|\.)gamehub\.us\.com$|(^|\.)gamehub-8w2\.pages\.dev$/.test(location.hostname)) return Promise.resolve(undefined);
+          tsLoad = tsLoad || new Promise((ok, no) => { const sc = document.createElement('script'); sc.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'; sc.async = true; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc); });
+          return tsLoad.then(() => new Promise((ok) => {
+            const box = document.createElement('div'); box.className = 'ts-box'; box.style.cssText = 'position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:9999'; document.body.appendChild(box);
+            let done = false, id = null;
+            const fin = (t) => { if (done) return; done = true; setTimeout(() => { try { window.turnstile.remove(id); } catch (e) {} box.remove(); }, 0); ok(t || undefined); };
+            try { id = window.turnstile.render(box, { sitekey: TS_KEY, appearance: 'interaction-only', callback: fin, 'error-callback': () => fin(), 'timeout-callback': () => fin() }); } catch (e) { fin(); }
+            setTimeout(() => fin(), 20000);
+          })).catch(() => undefined);
+        }
+        const withCaptcha = async (o = {}) => { const t = await captcha(); return t ? Object.assign({}, o, { captchaToken: t }) : o; };
         async function fresh(force) {
           try {
             const { data } = await sb.auth.getSession();
             const s = data && data.session;
-            if (!s) { const r = await sb.auth.signInAnonymously(); if (!r.error && r.data && r.data.user) uid = r.data.user.id; return; }
+            if (!s) { const r = await sb.auth.signInAnonymously({ options: await withCaptcha() }); if (!r.error && r.data && r.data.user) uid = r.data.user.id; return; }
             if (force || !s.expires_at || s.expires_at * 1000 - Date.now() < 60000) await sb.auth.refreshSession();
           } catch (e) {}
         }
@@ -6753,7 +6771,7 @@
             });
             sb = window.supabase.createClient(cfg.url, cfg.key, { auth: { persistSession: true, autoRefreshToken: true } });
             let { data } = await sb.auth.getSession();
-            if (!data.session) { const r = await sb.auth.signInAnonymously(); if (r.error) throw err(r.error); data = r.data; }
+            if (!data.session) { const r = await sb.auth.signInAnonymously({ options: await withCaptcha() }); if (r.error) throw err(r.error); data = r.data; }
             const user = (data.session || data).user;
             uid = user.id;
             sb.auth.onAuthStateChange((ev) => { if (ev === 'PASSWORD_RECOVERY' && NET.onRecovery) NET.onRecovery(); });
@@ -6766,7 +6784,7 @@
             return { pending: !!(data && data.user && data.user.new_email && !data.user.email) };
           },
           async signIn(email, pw) {
-            const { error } = await sb.auth.signInWithPassword({ email, password: pw });
+            const { error } = await sb.auth.signInWithPassword({ email, password: pw, options: await withCaptcha() });
             if (error) return { error: /invalid|credentials/i.test(error.message) ? 'Wrong email or password.' : /confirm/i.test(error.message) ? 'Please confirm your email first (check your inbox).' : error.message };
             return { reload: true };
           },
@@ -6777,7 +6795,7 @@
             if (error) return { error: /already/i.test(error.message) ? 'That Google account already has a GameHub account. Use Log in.' : error.message };
             return { redirect: true };
           },
-          async reset(email) { const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname }); return error ? { error: error.message } : {}; },
+          async reset(email) { const { error } = await sb.auth.resetPasswordForEmail(email, await withCaptcha({ redirectTo: location.origin + location.pathname })); return error ? { error: error.message } : {}; },
           async setPassword(pw) { const { error } = await sb.auth.updateUser({ password: pw }); return error ? { error: error.message } : {}; },
           async signOut() { await sb.auth.signOut(); return { reload: true }; },
           async loadSave() { const r = ok(await sb.from('saves').select('data,updated_at').eq('user_id', uid).maybeSingle()); return r ? { data: r.data, updated: Date.parse(r.updated_at) } : null; },

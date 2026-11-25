@@ -49,6 +49,7 @@
       'DOUBLE JUMP!': 'NHẢY ĐÔI!', 'TRIPLE JUMP!': 'NHẢY BA!', 'COMBO': 'COMBO', 'SURVIVOR!': 'SỐNG SÓT!', 'SURVIVOR': 'SỐNG SÓT', 'TYCOON!': 'ĐẠI GIA!', 'TYCOON': 'ĐẠI GIA',
       'SHARPSHOOTER!': 'XẠ THỦ!', 'SHARPSHOOTER': 'XẠ THỦ', 'SPEED GUESSER!': 'ĐOÁN NHANH!', 'SPEEDY': 'NHANH', 'ARTIST!': 'HỌA SĨ!', 'ARTIST': 'HỌA SĨ', 'MASTER OF DISGUISE!': 'BẬC THẦY NGỤY TRANG!', 'DISGUISE': 'NGỤY TRANG',
       'Three hits in a row': 'Ba phát trúng liên tiếp',
+      'Lobby': 'Sảnh', 'Guide': 'Hướng dẫn', 'Log': 'Nhật ký', 'Table': 'Bàn', 'Hand ranks': 'Thứ hạng bài',
       'Give a': 'Hãy đưa một', 'one-word hint.': 'gợi ý một từ.', 'new': 'mới',
     };
     window.VI_PAT4 = [

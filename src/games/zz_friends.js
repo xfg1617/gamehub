@@ -58,6 +58,43 @@
       }; });
     }
     window.frReqPop = frReqPop;
+    // a small "+ friend" button on the name tag of every other real player at an online table (Inna, Nov 2026:
+    // "allow to add friend"). Accounts only; it disappears once you're friends or the request is sent.
+    const TF = { state: {}, at: 0, busy: false, code: null };
+    async function tfLoad(force) {
+      if (TF.busy || (!force && Date.now() - TF.at < 20000)) return; TF.busy = true;
+      try { const all = await NET.friends(); const st = {}; (all.friends || []).forEach((f) => { st[f.id] = 'f'; }); (all.outgoing || []).forEach((f) => { st[f.id] = 'out'; }); (all.incoming || []).forEach((f) => { st[f.id] = 'in'; }); TF.state = st; TF.at = Date.now(); } catch (e) {}
+      TF.busy = false; tfPaint();
+    }
+    function tfPaint() {
+      const S = typeof NP !== 'undefined' && NP.S;
+      const on = S && S.online && !S.over && frOn() && !(NET.isGuest && NET.isGuest()) && S.game === (typeof activeGame !== 'undefined' ? activeGame : null);
+      document.querySelectorAll('.fr-add-mini').forEach((b) => { if (!on || TF.state[b.dataset.uid] === 'f' || TF.state[b.dataset.uid] === 'out') b.remove(); });
+      if (!on) return;
+      if (TF.code !== S.code) { TF.code = S.code; tfLoad(true); }
+      const root = document.getElementById('game-root'); if (!root) return;
+      S.seats.forEach((st, i) => {
+        if (!st || st.bot || !st.uid || i === S.me || (NET.me && st.uid === NET.me.id)) return;
+        const fs = TF.state[st.uid]; if (fs === 'f' || fs === 'out') return;
+        const host = [...root.querySelectorAll(`[id$="-seat-${i}"], [id$="-pl-${i}"]`)].find((e) => e.getBoundingClientRect().width > 0); if (!host) return;
+        const tag = host.matches('.tg-tag, .pl-tag') ? host : host.querySelector('.tg-tag, .pl-tag') || host;
+        if (tag.querySelector('.fr-add-mini')) return;
+        const b = document.createElement('button');
+        b.className = 'fr-add-mini' + (fs === 'in' ? ' in' : ''); b.dataset.uid = st.uid; b.type = 'button';
+        b.title = fs === 'in' ? `Accept ${st.name}'s friend request` : `Add ${st.name} as a friend`; b.textContent = fs === 'in' ? '✓ Accept' : '+ Friend';
+        b.onclick = async (e) => {
+          e.stopPropagation(); e.preventDefault(); b.disabled = true;
+          try { await NET.addFriend(st.uid); TF.state[st.uid] = fs === 'in' ? 'f' : 'out'; SFX.play('pop'); showToast(fs === 'in' ? `You and ${st.name} are now friends!` : `Friend request sent to ${st.name}.`, 'success'); b.remove(); }
+          catch (err) { b.disabled = false; showToast(err.message || 'Could not send', 'error'); }
+        };
+        if (getComputedStyle(tag).position === 'static') tag.style.position = 'relative';
+        tag.appendChild(b);
+      });
+    }
+    let tfQ = 0;
+    new MutationObserver(() => { if (tfQ) return; tfQ = requestAnimationFrame(() => { tfQ = 0; tfPaint(); }); }).observe(document.body, { childList: true, subtree: true });
+    setInterval(() => { const S = typeof NP !== 'undefined' && NP.S; if (S && S.online && !S.over) tfLoad(); }, 5000);
+    window.TF = TF;
     // a tap on a player's name tag at an online table = their player card
     document.addEventListener('click', (e) => {
       const S = typeof NP !== 'undefined' && NP.S; if (!S || !S.online || !frOn() || !e.target.closest) return;

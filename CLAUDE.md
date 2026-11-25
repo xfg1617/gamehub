@@ -906,3 +906,19 @@ folder that was handed over, so they do not exist here.)
   colour set / build evenly / unmortgage / costs $X) and is shown when +🏠 is pressed where you can't build.
 * After the roll, "🏠 Build / Mortgage" shows whenever you own anything (so you can try and be told why); before the roll
   it still only shows when something can be done. `test/t_ty_build_why.py`.
+
+## 5ab. Nov 25 2026 (Inna): emote position, language everywhere, translation audit, + Friend on tags
+
+* **Emote / chat bubbles** beside a name box that sits in a top-to-bottom list (`stacked()` in zz_emotes.js: Landlord,
+  Island Settlers, Mine Saboteurs...), towards the middle of the screen (`.side` / `.side-r`), not over the player above.
+* **Language switch everywhere, no reload**: `setLang` switches at once (text nodes remember their English in `ORIG`, so
+  English comes back without reloading; a game in progress carries on). Next to every ♪ button (game headers) there is an
+  EN/VI button (`.lang-mini`, added by an observer in zz_lang.js); the side menu / ☰ switch still works. Event `ps-lang`.
+* **Translation audit**: `python3 test/audit_vi.py [games]` plays every page and game online (stand-in) in Vietnamese and
+  writes the English still visible to `test/shots/vi_left.txt`. Part 3 = `src/games/zz_i18n_vi3.js` (`VI_MORE3` exact
+  lines incl. Landlord streets, Whodunit rooms/tools/suspects, Castles & Kings buildings/characters, badges, sound panel,
+  sign-up; `VI_PAT_MORE` number patterns). A line in CAPITALS gets the Vietnamese of its normal spelling (`upper()`).
+  Left in English on purpose: player/computer names, the game log (📜) and some "what happened" notices copied from it.
+* **+ Friend on name tags** at online tables (zz_friends.js `tfPaint`, `.fr-add-mini`, accounts only): one tap sends the
+  request; "✓ Accept" when they asked you. `test/t_tag_friend.py`.
+* Uno / Kaboom Cats / Bullshit: the table design sits under the whole ring of seats (was a thin strip at 1280 px).

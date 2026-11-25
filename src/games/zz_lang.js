@@ -99,6 +99,7 @@
       };
       Object.keys(window.VI_MORE || {}).forEach((k) => { if (!(k in VI)) VI[k] = window.VI_MORE[k]; });   // part 1: zz_i18n_vi.js
       Object.keys(window.VI_MORE2 || {}).forEach((k) => { if (!(k in VI)) VI[k] = window.VI_MORE2[k]; });   // part 2: zz_i18n_vi2.js
+      Object.keys(window.VI_MORE3 || {}).forEach((k) => { if (!(k in VI)) VI[k] = window.VI_MORE3[k]; });   // part 3: zz_i18n_vi3.js (audit)
       const PAT = [
         [/^(\d+)[–-](\d+) PLAYERS/, (m, a, b) => `${a}-${b} NGƯỜI`], [/(\d+) PLAYERS\b/g, '$1 NGƯỜI'], [/~(\d+) MIN\b/g, '~$1 PHÚT'], [/(\d+) MIN\b/g, '$1 PHÚT'],
         [/\bSOLO\b/g, 'CHƠI ĐƠN'], [/\bCHIPS\b/g, 'CHIP'], [/^(\d+) GAMES$/, '$1 TRÒ'], [/^● (\d+) online$/, '● $1 online'], [/^(\d+) chatting$/, '$1 đang trò chuyện'],
@@ -121,44 +122,94 @@
         [/^Waiting for friends to join \(at least (\d+) players\)\.\.\.$/, 'Đang chờ bạn bè vào phòng (ít nhất $1 người)...'],
         [/^Waiting for (.+)\.\.\.$/, 'Đang chờ $1...'], [/^(\d+) online now$/, '$1 đang online'],
       ];
+      PAT.push(...(window.VI_PAT_MORE || []));
+      // a line in CAPITALS whose normal spelling is known ("CASTLES & KINGS", "GO TO JAIL") gets the Vietnamese in capitals
+      let UP = null;
+      const upper = (s) => { if (!UP) { UP = {}; Object.keys(VI).forEach((k) => { if (/[a-z]/.test(k)) { const u = k.toUpperCase(); if (!(u in VI) && !(u in UP)) UP[u] = VI[k].toUpperCase(); } }); } return UP[s]; };
       // only exact lines are swapped, so names and chat stay as typed
+      const ORIG = new WeakMap();   // text node -> [English, Vietnamese], so switching back needs no reload
       const SKIP = '.chat-msg, #dg-feed, .logbox, .cf-list, #fr-chatwin .chat-list, input, textarea, script, style, [data-no-tr]';
       function tr(t) {
         const s = t.trim(); if (!s) return null;
         if (VI[s]) return t.replace(s, VI[s]);
         let out = s, hit = false;
         for (const [re, to] of PAT) { const n = out.replace(re, to); if (n !== out) { out = n; hit = true; } }
-        return hit ? t.replace(s, out) : null;
+        if (hit) return t.replace(s, out);
+        const u = /[A-Z]/.test(s) && !/[a-z]/.test(s) ? upper(s) : null;
+        return u ? t.replace(s, u) : null;
       }
       function walk(root) {
         if (!root) return;
-        if (root.nodeType === 3) { const e = root.parentElement; if (!e || e.closest(SKIP)) return; const v = tr(root.nodeValue); if (v !== null && v !== root.nodeValue) root.nodeValue = v; return; }
+        if (root.nodeType === 3) { const e = root.parentElement; if (!e || e.closest(SKIP)) return; const v = tr(root.nodeValue); if (v !== null && v !== root.nodeValue) { ORIG.set(root, [root.nodeValue, v]); root.nodeValue = v; } return; }
         if (root.nodeType !== 1 || root.closest(SKIP)) return;
         const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
         const list = []; while (w.nextNode()) list.push(w.currentNode);
         list.forEach(walk);
-        root.querySelectorAll('input[placeholder], textarea[placeholder]').forEach((i) => { const v = VI[i.placeholder]; if (v) i.placeholder = v; });
-        if (root.matches && root.matches('input[placeholder]') && VI[root.placeholder]) root.placeholder = VI[root.placeholder];
+        const ph = (i) => { const v = VI[i.placeholder]; if (v) { i.dataset.phEn = i.placeholder; i.placeholder = v; } };
+        root.querySelectorAll('input[placeholder], textarea[placeholder]').forEach(ph);
+        if (root.matches && root.matches('input[placeholder], textarea[placeholder]')) ph(root);
       }
-      // the switch: in the side menu (and so in the phone ☰ menu, which copies it)
+      // the switch: in the side menu (and so in the phone ☰ menu, which copies it), and a small EN/VI button next to
+      // the ♪ button in every game (Nov 2026, Inna: "allow language change on every page"). It switches at once, no
+      // reload, so a game in progress carries on.
+      const label = () => (LANG.code === 'vi' ? ['EN', 'English'] : ['VI', 'Tiếng Việt']);
+      function paintSwitches() {
+        const [f, n] = label();
+        const nb = document.getElementById('nav-lang'); if (nb) nb.innerHTML = `<span class="lang-flag">${f}</span><span>${n}</span>`;
+        const md = document.querySelector('#m-drawer #nav-lang, #m-drawer [data-lang-copy]'); if (md) md.innerHTML = `<span class="lang-flag">${f}</span><span>${n}</span>`;
+        document.querySelectorAll('.lang-mini').forEach((b) => { b.textContent = f; b.title = LANG.code === 'vi' ? 'Switch to English' : 'Chuyển sang Tiếng Việt'; });
+      }
       function addSwitch() {
         const nav = document.querySelector('aside.side nav'); if (!nav || document.getElementById('nav-lang')) return;
         const b = document.createElement('button');
         b.id = 'nav-lang'; b.className = (nav.querySelector('button[id^="nav-"]') || {}).className || '';
         b.setAttribute('onclick', 'setLang(LANG.code === "vi" ? "en" : "vi")'); b.setAttribute('data-no-tr', '');
-        b.innerHTML = `<span class="lang-flag">${LANG.code === 'vi' ? 'EN' : 'VI'}</span><span>${LANG.code === 'vi' ? 'English' : 'Tiếng Việt'}</span>`;
-        nav.appendChild(b);
+        nav.appendChild(b); paintSwitches();
       }
-      window.setLang = (c) => { try { localStorage.setItem('ps_lang', c); } catch (e) {} location.reload(); };
+      function addMini(root) {
+        (root && root.querySelectorAll ? root : document).querySelectorAll('button[onclick*="openSoundPanel"]').forEach((snd) => {
+          if (snd.nextElementSibling && snd.nextElementSibling.classList.contains('lang-mini')) return;
+          if (snd.closest('#mu-pop, aside.side, #m-drawer')) return;
+          const b = document.createElement('button');
+          b.className = (snd.className || '').replace(/\bgs-snd\b/, '') + ' lang-mini'; b.setAttribute('data-no-tr', '');
+          b.setAttribute('onclick', 'setLang(LANG.code === "vi" ? "en" : "vi")');
+          snd.after(b);
+        });
+        paintSwitches();
+      }
+      let obs = null;
+      function startVI() {
+        document.documentElement.lang = 'vi';
+        walk(document.body);
+        if (!obs) obs = new MutationObserver((ms) => {
+          for (const m of ms) {
+            if (m.type === 'characterData') walk(m.target);
+            else m.addedNodes.forEach(walk);
+          }
+        });
+        obs.observe(document.body, { childList: true, subtree: true, characterData: true });
+      }
+      function backToEN() {
+        if (obs) obs.disconnect();
+        document.documentElement.lang = 'en';
+        const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+        while (w.nextNode()) { const n = w.currentNode, o = ORIG.get(n); if (o && n.nodeValue === o[1]) n.nodeValue = o[0]; }
+        document.querySelectorAll('[data-ph-en]').forEach((i) => { i.placeholder = i.dataset.phEn; delete i.dataset.phEn; });
+      }
+      window.setLang = (c) => {
+        c = c === 'vi' ? 'vi' : 'en'; if (c === LANG.code) return;
+        try { localStorage.setItem('ps_lang', c); } catch (e) {}
+        LANG.code = c;
+        if (c === 'vi') startVI(); else backToEN();
+        paintSwitches();
+        document.dispatchEvent(new Event('ps-lang'));
+        if (typeof showToast === 'function') showToast(c === 'vi' ? 'Đã chuyển sang Tiếng Việt' : 'Switched to English', 'success');
+      };
+      window.VI_TABLE = VI;
       window.trVI = (s) => (LANG.code === 'vi' ? (tr(String(s)) || s) : s);
-      addSwitch();
-      if (LANG.code !== 'vi') return;
-      document.documentElement.lang = 'vi';
-      walk(document.body);
-      new MutationObserver((ms) => {
-        for (const m of ms) {
-          if (m.type === 'characterData') walk(m.target);
-          else m.addedNodes.forEach(walk);
-        }
-      }).observe(document.body, { childList: true, subtree: true, characterData: true });
+      addSwitch(); addMini(document);
+      // new game headers appear all the time: give each ♪ button its EN/VI neighbour
+      new MutationObserver((ms) => { for (const m of ms) for (const n of m.addedNodes) if (n.nodeType === 1 && (n.matches('button[onclick*="openSoundPanel"]') || n.querySelector('button[onclick*="openSoundPanel"]'))) { addMini(n.parentElement || n); return; } })
+        .observe(document.body, { childList: true, subtree: true });
+      if (LANG.code === 'vi') startVI();
     })();

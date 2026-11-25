@@ -123,7 +123,12 @@
         return seat === S.me ? document.getElementById('em-fab') : document.getElementById('gs-body');
       }
       // name boxes stacked in a column at the side (Pool on computers): the bubble pops out to their left
-      const sideways = (t) => window.innerWidth >= 1024 && !!t.closest('[data-bub="left"]');
+      // also any name box in a list stacked top-to-bottom (Landlord, Island Settlers, Whodunit, Mine Saboteurs): above it
+      // would cover the player above, so it pops out to the side facing the middle of the screen (Inna, Nov 2026)
+      const stacked = (t) => { const r = t.getBoundingClientRect(); return [t.previousElementSibling, t.nextElementSibling].some((x) => { if (!x) return false; const q = x.getBoundingClientRect(); return q.width > 0 && Math.abs(q.left - r.left) < 6 && Math.abs(q.width - r.width) < 40 && (q.bottom <= r.top + 4 || q.top >= r.bottom - 4); }); };
+      const sideways = (t) => window.innerWidth >= 1024 && (!!t.closest('[data-bub="left"]') || stacked(t));
+      // which way: towards the middle of the screen
+      const sideX = (r, w) => (r.left + r.width / 2 > window.innerWidth / 2 ? r.left - w - 14 : r.right + 14);
       function show(seat, id) {
         const S = table(), e = BY[id]; if (!S || !e || !S.seats[seat]) return;
         if (seat !== S.me && muted) return;
@@ -135,10 +140,10 @@
         b.el.classList.remove('on'); void b.el.offsetWidth; b.el.classList.add('on');
         const r = t.getBoundingClientRect(), w = 70, h = 70;
         let x = r.left + r.width / 2 - w / 2, y = r.top - h - 12, below = false;
-        if (sideways(t)) { x = r.left - w - 14; y = r.top + r.height / 2 - h / 2; }
+        if (sideways(t)) { x = sideX(r, w); y = r.top + r.height / 2 - h / 2; }
         else if (y < 6) { y = r.bottom + 12; below = true; }
         x = Math.max(6, Math.min(window.innerWidth - w - 6, x));
-        b.el.style.left = x + 'px'; b.el.style.top = y + 'px'; b.el.classList.toggle('below', below); b.el.classList.toggle('side', sideways(t));
+        b.el.style.left = x + 'px'; b.el.style.top = y + 'px'; b.el.classList.toggle('below', below); b.el.classList.toggle('side', sideways(t) && x < r.left); b.el.classList.toggle('side-r', sideways(t) && x > r.left);
         clearTimeout(b.timer); b.timer = setTimeout(() => b.el.classList.remove('on'), 3000);
       }
       window.emoteShow = show;
@@ -150,10 +155,10 @@
         let el = says[seat];
         if (!el || !document.body.contains(el)) { el = document.createElement('div'); el.className = 'em-say'; document.body.appendChild(el); says[seat] = el; }
         el.textContent = String(text).slice(0, 120);
-        el.classList.remove('on', 'below', 'side'); el.style.left = '0px'; el.style.top = '0px'; el.classList.add('on');
+        el.classList.remove('on', 'below', 'side', 'side-r'); el.style.left = '0px'; el.style.top = '0px'; el.classList.add('on');
         const r = t.getBoundingClientRect(), w = el.offsetWidth, h = el.offsetHeight;
         let x = r.left + r.width / 2 - w / 2, y = r.top - h - 12;
-        if (sideways(t)) { x = r.left - w - 14; y = r.top + r.height / 2 - h / 2; el.classList.add('side'); }
+        if (sideways(t)) { x = sideX(r, w); y = r.top + r.height / 2 - h / 2; el.classList.add(x > r.left ? 'side-r' : 'side'); }
         else if (y < 6) { y = r.bottom + 12; el.classList.add('below'); }
         el.style.left = Math.max(6, Math.min(window.innerWidth - w - 6, x)) + 'px'; el.style.top = y + 'px';
         clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), 5000);

@@ -135,3 +135,4 @@
     }
     /* bubble beside a name box (Pool's player column on computers): the pointer is on its right side */
     .em-bub.side::after, .em-say.side::after { left: auto; right: -10px; top: 50%; bottom: auto; margin: -6px 0 0; transform: rotate(-45deg); }
+    .em-bub.side-r::after, .em-say.side-r::after { left: -10px; right: auto; top: 50%; bottom: auto; margin: -6px 0 0; transform: rotate(135deg); }

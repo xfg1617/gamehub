@@ -975,6 +975,11 @@
     .chat-guest .btn-game { padding: 5px 10px; font-size: .75rem; }
     body.is-guest .chatbox .chat-form, body.is-guest .chatbox .chat-quick { display: none !important; }
     body.is-guest .chatbox .chat-guest { display: flex; }
+    /* "+ Friend" on another player's name tag at an online table (zz_friends.js) */
+    .fr-add-mini { position: absolute; top: -11px; left: -6px; z-index: 5; padding: 1px 6px; font-size: 10px; font-weight: 800; line-height: 1.4; color: #231505; background: #F5B041; border: 2px solid var(--ink); box-shadow: 0 2px 0 var(--ink); white-space: nowrap; cursor: pointer; }
+    .fr-add-mini.in { background: #34D399; }
+    .fr-add-mini:active { transform: translateY(2px); box-shadow: none; }
+    .fr-add-mini[disabled] { opacity: .5; }
     /* ===== ONLINE TABLES: lobby seats, the bar above an online game, the private-room game picker ===== */
     .np-seats { display: grid; gap: 6px; }
     .np-seat { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: #0A1624; border: 3px solid var(--ink); color: #9DB4CC; font-size: .875rem; min-width: 0; }
@@ -1249,6 +1254,7 @@
     }
     /* bubble beside a name box (Pool's player column on computers): the pointer is on its right side */
     .em-bub.side::after, .em-say.side::after { left: auto; right: -10px; top: 50%; bottom: auto; margin: -6px 0 0; transform: rotate(-45deg); }
+    .em-bub.side-r::after, .em-say.side-r::after { left: -10px; right: auto; top: 50%; bottom: auto; margin: -6px 0 0; transform: rotate(135deg); }
     /* =========================================================================
        FULL-SCREEN GAMES (Inna, Nov 2026): while a game is open (body.in-game) the side menu, the phone header
        and the footer step aside and the game uses the whole window. The move log hides behind "📜 Moves".
@@ -1667,15 +1673,15 @@
     }
     /* computers: a real table in the middle of the screen (replaces the old faint dashed oval) */
     @media (min-width: 1024px) {
-      body.in-game[data-game="poker"] #pk-table > .ring4, body.in-game[data-game="kittens"] #kk-opp > .r-mid, body.in-game[data-game="colorclash"] #cc-opp > .r-mid,
-      body.in-game[data-game="fibber"] #fb-opp > .r-mid, body.in-game[data-game="dominoes"] #gs-body .felt, body.in-game[data-game="blackjack"] #gs-body .felt { position: relative; isolation: isolate; }
-      body.in-game[data-game="poker"] #pk-table > .ring4::before, body.in-game[data-game="kittens"] #kk-opp > .r-mid::before, body.in-game[data-game="colorclash"] #cc-opp > .r-mid::before,
-      body.in-game[data-game="fibber"] #fb-opp > .r-mid::before, body.in-game[data-game="dominoes"] #gs-body .felt::before, body.in-game[data-game="blackjack"] #gs-body .felt::before {
+      body.in-game[data-game="poker"] #pk-table > .ring4, body.in-game[data-game="kittens"] #kk-opp, body.in-game[data-game="colorclash"] #cc-opp,
+      body.in-game[data-game="fibber"] #fb-opp, body.in-game[data-game="dominoes"] #gs-body .felt, body.in-game[data-game="blackjack"] #gs-body .felt { position: relative; isolation: isolate; }
+      body.in-game[data-game="poker"] #pk-table > .ring4::before, body.in-game[data-game="kittens"] #kk-opp::before, body.in-game[data-game="colorclash"] #cc-opp::before,
+      body.in-game[data-game="fibber"] #fb-opp::before, body.in-game[data-game="dominoes"] #gs-body .felt::before, body.in-game[data-game="blackjack"] #gs-body .felt::before {
         content: ''; position: absolute; inset: 2% 1%; z-index: -1; border: 0 !important; border-radius: 0 !important; pointer-events: none;
         clip-path: polygon(var(--tb-poly)); background: var(--tb-rim) 0 0 / var(--tb-rim-s), var(--tb-rimc);
       }
-      body.in-game[data-game="poker"] #pk-table > .ring4::after, body.in-game[data-game="kittens"] #kk-opp > .r-mid::after, body.in-game[data-game="colorclash"] #cc-opp > .r-mid::after,
-      body.in-game[data-game="fibber"] #fb-opp > .r-mid::after, body.in-game[data-game="dominoes"] #gs-body .felt::after, body.in-game[data-game="blackjack"] #gs-body .felt::after {
+      body.in-game[data-game="poker"] #pk-table > .ring4::after, body.in-game[data-game="kittens"] #kk-opp::after, body.in-game[data-game="colorclash"] #cc-opp::after,
+      body.in-game[data-game="fibber"] #fb-opp::after, body.in-game[data-game="dominoes"] #gs-body .felt::after, body.in-game[data-game="blackjack"] #gs-body .felt::after {
         content: ''; position: absolute; inset: calc(2% + 14px) calc(1% + 14px); z-index: -1; pointer-events: none; clip-path: polygon(var(--tb-poly));
         background: var(--tb-emb) center / min(34%, 240px) no-repeat, var(--tb-felt) 0 0 / var(--tb-felt-s), var(--tb-feltc);
       }
@@ -1683,6 +1689,10 @@
       body.in-game[data-game="poker"] #pk-table > .ring4::before { inset: 19% 9% 21%; }
       body.in-game[data-game="poker"] #pk-table > .ring4::after { inset: calc(19% + 14px) calc(9% + 14px) calc(21% + 14px); }
       body.in-game[data-game="poker"] #pk-table .r-mid::before { content: none !important; }
+      /* Uno, Kaboom Cats, Bullshit: the table also sits under the whole ring of seats (it was a thin strip on 1280 px) */
+      body.in-game:is([data-game="kittens"], [data-game="colorclash"], [data-game="fibber"]) :is(#kk-opp, #cc-opp, #fb-opp)::before { inset: 14% 4% 0; }
+      body.in-game:is([data-game="kittens"], [data-game="colorclash"], [data-game="fibber"]) :is(#kk-opp, #cc-opp, #fb-opp)::after { inset: calc(14% + 14px) calc(4% + 14px) 14px; }
+      body.in-game:is([data-game="kittens"], [data-game="colorclash"], [data-game="fibber"]) :is(#kk-opp, #cc-opp, #fb-opp) > .r-mid::before { content: none !important; }
     }
     /* the picker */
     .tbp { position: fixed; z-index: 95; left: 50%; top: 80px; transform: none; width: min(470px, calc(100vw - 16px)); background: #12304C; border: 3px solid var(--ink); box-shadow: 0 6px 0 var(--ink); padding: 10px 12px 12px; }
@@ -17285,7 +17295,12 @@
         return seat === S.me ? document.getElementById('em-fab') : document.getElementById('gs-body');
       }
       // name boxes stacked in a column at the side (Pool on computers): the bubble pops out to their left
-      const sideways = (t) => window.innerWidth >= 1024 && !!t.closest('[data-bub="left"]');
+      // also any name box in a list stacked top-to-bottom (Landlord, Island Settlers, Whodunit, Mine Saboteurs): above it
+      // would cover the player above, so it pops out to the side facing the middle of the screen (Inna, Nov 2026)
+      const stacked = (t) => { const r = t.getBoundingClientRect(); return [t.previousElementSibling, t.nextElementSibling].some((x) => { if (!x) return false; const q = x.getBoundingClientRect(); return q.width > 0 && Math.abs(q.left - r.left) < 6 && Math.abs(q.width - r.width) < 40 && (q.bottom <= r.top + 4 || q.top >= r.bottom - 4); }); };
+      const sideways = (t) => window.innerWidth >= 1024 && (!!t.closest('[data-bub="left"]') || stacked(t));
+      // which way: towards the middle of the screen
+      const sideX = (r, w) => (r.left + r.width / 2 > window.innerWidth / 2 ? r.left - w - 14 : r.right + 14);
       function show(seat, id) {
         const S = table(), e = BY[id]; if (!S || !e || !S.seats[seat]) return;
         if (seat !== S.me && muted) return;
@@ -17297,10 +17312,10 @@
         b.el.classList.remove('on'); void b.el.offsetWidth; b.el.classList.add('on');
         const r = t.getBoundingClientRect(), w = 70, h = 70;
         let x = r.left + r.width / 2 - w / 2, y = r.top - h - 12, below = false;
-        if (sideways(t)) { x = r.left - w - 14; y = r.top + r.height / 2 - h / 2; }
+        if (sideways(t)) { x = sideX(r, w); y = r.top + r.height / 2 - h / 2; }
         else if (y < 6) { y = r.bottom + 12; below = true; }
         x = Math.max(6, Math.min(window.innerWidth - w - 6, x));
-        b.el.style.left = x + 'px'; b.el.style.top = y + 'px'; b.el.classList.toggle('below', below); b.el.classList.toggle('side', sideways(t));
+        b.el.style.left = x + 'px'; b.el.style.top = y + 'px'; b.el.classList.toggle('below', below); b.el.classList.toggle('side', sideways(t) && x < r.left); b.el.classList.toggle('side-r', sideways(t) && x > r.left);
         clearTimeout(b.timer); b.timer = setTimeout(() => b.el.classList.remove('on'), 3000);
       }
       window.emoteShow = show;
@@ -17312,10 +17327,10 @@
         let el = says[seat];
         if (!el || !document.body.contains(el)) { el = document.createElement('div'); el.className = 'em-say'; document.body.appendChild(el); says[seat] = el; }
         el.textContent = String(text).slice(0, 120);
-        el.classList.remove('on', 'below', 'side'); el.style.left = '0px'; el.style.top = '0px'; el.classList.add('on');
+        el.classList.remove('on', 'below', 'side', 'side-r'); el.style.left = '0px'; el.style.top = '0px'; el.classList.add('on');
         const r = t.getBoundingClientRect(), w = el.offsetWidth, h = el.offsetHeight;
         let x = r.left + r.width / 2 - w / 2, y = r.top - h - 12;
-        if (sideways(t)) { x = r.left - w - 14; y = r.top + r.height / 2 - h / 2; el.classList.add('side'); }
+        if (sideways(t)) { x = sideX(r, w); y = r.top + r.height / 2 - h / 2; el.classList.add(x > r.left ? 'side-r' : 'side'); }
         else if (y < 6) { y = r.bottom + 12; el.classList.add('below'); }
         el.style.left = Math.max(6, Math.min(window.innerWidth - w - 6, x)) + 'px'; el.style.top = y + 'px';
         clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), 5000);
@@ -17456,6 +17471,43 @@
       }; });
     }
     window.frReqPop = frReqPop;
+    // a small "+ friend" button on the name tag of every other real player at an online table (Inna, Nov 2026:
+    // "allow to add friend"). Accounts only; it disappears once you're friends or the request is sent.
+    const TF = { state: {}, at: 0, busy: false, code: null };
+    async function tfLoad(force) {
+      if (TF.busy || (!force && Date.now() - TF.at < 20000)) return; TF.busy = true;
+      try { const all = await NET.friends(); const st = {}; (all.friends || []).forEach((f) => { st[f.id] = 'f'; }); (all.outgoing || []).forEach((f) => { st[f.id] = 'out'; }); (all.incoming || []).forEach((f) => { st[f.id] = 'in'; }); TF.state = st; TF.at = Date.now(); } catch (e) {}
+      TF.busy = false; tfPaint();
+    }
+    function tfPaint() {
+      const S = typeof NP !== 'undefined' && NP.S;
+      const on = S && S.online && !S.over && frOn() && !(NET.isGuest && NET.isGuest()) && S.game === (typeof activeGame !== 'undefined' ? activeGame : null);
+      document.querySelectorAll('.fr-add-mini').forEach((b) => { if (!on || TF.state[b.dataset.uid] === 'f' || TF.state[b.dataset.uid] === 'out') b.remove(); });
+      if (!on) return;
+      if (TF.code !== S.code) { TF.code = S.code; tfLoad(true); }
+      const root = document.getElementById('game-root'); if (!root) return;
+      S.seats.forEach((st, i) => {
+        if (!st || st.bot || !st.uid || i === S.me || (NET.me && st.uid === NET.me.id)) return;
+        const fs = TF.state[st.uid]; if (fs === 'f' || fs === 'out') return;
+        const host = [...root.querySelectorAll(`[id$="-seat-${i}"], [id$="-pl-${i}"]`)].find((e) => e.getBoundingClientRect().width > 0); if (!host) return;
+        const tag = host.matches('.tg-tag, .pl-tag') ? host : host.querySelector('.tg-tag, .pl-tag') || host;
+        if (tag.querySelector('.fr-add-mini')) return;
+        const b = document.createElement('button');
+        b.className = 'fr-add-mini' + (fs === 'in' ? ' in' : ''); b.dataset.uid = st.uid; b.type = 'button';
+        b.title = fs === 'in' ? `Accept ${st.name}'s friend request` : `Add ${st.name} as a friend`; b.textContent = fs === 'in' ? '✓ Accept' : '+ Friend';
+        b.onclick = async (e) => {
+          e.stopPropagation(); e.preventDefault(); b.disabled = true;
+          try { await NET.addFriend(st.uid); TF.state[st.uid] = fs === 'in' ? 'f' : 'out'; SFX.play('pop'); showToast(fs === 'in' ? `You and ${st.name} are now friends!` : `Friend request sent to ${st.name}.`, 'success'); b.remove(); }
+          catch (err) { b.disabled = false; showToast(err.message || 'Could not send', 'error'); }
+        };
+        if (getComputedStyle(tag).position === 'static') tag.style.position = 'relative';
+        tag.appendChild(b);
+      });
+    }
+    let tfQ = 0;
+    new MutationObserver(() => { if (tfQ) return; tfQ = requestAnimationFrame(() => { tfQ = 0; tfPaint(); }); }).observe(document.body, { childList: true, subtree: true });
+    setInterval(() => { const S = typeof NP !== 'undefined' && NP.S; if (S && S.online && !S.over) tfLoad(); }, 5000);
+    window.TF = TF;
     // a tap on a player's name tag at an online table = their player card
     document.addEventListener('click', (e) => {
       const S = typeof NP !== 'undefined' && NP.S; if (!S || !S.online || !frOn() || !e.target.closest) return;
@@ -18358,6 +18410,138 @@
       'Tap a tunnel piece on the map to make it cave in.': 'Chạm vào một mảnh đường hầm để làm sập nó.', 'LANDLORD': 'ĐỊA CHỦ', 'Hold to shake, let go to throw!': 'Giữ để lắc, thả ra để gieo!',
     };
     /* =========================================================================
+       VIETNAMESE, part 3 (Nov 2026, Inna: "some parts still show English, check all parts again").
+       Found by test/audit_vi.py, which opens every page and plays every game in Vietnamese and lists what is still
+       English. VI_MORE3 = exact lines, VI_PAT_MORE = lines with numbers or names in them. Player names stay as typed.
+       ========================================================================= */
+    window.VI_MORE3 = {
+      // pages, pickers, sign up, sound panel
+      'Just you. Pick your settings and play.': 'Chỉ mình bạn. Chọn cài đặt rồi chơi.', 'Daily #': 'Hằng ngày #',
+      'Guess today’s 5-letter word in 6 tries': 'Đoán từ 5 chữ cái của hôm nay trong 6 lần', 'Practice': 'Luyện tập',
+      'Choose a game': 'Chọn một trò chơi', 'Private Room': 'Phòng riêng', 'Ranked Match': 'Đấu xếp hạng', 'Unranked': 'Chưa xếp hạng',
+      'Pick a game. You get a code to send your friends.': 'Chọn một trò chơi. Bạn sẽ có mã để gửi cho bạn bè.',
+      'Pick a game. We pair you with a real player at your level, and the result changes your ranking for that game.': 'Chọn một trò chơi. Chúng tôi ghép bạn với người chơi thật cùng trình độ, và kết quả sẽ thay đổi thứ hạng của bạn ở trò đó.',
+      'Pick a game. (Online play is off, so the room plays on this device.)': 'Chọn một trò chơi. (Chơi online đang tắt, nên phòng sẽ chơi trên thiết bị này.)',
+      '♪ SOUND & MUSIC': '♪ ÂM THANH & NHẠC', 'Clicks, dice, cards, wins...': 'Tiếng bấm, xúc xắc, lá bài, chiến thắng...', 'Background tunes': 'Nhạc nền',
+      'VOLUME': 'ÂM LƯỢNG', 'WHICH MUSIC': 'NHẠC NÀO', 'Changes with the game': 'Đổi theo trò chơi', 'All of them': 'Tất cả', 'Music is off': 'Nhạc đang tắt',
+      'Off = only on the menus': 'Tắt = chỉ phát ở menu', 'Calm': 'Êm dịu', 'Upbeat': 'Sôi động', 'Jazzy': 'Jazz', 'Sunny': 'Tươi vui',
+      'Harbor Lights': 'Đèn Bến Cảng', 'Arcade Morning': 'Buổi Sáng Arcade', 'Card Room': 'Phòng Bài', 'Island Breeze': 'Gió Đảo',
+      'CREATE ACCOUNT': 'TẠO TÀI KHOẢN', 'Create account': 'Tạo tài khoản', 'Continue with Google': 'Tiếp tục với Google', 'or with email': 'hoặc bằng email',
+      'EMAIL': 'EMAIL', 'PASSWORD': 'MẬT KHẨU', 'Other players see this name. Your email is never shown to anyone.': 'Người khác sẽ thấy tên này. Email của bạn không bao giờ hiện cho ai.',
+      'I am 13 or older and I agree to the': 'Tôi từ 13 tuổi trở lên và đồng ý với', 'and': 'và', 'Privacy Policy': 'Chính sách bảo mật', 'Terms': 'Điều khoản',
+      'Your account starts fresh at level 1, and from then on your XP, stats, streaks and rankings are saved so you can play from any device.': 'Tài khoản mới bắt đầu ở cấp 1, rồi từ đó XP, thành tích, chuỗi ngày và thứ hạng được lưu lại để bạn chơi trên mọi thiết bị.',
+      'Accounts need the online service. Try again in a moment.': 'Tài khoản cần dịch vụ online. Hãy thử lại sau giây lát.',
+      'Friends need the online service. Check your connection and refresh the page.': 'Bạn bè cần dịch vụ online. Kiểm tra kết nối rồi tải lại trang.',
+      'ACCOUNT': 'TÀI KHOẢN', 'Member since': 'Thành viên từ', 'BEST STREAK': 'CHUỖI DÀI NHẤT', 'FAVORITE GAME': 'TRÒ YÊU THÍCH', 'WIN RATE': 'TỈ LỆ THẮNG',
+      'NOT PLAYED': 'CHƯA CHƠI', '▲ Click a game to see your stats and history for it.': '▲ Bấm vào một trò để xem thành tích và lịch sử của bạn.',
+      'ELO': 'ELO', 'TOP 3': 'TOP 3', 'HOT': 'HOT', 'No ranked Chess games yet. Play an': 'Chưa có ván Cờ vua xếp hạng nào. Hãy chơi một ván', 'to be first on the board!': 'để đứng đầu bảng!',
+      // badges
+      'First Win': 'Trận thắng đầu', 'Win any match': 'Thắng một trận bất kỳ', 'Sharpshooter': 'Xạ thủ', 'Hit 45%+ of your Naval shots': 'Bắn trúng từ 45% trở lên trong Hải chiến',
+      'Admiral': 'Đô đốc', 'Win 5 Sea Battle matches': 'Thắng 5 trận Hải chiến', 'Word Wizard': 'Phù thủy chữ', 'Solve a daily in 3 guesses or fewer': 'Giải từ hằng ngày trong tối đa 3 lần đoán',
+      'On Fire': 'Đang cháy', 'Reach a 7-day Daily streak': 'Đạt chuỗi 7 ngày liên tiếp', 'Connector': 'Bậc thầy nối', 'Win 3 Four-in-a-Row matches': 'Thắng 3 trận Bốn liên tiếp',
+      'Explorer': 'Nhà thám hiểm', 'Play 5 different games': 'Chơi 5 trò khác nhau', 'Chess Mind': 'Kỳ thủ', 'Win 3 Chess games': 'Thắng 3 ván Cờ vua',
+      'High Roller': 'Tay chơi lớn', 'Grow your Blackjack bank to 2500 chips': 'Nâng quỹ Xì dách lên 2500 chip', 'Pin Pal': 'Bạn của Ky', 'Score 150+ in Bowling': 'Ghi từ 150 điểm Bowling',
+      'Word Master': 'Bậc thầy chữ', 'Earn 3 stars in Word Connect': 'Đạt 3 sao trong Nối Chữ', 'Sleuth': 'Thám tử', 'Spot the impostor 3 times': 'Tìm ra kẻ mạo danh 3 lần',
+      // shared game words
+      'Your time': 'Thời gian của bạn', 'No timer': 'Không giới hạn', 'TABLE': 'BÀN', 'DEALER': 'NHÀ CÁI', 'CPU': 'MÁY', 'Leave game': 'Rời ván',
+      'End turn': 'Kết thúc lượt', 'Trade': 'Đổi', 'TOTAL': 'TỔNG', 'New match': 'Trận mới', 'Get ready': 'Chuẩn bị', 'Your turn.': 'Lượt của bạn.',
+      'Medium AI': 'Máy (Vừa)', 'Smart AI': 'Máy (Giỏi)', 'AI (Medium)': 'Máy (Vừa)', 'Easy AI': 'Máy (Dễ)', 'Hard AI': 'Máy (Khó)', 'Unbeatable AI': 'Máy (Bất bại)',
+      'The table is empty': 'Bàn đang trống', 'EMPTY': 'TRỐNG', 'DISCARD': 'BÀI ĐÃ ĐÁNH', 'Draw a card': 'Rút một lá', 'Play cards, then': 'Đánh bài, rồi',
+      // poker / blackjack
+      'Fold': 'Bỏ bài', 'Min': 'Tối thiểu', '½ pot': '½ pot', 'Raise to': 'Tố lên', 'All in': 'Tất tay', 'Xem/Theo': 'Xem/Theo', 'BETTING...': 'ĐANG ĐẶT CƯỢC...',
+      'DEALER STANDS ON 17 · BLACKJACK PAYS 3:2': 'NHÀ CÁI DỪNG Ở 17 · BLACKJACK ĂN 3:2', 'Blackjack!': 'Blackjack!',
+      // pool
+      'Break! Hold the table and drag to aim, then pull the power bar back and let go.': 'Phá bi! Giữ bàn và kéo để ngắm, rồi kéo thanh lực về sau và thả ra.',
+      'CENTRE': 'GIỮA', 'FINE AIM': 'NGẮM TINH', 'HIT POINT': 'ĐIỂM CHẠM', 'POWER': 'LỰC', 'TABLE OPEN': 'BÀN MỞ', 'SOLIDS': 'BI TRƠN', 'STRIPES': 'BI SỌC',
+      'PULL BACK  ◀  THEN LET GO TO SHOOT': 'KÉO VỀ  ◀  RỒI THẢ ĐỂ BẮN', 'Ball in hand: drag the cue ball where you want it': 'Bi trong tay: kéo bi cái đến chỗ bạn muốn',
+      // checkers / tic-tac-toe / four-in-a-row
+      'You captured': 'Bạn đã ăn', 'AI captured': 'Máy đã ăn', 'They captured': 'Đối thủ đã ăn', 'Captures are': 'Bắt quân là', 'forced': 'bắt buộc',
+      '. Keep jumping if you can. Reach the far row to become a king.': '. Nhảy tiếp nếu được. Đến hàng cuối để thành vua.',
+      // bowling
+      'How to throw:': 'Cách ném:', 'Strike (X)': 'Strike (X)', 'Spare (/)': 'Spare (/)', 'Frame': 'Khung',
+      'press on the ball and hold. Slide left or right to pick your spot, then flick it up the lane and let go. A faster flick throws a faster ball.': 'nhấn giữ quả bóng. Trượt trái hoặc phải để chọn chỗ, rồi vuốt lên đường lăn và thả ra. Vuốt càng nhanh bóng càng nhanh.',
+      // wall maze
+      'Reach the opposite side first! Your goal is the top edge.': 'Về tới phía bên kia trước! Đích của bạn là cạnh trên.', 'YOUR TURN: DO ONE': 'LƯỢT CỦA BẠN: LÀM MỘT VIỆC',
+      '🚶 Tap a': '🚶 Chạm vào một', 'glowing square': 'ô đang sáng', 'to move.': 'để đi.', '🌿 Tap a': '🌿 Chạm vào một', 'gap between squares': 'khe giữa các ô', 'to plant a hedge there.': 'để trồng hàng rào ở đó.',
+      // island settlers
+      'YOUR RESOURCES': 'TÀI NGUYÊN CỦA BẠN', 'BANK 4:1': 'NGÂN HÀNG 4:1', 'BANK 3:1': 'NGÂN HÀNG 3:1', 'Road': 'Đường', 'Village': 'Làng', 'Town': 'Thị trấn', 'village': 'làng', 'road': 'đường',
+      '🎲 Roll': '🎲 Gieo', '🤝 Trade with players': '🤝 Đổi với người chơi', 'Place your first': 'Đặt', 'on a glowing corner.': 'đầu tiên ở một góc đang sáng.',
+      // landlord
+      '🎲 SHAKE & ROLL': '🎲 LẮC & GIEO', 'Hold to shake, let go to throw!': 'Giữ để lắc, thả ra để gieo!', 'START': 'XUẤT PHÁT', 'JAIL': 'NHÀ TÙ', 'FREE PARKING': 'BÃI ĐỖ MIỄN PHÍ', 'GO TO JAIL': 'VÀO TÙ',
+      'MYSTERY BOX': 'HỘP BÍ ẨN', 'MYSTERY': 'BÍ ẨN', 'SURPRISE': 'BẤT NGỜ', 'Free Parking': 'Bãi đỗ miễn phí', 'Go To Jail': 'Vào tù', 'Jail / Just Visiting': 'Nhà tù / Chỉ ghé thăm',
+      'Mystery Box': 'Hộp bí ẩn', 'Surprise': 'Bất ngờ', 'Income Tax': 'Thuế thu nhập', 'Luxury Tax': 'Thuế xa xỉ', 'Waterworks': 'Nhà máy nước', 'Wind Farm': 'Trại điện gió',
+      'Coastal Rail': 'Ga Ven Biển', 'Harbor Rail': 'Ga Bến Cảng', 'Mountain Rail': 'Ga Miền Núi', 'Prairie Rail': 'Ga Đồng Cỏ',
+      'Anchor Alley': 'Hẻm Mỏ Neo', 'Bazaar Square': 'Quảng trường Chợ', 'Birch Boulevard': 'Đại lộ Bạch Dương', 'Blossom Way': 'Đường Hoa Nở', 'Cedar Court': 'Sân Tuyết Tùng',
+      'Cherry Court': 'Sân Anh Đào', 'Crimson Court': 'Sân Đỏ Thắm', 'Dockside Lane': 'Ngõ Bến Tàu', 'Emerald Avenue': 'Đại lộ Ngọc Bích', 'Firehouse Lane': 'Ngõ Cứu Hỏa',
+      'Forest Gate': 'Cổng Rừng', 'Gold Coast': 'Bờ Biển Vàng', 'Grand Boulevard': 'Đại lộ Lớn', 'Harvest Road': 'Đường Mùa Gặt', 'Lemon Lane': 'Ngõ Chanh', 'Maple Street': 'Phố Cây Phong',
+      'Market Street': 'Phố Chợ', 'Peach Plaza': 'Quảng trường Đào', 'Pine Ridge': 'Đồi Thông', 'Ruby Row': 'Dãy Hồng Ngọc', 'Skyline Tower': 'Tháp Chọc Trời', 'Sunny Side': 'Phía Nắng',
+      'YOUR PROPERTIES': 'ĐẤT CỦA BẠN', '🏠 Build / Mortgage': '🏠 Xây / Thế chấp', 'Mortgage': 'Thế chấp', 'Unmortgage': 'Chuộc lại', 'Done': 'Xong',
+      'Build rule: land on your own plot to build one house there.': 'Luật xây: dừng ở đất của mình để xây một nhà ở đó.', 'Build rule: own the whole colour set, then build evenly.': 'Luật xây: có đủ bộ màu, rồi xây đều.',
+      // whodunit
+      'DETECTIVE NOTEBOOK': 'SỔ TAY THÁM TỬ', 'TAP TO MARK': 'CHẠM ĐỂ ĐÁNH DẤU', 'SUSPECTS': 'NGHI PHẠM', 'TOOLS': 'CÔNG CỤ', 'ROOMS': 'CĂN PHÒNG', 'Tap a glowing room to walk there.': 'Chạm vào phòng đang sáng để đi đến đó.',
+      'Garden Trowel': 'Xẻng làm vườn', 'Frying Pan': 'Chảo rán', 'Golf Club': 'Gậy golf', 'Silver Teapot': 'Ấm trà bạc', 'Fishing Rod': 'Cần câu', 'Umbrella': 'Cái ô',
+      'Greenhouse': 'Nhà kính', 'Library': 'Thư viện', 'Observatory': 'Đài thiên văn', 'Music Room': 'Phòng nhạc', 'Grand Hall': 'Đại sảnh', 'Kitchen': 'Nhà bếp',
+      'Wine Cellar': 'Hầm rượu', 'Game Room': 'Phòng trò chơi', 'Boathouse': 'Nhà thuyền',
+      'Captain Reed': 'Thuyền trưởng Reed', 'Lady Juniper': 'Quý bà Juniper', 'Professor Finch': 'Giáo sư Finch', 'Nanny Opal': 'Vú em Opal', 'Baron Vex': 'Nam tước Vex', 'Chef Saffron': 'Đầu bếp Saffron',
+      // castles & kings
+      'Manor': 'Trang viên', 'Castle': 'Lâu đài', 'Palace': 'Cung điện', 'Shrine': 'Miếu', 'Chapel': 'Nhà nguyện', 'Abbey': 'Tu viện', 'Cathedral': 'Nhà thờ lớn',
+      'Inn': 'Quán trọ', 'Market': 'Chợ', 'Trading Post': 'Trạm buôn', 'Harbor': 'Bến cảng', 'Guild Hall': 'Hội quán', 'Town Hall': 'Tòa thị chính',
+      'Watchtower': 'Tháp canh', 'Barracks': 'Doanh trại', 'Armory': 'Kho vũ khí', 'Fortress': 'Pháo đài', 'Great Wall': 'Vạn Lý Trường Thành', 'Dragon Gate': 'Cổng Rồng', 'Clock Tower': 'Tháp đồng hồ',
+      'Shadow': 'Bóng Đêm', 'Pickpocket': 'Kẻ Móc Túi', 'Trader': 'Lái Buôn', 'Monarch': 'Nhà Vua', 'Abbot': 'Tu Viện Trưởng', 'Merchant': 'Thương Nhân', 'Architect': 'Kiến Trúc Sư', 'Captain': 'Thuyền Trưởng',
+      'Name a character: they miss their whole turn this round.': 'Gọi tên một nhân vật: người đó mất cả lượt vòng này.',
+      'Name a character: when their turn starts, you take all their gold.': 'Gọi tên một nhân vật: khi lượt họ bắt đầu, bạn lấy hết vàng của họ.',
+      'Draw 2 extra building cards.': 'Rút thêm 2 lá công trình.', 'Take the crown (pick first next round). +1 gold for each royal building.': 'Lấy vương miện (chọn trước ở vòng sau). +1 vàng cho mỗi công trình hoàng gia.',
+      '+1 gold for each faith building. The Captain can’t touch your town.': '+1 vàng cho mỗi công trình tôn giáo. Thuyền Trưởng không động được vào thị trấn của bạn.',
+      '+1 gold, and +1 for each trade building.': '+1 vàng, và +1 cho mỗi công trình thương mại.', 'Draw 2 extra cards and build up to 3 buildings.': 'Rút thêm 2 lá và xây tối đa 3 công trình.',
+      '+1 gold for each guard building. Pay 1 less than its cost to knock down a building.': '+1 vàng cho mỗi công trình quân sự. Trả ít hơn giá 1 vàng để phá một công trình.',
+      'No buildings yet': 'Chưa có công trình', 'YOUR BUILDING CARDS · tap to build': 'LÁ CÔNG TRÌNH CỦA BẠN · chạm để xây', 'Choose your character for this round:': 'Chọn nhân vật cho vòng này:',
+      // find the impostor
+      'CATEGORY': 'CHỦ ĐỀ', 'SECRET WORD': 'TỪ BÍ MẬT', 'YOUR WORD': 'TỪ CỦA BẠN', 'TAP TO REVEAL': 'CHẠM ĐỂ XEM', "I'm ready": 'Tôi sẵn sàng', 'Nature': 'Thiên nhiên',
+      'different': 'khác', 'word. It could be you! Everybody else has the same word.': 'từ. Có thể là bạn! Mọi người còn lại có cùng một từ.',
+      // mine saboteurs
+      'RASCAL': 'KẺ PHÁ HOẠI', 'DIGGER': 'THỢ ĐÀO', '😈 You are a': '😈 Bạn là', '⛏ You are a': '⛏ Bạn là', ': secretly stop the tunnel reaching the gold.': ': bí mật ngăn đường hầm tới vàng.',
+      ': dig a tunnel to the gold. Watch out for Rascals!': ': đào đường hầm tới vàng. Coi chừng Kẻ phá hoại!',
+      // bullshit
+      'NOW:': 'BÂY GIỜ:', 'Pick 1 to 4 cards and say they are': 'Chọn 1 đến 4 lá và nói chúng là', 'Put down': 'Đặt xuống', '. Believe it?': '. Tin không?',
+      'Aces': 'Át', 'Twos': 'Hai', 'Threes': 'Ba', 'Fours': 'Bốn', 'Fives': 'Năm', 'Sixes': 'Sáu', 'Sevens': 'Bảy', 'Eights': 'Tám', 'Nines': 'Chín', 'Tens': 'Mười', 'Jacks': 'Bồi', 'Queens': 'Đầm', 'Kings': 'Già',
+      'ACES': 'ÁT', 'TWOS': 'HAI', 'THREES': 'BA', 'FOURS': 'BỐN', 'FIVES': 'NĂM', 'SIXES': 'SÁU', 'SEVENS': 'BẢY', 'EIGHTS': 'TÁM', 'NINES': 'CHÍN', 'TENS': 'MƯỜI', 'JACKS': 'BỒI', 'QUEENS': 'ĐẦM', 'KINGS': 'GIÀ',
+      // notices seen at the start of games
+      'A crime at the manor! Find': 'Một vụ án tại trang viên! Hãy tìm ra', 'who': 'ai', 'did it,': 'đã gây án,', 'with what': 'bằng gì', 'where': 'ở đâu',
+      '. Everyone starts in the Grand Hall.': '. Mọi người bắt đầu ở Đại sảnh.', "Game on! Don't draw the": 'Bắt đầu! Đừng rút phải', '. Everyone starts with one': '. Ai cũng bắt đầu với một',
+'. Pick corners touching good numbers: 6 and 8 come up the most.': '. Chọn góc cạnh các số tốt: 6 và 8 ra nhiều nhất.', 'Give...': 'Đưa...', 'Get...': 'Nhận...',
+            '+ Friend': '+ Kết bạn', '✓ Accept': '✓ Đồng ý',
+      'It was a lie!': 'Là nói dối!', 'It was true!': 'Là thật!', 'shouts': 'hô', 'Places': 'Địa điểm', 'ENTER': 'NHẬP',
+      'press on the ball and hold. Slide left or right to pick your spot, then flick it up the lane and let go. A faster flick throws a faster ball, but it is harder to aim. Curve your flick at the end to put spin on it. Keyboard: ← → to move, hold Space and let go to throw.': 'nhấn giữ quả bóng. Trượt trái hoặc phải để chọn chỗ, rồi vuốt lên đường lăn và thả ra. Vuốt càng nhanh bóng càng nhanh nhưng khó ngắm hơn. Uốn cong cú vuốt ở cuối để tạo xoáy. Bàn phím: ← → để di chuyển, giữ Space rồi thả để ném.',
+      // uno
+      'COLOR': 'MÀU', 'Click a glowing card to play it, or draw from the pile.': 'Bấm vào lá đang sáng để đánh, hoặc rút từ chồng bài.',
+    };
+    const VI_RES = { Clay: 'Đất sét', Grain: 'Lúa', Timber: 'Gỗ', Wool: 'Len', Stone: 'Đá' };
+    const VI_COL = { RED: 'ĐỎ', GREEN: 'XANH LÁ', BLUE: 'XANH DƯƠNG', YELLOW: 'VÀNG' };
+    const VI_RANK1 = { Ace: 'Át', Two: 'Hai', Three: 'Ba', Four: 'Bốn', Five: 'Năm', Six: 'Sáu', Seven: 'Bảy', Eight: 'Tám', Nine: 'Chín', Ten: 'Mười', Jack: 'Bồi', Queen: 'Đầm', King: 'Già' };
+    const vr = (w) => VI_RANK1[w] || VI_RANK1[w.replace(/e?s$/, '')] || window.VI_MORE3[w] || w;
+    window.VI_PAT_MORE = [
+      [/^(\d[\d,]*) chips$/, '$1 chip'], [/^(\d[\d,]*) chips · bet (\d+)$/, '$1 chip · cược $2'], [/^(\d+) cards?$/, '$1 lá'], [/^(\d+) tiles?$/, '$1 quân'], [/^(\d+) left$/, 'còn $1'],
+      [/^(\d+) (Clay|Grain|Timber|Wool|Stone)$/, (m, n, r) => `${n} ${VI_RES[r]}`], [/^(\d+) hot potato(?:es)? hidden$/, '$1 củ khoai nóng đang giấu'],
+      [/^(\d+) \/ (\d+) POINTS$/, '$1 / $2 ĐIỂM'], [/^(\d+) STEPS? TO GO$/, 'CÒN $1 BƯỚC'], [/^(\d+) steps? · 🌿 (\d+) hedges?$/, '$1 bước · 🌿 $2 hàng rào'],
+      [/^BET (\d+)$/, 'CƯỢC $1'], [/^Bet (\d+)$/, 'Cược $1'], [/^Call (\d+)$/, 'Theo $1'], [/^Raise (\d+)$/, 'Tố $1'],
+      [/^BONEYARD · (\d+)$/, 'KHO QUÂN · $1'], [/^DECK (\d+)$/, 'BỘ BÀI $1'], [/^DRAW PILE · (\d+)$/, 'CHỒNG RÚT · $1'], [/^DRAW · (\d+)$/, 'RÚT · $1'], [/^SHOE · (\d+)$/, 'HỘP BÀI · $1'],
+      [/^PILE · (\d+) CARDS?$/, 'CHỒNG BÀI · $1 LÁ'],
+      [/^(.+) is thinking\.\.\.$/, '$1 đang suy nghĩ...'], [/^(.+) is choosing a character\.\.\.$/, '$1 đang chọn nhân vật...'], [/^(.+) is choosing cards\.\.\.$/, '$1 đang chọn bài...'],
+      [/^(.+) says$/, '$1 nói'], [/^· (.+) said (\d+) (\w+)$/, (m, a, n, r) => `· ${a} nói ${n} lá ${vr(r)}`],
+      [/^HAND (\d+) \/ (\d+)$/, 'VÁN $1 / $2'], [/^Hand (\d+) · (\d+) players left · blinds rise every (\d+) hands$/, 'Ván $1 · còn $2 người · cược mù tăng mỗi $3 ván'],
+      [/^GAME (\d+) · FIRST TO (\d+)$/, 'VÁN $1 · AI ĐẠT $2 TRƯỚC THẮNG'], [/^ROUND (\d+)$/, 'VÒNG $1'], [/^ROUND (\d+) · TO (\d+)$/, 'VÒNG $1 · ĐẾN $2'], [/^ROUND (\d+)\/(\d+)$/, 'VÒNG $1/$2'],
+      [/^vs (.+)$/, 'đấu với $1'], [/^(.+) \(you\)$/, '$1 (bạn)'],
+      [/^🂠 (\d+) cards · 🏠 (\d+) · 🏰 (\d+) · road (\d+)$/, '🂠 $1 lá · 🏠 $2 · 🏰 $3 · đường $4'],
+      [/^👑 Crown: (.+) · First to (\d+) buildings ends the game\.$/, '👑 Vương miện: $1 · Ai có $2 công trình trước thì kết thúc ván.'],
+      [/^(.+): Frame (\d+), ball (\d+)\. Grab the ball and flick it up the lane\.$/, '$1: Khung $2, bóng $3. Giữ bóng và vuốt lên đường lăn.'],
+      [/^([♠♥♦♣★◆] )?(RED|GREEN|BLUE|YELLOW)( [↻↺])?$/, (m, a, c, b) => `${a || ''}${VI_COL[c]}${b || ''}`],
+      [/^One of the (\d+) players has a$/, 'Một trong $1 người chơi có một'],
+      [/^(\d+) houses? · house \$(\d+)$/, '$1 nhà · giá nhà $$$2'], [/^Hotel$/, 'Khách sạn'], [/^Your cash: \$(\d+)$/, 'Tiền của bạn: $$$1'],
+      [/^YOUR PROPERTIES · \$(\d+)$/, 'ĐẤT CỦA BẠN · $$$1'],
+      [/^picks up the pile \((\d+) cards?\)\.$/, 'nhặt cả chồng bài ($1 lá).'], [/^(\d+) (Aces?|Twos?|Threes?|Fours?|Fives?|Sixes?|Sevens?|Eights?|Nines?|Tens?|Jacks?|Queens?|Kings?)$/, (m, n, r) => `${n} lá ${vr(r)}`],
+      [/^(\d+)\/(\d+) TRIED$/, '$1/$2 ĐÃ THỬ'],
+    ];
+    /* =========================================================================
        LANGUAGE: English / Tiếng Việt (Nov 2026, Inna; stage 1). The page is written in English; when Vietnamese is
        picked, every piece of text that exactly matches a line in VI below is swapped as it appears on screen (a
        MutationObserver), plus a few patterns ("3-6 PLAYERS · ~20 MIN"). Things people type (chat, names) are never
@@ -18458,6 +18642,7 @@
       };
       Object.keys(window.VI_MORE || {}).forEach((k) => { if (!(k in VI)) VI[k] = window.VI_MORE[k]; });   // part 1: zz_i18n_vi.js
       Object.keys(window.VI_MORE2 || {}).forEach((k) => { if (!(k in VI)) VI[k] = window.VI_MORE2[k]; });   // part 2: zz_i18n_vi2.js
+      Object.keys(window.VI_MORE3 || {}).forEach((k) => { if (!(k in VI)) VI[k] = window.VI_MORE3[k]; });   // part 3: zz_i18n_vi3.js (audit)
       const PAT = [
         [/^(\d+)[–-](\d+) PLAYERS/, (m, a, b) => `${a}-${b} NGƯỜI`], [/(\d+) PLAYERS\b/g, '$1 NGƯỜI'], [/~(\d+) MIN\b/g, '~$1 PHÚT'], [/(\d+) MIN\b/g, '$1 PHÚT'],
         [/\bSOLO\b/g, 'CHƠI ĐƠN'], [/\bCHIPS\b/g, 'CHIP'], [/^(\d+) GAMES$/, '$1 TRÒ'], [/^● (\d+) online$/, '● $1 online'], [/^(\d+) chatting$/, '$1 đang trò chuyện'],
@@ -18480,46 +18665,96 @@
         [/^Waiting for friends to join \(at least (\d+) players\)\.\.\.$/, 'Đang chờ bạn bè vào phòng (ít nhất $1 người)...'],
         [/^Waiting for (.+)\.\.\.$/, 'Đang chờ $1...'], [/^(\d+) online now$/, '$1 đang online'],
       ];
+      PAT.push(...(window.VI_PAT_MORE || []));
+      // a line in CAPITALS whose normal spelling is known ("CASTLES & KINGS", "GO TO JAIL") gets the Vietnamese in capitals
+      let UP = null;
+      const upper = (s) => { if (!UP) { UP = {}; Object.keys(VI).forEach((k) => { if (/[a-z]/.test(k)) { const u = k.toUpperCase(); if (!(u in VI) && !(u in UP)) UP[u] = VI[k].toUpperCase(); } }); } return UP[s]; };
       // only exact lines are swapped, so names and chat stay as typed
+      const ORIG = new WeakMap();   // text node -> [English, Vietnamese], so switching back needs no reload
       const SKIP = '.chat-msg, #dg-feed, .logbox, .cf-list, #fr-chatwin .chat-list, input, textarea, script, style, [data-no-tr]';
       function tr(t) {
         const s = t.trim(); if (!s) return null;
         if (VI[s]) return t.replace(s, VI[s]);
         let out = s, hit = false;
         for (const [re, to] of PAT) { const n = out.replace(re, to); if (n !== out) { out = n; hit = true; } }
-        return hit ? t.replace(s, out) : null;
+        if (hit) return t.replace(s, out);
+        const u = /[A-Z]/.test(s) && !/[a-z]/.test(s) ? upper(s) : null;
+        return u ? t.replace(s, u) : null;
       }
       function walk(root) {
         if (!root) return;
-        if (root.nodeType === 3) { const e = root.parentElement; if (!e || e.closest(SKIP)) return; const v = tr(root.nodeValue); if (v !== null && v !== root.nodeValue) root.nodeValue = v; return; }
+        if (root.nodeType === 3) { const e = root.parentElement; if (!e || e.closest(SKIP)) return; const v = tr(root.nodeValue); if (v !== null && v !== root.nodeValue) { ORIG.set(root, [root.nodeValue, v]); root.nodeValue = v; } return; }
         if (root.nodeType !== 1 || root.closest(SKIP)) return;
         const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
         const list = []; while (w.nextNode()) list.push(w.currentNode);
         list.forEach(walk);
-        root.querySelectorAll('input[placeholder], textarea[placeholder]').forEach((i) => { const v = VI[i.placeholder]; if (v) i.placeholder = v; });
-        if (root.matches && root.matches('input[placeholder]') && VI[root.placeholder]) root.placeholder = VI[root.placeholder];
+        const ph = (i) => { const v = VI[i.placeholder]; if (v) { i.dataset.phEn = i.placeholder; i.placeholder = v; } };
+        root.querySelectorAll('input[placeholder], textarea[placeholder]').forEach(ph);
+        if (root.matches && root.matches('input[placeholder], textarea[placeholder]')) ph(root);
       }
-      // the switch: in the side menu (and so in the phone ☰ menu, which copies it)
+      // the switch: in the side menu (and so in the phone ☰ menu, which copies it), and a small EN/VI button next to
+      // the ♪ button in every game (Nov 2026, Inna: "allow language change on every page"). It switches at once, no
+      // reload, so a game in progress carries on.
+      const label = () => (LANG.code === 'vi' ? ['EN', 'English'] : ['VI', 'Tiếng Việt']);
+      function paintSwitches() {
+        const [f, n] = label();
+        const nb = document.getElementById('nav-lang'); if (nb) nb.innerHTML = `<span class="lang-flag">${f}</span><span>${n}</span>`;
+        const md = document.querySelector('#m-drawer #nav-lang, #m-drawer [data-lang-copy]'); if (md) md.innerHTML = `<span class="lang-flag">${f}</span><span>${n}</span>`;
+        document.querySelectorAll('.lang-mini').forEach((b) => { b.textContent = f; b.title = LANG.code === 'vi' ? 'Switch to English' : 'Chuyển sang Tiếng Việt'; });
+      }
       function addSwitch() {
         const nav = document.querySelector('aside.side nav'); if (!nav || document.getElementById('nav-lang')) return;
         const b = document.createElement('button');
         b.id = 'nav-lang'; b.className = (nav.querySelector('button[id^="nav-"]') || {}).className || '';
         b.setAttribute('onclick', 'setLang(LANG.code === "vi" ? "en" : "vi")'); b.setAttribute('data-no-tr', '');
-        b.innerHTML = `<span class="lang-flag">${LANG.code === 'vi' ? 'EN' : 'VI'}</span><span>${LANG.code === 'vi' ? 'English' : 'Tiếng Việt'}</span>`;
-        nav.appendChild(b);
+        nav.appendChild(b); paintSwitches();
       }
-      window.setLang = (c) => { try { localStorage.setItem('ps_lang', c); } catch (e) {} location.reload(); };
+      function addMini(root) {
+        (root && root.querySelectorAll ? root : document).querySelectorAll('button[onclick*="openSoundPanel"]').forEach((snd) => {
+          if (snd.nextElementSibling && snd.nextElementSibling.classList.contains('lang-mini')) return;
+          if (snd.closest('#mu-pop, aside.side, #m-drawer')) return;
+          const b = document.createElement('button');
+          b.className = (snd.className || '').replace(/\bgs-snd\b/, '') + ' lang-mini'; b.setAttribute('data-no-tr', '');
+          b.setAttribute('onclick', 'setLang(LANG.code === "vi" ? "en" : "vi")');
+          snd.after(b);
+        });
+        paintSwitches();
+      }
+      let obs = null;
+      function startVI() {
+        document.documentElement.lang = 'vi';
+        walk(document.body);
+        if (!obs) obs = new MutationObserver((ms) => {
+          for (const m of ms) {
+            if (m.type === 'characterData') walk(m.target);
+            else m.addedNodes.forEach(walk);
+          }
+        });
+        obs.observe(document.body, { childList: true, subtree: true, characterData: true });
+      }
+      function backToEN() {
+        if (obs) obs.disconnect();
+        document.documentElement.lang = 'en';
+        const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+        while (w.nextNode()) { const n = w.currentNode, o = ORIG.get(n); if (o && n.nodeValue === o[1]) n.nodeValue = o[0]; }
+        document.querySelectorAll('[data-ph-en]').forEach((i) => { i.placeholder = i.dataset.phEn; delete i.dataset.phEn; });
+      }
+      window.setLang = (c) => {
+        c = c === 'vi' ? 'vi' : 'en'; if (c === LANG.code) return;
+        try { localStorage.setItem('ps_lang', c); } catch (e) {}
+        LANG.code = c;
+        if (c === 'vi') startVI(); else backToEN();
+        paintSwitches();
+        document.dispatchEvent(new Event('ps-lang'));
+        if (typeof showToast === 'function') showToast(c === 'vi' ? 'Đã chuyển sang Tiếng Việt' : 'Switched to English', 'success');
+      };
+      window.VI_TABLE = VI;
       window.trVI = (s) => (LANG.code === 'vi' ? (tr(String(s)) || s) : s);
-      addSwitch();
-      if (LANG.code !== 'vi') return;
-      document.documentElement.lang = 'vi';
-      walk(document.body);
-      new MutationObserver((ms) => {
-        for (const m of ms) {
-          if (m.type === 'characterData') walk(m.target);
-          else m.addedNodes.forEach(walk);
-        }
-      }).observe(document.body, { childList: true, subtree: true, characterData: true });
+      addSwitch(); addMini(document);
+      // new game headers appear all the time: give each ♪ button its EN/VI neighbour
+      new MutationObserver((ms) => { for (const m of ms) for (const n of m.addedNodes) if (n.nodeType === 1 && (n.matches('button[onclick*="openSoundPanel"]') || n.querySelector('button[onclick*="openSoundPanel"]'))) { addMini(n.parentElement || n); return; } })
+        .observe(document.body, { childList: true, subtree: true });
+      if (LANG.code === 'vi') startVI();
     })();
     /* =========================================================================
        LEGAL: Terms of Service + Privacy Policy (13 and up). A TEMPLATE written in plain English for a U.S. site,

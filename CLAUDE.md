@@ -952,3 +952,14 @@ folder that was handed over, so they do not exist here.)
 * **Sea Battle rejoin**: pressing Deploy saves your fleet on this device only (`ps_ng_fleet:<code>:<uid>`, navalnet.js);
   it is never sent to the other player. On rejoin the fleet is put back before the replay, so every missed shot is
   answered on the same ships; the save is removed when the game ends. `test/t_np_naval_rejoin.py`.
+
+## 5ad. An address for every page (Nov 25 2026, Inna)
+
+* `src/games/zz_router.js` (only on http/https; file:// copies and most tests are unaffected): `/` home, `/friends`,
+  `/profile`, `/leaderboard`, `/how-to-play`, `/daily-word`, and each game by its shown name (`gameSlug`: `/landlord`,
+  `/castles-and-kings`, `/sea-battle` = the Sea Battle setup); `/r/CODE` invites are left to `handleJoinLink`.
+  `navigateTo` / `openGame` are wrapped: after each change the address is pushed (new history entry) and the tab title
+  set ("Chess · GameHub"). Back / Forward (`popstate`) open that page; during a game in progress it asks "Leave this
+  game?" first and stays put on "Keep playing". Opening or refreshing an address waits for the connection (`ps-online` /
+  `ps-offline`, max 8 s) and then opens it; an unknown address goes home. Cloudflare Pages serves index.html for any
+  path because there is no 404.html (keep it that way). `test/t_router.py` (stand-in at http://gamehub.test).

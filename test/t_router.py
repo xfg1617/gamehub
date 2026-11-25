@@ -1,0 +1,45 @@
+"""Addresses for every page (Nov 2026, Inna): going to a page or a game changes the address (/friends, /chess ...),
+the browser's Back button goes back a page, a game in progress asks before Back leaves it, a refresh stays on the same
+page, and opening an address like /poker straight away shows Poker. Uses the stand-in served from http://gamehub.test."""
+import sys; sys.path.insert(0, 'test')
+from nplib import *
+path = lambda pg: pg.evaluate("location.pathname")
+with sync_playwright() as p:
+    A, = players(p, 1)
+    A.evaluate("navigateTo('play', true)"); A.wait_for_timeout(400)
+    check(path(A) == '/', f'home is / ({path(A)})')
+    A.click('#nav-friends'); A.wait_for_timeout(400)
+    check(path(A) == '/friends' and 'Friends' in A.title(), f'Friends page: {path(A)} | title "{A.title()}"')
+    A.click('#nav-leaderboard'); A.wait_for_timeout(400); check(path(A) == '/leaderboard', 'Leaderboard: /leaderboard')
+    A.click('#nav-rules'); A.wait_for_timeout(400); check(path(A) == '/how-to-play', 'How to Play: /how-to-play')
+    A.click('#nav-daily'); A.wait_for_timeout(600); check(path(A) == '/daily-word', 'Daily Word: /daily-word')
+    A.evaluate("navigateTo('play')"); A.wait_for_timeout(400)
+    A.evaluate("openGame('tycoon')"); A.wait_for_timeout(600)
+    check(path(A) == '/landlord', f'a game uses its name: {path(A)}')
+    A.evaluate("openGame('guild')"); A.wait_for_timeout(600); check(path(A) == '/castles-and-kings', f'two words: {path(A)}')
+    A.go_back(); A.wait_for_timeout(1200)
+    check(path(A) == '/landlord' and A.evaluate("activeGame") == 'tycoon', f'Back goes to the previous game ({path(A)})')
+    A.go_back(); A.wait_for_timeout(1000); check(path(A) == '/' and A.evaluate("activeView") == 'play', 'Back again: home')
+    A.go_forward(); A.wait_for_timeout(1200); check(path(A) == '/landlord', 'Forward works too')
+    # a game in progress: Back asks first; "Keep playing" stays in the game
+    A.evaluate("navigateTo('play', true); openGame('poker')"); A.wait_for_timeout(500)
+    A.click('[data-mode="room"]') if A.query_selector('[data-mode="room"]') else None
+    A.wait_for_timeout(500); A.evaluate("navigateTo('play', true); openGame('poker')"); A.wait_for_timeout(500)
+    A.evaluate("GT.started = true; GT.over = false")
+    A.go_back(); A.wait_for_timeout(800)
+    asked = A.evaluate("document.body.innerText.includes('LEAVE THIS GAME?')")
+    check(asked and A.evaluate("activeGame") == 'poker' and path(A) == '/poker', 'Back during a game asks first and stays put')
+    A.evaluate("[...document.querySelectorAll('button')].find(b => /Keep playing/.test(b.textContent)).click()"); A.wait_for_timeout(300)
+    A.evaluate("GT.started = false")
+    # refresh on a game address, and a fresh visit to an address
+    A.reload(); A.wait_for_function("typeof NET !== 'undefined' && NET.on", timeout=20000); A.wait_for_timeout(1500)
+    check(A.evaluate("activeGame") == 'poker' and path(A) == '/poker', f'a refresh stays on Poker ({path(A)}, {A.evaluate("activeGame")})')
+    A.goto('http://gamehub.test/checkers'); A.wait_for_function("typeof NET !== 'undefined' && NET.on", timeout=20000); A.wait_for_timeout(1500)
+    check(A.evaluate("activeGame") == 'checkers' and A.query_selector('[data-mode="room"]') is not None, 'opening /checkers shows Checkers with the online choices')
+    A.goto('http://gamehub.test/friends'); A.wait_for_function("typeof NET !== 'undefined' && NET.on", timeout=20000); A.wait_for_timeout(1500)
+    check(A.evaluate("activeView") == 'friends', 'opening /friends shows the Friends page')
+    A.goto('http://gamehub.test/no-such-page'); A.wait_for_timeout(1500)
+    check(path(A) == '/' and A.evaluate("activeView") == 'play', 'an unknown address goes home')
+    A.goto('http://gamehub.test/sea-battle'); A.wait_for_function("typeof NET !== 'undefined' && NET.on", timeout=20000); A.wait_for_timeout(1500)
+    check(A.evaluate("activeGame") == 'navalnet' and path(A) == '/sea-battle', f'/sea-battle opens Sea Battle ({A.evaluate("activeGame")})')
+    done(A)

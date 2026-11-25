@@ -3,7 +3,7 @@ turns; every player's cash, properties and position must match on both screens. 
 import sys, random; sys.path.insert(0, 'test')
 from nplib import *
 REAL = 'real' in sys.argv
-STATE = "document.getElementById('ty-players').innerText.replace(/\\s+/g, ' ') + ' | ' + [...document.querySelectorAll('[id^=ty-pawn-]')].map(p => p.parentElement && p.parentElement.id).join(',')"
+STATE = "document.getElementById('ty-players').innerText.replace(/\+ Friend|✓ Accept/g, '').replace(/\\s+/g, ' ') + ' | ' + [...document.querySelectorAll('[id^=ty-pawn-]')].map(p => p.parentElement && p.parentElement.id).join(',')"
 def act(pg):
     pick = random.choice(['by-yes', 'by-no', 'by-yes'])
     return pg.evaluate("""(pick) => { for (const id of ['cd-ok', pick, 'by-yes', 'by-no', 'au-10', 'au-pass', 'jl-roll', 'mg-go']) { const b = document.getElementById(id); if (b) { b.click(); return id; } }

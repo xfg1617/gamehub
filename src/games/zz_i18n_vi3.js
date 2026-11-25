@@ -99,6 +99,8 @@
       '. Everyone starts in the Grand Hall.': '. Mọi người bắt đầu ở Đại sảnh.', "Game on! Don't draw the": 'Bắt đầu! Đừng rút phải', '. Everyone starts with one': '. Ai cũng bắt đầu với một',
 '. Pick corners touching good numbers: 6 and 8 come up the most.': '. Chọn góc cạnh các số tốt: 6 và 8 ra nhiều nhất.', 'Give...': 'Đưa...', 'Get...': 'Nhận...',
             '+ Friend': '+ Kết bạn', '✓ Accept': '✓ Đồng ý',
+      'After paying rent you may make the owner an offer for that plot; they can accept, refuse or ask for more. Not plots with a hotel, not plots from a full colour set.': 'Sau khi trả tiền thuê, bạn có thể trả giá mua ô đó; chủ đất có thể đồng ý, từ chối hoặc đòi thêm. Không áp dụng cho ô có khách sạn hoặc thuộc bộ màu đã đủ.',
+      'No thanks': 'Thôi', 'No, keep it': 'Không, giữ lại', 'No deal': 'Không mua', '📄 See the card': '📄 Xem thẻ',
       'It was a lie!': 'Là nói dối!', 'It was true!': 'Là thật!', 'shouts': 'hô', 'Places': 'Địa điểm', 'ENTER': 'NHẬP',
       'press on the ball and hold. Slide left or right to pick your spot, then flick it up the lane and let go. A faster flick throws a faster ball, but it is harder to aim. Curve your flick at the end to put spin on it. Keyboard: ← → to move, hold Space and let go to throw.': 'nhấn giữ quả bóng. Trượt trái hoặc phải để chọn chỗ, rồi vuốt lên đường lăn và thả ra. Vuốt càng nhanh bóng càng nhanh nhưng khó ngắm hơn. Uốn cong cú vuốt ở cuối để tạo xoáy. Bàn phím: ← → để di chuyển, giữ Space rồi thả để ném.',
       // uno
@@ -129,4 +131,8 @@
       [/^YOUR PROPERTIES · \$(\d+)$/, 'ĐẤT CỦA BẠN · $$$1'],
       [/^picks up the pile \((\d+) cards?\)\.$/, 'nhặt cả chồng bài ($1 lá).'], [/^(\d+) (Aces?|Twos?|Threes?|Fours?|Fives?|Sixes?|Sevens?|Eights?|Nines?|Tens?|Jacks?|Queens?|Kings?)$/, (m, n, r) => `${n} lá ${vr(r)}`],
       [/^(\d+)\/(\d+) TRIED$/, '$1/$2 ĐÃ THỬ'],
+      [/^Offer \$(\d+)$/, 'Trả $$$1'], [/^Ask for \$(\d+)$/, 'Đòi $$$1'], [/^Sell for \$(\d+)$/, 'Bán với giá $$$1'], [/^Pay \$(\d+)$/, 'Trả $$$1'], [/^From \$(\d+) to \$(\d+)$/, 'Từ $$$1 đến $$$2'],
+      [/^Make (.+) an offer for (.+)\? It's worth \$(\d+)\. You have \$(\d+)\.$/, 'Trả giá với $1 để mua $2? Giá trị $$$3. Bạn có $$$4.'],
+      [/^(.+) wants \$(\d+) for (.+) \(you offered \$(\d+)\)\. You have \$(\d+)\.$/, '$1 đòi $$$2 cho $3 (bạn trả $$$4). Bạn có $$$5.'],
+      [/^(.+) offers you$/, '$1 trả giá cho bạn'], [/^for your (.+) \(worth \$(\d+)\)\. Sell, or ask for more\?$/, 'để mua $1 của bạn (giá trị $$$2). Bán, hay đòi thêm?'],
     ];

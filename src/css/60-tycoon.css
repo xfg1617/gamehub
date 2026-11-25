@@ -105,3 +105,7 @@
     .ty-mine-win { position: fixed; z-index: 71; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(720px, calc(100vw - 24px)); max-height: min(78vh, 640px); display: flex; flex-direction: column; box-shadow: 0 8px 0 var(--ink); }
     .ty-mine-list { overflow-y: auto; min-height: 0; }
     .ty-mine-rule { padding: 8px 12px; background: #0A1624; border-bottom: 3px solid var(--ink); font-size: .85rem; font-weight: 700; color: #F5B041; }
+    /* buy-out haggling: − / + round the amount */
+    .ty-haggle { display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .ty-haggle .btn-game { padding: 4px 10px; font-size: .8rem; }
+    .ty-haggle b { min-width: 92px; text-align: center; font-family: Outfit, sans-serif; font-size: 1.6rem; font-weight: 800; color: #F5B041; }

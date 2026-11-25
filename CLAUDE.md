@@ -922,3 +922,9 @@ folder that was handed over, so they do not exist here.)
 * **+ Friend on name tags** at online tables (zz_friends.js `tfPaint`, `.fr-add-mini`, accounts only): one tap sends the
   request; "✓ Accept" when they asked you. `test/t_tag_friend.py`.
 * Uno / Kaboom Cats / Bullshit: the table design sits under the whole ring of seats (was a thin strip at 1280 px).
+* **Landlord buy-out = negotiation** (Nov 25 2026, Inna: "instead of double price"): after paying rent the player offers
+  any amount from what the plot is worth (`plotWorth` = land + houses, also `buyoutPrice`) up to their cash (− / + picker,
+  `priceAsk`, ids `hg-go` / `hg-no` / `hg-yes`, `#ty-offer`); the owner sells, refuses, or asks for more (`bo2`); the
+  buyer pays that or walks away (`bo3`, `bo-yes` / `bo-no`). Computers: `botMax` (buyer, 1.5x worth, 2.4x if it helps a
+  set, keeps a cash reserve) and `botMin` (owner, 1.6x, 2.6x+ if they own others of the set). `+ Friend` labels on tags
+  are drawn with CSS `::before` so they never mix into game text the tests compare.

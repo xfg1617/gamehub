@@ -135,7 +135,7 @@
           { key: 'clock', label: 'DECISION TIMER', def: 25, choices: [[0, 'Off'], [20, '20 s'], [25, '25 s'], [40, '40 s']] },
           { key: 'cash', label: 'STARTING CASH', def: 1500, choices: [[1000, '$1000'], [1500, '$1500'], [2500, '$2500']] },
           { key: 'auction', label: 'Auctions', toggle: true, def: 1, hint: 'If a player skips a property, everyone can bid on it.', choices: [[1, 'On'], [0, 'Off']] },
-          { key: 'buyout', label: 'Buy out land', toggle: true, def: 0, hint: 'After paying rent you may buy that plot from its owner for 2x (land price + its houses). Not plots with a hotel, not plots from a full colour set.', choices: [[0, 'Off'], [1, 'On']] },
+          { key: 'buyout', label: 'Buy out land', toggle: true, def: 0, hint: 'After paying rent you may make the owner an offer for that plot; they can accept, refuse or ask for more. Not plots with a hotel, not plots from a full colour set.', choices: [[0, 'Off'], [1, 'On']] },
           { key: 'jack', label: 'Free Parking jackpot', toggle: true, def: 0, hint: 'Taxes and fines pile up on Free Parking. Land there to take it all.', choices: [[0, 'Off'], [1, 'On']] },
         ], (sel) => { const sim = !!window.__tycoonSim; start(body, sel, npLocal([{ bot: sim, name: sim ? 'Sim bot' : profile.username, avatar: profile.avatar }].concat(BN.slice(0, +sel.n - 1).map((b) => ({ bot: true, name: b[0], avatar: b[1] }))), sel)); });
       }
@@ -388,33 +388,92 @@
       }
       const setBanner = (t) => { G.msg = t; const el = $('ty-msg'); if (el) el.textContent = t; };
 
-      /* ---------- buy out (setting): after paying rent, buy the plot from its owner for 2x (land + houses) ---------- */
-      const buyoutPrice = (S, i) => { const t = BOARD[i]; return 2 * (t.pr + (t.k === 'prop' ? (S.houses[i] || 0) * t.hc : 0)); };
+      /* ---------- buy out (setting): after paying rent, make the owner an offer for that plot ----------
+         Nov 2026 (Inna: "allow negotiation instead of double price"): the player offers any amount from what the plot is
+         worth (land + its houses) up to their cash; the owner accepts, says no, or names a higher price; then the buyer
+         accepts that price or walks away. One round of haggling, every step is a table decision. */
+      const plotWorth = (S, i) => { const t = BOARD[i]; return t.pr + (t.k === 'prop' ? (S.houses[i] || 0) * t.hc : 0); };
+      const buyoutPrice = plotWorth;          // the lowest offer you may make
       function canBuyout(S, pi, i) {
         const t = BOARD[i], o = S.own[i];
         if (!['prop', 'rail', 'util'].includes(t.k) || o === undefined || o === pi || S.mort[i]) return false;
         if (t.k === 'prop' && S.houses[i] >= 5) return false;                 // no plots with a hotel
         if (owns(S, o, t.k === 'prop' ? t.g : t.k === 'rail' ? 'rail' : 'ut')) return false;   // no plots from a full set
-        return S.cash[pi] >= buyoutPrice(S, i);
+        return S.cash[pi] >= plotWorth(S, i);
+      }
+      const grpOf = (t) => (t.k === 'prop' ? t.g : t.k === 'rail' ? 'rail' : 'ut');
+      // what a computer player thinks the plot is worth to it, as a buyer (max it pays) or as the owner (min it takes)
+      function botMax(S, pi, i) {
+        const t = BOARD[i], others = GROUPS[grpOf(t)].filter((x) => x !== i), w = plotWorth(S, i);
+        const helps = others.some((x) => S.own[x] === pi) || others.every((x) => S.own[x] === undefined || S.own[x] === pi);
+        const reserve = G.timed ? 250 : 400, room = S.cash[pi] - reserve;
+        return Math.max(0, Math.min(room, Math.round(w * (helps ? 2.4 : 1.5))));
+      }
+      function botMin(S, oi, i) {
+        const t = BOARD[i], others = GROUPS[grpOf(t)].filter((x) => x !== i), w = plotWorth(S, i);
+        const mine = others.filter((x) => S.own[x] === oi).length;
+        return Math.round(w * (mine ? 2.6 + mine * 0.4 : 1.6) / 10) * 10;
+      }
+      const r10 = (n) => Math.round(n / 10) * 10;
+      // a price picker: − / + buttons round the amount, plus the two choices (Make offer / Counter...) and "No"
+      function priceAsk(label, lo, hi, start, goLabel, noLabel, extra) {
+        return new Promise((res) => {
+          let v = Math.max(lo, Math.min(hi, start)), done = false;
+          const fin = (x) => { if (done) return; done = true; G._rebind = null; G.clock.stop(); setPrompt(''); res(x); };
+          const paint = () => {
+            setPrompt(`<div class="space-y-2"><div class="font-bold text-sm text-bone">${label}</div>
+              <div class="ty-haggle"><button class="btn-game btn-graphite" data-d="-50">−50</button><button class="btn-game btn-graphite" data-d="-10">−10</button><b id="ty-offer">${money(v)}</b><button class="btn-game btn-graphite" data-d="10">+10</button><button class="btn-game btn-graphite" data-d="50">+50</button></div>
+              <div class="flex gap-2 justify-center flex-wrap">${extra || ''}<button id="hg-go" class="btn-game btn-amber py-2 px-6">${goLabel} ${money(v)}</button><button id="hg-no" class="btn-game btn-graphite py-2 px-5">${noLabel}</button></div>
+              <div class="text-xs text-muted">From ${money(lo)} to ${money(hi)}</div></div>`);
+            bind();
+          };
+          const bind = () => {
+            document.querySelectorAll('#ty-prompt [data-d]').forEach((b) => { b.onclick = () => { v = Math.max(lo, Math.min(hi, v + +b.dataset.d)); paint(); }; });
+            const go = $('hg-go'), no = $('hg-no'), yes = $('hg-yes');
+            if (go) go.onclick = () => fin({ v }); if (no) no.onclick = () => fin(false); if (yes) yes.onclick = () => fin({ accept: true });
+          };
+          G._rebind = paint; paint();
+          if (G.secs) G.clock.start(G.secs, 'Your time', () => { if (!done) { showToast("Time's up!", 'error'); fin(false); } }, 6); else G.clock.idle('No timer', '∞');
+        });
       }
       async function buyout(p, t, owner) {
         const S = G.S, i = t.i;
         if (!canBuyout(S, p.i, i)) return;
-        const price = buyoutPrice(S, i), h = t.k === 'prop' ? S.houses[i] : 0;
+        const worth = plotWorth(S, i), h = t.k === 'prop' ? S.houses[i] : 0;
         const what = `${t.n}${h ? ` with ${h} house${h > 1 ? 's' : ''}` : ''}`;
-        if (!mine(p)) setBanner(`${p.name} is thinking about buying ${t.n}...`);
-        const yes = await decide(p, 'bo', () => {
+        // 1. the buyer makes an offer (or not)
+        if (!mine(p)) setBanner(`${p.name} is thinking about making an offer for ${t.n}...`);
+        const off = await decide(p, 'bo', () => {
           setBanner('');
-          return ask(`<button class="ty-cardlink" onclick="tyDeed(${i})">📄 See the ${esc(t.n)} card</button><button id="bo-yes" class="btn-game btn-amber py-2 px-6">Buy it for ${money(price)}</button><button id="bo-no" class="btn-game btn-graphite py-2 px-6">No thanks</button>`, { 'bo-yes': true, 'bo-no': false }, `Buy ${what} from ${owner.name}? Price: 2 × (${money(t.pr)}${h ? ` + ${h} × ${money(t.hc)}` : ''}) = ${money(price)}. You have ${money(S.cash[p.i])}.`, false);
-        }, () => {
-          // a computer buys only when it is rich enough and the plot helps it towards a set
-          const g = t.k === 'prop' ? t.g : t.k === 'rail' ? 'rail' : 'ut';
-          const others = GROUPS[g].filter((x) => x !== i);
-          const helps = others.some((x) => S.own[x] === p.i) || others.every((x) => S.own[x] === undefined || S.own[x] === p.i);
-          const left = S.cash[p.i] - price;
-          return (helps && left >= (G.timed ? 250 : 400)) || left >= 1500;
-        }, 1000);
-        if (!yes || !G || G.over || !canBuyout(S, p.i, i)) { if (!yes) log(`${nm(p)} decides not to buy ${t.n}.`); return; }
+          return priceAsk(`Make ${owner.name} an offer for ${what}? It's worth ${money(worth)}. You have ${money(S.cash[p.i])}. <button class="ty-cardlink" onclick="tyDeed(${i})">📄 See the card</button>`,
+            worth, S.cash[p.i], r10(worth * 1.5), 'Offer', 'No thanks');
+        }, () => { const m = botMax(S, p.i, i); return m >= worth ? { v: Math.max(worth, r10(m * 0.7)) } : false; }, 1000);
+        if (!off || !G || G.over || !canBuyout(S, p.i, i)) { if (!off) log(`${nm(p)} decides not to make an offer for ${t.n}.`); return; }
+        let price = Math.max(worth, Math.min(S.cash[p.i], Math.round(+off.v) || worth));
+        log(`💬 ${nm(p)} offers ${nm(owner)} <b>${money(price)}</b> for <b>${t.n}</b>.`);
+        // 2. the owner accepts, says no, or names a higher price
+        if (!mine(owner)) setBanner(`${p.name} offers ${owner.name} ${money(price)} for ${t.n}. Waiting for ${owner.name}...`);
+        const ans = await decide(owner, 'bo2', () => {
+          setBanner('');
+          return priceAsk(`${p.name} offers you <b class="text-amber">${money(price)}</b> for your ${what} (worth ${money(worth)}). Sell, or ask for more?`,
+            Math.min(price + 10, S.cash[p.i]), S.cash[p.i], r10(price * 1.3), 'Ask for', 'No, keep it', `<button id="hg-yes" class="btn-game btn-emerald py-2 px-6">Sell for ${money(price)}</button>`);
+        }, () => { const want = botMin(S, owner.i, i); return price >= want ? { accept: true } : want <= S.cash[p.i] ? { v: want } : false; }, 1200);
+        if (!G || G.over) return;
+        if (!ans) { log(`${nm(owner)} won't sell ${t.n}.`); setBanner(`${owner.name} won't sell ${t.n}.`); await W(900); return; }
+        if (!ans.accept) {
+          const ask2 = Math.max(price + 10, Math.min(S.cash[p.i], Math.round(+ans.v) || price));
+          log(`💬 ${nm(owner)} asks for <b>${money(ask2)}</b> instead.`);
+          // 3. the buyer takes the higher price or walks away
+          if (!mine(p)) setBanner(`${owner.name} asks ${p.name} for ${money(ask2)}...`);
+          const ok = await decide(p, 'bo3', () => {
+            setBanner('');
+            return ask(`<button id="bo-yes" class="btn-game btn-amber py-2 px-6">Pay ${money(ask2)}</button><button id="bo-no" class="btn-game btn-graphite py-2 px-6">No deal</button>`, { 'bo-yes': true, 'bo-no': false },
+              `${owner.name} wants ${money(ask2)} for ${t.n} (you offered ${money(price)}). You have ${money(S.cash[p.i])}.`, false);
+          }, () => ask2 <= botMax(S, p.i, i), 1000);
+          if (!ok || !G || G.over || S.cash[p.i] < ask2) { log(`${nm(p)} says no deal.`); setBanner(`No deal for ${t.n}.`); await W(700); return; }
+          price = ask2;
+        }
+        if (!canBuyout(S, p.i, i) || S.cash[p.i] < price) return;
         moneyFlow(p.i, owner.i, price); S.cash[p.i] -= price; S.cash[owner.i] += price; S.own[i] = p.i;
         G.claimed = i; log(`🤝 ${nm(p)} buys <b>${what}</b> from ${nm(owner)} for <b>${money(price)}</b>.`); setBanner(`${p.name} buys ${t.n} from ${owner.name} for ${money(price)}`);
         SFX.play('coin'); if (isMe(p)) G.boughtN++; render(); G.claimed = null; await W(900);
@@ -875,12 +934,12 @@
         rules: { tag: '2-4 PLAYERS', steps: [
           '<strong class="text-bone">Roll &amp; move:</strong> Roll two dice and walk around the board. Pass <b>START</b> to collect $200. Doubles give you another go (three in a row sends you to Jail).',
           '<strong class="text-bone">Buy &amp; collect rent:</strong> Land on a free property to buy it. Land on someone else\'s and you pay rent. Own a whole colour set to <span class="text-amber font-bold">double the rent</span>, then build houses and hotels to charge much more.',
-          '<strong class="text-bone">Win:</strong> With a round limit (15, 25 or 40), the richest player at the end wins. In Classic, the last player not bankrupt wins. Short on cash? Houses are sold and properties mortgaged for you automatically. Skip a property and it goes to <b>auction</b>: everyone can bid and the highest bid wins (you can turn auctions off in the settings). Settings also let you build by standing on your own plot instead of owning the whole colour, and buy a plot from its owner (2x land + houses) after paying rent.',
+          '<strong class="text-bone">Win:</strong> With a round limit (15, 25 or 40), the richest player at the end wins. In Classic, the last player not bankrupt wins. Short on cash? Houses are sold and properties mortgaged for you automatically. Skip a property and it goes to <b>auction</b>: everyone can bid and the highest bid wins (you can turn auctions off in the settings). Settings also let you build by standing on your own plot instead of owning the whole colour, and make the owner an offer for a plot after paying rent (they can accept, refuse or ask for more).',
         ], tip: 'Railroads and the orange and red sets are the best value. Build evenly across a set.' },
         profileTiles: (s) => [['WINS', s.wins, 'text-amber'], ['GAMES', s.played, 'text-bone'], ['BEST WORTH', '$' + (s.bestWorth || 0), 'text-emerald'], ['PROPERTIES', s.props || 0, 'text-teal']],
         extraRows: (s) => srow('Houses built', s.houses || 0),
         online: { seats: (sel) => +sel.n || 3, ranked: true, start: (body, sel, S) => start(body, sel, S) },
-        engine: { BOARD, GROUPS, rentFor, netWorth, canBuild, buildWhy, canBuyout, buyoutPrice, get G() { return G; } }, open, close() { if (boardRO) { boardRO.disconnect(); boardRO = null; } G = null; },
+        engine: { BOARD, GROUPS, rentFor, netWorth, canBuild, buildWhy, canBuyout, buyoutPrice, botMin, botMax, get G() { return G; } }, open, close() { if (boardRO) { boardRO.disconnect(); boardRO = null; } G = null; },
       };
       registerGame(mod);
     })();

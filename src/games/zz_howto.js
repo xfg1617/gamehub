@@ -158,7 +158,7 @@
           ['Buy', 'Land on a property nobody owns and you can buy it. Skip it and it goes to auction for everyone.'],
           ['Rent', 'Land on someone else’s property and you pay them rent. Own a whole colour set to double the rent.'],
           ['Build', 'With a full colour set, build houses (and then a hotel) to charge much more rent. (Room setting: or build one house each time you land on your own plot.)'],
-          ['Buy out (setting)', 'If the room turns it on: after paying rent you may buy that plot from its owner for 2 × (land price + its houses). Not a plot with a hotel, and not one from a full colour set.'],
+          ['Buy out (setting)', 'If the room turns it on: after paying rent you may make the owner an offer for that plot (at least what it is worth: land + houses). The owner can sell, refuse, or ask for more; then you pay that price or walk away. Not a plot with a hotel, and not one from a full colour set.'],
           ['START', 'Every time you pass or land on START you collect <b>$200</b>.'],
           ['Doubles', 'Roll the same number on both dice and you move, then roll again. Roll doubles <b>three times in a row</b> and you go straight to Jail (no $200).'],
           ['Jail', 'You go to Jail by landing on Go to Jail, by a card, or by 3 doubles. In Jail you can <b>pay $50</b>, use a <b>Get Out of Jail Free</b> card, or try to <b>roll doubles</b> (up to 3 turns; after the third miss you pay $50 and move). Just landing on the Jail square is only “visiting”.'],

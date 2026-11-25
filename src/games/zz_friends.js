@@ -81,7 +81,7 @@
         if (tag.querySelector('.fr-add-mini')) return;
         const b = document.createElement('button');
         b.className = 'fr-add-mini' + (fs === 'in' ? ' in' : ''); b.dataset.uid = st.uid; b.type = 'button';
-        b.title = fs === 'in' ? `Accept ${st.name}'s friend request` : `Add ${st.name} as a friend`; b.textContent = fs === 'in' ? '✓ Accept' : '+ Friend';
+        b.title = fs === 'in' ? `Accept ${st.name}'s friend request` : `Add ${st.name} as a friend`; b.setAttribute('aria-label', b.title);   // the label is drawn by CSS (::before), so it never mixes into the game's text
         b.onclick = async (e) => {
           e.stopPropagation(); e.preventDefault(); b.disabled = true;
           try { await NET.addFriend(st.uid); TF.state[st.uid] = fs === 'in' ? 'f' : 'out'; SFX.play('pop'); showToast(fs === 'in' ? `You and ${st.name} are now friends!` : `Friend request sent to ${st.name}.`, 'success'); b.remove(); }

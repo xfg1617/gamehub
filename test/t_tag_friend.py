@@ -6,7 +6,7 @@ with sync_playwright() as p:
     A, B = players(p, 2)
     code = open_table(A, 'colorclash', 'room', {'n': 3})
     join(B, code); A.wait_for_timeout(2000); start(A); A.wait_for_timeout(4000)
-    info = A.evaluate("[...document.querySelectorAll('.fr-add-mini')].map(b => [b.dataset.uid, b.closest('[id]').id, b.textContent])")
+    info = A.evaluate("[...document.querySelectorAll('.fr-add-mini')].map(b => [b.dataset.uid, b.closest('[id]').id, getComputedStyle(b, '::before').content])")
     buid = B.evaluate("NET.me.id")
     print('   buttons on A:', info)
     check(len(info) == 1 and info[0][0] == buid, "A sees '+ Friend' only on B's tag")

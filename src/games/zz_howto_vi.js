@@ -119,7 +119,7 @@
           ['Mua đất', 'Dừng ở ô chưa ai sở hữu thì bạn có thể mua. Không mua thì ô đó được đem ra đấu giá cho mọi người.'],
           ['Tiền thuê', 'Dừng ở đất của người khác thì phải trả tiền thuê cho họ. Có đủ cả bộ màu thì tiền thuê gấp đôi.'],
           ['Xây nhà', 'Có đủ bộ màu thì xây nhà (rồi khách sạn) để thu tiền thuê cao hơn nhiều. (Cài đặt phòng: hoặc xây một nhà mỗi lần dừng ở đất của mình.)'],
-          ['Mua lại đất (cài đặt)', 'Nếu phòng bật: sau khi trả tiền thuê, bạn có thể mua lại ô đó với giá 2 × (giá đất + nhà trên đó). Không áp dụng cho ô có khách sạn hoặc thuộc bộ màu đã đủ.'],
+          ['Mua lại đất (cài đặt)', 'Nếu phòng bật: sau khi trả tiền thuê, bạn có thể trả giá để mua ô đó (ít nhất bằng giá trị của nó: giá đất + nhà). Chủ đất có thể bán, từ chối, hoặc đòi giá cao hơn; rồi bạn trả giá đó hoặc thôi. Không áp dụng cho ô có khách sạn hoặc thuộc bộ màu đã đủ.'],
           ['Ô START', 'Mỗi lần đi qua hoặc dừng ở ô START bạn nhận <b>$200</b>.'],
           ['Đổ đôi', 'Hai xúc xắc ra cùng số thì bạn đi rồi được tung tiếp. Đổ đôi <b>ba lần liền</b> thì vào thẳng Nhà tù (không nhận $200).'],
           ['Nhà tù', 'Bạn vào tù khi dừng ở ô Vào Tù, do một lá thẻ, hoặc do đổ đôi 3 lần. Trong tù bạn có thể <b>trả $50</b>, dùng thẻ <b>Ra Tù Miễn Phí</b>, hoặc thử <b>đổ đôi</b> (tối đa 3 lượt; trượt lần thứ ba thì trả $50 rồi đi). Chỉ dừng ở ô Nhà tù thì chỉ là “thăm”.'],

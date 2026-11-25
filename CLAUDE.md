@@ -827,3 +827,10 @@ folder that was handed over, so they do not exist here.)
 * **Court cards** (`courtSVG(rank, suit)` in core.js): J / Q / K show a double-headed pixel-art figure in a frame (King:
   crown, beard, sword; Queen: crown, golden hair, flower; Jack: feathered cap, halberd), drawn for GameHub (no copied deck
   art). The hand-ranks guide uses 46x66 cards with full faces.
+* **Fluid card sizes** (`src/css/41-card-sizes.css`, Inna: "different sizes on different screens, fit perfectly"): each
+  card game computes one card width `--cw` from the screen height/width (Poker `(100vh-440)/5.2` capped by 5.75vw,
+  40-124 px; Blackjack `(100vh-450)/3.5` / 7vw, 48-160; Bullshit `(100vh-410)/6.3` / 7vw, 40-120, and your hand also
+  shrinks so all cards stay on one row: `--n` = cards held, set in fibber.js). Corners, suit, pips, aces and court
+  pictures scale from the card (`--k`). Checked at 1280x720, 1366x768, 1440x900, 1536x864, 1690x903, 1920x1080,
+  2560x1440 and a 390 px phone: no scrolling, Poker's shared cards in one row and your seat above the button bar,
+  Blackjack's Hit/Stand on screen. Re-measure with a script like this if a layout changes.

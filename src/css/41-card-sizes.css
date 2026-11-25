@@ -1,0 +1,37 @@
+    /* ===== Fluid card sizes (Inna, Nov 2026: "different sizes on different screens, fit perfectly") =====
+       Each card game works out ONE card width (--cw) from the screen's height and width; every card on the table, its
+       corner number, suit, pips and court picture scale from it. This file comes after the older fixed sizes and wins. */
+    html body.in-game #gs-body { --cr: 1.42; }
+    /* --- Poker: shared cards + your two cards are the main size; opponents' cards and the deck a bit smaller --- */
+    html body.in-game[data-game="poker"] #gs-body { --cw: clamp(40px, min(calc((100vh - 440px) / 5.2), 5.75vw), 124px); --cs: calc(var(--cw) * .86); }
+    @media (max-width: 1023px) { html body.in-game[data-game="poker"] #gs-body { --cw: clamp(38px, min(15vw, 9vh), 72px); --cs: calc(var(--cw) * .82); } }
+    html body.in-game[data-game="poker"] #gs-body .pk-board .pcard { width: var(--cw) !important; height: calc(var(--cw) * var(--cr)) !important; }
+    html body.in-game[data-game="poker"] #gs-body .pcard.sm:not(.pk-rc *) { width: var(--cs) !important; height: calc(var(--cs) * var(--cr)) !important; }
+    html body.in-game[data-game="poker"] #gs-body .tg-seat .pcard { margin-left: 0 !important; }
+    /* --- Blackjack: the dealer's and your hands --- */
+    html body.in-game[data-game="blackjack"] #gs-body { --cw: clamp(48px, min(calc((100vh - 450px) / 3.5), 7vw), 160px); }
+    @media (max-width: 1023px) { html body.in-game[data-game="blackjack"] #gs-body { --cw: clamp(44px, min(18vw, 11vh), 86px); } }
+    html body.in-game[data-game="blackjack"] #gs-body .pcard:not(.sm) { width: var(--cw) !important; height: calc(var(--cw) * var(--cr)) !important; }
+    /* --- Bullshit: your hand, the pile and turned-over cards --- */
+    html body.in-game[data-game="fibber"] #gs-body { --cw: clamp(40px, min(calc((100vh - 410px) / 6.3), 7vw), 120px); }
+    @media (max-width: 1023px) { html body.in-game[data-game="fibber"] #gs-body { --cw: clamp(36px, min(12.5vw, 7.5vh), 60px); } }
+    html body.in-game[data-game="fibber"] #gs-body .fb-reveal .pcard { width: var(--cw) !important; height: calc(var(--cw) * var(--cr)) !important; }
+    /* your hand: as big as the screen height allows, but narrow enough that every card fits on one row */
+    html body.in-game[data-game="fibber"] #gs-body .fb-hand { --hw: var(--cw); }
+    @media (min-width: 1024px) {
+      html body.in-game[data-game="fibber"] #gs-body .fb-hand { --hw: min(var(--cw), calc((100vw - 60px) / var(--n, 13) - 6px)); }
+      html body.in-game[data-game="fibber"] #gs-body .fb-hand > div:last-child { flex-wrap: nowrap !important; }
+    }
+    html body.in-game[data-game="fibber"] #gs-body .fb-hand .pcard { width: var(--hw) !important; height: calc(var(--hw) * var(--cr)) !important; --k: var(--hw); }
+    html body.in-game[data-game="fibber"] #fb-opp > .r-mid { min-height: 0 !important; }
+    html body.in-game[data-game="fibber"] #gs-body .fb-pile { width: calc(var(--cw) * 1.35 + 6px) !important; height: calc(var(--cw) * 1.35 * var(--cr) + 6px) !important; }
+    html body.in-game[data-game="fibber"] #gs-body .fb-pile .pcard { width: calc(var(--cw) * 1.35) !important; height: calc(var(--cw) * 1.35 * var(--cr)) !important; }
+    /* --- corners scale with each card's own width (set per game above) --- */
+    html body.in-game[data-game="poker"] #gs-body .pk-board .pcard, html body.in-game[data-game="blackjack"] #gs-body .pcard:not(.sm),
+    html body.in-game[data-game="fibber"] #gs-body .fb-reveal .pcard { --k: var(--cw); }
+    html body.in-game[data-game="poker"] #gs-body .pcard.sm { --k: var(--cs); }
+    html body.in-game[data-game="fibber"] #gs-body .fb-pile .pcard { --k: calc(var(--cw) * 1.35); }
+    html body.in-game #gs-body .pcard.pc-real .pc-corner { font-size: calc(var(--k, 60px) * .25) !important; left: calc(var(--k, 60px) * .06) !important; top: calc(var(--k, 60px) * .04) !important; }
+    html body.in-game #gs-body .pcard.pc-real .pc-corner.br { display: flex !important; left: auto !important; top: auto !important; right: calc(var(--k, 60px) * .06) !important; bottom: calc(var(--k, 60px) * .04) !important; }
+    html body.in-game #gs-body .pcard.pc-real .pc-corner i svg { width: calc(var(--k, 60px) * .13) !important; height: calc(var(--k, 60px) * .13) !important; }
+    html body.in-game #gs-body .pcard.pc-real .pc-court svg { width: 54% !important; }

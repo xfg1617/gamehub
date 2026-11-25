@@ -232,6 +232,7 @@
         // my hand, sorted by rank; tap to pick
         const me = G.players[G.me], picking = !!G.choose;
         const order = me.hand.map((c, i) => ({ c, i })).sort((a, b) => ORDER.indexOf(a.c.r) - ORDER.indexOf(b.c.r) || a.c.s.localeCompare(b.c.s));
+        $('fb-hand').style.setProperty('--n', Math.max(10, me.hand.length));   // card width follows how many you hold (one row)
         $('fb-hand').innerHTML = `<div class="tg-mine mb-2"><div id="fb-seat-${G.me}" class="inline-block">${nameTag({ av: me.av, name: me.name, sub: G.places.includes(me) && !me.hand.length ? 'out of cards' : `${me.hand.length} card${me.hand.length === 1 ? '' : 's'}`, turn: G.players[G.cur] === me && !G.over, me: true })}</div></div><div class="flex flex-wrap justify-center gap-1.5">${order.map(({ c, i }) => `<button class="fb-card ${G.sel.has(i) ? 'sel' : ''} ${c.r === G.need ? 'match' : ''}" data-i="${i}" ${picking ? '' : 'disabled'}>${pipCard(c)}</button>`).join('')}</div>`;
         $('fb-hand').querySelectorAll('.fb-card').forEach((b) => { b.onclick = () => {
           if (!G.choose) return; const i = +b.dataset.i;

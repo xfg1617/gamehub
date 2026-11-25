@@ -75,7 +75,8 @@
       const quick = k === 'global' ? CHAT_QUICK.global : CHAT_QUICK._game;
       host.innerHTML = `<div class="chatbox" data-room="${k}"><div class="chat-list"></div><div class="chat-typing"></div>
         <div class="chat-quick">${quick.map((q) => `<button type="button">${esc(q)}</button>`).join('')}</div>
-        <form class="chat-form" autocomplete="off"><input maxlength="200" placeholder="Say something nice…" aria-label="Chat message"><button type="submit">Send</button></form></div>`;
+        <form class="chat-form" autocomplete="off"><input maxlength="200" placeholder="Say something nice…" aria-label="Chat message"><button type="submit">Send</button></form>
+        <div class="chat-guest"><span>🔒 Only players with an account can chat.</span><span class="flex gap-2"><button type="button" class="btn-game btn-amber" onclick="openAuthModal('signup')">Sign up free</button><button type="button" class="btn-game btn-graphite" onclick="openAuthModal('signin')">Log in</button></span></div></div>`;
       const box = host.firstElementChild, input = box.querySelector('input');
       box.querySelector('form').onsubmit = (e) => { e.preventDefault(); chatSend(box.dataset.room, input.value); input.value = ''; };
       box.querySelectorAll('.chat-quick button').forEach((b) => { b.onclick = () => chatSend(box.dataset.room, b.textContent); });

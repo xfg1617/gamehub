@@ -882,3 +882,17 @@ folder that was handed over, so they do not exist here.)
 * **Word language stands out**: setting `hero: true` (netplay sorts it first, `.np-set-hero` amber frame, hint line,
   bigger buttons, flags). Rooms with settings but no computer-players box (Doodle) also use the two-column room layout.
   `test/t_doodle_live.py` checks the near guess and the hero setting.
+
+## 5z. Chat and friends need an account (Nov 25 2026, Inna)
+
+* Guests (online, no account) can play everything, use emotes and READ chat, but can't send chat messages, add or accept
+  friends, or send private messages. `NET.isGuest()`; `NET.chatSend / addFriend / acceptFriend / dmSend` reject with
+  "Sign up to ... It's free!" and open the sign-up box. `body.is-guest` (kept in step by a setter on `NET.account`) swaps
+  every chat box's typing line for `.chat-guest` (Sign up free / Log in); the Friends page shows an ACCOUNTS ONLY panel;
+  player cards show "🔒 Sign up to add friends"; the chat's Friends view asks to sign up.
+* Server side: **`backend/accounts-only.sql`** (restrictive policies using `public.has_account()` = auth.users row not
+  anonymous) on messages insert, friend_requests insert/update, dms insert. Checked on PostgreSQL 16 (runs twice; guest
+  refused, account allowed, guest can still read). An account that hasn't confirmed its email yet is still anonymous to
+  the server: the error says "Sign up (and confirm your email) to ...".
+* Tests: `nplib.players(..., account=True)` by default gives stand-in players an account (`psnet_email`); `t_accounts.py`
+  and `t_welcome.py` pass `account=False`. `test/t_guest_limits.py`.

@@ -23,6 +23,7 @@
         const b = document.getElementById('chat-fr-btn'); if (b) b.textContent = '← Room';
         const host = body(); if (!host) return;
         if (!NET.on) { host.innerHTML = '<div class="p-5 text-sm text-muted text-center">Friends need the online service.</div>'; return; }
+        if (NET.isGuest && NET.isGuest()) { host.innerHTML = `<div class="p-5 text-sm text-center space-y-3"><div class="text-bone font-bold">🔒 Friends and messages are for players with an account.</div><button class="btn-game btn-amber px-4 py-2 text-sm" onclick="openAuthModal('signup')">Sign up free</button></div>`; return; }
         host.innerHTML = '<div class="p-5 text-sm text-muted text-center">Loading your friends...</div>';
         let list = [], all = { friends: [], incoming: [], outgoing: [] };
         try { all = await NET.friends(); list = all.friends || []; } catch (e) {}

@@ -71,6 +71,12 @@
     function renderFriends() {
       const root = document.getElementById('friends-root'); if (!root) return;
       if (!frOn()) { root.innerHTML = `<div class="win p-6 text-center text-sm text-muted max-w-md mx-auto">Friends need the online service. Check your connection and refresh the page.</div>`; return; }
+      // friends are for players with an account (Inna, Nov 2026)
+      if (NET.isGuest && NET.isGuest()) { root.innerHTML = `<div class="win overflow-hidden max-w-lg mx-auto"><div class="winbar amber"><span>FRIENDS</span><span class="pix text-xs">ACCOUNTS ONLY</span></div>
+        <div class="p-6 space-y-4 text-center"><div class="text-5xl">🔒</div><div class="text-lg font-extrabold text-bone">Make a free account to add friends and chat</div>
+        <p class="text-sm text-muted">With an account you can find players, add friends, message them, invite them to your rooms and chat at every table. Your friends, levels and stats follow you to any device.</p>
+        <div class="flex gap-3 justify-center"><button class="btn-game btn-amber px-6 py-2.5" onclick="openAuthModal('signup')">Sign up free</button><button class="btn-game btn-graphite px-5 py-2.5" onclick="openAuthModal('signin')">Log in</button></div>
+        <p class="text-xs text-muted">Guests can still play every game and read the chat.</p></div></div>`; return; }
       root.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_380px] gap-6 items-start">
         <div class="space-y-6 min-w-0">
           ${!(typeof NET !== 'undefined' && NET.account) ? `<div class="tip text-sm"><span class="tip-tag bg-amber">TIP</span>You're playing as a guest. <button class="underline text-amber font-bold" onclick="openAuthModal('signup')">Create an account</button> so your friends list follows you to any device.</div>` : ''}
@@ -157,13 +163,15 @@
       const on = NET.isOnline(id);
       const btn = { me: '', friends: `<button class="btn-game btn-teal w-full py-2.5 text-sm" data-act="chat">Chat</button>`, sent: '<button class="btn-game btn-graphite w-full py-2.5 text-sm" disabled>Friend request sent</button>',
         asked: `<button class="btn-game btn-emerald w-full py-2.5 text-sm" data-act="add">Accept friend request</button>`, none: `<button class="btn-game btn-amber w-full py-2.5 text-sm" data-act="add">＋ Add friend</button>` }[c.friend] || '';
+      const guestBtn = `<button class="btn-game btn-amber w-full py-2.5 text-sm" onclick="openAuthModal('signup')">🔒 Sign up to add friends</button>`;
+      const btnShown = NET.isGuest && NET.isGuest() && c.friend !== 'me' ? guestBtn : btn;
       el.innerHTML = `<div class="win max-w-sm mx-auto my-6 sm:my-12 overflow-hidden"><div class="winbar amber"><span>PLAYER CARD</span><button class="pix text-sm" data-act="x" aria-label="Close">✕</button></div>
         <div class="p-6 space-y-4 text-center">
           <div class="avatar-tile w-24 h-24 text-5xl mx-auto">${esc(c.avatar)}</div>
           <div><div class="text-2xl font-extrabold text-bone">${esc(c.name)}</div><div class="pix text-xs mt-1 ${on ? 'text-emerald' : 'text-muted'}">${on ? '● ONLINE' : 'OFFLINE'} · PLAYING SINCE ${esc(String(c.since || '').toUpperCase())}${c.friend === 'friends' ? ' · FRIEND' : ''}</div></div>
           ${psTiles(st)}${psHere(st)}
           <div class="text-left"><div class="pix text-xs tracking-wider text-muted mb-1.5">RANKINGS</div>${(c.ratings || []).length ? c.ratings.map((r) => srow(esc(frGameName(r.game)), `${r.elo} Elo · ${r.wins}/${r.games} won`)).join('') : '<div class="text-sm text-muted">No ranked games yet.</div>'}</div>
-          ${btn}
+          ${btnShown}
           <button class="btn-game btn-graphite w-full py-2.5 text-sm" data-act="full">View full profile ▶</button>
           ${c.friend === 'friends' ? '<button class="pix text-xs text-muted hover:text-coral" data-act="rm">Remove friend</button>' : ''}
         </div></div>`;

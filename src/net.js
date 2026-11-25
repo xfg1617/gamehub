@@ -361,6 +361,11 @@
         return B;
       }
 
+      // body.is-guest = online without an account: chat boxes show "Sign up to chat", friend buttons ask to sign up
+      let account = null;
+      const guestMark = () => { if (document.body) document.body.classList.toggle('is-guest', !!(NET.on && !account)); };
+      Object.defineProperty(NET, 'account', { get: () => account, set: (v) => { account = v; guestMark(); }, configurable: true });
+      document.addEventListener('ps-online', guestMark);
       const B = local ? localBackend() : cfg.url && cfg.key ? supaBackend() : null;
       NET.mode = local ? 'local' : B ? 'online' : 'off';
       NET.start = async () => {
@@ -429,15 +434,20 @@
       NET.publishStats = (o) => B.publishStats(o);
       NET.playerStats = (id) => B.playerStats(id);
       NET.friends = () => B.friends();
-      NET.addFriend = (id) => B.addFriend(id);
-      NET.acceptFriend = (id) => B.acceptFriend(id);
+      // Only players with an account can add friends and chat (Inna, Nov 2026). Guests can still read chat. The server
+      // checks the same thing (backend/accounts-only.sql), so this can't be skipped.
+      NET.isGuest = () => !!(NET.on && !NET.account);
+      const needAccount = (what) => { if (!NET.isGuest()) return null; if (typeof openAuthModal === 'function') setTimeout(() => openAuthModal('signup'), 50); return Promise.reject(new Error(`Sign up to ${what}. It's free!`)); };
+      const serverNo = (what) => (e) => { throw (/row-level|policy|permission/i.test(String(e && e.message)) ? new Error(`Sign up (and confirm your email) to ${what}.`) : e); };
+      NET.addFriend = (id) => needAccount('add friends') || B.addFriend(id).catch(serverNo('add friends'));
+      NET.acceptFriend = (id) => needAccount('accept friend requests') || B.acceptFriend(id).catch(serverNo('accept friend requests'));
       NET.removeFriend = (id) => B.removeFriend(id);
       NET.dmHistory = (id) => B.dmHistory(id);
-      NET.dmSend = (id, text) => B.dmSend(id, NET.clean(text).slice(0, 300));
+      NET.dmSend = (id, text) => needAccount('message friends') || B.dmSend(id, NET.clean(text).slice(0, 300));
       NET.onSocial = (fn) => B.onSocial(fn);
       NET.isOnline = (id) => !!(NET.onlineIds && NET.onlineIds.has(id));
       NET.chatHistory = (room) => B.history(room);
-      NET.chatSend = (room, text) => B.send(room, NET.clean(text).slice(0, 200));
+      NET.chatSend = (room, text) => needAccount('chat') || B.send(room, NET.clean(text).slice(0, 200)).catch(serverNo('chat'));
       NET.chatSub = (room, fn) => B.sub(room, fn);
       NET.report = (id, why) => B.report(id, why);
       NET.quickMatch = (game, settings) => B.quick(game, settings);

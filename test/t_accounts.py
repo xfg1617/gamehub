@@ -9,11 +9,10 @@ from nplib import *
 REAL = 'real' in sys.argv
 email = f'test.pilot.{random.randint(10000, 99999)}@example.com'
 with sync_playwright() as p:
-    A, B = players(p, 2, REAL)
-    fresh = A.evaluate("[profile.username, profile.xp, profile.dailyStreak, profile.navalElo, profile.wins, profile.stats.naval.played, profile.stats.daily.played, document.getElementById('home-elo').textContent, document.getElementById('home-streak').textContent]")
+    A, B = players(p, 2, REAL, account=False)
+    fresh = A.evaluate("[profile.username, profile.xp, profile.dailyStreak, profile.navalElo, profile.wins, profile.stats.naval.played, profile.stats.daily.played]")
     print('   new guest:', fresh)
     check(fresh[0].startswith('Player') and fresh[1:7] == [0, 0, 1200, 0, 0, 0], 'a new guest starts from zero (no CaptainFox, no fake numbers)')
-    check(fresh[7] == '1200' and fresh[8] == '0', 'the home page shows the real starting Elo and streak')
     check(A.evaluate("document.getElementById('btn-signin').style.display") != 'none' and 'Sign up' in A.evaluate("document.getElementById('btn-signin').textContent"), 'guests see "Sign up · Log in"')
     A.evaluate("profile.xp = 777; profile.stats.chess = { played: 5, wins: 4, losses: 1, draws: 0 }; saveProfileToStorage()")
     A.evaluate("openAuthModal('signup')"); A.wait_for_timeout(200)

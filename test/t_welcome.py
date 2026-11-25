@@ -3,7 +3,7 @@ once; and player stats that fail to send are sent again later."""
 import sys; sys.path.insert(0, 'test')
 from nplib import *
 with sync_playwright() as p:
-    A, = players(p, 1)
+    A, = players(p, 1, account=False)
     A.context.add_init_script("Object.defineProperty(navigator, 'webdriver', { get: () => false })")
     A.evaluate("localStorage.removeItem('ps_welcome_v1'); location.reload()"); A.wait_for_load_state()
     try: A.wait_for_selector('#wl-pop', timeout=9000); shown = True

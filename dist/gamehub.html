@@ -970,6 +970,11 @@
       #chat-pops { bottom: 72px !important; }
       body.in-game main.flex-1 { padding-bottom: 72px !important; }
     }
+    /* guests (online, no account) can read chat but not send: the typing line becomes "Sign up to chat" (Nov 2026) */
+    .chat-guest { display: none; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding: 8px 10px; background: #122A40; border-top: 3px solid var(--ink); font-size: .8rem; font-weight: 700; color: #F7F4EC; }
+    .chat-guest .btn-game { padding: 5px 10px; font-size: .75rem; }
+    body.is-guest .chatbox .chat-form, body.is-guest .chatbox .chat-quick { display: none !important; }
+    body.is-guest .chatbox .chat-guest { display: flex; }
     /* ===== ONLINE TABLES: lobby seats, the bar above an online game, the private-room game picker ===== */
     .np-seats { display: grid; gap: 6px; }
     .np-seat { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: #0A1624; border: 3px solid var(--ink); color: #9DB4CC; font-size: .875rem; min-width: 0; }
@@ -5905,7 +5910,8 @@
       const quick = k === 'global' ? CHAT_QUICK.global : CHAT_QUICK._game;
       host.innerHTML = `<div class="chatbox" data-room="${k}"><div class="chat-list"></div><div class="chat-typing"></div>
         <div class="chat-quick">${quick.map((q) => `<button type="button">${esc(q)}</button>`).join('')}</div>
-        <form class="chat-form" autocomplete="off"><input maxlength="200" placeholder="Say something nice…" aria-label="Chat message"><button type="submit">Send</button></form></div>`;
+        <form class="chat-form" autocomplete="off"><input maxlength="200" placeholder="Say something nice…" aria-label="Chat message"><button type="submit">Send</button></form>
+        <div class="chat-guest"><span>🔒 Only players with an account can chat.</span><span class="flex gap-2"><button type="button" class="btn-game btn-amber" onclick="openAuthModal('signup')">Sign up free</button><button type="button" class="btn-game btn-graphite" onclick="openAuthModal('signin')">Log in</button></span></div></div>`;
       const box = host.firstElementChild, input = box.querySelector('input');
       box.querySelector('form').onsubmit = (e) => { e.preventDefault(); chatSend(box.dataset.room, input.value); input.value = ''; };
       box.querySelectorAll('.chat-quick button').forEach((b) => { b.onclick = () => chatSend(box.dataset.room, b.textContent); });
@@ -7287,6 +7293,11 @@
         return B;
       }
 
+      // body.is-guest = online without an account: chat boxes show "Sign up to chat", friend buttons ask to sign up
+      let account = null;
+      const guestMark = () => { if (document.body) document.body.classList.toggle('is-guest', !!(NET.on && !account)); };
+      Object.defineProperty(NET, 'account', { get: () => account, set: (v) => { account = v; guestMark(); }, configurable: true });
+      document.addEventListener('ps-online', guestMark);
       const B = local ? localBackend() : cfg.url && cfg.key ? supaBackend() : null;
       NET.mode = local ? 'local' : B ? 'online' : 'off';
       NET.start = async () => {
@@ -7355,15 +7366,20 @@
       NET.publishStats = (o) => B.publishStats(o);
       NET.playerStats = (id) => B.playerStats(id);
       NET.friends = () => B.friends();
-      NET.addFriend = (id) => B.addFriend(id);
-      NET.acceptFriend = (id) => B.acceptFriend(id);
+      // Only players with an account can add friends and chat (Inna, Nov 2026). Guests can still read chat. The server
+      // checks the same thing (backend/accounts-only.sql), so this can't be skipped.
+      NET.isGuest = () => !!(NET.on && !NET.account);
+      const needAccount = (what) => { if (!NET.isGuest()) return null; if (typeof openAuthModal === 'function') setTimeout(() => openAuthModal('signup'), 50); return Promise.reject(new Error(`Sign up to ${what}. It's free!`)); };
+      const serverNo = (what) => (e) => { throw (/row-level|policy|permission/i.test(String(e && e.message)) ? new Error(`Sign up (and confirm your email) to ${what}.`) : e); };
+      NET.addFriend = (id) => needAccount('add friends') || B.addFriend(id).catch(serverNo('add friends'));
+      NET.acceptFriend = (id) => needAccount('accept friend requests') || B.acceptFriend(id).catch(serverNo('accept friend requests'));
       NET.removeFriend = (id) => B.removeFriend(id);
       NET.dmHistory = (id) => B.dmHistory(id);
-      NET.dmSend = (id, text) => B.dmSend(id, NET.clean(text).slice(0, 300));
+      NET.dmSend = (id, text) => needAccount('message friends') || B.dmSend(id, NET.clean(text).slice(0, 300));
       NET.onSocial = (fn) => B.onSocial(fn);
       NET.isOnline = (id) => !!(NET.onlineIds && NET.onlineIds.has(id));
       NET.chatHistory = (room) => B.history(room);
-      NET.chatSend = (room, text) => B.send(room, NET.clean(text).slice(0, 200));
+      NET.chatSend = (room, text) => needAccount('chat') || B.send(room, NET.clean(text).slice(0, 200)).catch(serverNo('chat'));
       NET.chatSub = (room, fn) => B.sub(room, fn);
       NET.report = (id, why) => B.report(id, why);
       NET.quickMatch = (game, settings) => B.quick(game, settings);
@@ -17056,6 +17072,7 @@
         const b = document.getElementById('chat-fr-btn'); if (b) b.textContent = '← Room';
         const host = body(); if (!host) return;
         if (!NET.on) { host.innerHTML = '<div class="p-5 text-sm text-muted text-center">Friends need the online service.</div>'; return; }
+        if (NET.isGuest && NET.isGuest()) { host.innerHTML = `<div class="p-5 text-sm text-center space-y-3"><div class="text-bone font-bold">🔒 Friends and messages are for players with an account.</div><button class="btn-game btn-amber px-4 py-2 text-sm" onclick="openAuthModal('signup')">Sign up free</button></div>`; return; }
         host.innerHTML = '<div class="p-5 text-sm text-muted text-center">Loading your friends...</div>';
         let list = [], all = { friends: [], incoming: [], outgoing: [] };
         try { all = await NET.friends(); list = all.friends || []; } catch (e) {}
@@ -17417,6 +17434,12 @@
     function renderFriends() {
       const root = document.getElementById('friends-root'); if (!root) return;
       if (!frOn()) { root.innerHTML = `<div class="win p-6 text-center text-sm text-muted max-w-md mx-auto">Friends need the online service. Check your connection and refresh the page.</div>`; return; }
+      // friends are for players with an account (Inna, Nov 2026)
+      if (NET.isGuest && NET.isGuest()) { root.innerHTML = `<div class="win overflow-hidden max-w-lg mx-auto"><div class="winbar amber"><span>FRIENDS</span><span class="pix text-xs">ACCOUNTS ONLY</span></div>
+        <div class="p-6 space-y-4 text-center"><div class="text-5xl">🔒</div><div class="text-lg font-extrabold text-bone">Make a free account to add friends and chat</div>
+        <p class="text-sm text-muted">With an account you can find players, add friends, message them, invite them to your rooms and chat at every table. Your friends, levels and stats follow you to any device.</p>
+        <div class="flex gap-3 justify-center"><button class="btn-game btn-amber px-6 py-2.5" onclick="openAuthModal('signup')">Sign up free</button><button class="btn-game btn-graphite px-5 py-2.5" onclick="openAuthModal('signin')">Log in</button></div>
+        <p class="text-xs text-muted">Guests can still play every game and read the chat.</p></div></div>`; return; }
       root.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_380px] gap-6 items-start">
         <div class="space-y-6 min-w-0">
           ${!(typeof NET !== 'undefined' && NET.account) ? `<div class="tip text-sm"><span class="tip-tag bg-amber">TIP</span>You're playing as a guest. <button class="underline text-amber font-bold" onclick="openAuthModal('signup')">Create an account</button> so your friends list follows you to any device.</div>` : ''}
@@ -17503,13 +17526,15 @@
       const on = NET.isOnline(id);
       const btn = { me: '', friends: `<button class="btn-game btn-teal w-full py-2.5 text-sm" data-act="chat">Chat</button>`, sent: '<button class="btn-game btn-graphite w-full py-2.5 text-sm" disabled>Friend request sent</button>',
         asked: `<button class="btn-game btn-emerald w-full py-2.5 text-sm" data-act="add">Accept friend request</button>`, none: `<button class="btn-game btn-amber w-full py-2.5 text-sm" data-act="add">＋ Add friend</button>` }[c.friend] || '';
+      const guestBtn = `<button class="btn-game btn-amber w-full py-2.5 text-sm" onclick="openAuthModal('signup')">🔒 Sign up to add friends</button>`;
+      const btnShown = NET.isGuest && NET.isGuest() && c.friend !== 'me' ? guestBtn : btn;
       el.innerHTML = `<div class="win max-w-sm mx-auto my-6 sm:my-12 overflow-hidden"><div class="winbar amber"><span>PLAYER CARD</span><button class="pix text-sm" data-act="x" aria-label="Close">✕</button></div>
         <div class="p-6 space-y-4 text-center">
           <div class="avatar-tile w-24 h-24 text-5xl mx-auto">${esc(c.avatar)}</div>
           <div><div class="text-2xl font-extrabold text-bone">${esc(c.name)}</div><div class="pix text-xs mt-1 ${on ? 'text-emerald' : 'text-muted'}">${on ? '● ONLINE' : 'OFFLINE'} · PLAYING SINCE ${esc(String(c.since || '').toUpperCase())}${c.friend === 'friends' ? ' · FRIEND' : ''}</div></div>
           ${psTiles(st)}${psHere(st)}
           <div class="text-left"><div class="pix text-xs tracking-wider text-muted mb-1.5">RANKINGS</div>${(c.ratings || []).length ? c.ratings.map((r) => srow(esc(frGameName(r.game)), `${r.elo} Elo · ${r.wins}/${r.games} won`)).join('') : '<div class="text-sm text-muted">No ranked games yet.</div>'}</div>
-          ${btn}
+          ${btnShown}
           <button class="btn-game btn-graphite w-full py-2.5 text-sm" data-act="full">View full profile ▶</button>
           ${c.friend === 'friends' ? '<button class="pix text-xs text-muted hover:text-coral" data-act="rm">Remove friend</button>' : ''}
         </div></div>`;
@@ -18232,6 +18257,14 @@
        table in zz_lang.js like part 1 (this file loads just before it). Keys are the exact English lines.
        ========================================================================= */
     window.VI_MORE2 = {
+      // chat and friends need an account
+      '🔒 Only players with an account can chat.': '🔒 Chỉ người có tài khoản mới được trò chuyện.', 'Sign up free': 'Đăng ký miễn phí', 'ACCOUNTS ONLY': 'CHỈ CÓ TÀI KHOẢN',
+      'Make a free account to add friends and chat': 'Tạo tài khoản miễn phí để kết bạn và trò chuyện',
+      'With an account you can find players, add friends, message them, invite them to your rooms and chat at every table. Your friends, levels and stats follow you to any device.': 'Có tài khoản, bạn có thể tìm người chơi, kết bạn, nhắn tin, mời bạn bè vào phòng và trò chuyện ở mọi bàn. Bạn bè, cấp độ và thành tích đi theo bạn trên mọi thiết bị.',
+      'Guests can still play every game and read the chat.': 'Khách vẫn chơi được mọi trò và đọc được tin nhắn.', '🔒 Sign up to add friends': '🔒 Đăng ký để kết bạn',
+      '🔒 Friends and messages are for players with an account.': '🔒 Bạn bè và tin nhắn chỉ dành cho người có tài khoản.',
+      "Sign up to chat. It's free!": 'Đăng ký để trò chuyện. Miễn phí!', "Sign up to add friends. It's free!": 'Đăng ký để kết bạn. Miễn phí!',
+      "Sign up to message friends. It's free!": 'Đăng ký để nhắn tin cho bạn bè. Miễn phí!', "Sign up to accept friend requests. It's free!": 'Đăng ký để nhận lời mời kết bạn. Miễn phí!',
       // Doodle Guess room
       'WORD LANGUAGE': 'NGÔN NGỮ CỦA TỪ', '🇺🇸 English': '🇺🇸 Tiếng Anh', '🇻🇳 Tiếng Việt': '🇻🇳 Tiếng Việt', 'Which language the words to draw are in.': 'Các từ để vẽ sẽ bằng ngôn ngữ nào.',
       // table designs (zz_tables.js)

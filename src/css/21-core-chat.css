@@ -70,3 +70,8 @@
       #chat-pops { bottom: 72px !important; }
       body.in-game main.flex-1 { padding-bottom: 72px !important; }
     }
+    /* guests (online, no account) can read chat but not send: the typing line becomes "Sign up to chat" (Nov 2026) */
+    .chat-guest { display: none; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding: 8px 10px; background: #122A40; border-top: 3px solid var(--ink); font-size: .8rem; font-weight: 700; color: #F7F4EC; }
+    .chat-guest .btn-game { padding: 5px 10px; font-size: .75rem; }
+    body.is-guest .chatbox .chat-form, body.is-guest .chatbox .chat-quick { display: none !important; }
+    body.is-guest .chatbox .chat-guest { display: flex; }

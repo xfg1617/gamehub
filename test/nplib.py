@@ -18,7 +18,7 @@ def _watch(pg):
     pg.on('console', lambda m: pg.errs.append(m.text) if m.type == 'error' and 'Failed to load resource' not in m.text and 'WebSocket' not in m.text else None)
     return pg
 
-def _ctx(br, real):
+def _ctx(br, real, account=True):
     ctx = br.new_context(viewport={'width': 1280, 'height': 900})
     if os.path.exists(STUB): ctx.route('https://cdn.tailwindcss.com/**', lambda r: r.fulfill(path=STUB, content_type='application/javascript'))
     if real:
@@ -27,9 +27,11 @@ def _ctx(br, real):
         ctx.route('https://*.supabase.co/**', lambda r: r.abort())
         ctx.route('http://gamehub.test/**', lambda r: r.fulfill(path=FILE, content_type='text/html'))
         ctx.add_init_script("try { localStorage.setItem('ps_net_local', '1'); } catch (e) {}")
+        # chat and friends are for accounts only (Nov 2026): test players have an account unless a test is about guests
+        if account: ctx.add_init_script("try { if (!sessionStorage.getItem('psnet_email')) sessionStorage.setItem('psnet_email', 'tester@gamehub.test'); } catch (e) {}")
     return ctx
 
-def players(p, n=2, real=False):
+def players(p, n=2, real=False, account=True):
     br = launch(p); out = []
     if real:
         for i in range(n):
@@ -38,7 +40,7 @@ def players(p, n=2, real=False):
             pg.wait_for_timeout(600); pg.wait_for_load_state()
             out.append(pg)
     else:
-        ctx = _ctx(br, False)
+        ctx = _ctx(br, False, account)
         A = _watch(ctx.new_page()); A.goto('http://gamehub.test/gamehub.html'); out.append(A)
         A.wait_for_function("typeof NET !== 'undefined' && NET.on && NET.me && NET.me.name", timeout=20000)
         for i in range(1, n):

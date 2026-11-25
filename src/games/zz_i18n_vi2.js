@@ -4,6 +4,14 @@
        table in zz_lang.js like part 1 (this file loads just before it). Keys are the exact English lines.
        ========================================================================= */
     window.VI_MORE2 = {
+      // chat and friends need an account
+      '🔒 Only players with an account can chat.': '🔒 Chỉ người có tài khoản mới được trò chuyện.', 'Sign up free': 'Đăng ký miễn phí', 'ACCOUNTS ONLY': 'CHỈ CÓ TÀI KHOẢN',
+      'Make a free account to add friends and chat': 'Tạo tài khoản miễn phí để kết bạn và trò chuyện',
+      'With an account you can find players, add friends, message them, invite them to your rooms and chat at every table. Your friends, levels and stats follow you to any device.': 'Có tài khoản, bạn có thể tìm người chơi, kết bạn, nhắn tin, mời bạn bè vào phòng và trò chuyện ở mọi bàn. Bạn bè, cấp độ và thành tích đi theo bạn trên mọi thiết bị.',
+      'Guests can still play every game and read the chat.': 'Khách vẫn chơi được mọi trò và đọc được tin nhắn.', '🔒 Sign up to add friends': '🔒 Đăng ký để kết bạn',
+      '🔒 Friends and messages are for players with an account.': '🔒 Bạn bè và tin nhắn chỉ dành cho người có tài khoản.',
+      "Sign up to chat. It's free!": 'Đăng ký để trò chuyện. Miễn phí!', "Sign up to add friends. It's free!": 'Đăng ký để kết bạn. Miễn phí!',
+      "Sign up to message friends. It's free!": 'Đăng ký để nhắn tin cho bạn bè. Miễn phí!', "Sign up to accept friend requests. It's free!": 'Đăng ký để nhận lời mời kết bạn. Miễn phí!',
       // Doodle Guess room
       'WORD LANGUAGE': 'NGÔN NGỮ CỦA TỪ', '🇺🇸 English': '🇺🇸 Tiếng Anh', '🇻🇳 Tiếng Việt': '🇻🇳 Tiếng Việt', 'Which language the words to draw are in.': 'Các từ để vẽ sẽ bằng ngôn ngữ nào.',
       // table designs (zz_tables.js)

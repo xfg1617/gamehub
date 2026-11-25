@@ -1,0 +1,35 @@
+"""Chat and friends are for players with an account (Nov 2026, Inna): a guest can read the chat but the typing line
+is replaced by "Sign up to chat"; the Friends page asks them to sign up; a player card shows "Sign up to add friends";
+sending anyway is refused. A player with an account chats and adds friends as before."""
+import sys; sys.path.insert(0, 'test')
+from nplib import *
+with sync_playwright() as p:
+    G, = players(p, 1, account=False)
+    check(G.evaluate("NET.isGuest() && document.body.classList.contains('is-guest')"), 'the guest is marked as a guest')
+    G.evaluate("navigateTo('play', true); openGame('poker')"); G.wait_for_timeout(800)
+    G.evaluate("chatToggle(true)"); G.wait_for_timeout(400)
+    vis = G.evaluate("(() => { const b = document.querySelector('#chat-panel .chatbox'); return [getComputedStyle(b.querySelector('.chat-form')).display, getComputedStyle(b.querySelector('.chat-guest')).display, b.querySelector('.chat-guest').innerText]; })()")
+    check(vis[0] == 'none' and vis[1] == 'flex' and 'account' in vis[2], f'the guest sees "Sign up to chat" instead of the typing line {vis}')
+    G.screenshot(path='test/shots/guest_chat.png')
+    err = G.evaluate("NET.chatSend('poker', 'hello').then(() => 'sent', (e) => e.message)")
+    check(err.startswith('Sign up'), f'sending anyway is refused: {err}')
+    G.keyboard.press('Escape'); G.wait_for_timeout(300)
+    G.evaluate("document.getElementById('auth-modal') && document.getElementById('auth-modal').classList.add('hidden')")
+    err = G.evaluate("NET.addFriend('someone').then(() => 'sent', (e) => e.message)")
+    check(err.startswith('Sign up'), f'adding a friend is refused: {err}')
+    G.wait_for_timeout(300); check(G.evaluate("!document.getElementById('auth-modal').classList.contains('hidden')"), 'the sign-up box opens')
+    G.evaluate("document.getElementById('auth-modal') && document.getElementById('auth-modal').classList.add('hidden')")
+    G.evaluate("navigateTo('friends')"); G.wait_for_timeout(800)
+    txt = G.inner_text('#friends-root')
+    check('Make a free account' in txt and not G.query_selector('#fr-q'), 'the Friends page asks the guest to sign up')
+    G.screenshot(path='test/shots/guest_friends.png')
+    G.context.browser.close()
+with sync_playwright() as p:
+    A, = players(p, 1)
+    check(not A.evaluate("NET.isGuest()") and not A.evaluate("document.body.classList.contains('is-guest')"), 'a player with an account is not a guest')
+    A.evaluate("navigateTo('play', true); openGame('poker')"); A.wait_for_timeout(800)
+    A.evaluate("chatToggle(true)"); A.wait_for_timeout(300)
+    check(A.evaluate("getComputedStyle(document.querySelector('#chat-panel .chat-form')).display") != 'none', 'an account sees the typing line')
+    r = A.evaluate("NET.chatSend('poker', 'hello table').then(() => 'sent', (e) => e.message)")
+    check(r == 'sent', f'an account can chat ({r})')
+    done(A)

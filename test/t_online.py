@@ -33,7 +33,7 @@ with sync_playwright() as p:
     # quick match
     for pg in (A, B):
         pg.evaluate("openGame('chess')"); pg.wait_for_timeout(300)
-        pg.click('[data-mode="online"]'); pg.wait_for_timeout(900)
+        pg.click('[data-mode="quick"]'); pg.wait_for_timeout(900)
     A.wait_for_timeout(1500)
     check(A.query_selector('#ch-board') is not None and B.query_selector('#ch-board') is not None, 'quick match put both players on a board')
     A.screenshot(path='test/shots/online_A.png')
@@ -51,7 +51,7 @@ with sync_playwright() as p:
     check(len(lb) == 2, f'leaderboard lists both players {lb}')
     # a private room with a code, then a resignation
     for pg in (A, B): pg.evaluate("document.getElementById('g-modal').classList.add('hidden'); navigateTo('play', true)")
-    A.evaluate("openGame('chess')"); A.wait_for_timeout(300); A.click('[data-mode="friend"]'); A.wait_for_timeout(2000)
+    A.evaluate("openGame('chess')"); A.wait_for_timeout(300); A.click('[data-mode="room"]'); A.wait_for_timeout(2000)
     code = A.evaluate("document.querySelector('#np-lob .room-code').textContent")
     check(code in A.evaluate("document.body.innerText"), f'host waits in room {code}')
     B.fill('#quick-room-input', code); B.click('.code-row button'); B.wait_for_timeout(3000)
@@ -63,6 +63,6 @@ with sync_playwright() as p:
     A.wait_for_timeout(6000); print('   ROOM', A.evaluate("JSON.stringify(Object.values(JSON.parse(localStorage.getItem('psnet_db')).rooms).slice(-1))"), A.evaluate('NET.me.id'), B.evaluate('NET.me.id'), B.errs[-3:], A.errs[-3:])
     A.wait_for_function("!document.getElementById('g-modal').classList.contains('hidden')", timeout=40000)
     res = A.evaluate("document.getElementById('g-modal').innerText")
-    print('   friendly modal:', res.replace('\n',' ')[:200]); check('Friendly game' in res, 'room-code games are friendly (no Elo change)')
+    print('   friendly modal:', res.replace('\n',' ')[:200]); check('ELO' not in res.upper(), 'room-code games are friendly (no Elo row, no Elo change)')
     print('errors:', A.errs[:3], B.errs[:3])
 print('ALL GOOD' if not fails else f'{len(fails)} PROBLEMS')

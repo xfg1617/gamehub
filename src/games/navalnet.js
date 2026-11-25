@@ -32,6 +32,20 @@
         const oppElo = await NET.rating('naval').catch(() => ({ elo: 1200 })).then((r) => r.elo || 1200);
         initNavalGame(S.name(opp), oppElo, S.ranked ? 'RANKED' : 'FRIENDLY');
         ng.opponentAv = S.avatar(opp); ng.mySeat = me;
+        // rejoining (Nov 2026): your fleet was saved privately on this device when you pressed Deploy. It never goes to
+        // the other player; it puts your ships back where they were, then the missed shots are replayed on it.
+        const FKEY = 'ps_ng_fleet:' + S.code + ':' + ((S.seats[me] && S.seats[me].uid) || '');
+        const saved = (() => { try { return JSON.parse(localStorage.getItem(FKEY) || 'null'); } catch (e) { return null; } })();
+        if (saved && Array.isArray(saved) && saved.length === SHIPS_DEF.length) {
+          for (let r = 0; r < 10; r++) for (let c = 0; c < 10; c++) ng.playerBoard[r][c] = null;
+          ng.playerShips.length = 0;
+          saved.forEach((sh) => { const def = SHIPS_DEF.find((d) => d.id === sh.id); if (!def) return;
+            sh.cells.forEach((x) => { ng.playerBoard[x.r][x.c] = def.id; });
+            ng.playerShips.push({ id: def.id, name: def.name, size: def.size, cells: sh.cells.map((x) => ({ r: x.r, c: x.c })), r: sh.cells[0].r, c: sh.cells[0].c, orient: sh.orient || 'H', hits: 0, sunk: false }); });
+          renderNavalSetup();
+        }
+        const saveFleet = () => { try { localStorage.setItem(FKEY, JSON.stringify(ng.playerShips.map((x) => ({ id: x.id, orient: x.orient, cells: x.cells.map((c) => ({ r: c.r, c: c.c })) })))); } catch (e) {} };
+        const forgetFleet = () => { try { localStorage.removeItem(FKEY); } catch (e) {} };
         // at the end each screen shows the other its fleet (sent twice, it is only a picture)
         S.onPeek = (i, d) => { if (i === opp && d && d.fleet && window.ngShowEnemyFleet) ngShowEnemyFleet(d.fleet); };
         const sendFleet = () => S.peek({ fleet: ng.playerShips.map((x) => ({ id: x.id, cells: x.cells.map((c) => ({ r: c.r, c: c.c })) })) });
@@ -39,14 +53,14 @@
         const tok = G.tok, live = () => G && G.tok === tok && !G.over;
         let k = 0;
         ngNet = {
-          ready: () => S.act({ t: 'ready', key: 'ready' }),
+          ready: () => { saveFleet(); S.act({ t: 'ready', key: 'ready' }); },
           fire: (r, c) => {
             S.act({ t: 'shot', k, r, c });
             // the shot is marked at once; if the answer is slow, say so instead of leaving the player guessing
             gTimeout(() => { if (live() && ng.playerShots[r] && ng.playerShots[r][c] === 'pend') setBattleBanner('📡', 'Slow connection...', `Waiting for ${S.name(opp)}'s screen to answer. Your shot is marked on the map.`); }, 6000);
           },
           skip: () => S.act({ t: 'skip', k }),
-          over: (won, cb) => { G.over = true; sendFleet(); setTimeout(sendFleet, 1500); S.finish(won ? 'win' : 'loss').then(cb); },
+          over: (won, cb) => { G.over = true; forgetFleet(); sendFleet(); setTimeout(sendFleet, 1500); S.finish(won ? 'win' : 'loss').then(cb); },
           back: () => { giveBack(); open(root); },
         };
         S.onLeft = (a) => {

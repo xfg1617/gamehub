@@ -937,3 +937,18 @@ folder that was handed over, so they do not exist here.)
   the moves are replayed with `NP.catchup = true` (gTimeout waits 0, motionOff, `S.act` sends nothing) until the session
   is idle (`S._idle`). 2-player games that already gave the win to the other player can't be rejoined ("already
   finished"). Chess has its own system and no rejoin yet. `test/t_np_rejoin.py` (reload, and away > 45 s).
+
+## 5ac. Chess on the shared table + Sea Battle rejoin (Nov 25 2026, Inna)
+
+* **Chess uses netplay now** (`mod.online = { seats: 2, ranked: true }`, apply/drive like Checkers): the old own online
+  system (onlineLobby, quitOnline, watchOpponent, sendNet/onRoom on the rooms table, the `ce:` emote channel, the
+  chess-only "opp: online/friend" choice) is gone. Colours: online the shared dice pick White (`G.whiteSeat =
+  S.rng.rnd(2)`), on this device PLAY AS (side) decides; moves are actions `{t:'mv', s, f, to, p}`; resign / leave /
+  disconnect via the table; ranked Elo via `S.finish` (game id still `chess`, so ratings and stats are kept). Rooms,
+  quick match, rematch, emotes, lost-message protection and **rejoin** come from netplay. The special `chess ? 'friend'`
+  cases in core / base page / rematch are gone. `test/t_np_chess.py` (room, 12 moves, reload + rejoin, resign);
+  `t_online.py`, `t_chess_emotes.py`, `t_invite_link.py` updated (`data-mode="quick"` / `"room"`); `t_online_leave.py` /
+  `t_online_real.py` (real service) updated but not run.
+* **Sea Battle rejoin**: pressing Deploy saves your fleet on this device only (`ps_ng_fleet:<code>:<uid>`, navalnet.js);
+  it is never sent to the other player. On rejoin the fleet is put back before the replay, so every missed shot is
+  answered on the same ships; the save is removed when the game ends. `test/t_np_naval_rejoin.py`.

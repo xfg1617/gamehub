@@ -213,7 +213,7 @@
       if (!NET.on) return showToast('Joining rooms needs the online service.', 'error');
       NET.getRoom(code).then((r) => {
         if (!r || r.status === 'done') return showToast(`Room ${code} isn't open right now.`, 'error');
-        const go = () => { navigateTo('play', true); netJoin(code, r.game, r.game === 'chess' ? 'friend' : 'room'); };
+        const go = () => { navigateTo('play', true); netJoin(code, r.game, 'room'); };
         if (gameInProgress()) askConfirm({ title: 'JOIN THIS ROOM?', sub: 'Leaving will end the game you are playing.', yes: 'Join room', no: 'Stay here' }).then((ok) => ok && go()); else go();
       }).catch(() => showToast('Could not reach the online service.', 'error'));
     }
@@ -221,7 +221,7 @@
     // open a game straight into an online room
     function netJoin(code, game, kind) {
       if (!GAME_MODS[game]) return showToast('That game is not online yet.', 'error');
-      SETUP_PRESET = { id: game, sel: game === 'chess' ? { opp: kind || 'friend', room: code } : { net: kind === 'online' ? 'room' : (kind || 'room'), room: code }, code };
+      SETUP_PRESET = { id: game, sel: { net: kind === 'online' || kind === 'friend' ? 'room' : (kind || 'room'), room: code }, code };
       openGame(game);
       const go = document.querySelector('#game-root #su-go'); if (go) go.click();
     }
@@ -730,7 +730,7 @@
       const join = () => NET.getRoom(code).then((r) => {
         if (!r || r.status === 'done') return showToast(`Room ${code} isn't open right now. Your friend may not have pressed Start yet, or the game has ended. Ask them to check and send the link again.`, 'error');
         if (!GAME_MODS[r.game]) return showToast('That game is not online yet.', 'error');
-        go(() => { netJoin(code, r.game, r.game === 'chess' ? 'friend' : 'room'); showToast(`Joining room ${code}...`, 'success'); });
+        go(() => { netJoin(code, r.game, 'room'); showToast(`Joining room ${code}...`, 'success'); });
       }).catch(() => showToast('Could not reach the online service. Check your connection and open the link again.', 'error'));
       if (NET.on) return join();
       if (NET.failed) return local("Couldn't connect to play online, so you can play the same game on this device. Check your connection and open the link again to join your friend.");

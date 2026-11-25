@@ -118,7 +118,7 @@
     }
     // can "just you + nb computer players" run as the game's own on-this-device version?
     function npCanLocal(m, nb) {
-      if (['navalnet', 'tictactoe', 'c4', 'checkers', 'pool', 'wordduel', 'bowling'].includes(m.id)) return nb === 1;
+      if (['navalnet', 'tictactoe', 'c4', 'checkers', 'chess', 'pool', 'wordduel', 'bowling'].includes(m.id)) return nb === 1;
       if (m.id === 'poker') return nb === 3;
       const sk = tableSizeKey(m.id), so = sk && (m._opts || []).find((o) => o.key === sk);
       return !!(so && so.choices.some((c) => +c[0] === nb + 1));
@@ -312,7 +312,7 @@
         started = true; if (autoT) gClearInt(autoT);
         S = npOnline({ code, ch, seats: d.seats, me: myIdx, seed: d.seed, sel: d.sel, ranked, room });
         NP.table = code; CHAT.mode = 'table'; if (typeof chatOnView === 'function') chatOnView('game');
-        if (m.id !== 'navalnet') npRemember({ code, game: m.id, start: d, net: sel.net, ranked });   // Sea Battle fleets stay on one screen: no rejoin
+        npRemember({ code, game: m.id, start: d, net: sel.net, ranked });
         NP.last = { code, game: m.id, sel: Object.assign({}, d.sel), ranked, bots: d.seats.filter((x) => x.bot).length, uids: d.seats.filter((x) => x.uid).map((x) => x.uid), names: Object.fromEntries(d.seats.filter((x) => x.uid).map((x) => [x.uid, x.name])) };
         if (ranked && pingT == null) { NET.ping(code); pingT = gInterval(() => NET.ping(code), 10000); }
         SFX.play('reveal');
@@ -503,7 +503,7 @@
         const gm = document.getElementById('g-modal'); if (gm) gm.classList.add('hidden');
         showToast('Rematch! Setting up the table...', 'success');
         const id = L.game;
-        SETUP_PRESET = { id, sel: id === 'chess' ? Object.assign({}, L.sel, { opp: 'friend', room: code }) : Object.assign({}, L.sel, { net: 'room', room: code, rematch: n, rmRanked: L.ranked, rmBots: L.bots || 0 }), code, host };
+        SETUP_PRESET = { id, sel: Object.assign({}, L.sel, { net: 'room', room: code, rematch: n, rmRanked: L.ranked, rmBots: L.bots || 0 }), code, host };
         const start = () => { openGame(id); const g = document.querySelector('#game-root #su-go'); if (g) g.click(); };
         if (host) return start();
         // joiners wait until the new room exists, so they join it instead of opening their own

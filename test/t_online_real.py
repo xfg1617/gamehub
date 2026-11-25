@@ -32,7 +32,7 @@ with sync_playwright() as p:
         check('hello from Test Pilot A' in B.evaluate("document.getElementById('chat-global').innerText"), 'chat message arrived on the other device')
         for pg in (A, B):
             pg.evaluate("openGame('chess')"); pg.wait_for_timeout(400)
-            pg.click('[data-k="opp"][data-v="online"]'); pg.click('#su-go'); pg.wait_for_timeout(2500)
+            pg.click('[data-mode="quick"]'); pg.wait_for_timeout(2500)
         A.wait_for_timeout(3000)
         check(A.query_selector('#ch-board') is not None and B.query_selector('#ch-board') is not None, 'quick match paired the two devices')
         if not fails:
@@ -51,7 +51,7 @@ with sync_playwright() as p:
             # a private room with a code (friendly, no Elo), then a resignation
             lb0 = sorted(lb)
             for pg in (A, B): pg.evaluate("document.getElementById('g-modal').classList.add('hidden'); navigateTo('play', true)")
-            A.evaluate("openGame('chess')"); A.wait_for_timeout(400); A.click('[data-k="opp"][data-v="friend"]')
+            A.evaluate("openGame('chess')"); A.wait_for_timeout(400); A.click('[data-mode="room"]')
             code = A.evaluate("document.getElementById('su-code').textContent"); A.click('#su-go'); A.wait_for_timeout(3000)
             check(code in A.evaluate("document.body.innerText"), f'host waits in room {code}')
             B.fill('#quick-room-input', code); B.click('.code-row button'); B.wait_for_timeout(5000)

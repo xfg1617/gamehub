@@ -43,7 +43,7 @@ with sync_playwright() as p:
     A.evaluate("closeActiveGame()"); B.evaluate("closeActiveGame()")
     # 3. Chess
     A.evaluate("navigateTo('play', true); openGame('chess')"); A.wait_for_timeout(600)
-    A.click('[data-mode="friend"]'); A.wait_for_timeout(2500)
+    A.click('[data-mode="room"]'); A.wait_for_timeout(2500)
     link = room_link(A)
     open_link(B, link)
     A.click('#np-start'); A.wait_for_timeout(3000)

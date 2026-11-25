@@ -280,50 +280,28 @@
 
       function open(root) {
         const body = gameShell(root, mod, '', 'max-w-[1000px] mx-auto');
-        // online: step 1 is the same "how do you want to play?" picker as every game (invites / ranked go straight on)
-        const pre = SETUP_PRESET && SETUP_PRESET.id === 'chess' ? SETUP_PRESET : null;
-        const saved = Object.assign({ side: 'w', lvl: 2, clock: 60, theme: 'ocean', hints: 1 }, setupLoad('chess'));
-        if (NET.on && pre && (pre.sel.opp === 'friend' || pre.sel.opp === 'online')) {   // an invite, a rematch, Create Room or Ranked Match
-          SETUP_PRESET = null; GT.started = true; GT.over = false;
-          return start(body, Object.assign({}, saved, pre.sel, { room: pre.sel.opp === 'friend' ? (pre.sel.room || pre.code) : undefined }));
-        }
-        if (NET.on && !pre) {
-          body.innerHTML = `<div class="win max-w-xl mx-auto overflow-hidden"><div class="winbar ${mod.tone || 'amber'}"><span>CHESS</span><span class="spr w-5 h-5">${GICONS[mod.icon]}</span></div>
-            <div class="p-6 space-y-5"><div class="flex items-center gap-4"><span class="gart" style="--c:${mod.color}"><span style="display:contents">${GICONS[mod.icon]}</span></span><p class="text-sm text-muted leading-relaxed">${mod.blurb || ''}</p></div>
-            <div class="pix text-xs tracking-wider text-muted">HOW DO YOU WANT TO PLAY?</div>
-            <div class="su-modes"><button class="su-mode" data-mode="online" style="--c:#2DD4BF"><span class="su-mode-t">Online match</span><span class="su-mode-d">Get paired with a real player at your level. Ranked.</span><span class="su-mode-go">▶</span></button>
-              <button class="su-mode" data-mode="friend" style="--c:#F5B041"><span class="su-mode-t">Private room</span><span class="su-mode-d">Your own room: invite a friend with a link or add a computer opponent, choose the timer and chat.</span><span class="su-mode-go">▶</span></button></div>
-            <button class="btn-game btn-graphite w-full py-2.5 text-sm" onclick="openGuide('chess')">? How to play Chess</button></div></div>`;
-          body.querySelectorAll('[data-mode]').forEach((b) => { b.onclick = () => { SFX.play('click'); const opp = b.dataset.mode; setupSave('chess', Object.assign({}, saved, { opp })); GT.started = true; GT.over = false; start(body, Object.assign({}, saved, { opp, room: generateRoomCode() })); }; });
-          return;
-        }
-        const vsAI = (s) => !s.opp || s.opp === 'ai';
+        // Nov 2026: Chess uses the shared online table (netplay) like every other game: the same "how do you want to
+        // play?" picker, rooms, quick match (ranked Elo), rematch, emotes, lost-message protection and rejoining.
         setupScreen(body, mod, [
-          ...(NET.on ? [{ key: 'opp', label: 'PLAY', def: 'friend', choices: [['online', 'Online'], ['friend', 'Private room']], hint: 'Online finds you a real player (ranked Elo). A private room gives you a link for a friend, or you can add a computer opponent.' }] : []),
-          { key: 'side', label: 'PLAY AS', def: 'w', when: vsAI, choices: [['w', 'White'], ['b', 'Black'], ['r', 'Random']] },
-          { key: 'lvl', label: 'DIFFICULTY', def: 2, when: vsAI, choices: [[1, 'Easy'], [2, 'Medium'], [3, 'Hard']] },
+          { key: 'side', label: 'PLAY AS', def: 'w', local: true, choices: [['w', 'White'], ['b', 'Black'], ['r', 'Random']] },
+          { key: 'lvl', label: 'DIFFICULTY', def: 2, local: true, choices: [[1, 'Easy'], [2, 'Medium'], [3, 'Hard']] },
           { key: 'clock', label: 'MOVE TIMER', def: 60, choices: [[0, 'Off'], [30, '30 s'], [60, '60 s'], [120, '2 min']] },
           { key: 'theme', label: 'BOARD COLOURS', def: 'ocean', choices: [['ocean', 'Ocean'], ['forest', 'Forest'], ['wood', 'Wood']] },
           { key: 'hints', label: 'Move hints', toggle: true, def: 1, hint: 'Show where the picked piece can go.', choices: [[1, 'On'], [0, 'Off']] },
-        ], (sel) => start(body, sel));
-        const go = body.querySelector('#su-go'); const fix = () => { const on = body.querySelector('[data-k="opp"].on'); if (go && on) go.textContent = on.dataset.v === 'online' ? 'Find a game' : 'Create room'; };
-        fix(); new MutationObserver(fix).observe(body, { childList: true, subtree: true });
+        ], (sel) => start(body, sel, npLocal([{ name: profile.username, avatar: profile.avatar }, { bot: true, name: `AI (${LV[(+sel.lvl || 2) - 1]})`, avatar: '🤖' }], sel)));
       }
+      // which seat plays White: online the shared dice decide (same on both screens); on this device, your choice
+      const colorOf = (seat) => (seat === G.whiteSeat ? 'w' : 'b');
+      const seatOf = (col) => (col === 'w' ? G.whiteSeat : 1 - G.whiteSeat);
+      const oppSeat = () => 1 - G.S.me;
+      const oppName = () => (G.S.online ? G.S.name(oppSeat()) : `AI (${LV[G.lvl - 1]})`);
 
-      function start(body, sel, online) {
-        if (!online && NET.on && (sel.opp === 'online' || sel.opp === 'friend')) return onlineLobby(body, sel);
-        const me = online ? online.me : sel.side === 'r' ? (Math.random() < 0.5 ? 'w' : 'b') : sel.side;
-        G = { online: online || null, st: newPos(), me, lvl: +sel.lvl || 2, secs: +sel.clock, hints: !!+sel.hints, theme: sel.theme, sel: null, targets: [], last: null, over: false, hist: [], seen: {}, capW: [], capB: [], busy: false, resign: false, promo: null, tok: ++GT.cur };
+      function start(body, sel, S) {
+        const side = sel.side === 'r' ? (Math.random() < 0.5 ? 'w' : 'b') : sel.side === 'b' ? 'b' : 'w';
+        const whiteSeat = S.online ? S.rng.rnd(2) : (side === 'w' ? 0 : 1);
+        G = { S, whiteSeat, st: newPos(), me: null, lvl: +sel.lvl || 2, secs: +sel.clock, hints: sel.hints === undefined ? true : !!+sel.hints, theme: sel.theme || 'ocean', sel: null, targets: [], last: null, over: false, hist: [], seen: {}, capW: [], capB: [], busy: false, resign: false, promo: null, tok: ++GT.cur };
+        G.me = colorOf(S.me);
         G.seen[posKey(G.st)] = 1;
-        // emotes in online chess (Chess has its own online system, so it opens a small live channel just for them)
-        if (online && typeof NP !== 'undefined') {
-          if (NP.S) { try { NP.S.leave(); } catch (e) {} }
-          const ech = NET.channel('ce:' + online.code, { name: NET.me.name, avatar: NET.me.avatar });
-          NP.S = { online: true, over: false, game: 'chess', code: online.code, me: 0,
-            seats: [{ name: NET.me.name, avatar: NET.me.avatar, uid: NET.me.id }, { name: online.opp.name, avatar: online.opp.avatar, uid: online.opp.id }],
-            emote: (id) => ech.send('emo', { id }), leave() { this.over = true; try { ech.close(); } catch (e) {} } };
-          ech.on('emo', (d, from) => { if (from !== NET.me.id && d && window.emoteShow) window.emoteShow(1, d.id); });
-        }
         body.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,560px)_1fr] gap-6 items-start">
           <div class="space-y-2">
             <div id="ch-top" class="flex items-center justify-between"></div>
@@ -334,220 +312,56 @@
             <div class="win overflow-hidden"><div class="winbar teal"><span id="ch-status">YOUR MOVE</span><span id="ch-lvl" class="pix text-xs"></span></div>
               <div class="p-4 space-y-3"><div id="ch-clock"></div><div id="ch-msg" class="text-sm text-muted min-h-[20px]"></div></div></div>
             <div class="win overflow-hidden"><div class="winbar"><span>MOVES</span></div><div id="ch-moves" class="logbox !border-0" style="height:210px"></div></div>
-            <div class="grid grid-cols-2 gap-3"><button id="ch-resign" class="btn-game btn-coral py-2.5 text-sm">Resign</button><button id="ch-new" class="btn-game btn-graphite py-2.5 text-sm">New game</button></div>
+            <div class="grid grid-cols-2 gap-3"><button id="ch-resign" class="btn-game btn-coral py-2.5 text-sm">Resign</button><button id="ch-new" class="btn-game btn-graphite py-2.5 text-sm">${S.online ? 'Leave' : 'New game'}</button></div>
           </div></div>`;
         G.clock = makeClock(document.getElementById('ch-clock'));
-        document.getElementById('ch-lvl').textContent = G.online ? (G.online.ranked ? 'ONLINE · RANKED' : `ONLINE · ROOM ${G.online.code}`) : `vs ${LV[G.lvl - 1]} AI`;
-        document.getElementById('ch-new').onclick = () => {
-          if (G.online && !G.over) {
-            return askConfirm({ title: 'LEAVE THIS GAME?', sub: 'Leaving an online game counts as a loss, and your opponent wins.' }).then((yes) => { if (yes && G) { quitOnline(); if (netOff) { netOff(); netOff = null; } open(document.getElementById('game-root')); } });
-          }
-          open(document.getElementById('game-root'));
-        };
-        if (G.online) gOn(window, 'pagehide', () => quitOnline());
+        document.getElementById('ch-lvl').textContent = S.online ? (S.ranked ? 'ONLINE · RANKED' : `ONLINE · ROOM ${S.code}`) : `vs ${LV[G.lvl - 1]} AI`;
+        document.getElementById('ch-new').onclick = () => npConfirmLeave(() => open(document.getElementById('game-root')));
         document.getElementById('ch-resign').onclick = (e) => {
           if (G.over) return;
           if (!G.resign) { G.resign = true; e.target.textContent = 'Really resign?'; gTimeout(() => { if (G) { G.resign = false; e.target.textContent = 'Resign'; } }, 3000); return; }
-          if (G.online) sendNet({ t: 'resign' });
-          finish({ over: true, kind: 'resign', winner: G.me === 'w' ? 'b' : 'w' });
+          S.act({ t: 'resign', s: S.me });
         };
-        if (G.online) { document.getElementById('ch-new').textContent = 'Leave'; watchOpponent(); }
+        S.on(apply, drive);
         render();
-        if (G.st.turn !== G.me) oppTurn(); else humanTurn();
+        npBar('');
+        turn();
       }
-      const oppTurn = () => (G.online ? netTurn() : aiTurn());
-
-      /* ---------- playing a real person ---------- */
-      let netOff = null;
-      // the waiting room: quick match (anyone, ranked) or a private room code (a friend, not ranked)
-      async function onlineLobby(body, sel) {
-        const quick = sel.opp === 'online', root = document.getElementById('game-root');
-        let room = null, gone = false;
-        const leave = () => { gone = true; if (netOff) { netOff(); netOff = null; } if (room) NET.leave(room.code); open(root); };
-        const wait = (title, html) => {
-          body.innerHTML = `<div class="win max-w-lg mx-auto overflow-hidden"><div class="winbar teal"><span>${title}</span><span class="pix text-xs">CHESS ONLINE</span></div>
-            <div class="p-6 space-y-4 text-center"><div class="ch-wait"><i></i><i></i><i></i></div>${html}<button id="ch-cancel" class="btn-game btn-graphite py-2 px-6 text-sm">Cancel</button></div></div>`;
-          document.getElementById('ch-cancel').onclick = leave;
-        };
-        const qt0 = Date.now(), qClock = () => { const t = Math.floor((Date.now() - qt0) / 1000); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`; };
-        const qTick = gInterval(() => { const el = document.getElementById('ch-qt'); if (el) el.textContent = qClock(); else if (G) gClearInt(qTick); }, 1000);
-        const timerHTML = () => `<div class="flex items-center justify-center gap-2"><span class="pix text-xs text-muted">${quick ? 'SEARCHING' : 'WAITING'}</span><span id="ch-qt" class="pix text-xl text-teal">${qClock()}</span></div>`;
-        wait(quick ? 'FINDING AN OPPONENT' : 'OPENING YOUR ROOM', timerHTML() + '<p class="text-sm text-muted">Connecting...</p>');
-        try { room = quick ? await NET.quickMatch('chess', { clock: +sel.clock }) : await NET.enterRoom(sel.room, 'chess', { clock: +sel.clock }); }
-        catch (e) { showToast(e.message || 'Could not connect.', 'error'); return open(root); }
-        if (gone || activeGame !== 'chess') return;
-        const code = room.code, link = inviteLink('chess', code, { ...sel, opp: 'friend' });
-        const iHost = room.host === NET.me.id;
-        NET.ping(code); gInterval(() => NET.ping(code), 10000);
-        let begun = false;
-        // the game itself starts here (quick match: as soon as you are paired; private room: when the host presses Start)
-        const launch = async (r, clock) => {
-          if (begun || gone) return; begun = true;
-          const oppId = r.host === NET.me.id ? r.guest : r.host;
-          const [opp, rt] = await Promise.all([NET.profileOf(oppId), NET.rating('chess').catch(() => ({ elo: 1200 }))]);
-          const ort = await NET.leaderboard('chess').then((l) => (l.find((x) => x.id === oppId) || { elo: 1200 }).elo).catch(() => 1200);
-          SFX.play('reveal'); showToast(quick ? `${opp.name} joined. Good luck!` : 'The game is on. Good luck!', 'success');
-          NP.table = code; CHAT.mode = 'table'; chatOnView('game');
-          start(body, { ...sel, clock: clock != null ? clock : (r.settings && r.settings.clock) || sel.clock }, { code, isHost: r.host === NET.me.id, me: r.first === NET.me.id ? 'w' : 'b', ranked: r.is_public, n: 0, opp: { id: oppId, name: opp.name, avatar: opp.avatar, elo: ort }, myElo: rt.elo, seen: Date.now() });
-          GT.started = true; GT.over = false;
-          onRoom(r);
-        };
-        if (quick) {
-          if (room.status === 'waiting') wait('WAITING FOR A PLAYER', timerHTML() + '<p class="text-sm text-muted">You are in the queue. The next player who looks for a chess game is matched with you.</p><p class="text-xs text-muted">Testing on one computer? Two tabs of the same browser are the same player. Use a second browser, or a private window, for the other side.</p>');
-          if (netOff) netOff();
-          netOff = NET.watchRoom(code, (r) => { if (gone) return; if (!begun && r.status === 'playing' && r.guest) launch(r); else if (begun) onRoom(r); });
-          return;
+      // every change to the game, in the same order on every screen
+      function apply(a) {
+        if (!G || G.over) return 0;
+        if (a.t === 'mv') {
+          if (seatOf(G.st.turn) !== a.s) return 0;
+          const mv = legal(G.st).find((q) => q.f === a.f && q.t === a.to && (q.p || null) === (a.p || null));
+          if (!mv) return 0;
+          play(mv);
+          return (G.slideMs || MOTION.slide) + 120;
         }
-        // ---------- private room: invite link, the move timer (host chooses), a computer opponent, room chat ----------
-        const ch = NET.channel(code, { name: NET.me.name, avatar: NET.me.avatar, at: Date.now() });
-        let clock = +sel.clock, joined = null, rr = null, nb = 0, lv = +sel.lvl || 2, side = sel.side || 'w';
-        const CLOCKS = [[0, 'Off'], [30, '30 s'], [60, '60 s'], [120, '2 min']];
-        const seg = (key, cur, list) => `<div class="seg w-full">${list.map(([v, t]) => `<button data-${key}="${v}" class="seg-btn flex-1 ${String(v) === String(cur) ? 'on' : ''}">${t}</button>`).join('')}</div>`;
-        body.innerHTML = `<div class="np-room"><div class="win overflow-hidden np-room-main"><div class="winbar teal"><span>${iHost ? 'YOUR ROOM · ' + esc(code) : 'ROOM ' + esc(code)}</span><span class="pix text-xs">CHESS ONLINE</span></div><div class="p-6 space-y-4 text-center" id="np-lob"></div></div>
-          <div class="win overflow-hidden np-room-chat" id="np-chatwin"><div class="winbar teal"><span>ROOM CHAT</span></div><div id="np-chat"></div></div></div>`;
-        NP.table = code; CHAT.mode = 'table'; chatOnView('game'); netChatRoom('t:' + code); chatMount(document.getElementById('np-chat'), 't:' + code);
-        const lobEl = body.querySelector('#np-lob');
-        // left the room some other way (Lobby button, sidebar, another game): close it quietly
-        const shut = () => { if (gone || begun) return; gone = true; try { ch.close(); } catch (e) {} if (netOff) { netOff(); netOff = null; } if (iHost) NET.leave(code); };
-        const dog = setInterval(() => { if (gone || begun) return clearInterval(dog); if (!lobEl.isConnected) { clearInterval(dog); shut(); } }, 1500);
-        const paint = () => {
-          if (gone || begun) return;
-          if (!lobEl.isConnected) return shut();
-          const lob = lobEl;
-          const meRow = `<div class="np-seat on"><span class="text-lg">${esc(NET.me.avatar)}</span><span class="font-bold truncate">${esc(NET.me.name)}</span>${iHost ? '<span class="pix text-xs text-amber">HOST</span>' : ''}<span class="pix text-xs text-teal">YOU</span></div>`;
-          const oppRow = joined ? `<div class="np-seat on"><span class="text-lg">${esc(joined.avatar)}</span><span class="font-bold truncate">${esc(joined.name)}</span>${!iHost ? '<span class="pix text-xs text-amber">HOST</span>' : ''}</div>`
-            : nb ? `<div class="np-seat on bot"><span class="text-lg">🤖</span><span class="font-bold truncate">Computer</span><span class="pix text-xs text-muted">${['', 'EASY', 'MEDIUM', 'HARD'][lv]}</span></div>`
-            : '<div class="np-seat"><span class="text-lg">·</span><span class="text-muted">Waiting for your friend...</span></div>';
-          lob.innerHTML = `<div class="flex items-center justify-center gap-2"><span class="pix text-xs text-muted">WAITING</span><span id="ch-qt" class="pix text-xl text-teal">${qClock()}</span></div>
-            <p class="text-sm text-muted">${iHost ? 'Your room is open. Send the link to a friend, or add a computer opponent.' : 'You are in the room. The host starts the game.'}</p>
-            <div class="room-code mx-auto" style="max-width:220px">${esc(code)}</div>
-            <div class="flex flex-wrap justify-center gap-2"><button id="ch-copy" class="btn-game btn-amber py-2 px-5 text-sm">Copy invite link</button><button id="ch-finv" class="btn-game btn-teal py-2 px-5 text-sm">Invite friends</button>${navigator.share ? '<button id="ch-share" class="btn-game btn-teal py-2 px-5 text-sm">Share…</button>' : ''}</div>
-            <div class="np-linkline pix text-xs text-muted">${esc(link.replace(/^https?:\/\//, ''))}</div>
-            <div class="np-seats text-left">${meRow}${oppRow}</div>
-            ${iHost && !joined ? `<div class="np-bots np-bots-hi"><div class="np-bots-h"><span>PLAY THE COMPUTER</span></div><div class="flex items-center justify-between gap-3"><span class="text-sm text-bone leading-snug">No friend around? Add a computer opponent.</span>
-              <span class="np-step"><button id="np-bm" class="btn-game btn-graphite" ${nb <= 0 ? 'disabled' : ''} aria-label="No computer opponent">−</button><b id="np-bn">${nb}</b><button id="np-bp" class="btn-game btn-amber" ${nb >= 1 ? 'disabled' : ''} aria-label="Add a computer opponent">+</button></span></div>
-              ${nb ? `<div class="pix text-xs tracking-wider text-muted mt-3 mb-1.5 text-left">COMPUTER LEVEL</div>${seg('lv', lv, [[1, 'Easy'], [2, 'Medium'], [3, 'Hard']])}
-              <div class="pix text-xs tracking-wider text-muted mt-3 mb-1.5 text-left">PLAY AS</div>${seg('sd', side, [['w', 'White'], ['b', 'Black'], ['r', 'Random']])}` : ''}</div>` : ''}
-            <div class="np-sets"><div class="flex items-center justify-between gap-2 mb-1"><span class="pix text-xs tracking-wider text-muted">GAME SETTINGS</span><span class="pix text-xs ${iHost ? 'text-amber' : 'text-muted'}">${iHost ? 'TAP TO CHANGE' : 'THE HOST CHOOSES'}</span></div>
-              <div class="np-set"><div class="np-set-l">MOVE TIMER</div>${iHost ? seg('ck', clock, CLOCKS) : `<div class="np-set-v">${(CLOCKS.find((c) => c[0] === +clock) || [0, 'Off'])[1]}</div>`}</div></div>
-            ${iHost ? `<button id="np-start" class="btn-game btn-amber w-full py-2.5 text-sm" ${joined || nb ? '' : 'disabled'}>${joined || nb ? 'Start game' : 'Invite a friend or add a computer opponent'}</button>` : ''}
-            <div class="flex flex-wrap justify-center gap-2"><button class="btn-game btn-graphite py-2 px-5 text-sm" onclick="openGuide('chess')">? How to play</button><button id="ch-cancel" class="btn-game btn-graphite py-2 px-6 text-sm">Leave room</button></div>`;
-          lob.querySelector('#ch-copy').onclick = (e) => copyText(link, e.currentTarget);
-          lob.querySelector('#ch-finv').onclick = () => inviteFriends(link, 'Chess');
-          const shr = lob.querySelector('#ch-share'); if (shr) shr.onclick = () => navigator.share({ title: 'Play Chess on GameHub', text: 'Play Chess with me on GameHub!', url: link }).catch(() => {});
-          lob.querySelector('#ch-cancel').onclick = () => { try { ch.close(); } catch (e) {} leave(); };
-          const bm = lob.querySelector('#np-bm'); if (bm) bm.onclick = () => { nb = 0; SFX.play('click'); paint(); };
-          const bp = lob.querySelector('#np-bp'); if (bp) bp.onclick = () => { nb = 1; SFX.play('click'); paint(); };
-          lob.querySelectorAll('[data-lv]').forEach((b) => { b.onclick = () => { lv = +b.dataset.lv; paint(); }; });
-          lob.querySelectorAll('[data-sd]').forEach((b) => { b.onclick = () => { side = b.dataset.sd; paint(); }; });
-          lob.querySelectorAll('[data-ck]').forEach((b) => { b.onclick = () => { clock = +b.dataset.ck; SFX.play('click'); ch.send('set', { clock }); paint(); }; });
-          const st = lob.querySelector('#np-start');
-          if (st) st.onclick = () => {
-            if (joined && rr) { ch.send('go', { clock }); return launch(rr, clock); }
-            if (nb) { gone = true; try { ch.close(); } catch (e) {} if (netOff) { netOff(); netOff = null; } NET.leave(code); start(body, { ...sel, opp: 'ai', lvl: lv, side, clock }); GT.started = true; GT.over = false; }
-          };
-        };
-        ch.on('set', (d) => { if (!iHost && d && d.clock != null && +d.clock !== clock) { clock = +d.clock; showToast('The host changed the move timer.', 'info'); paint(); } });
-        ch.on('hi', () => { if (iHost) ch.send('set', { clock }); });
-        ch.on('go', (d) => { if (!iHost && rr) launch(rr, d && d.clock != null ? +d.clock : clock); else if (!iHost) NET.getRoom(code).then((r) => r && launch(r, d && d.clock)); });
-        paint();
-        ch.ready.then(() => { if (!iHost) ch.send('hi', {}); });
-        if (netOff) netOff();
-        netOff = NET.watchRoom(code, async (r) => {
-          if (gone) return;
-          if (begun) return onRoom(r);
-          if (r.status === 'playing' && r.guest && !joined) {
-            rr = r; const oppId = r.host === NET.me.id ? r.guest : r.host;
-            joined = await NET.profileOf(oppId).catch(() => ({ name: 'Your friend', avatar: '🙂' }));
-            if (iHost) { nb = 0; SFX.play('pop'); showToast(`${joined.name} joined your room.`, 'success'); }
-            paint();
-          }
-        });
-      }
-      // the other player's connection: after 20 s with no heartbeat their side shows DISCONNECTED with a
-      // countdown; if they are still gone after 65 s the player who stayed wins (the service agrees after 60 s)
-      // leaving a live online game counts as a loss; the other player is told straight away
-      function quitOnline() {
-        if (!G || !G.online || G.over) return;
-        const o = G.online, n = o.n; o.n++; G.over = true;
-        try { reportGame('chess', 'loss', { elo: 0, xp: 5, label: `Online vs ${o.opp.name} · left the game` }); } catch (e) {}
-        (async () => { try { await NET.sendMove(o.code, { t: 'leave' }, n); } catch (e) {} try { await NET.reportResult(o.code, 'loss'); } catch (e) {} })();
-      }
-      function watchOpponent() {
-        const tok = G.tok, o = G.online;
-        o.seen = o.seen || Date.now();
-        let shown = false, keep = '';
-        const tick = () => {
-          if (!G || G.tok !== tok || G.over) return;
-          const gone = Date.now() - o.seen, msg = document.getElementById('ch-msg'), bar = document.getElementById('ch-dc');
-          if (gone > 20000) {
-            if (!shown) { shown = true; keep = msg ? msg.innerHTML : ''; SFX.play('nope'); }
-            const left = Math.max(0, Math.ceil((65000 - gone) / 1000));
-            const html = `<span id="ch-dc" class="text-coral font-bold">${esc(o.opp.name)} disconnected.</span> You win in ${left}s if they don't come back.`;
-            if (msg && (!bar || msg.innerHTML !== html)) msg.innerHTML = html;
-            if (gone > 65000) return finish({ over: true, kind: 'disconnect', winner: G.me });
-          } else if (shown) {
-            shown = false; if (msg && bar) msg.innerHTML = keep; showToast(`${o.opp.name} is back.`, 'success');
-          }
-          gTimeout(tick, 1000);
-        };
-        gTimeout(tick, 1000);
-      }
-      // a move (or a resignation) goes to the service; the other player's screen picks it up
-      function sendNet(mv) {
-        const o = G.online; if (!o) return;
-        const idx = o.n++;
-        NET.sendMove(o.code, mv, idx).catch((e) => showToast('Connection problem: ' + (e.message || 'move not sent'), 'error'));
-      }
-      // the room changed: play any new moves from the other player
-      function onRoom(r) {
-        const o = G && G.online; if (!o || r.code !== o.code) return;
-        const sv = (r.host === NET.me.id ? r.guest_seen : r.host_seen) || 0;
-        if (sv && sv !== o.seenVal) { o.seenVal = sv; o.seen = Date.now(); }
-        const ms = r.moves || [];
-        while (o.n < ms.length) {
-          const x = ms[o.n]; o.n++;
-          if (x.by === NET.me.id || G.over) continue;
-          if ((x.t || 'move') === 'move') {
-            const mv = legal(G.st).find((q) => q.f === x.f && q.t === x.to && (q.p || null) === (x.p || null));
-            if (mv && G.st.turn !== G.me) play(mv); else showToast('The game got out of step. Try leaving and rejoining the room.', 'error');
-          } else if (x.t === 'resign') finish({ over: true, kind: 'oppresign', winner: G.me });
-          else if (x.t === 'leave') finish({ over: true, kind: 'abandon', winner: G.me });
+        if (a.t === 'resign' || a.t === '_left' || a.t === '_gone') {
+          const mineSeat = a.s === G.S.me;
+          const loser = colorOf(a.s), winner = loser === 'w' ? 'b' : 'w';
+          finish({ over: true, kind: mineSeat ? 'resign' : a.t === 'resign' ? 'oppresign' : a.t === '_gone' ? 'disconnect' : 'abandon', winner });
         }
-        if (r.status === 'done' && r.result) o.result = r.result;
+        return 0;
       }
-      // while waiting for the other player: show their clock, and notice if they leave
-      function netTurn() {
+      // only on the table's host: the computer moves
+      function drive() {
+        if (!G || G.over) return;
+        const seat = seatOf(G.st.turn);
+        if (G.S.bot(seat)) G.S.later(() => { const m = bestMove(G.st, G.lvl); if (m) G.S.act({ t: 'mv', s: seat, f: m.f, to: m.t, p: m.p || null }); }, window.__fast ? 50 : 1300 + rnd(700));
+      }
+      // my decision: it goes through the table (on this device straight away)
+      const send = (m) => { G.busy = true; G.S.act({ t: 'mv', s: seatOf(G.st.turn), f: m.f, to: m.t, p: m.p || null }); };
+      function turn() {
         if (G.over) return;
-        document.getElementById('ch-status').textContent = "OPPONENT'S MOVE";
-        if (G.secs) G.clock.start(G.secs + 5, 'Their time', () => {}, 8); else G.clock.idle('Their move', '...');
+        G.busy = false;
+        if (G.S.mine(seatOf(G.st.turn))) humanTurn(); else oppTurn();
       }
-      async function finishOnline(res, title, sub, s) {
-        if (typeof NP !== 'undefined' && NP.S && NP.S.game === 'chess') NP.S.over = true;
-        const o = G.online, tok = G.tok;
-        document.getElementById('ch-status').textContent = title.toUpperCase();
-        document.getElementById('ch-msg').textContent = sub;
-        SFX.play(res === 'win' ? 'win' : res === 'loss' ? 'lose' : 'pop');
-        // both players report the result; Elo changes once the service has both reports (or one player has left)
-        let r = null;
-        for (let k = 0; k < 36 && G && G.tok === tok; k++) {
-          try { r = await NET.reportResult(o.code, res); } catch (e) { r = null; }
-          if (r && r.final) break;
-          await gSleep(k < 3 ? 1500 : 5000);
-        }
-        if (!G || G.tok !== tok) return;
-        let eloRow = ['Ranked Elo', o.ranked ? 'Waiting for your opponent...' : 'Friendly game', 'text-muted'];
-        let delta = 0;
-        if (r && r.final && r.disputed) eloRow = ['Ranked Elo', 'Results did not match: no change', 'text-coral'];
-        else if (r && r.final && o.ranked) {
-          const iAmHost = o.isHost;
-          const newElo = iAmHost ? r.host_elo : r.guest_elo; delta = iAmHost ? r.delta_host : -r.delta_host;
-          eloRow = ['Ranked Elo', `${newElo} (${delta >= 0 ? '+' : ''}${delta})`, delta >= 0 ? 'text-emerald' : 'text-coral'];
-        }
-        NP.last = { code: o.code, game: 'chess', sel: { clock: G.secs }, ranked: o.ranked, uids: [NET.me.id, o.opp.id], names: { [NET.me.id]: NET.me.name, [o.opp.id]: o.opp.name } };
-        const g = gstat('chess'); g.online = (g.online || 0) + 1; if (res === 'win' && s.kind === 'mate') g.mates = (g.mates || 0) + 1;
-        reportGame('chess', res, { elo: delta, xp: res === 'win' ? 50 : res === 'draw' ? 25 : 15, label: `Online vs ${o.opp.name} · ${G.hist.length} moves` });
-        gTimeout(() => gameResult({ title, sub, tone: res === 'loss' ? 'coral' : 'amber', sprite: res === 'win' ? 'trophy' : 'anchor', rows: [['Opponent', `${o.opp.avatar} ${o.opp.name}`, 'text-bone'], ['Moves', Math.ceil(G.hist.length / 2)], eloRow], againLabel: 'Play again', again: () => open(document.getElementById('game-root')) }), 500);
+      function oppTurn() {
+        if (G.over) return;
+        const bot = G.S.bot(seatOf(G.st.turn));
+        document.getElementById('ch-status').textContent = bot ? 'AI THINKING...' : `${oppName().toUpperCase()}'S MOVE`;
+        if (!bot && G.secs) G.clock.start(G.secs + 5, 'Their time', () => {}, 8); else G.clock.idle(bot ? 'AI turn' : 'Their move', '...');
       }
 
       function humanTurn() {
@@ -557,20 +371,8 @@
           if (G.over || G.st.turn !== G.me) return;
           const mv = pick(legal(G.st));
           showToast("Time's up! A move was played for you.", 'error');
-          play(mv);
+          send(mv);
         }, 8); else G.clock.idle('No timer', '∞');
-      }
-
-      function aiTurn() {
-        if (G.over) return;
-        document.getElementById('ch-status').textContent = 'AI THINKING...';
-        G.clock.idle('AI turn', '...');
-        const tok = G.tok;
-        gTimeout(() => {
-          if (!G || G.tok !== tok || G.over) return;
-          const mv = bestMove(G.st, G.lvl);
-          if (mv) play(mv); else finish(status(G.st, G.seen));
-        }, (G.slideMs || 0) + (window.__fast ? 50 : 1300 + rnd(700)));
       }
 
       function san(st, m) {
@@ -617,48 +419,53 @@
         // the sound lands with the piece, not when it lifts off
         const snd = s.check || (s.over && s.kind === 'mate') ? 'check' : victim ? 'capture' : 'move';
         gTimeout(() => SFX.play(snd), Math.max(0, G.slideMs - 60));
-        if (s.over) { if (G.online && mover === G.me) sendNet({ t: 'move', f: m.f, to: m.t, p: m.p || null }); const tok = G.tok; gTimeout(() => { if (G && G.tok === tok) finish(s); }, G.slideMs + 150); G.over = true; G.clock.stop(); return; }
-        if (G.online && mover === G.me) sendNet({ t: 'move', f: m.f, to: m.t, p: m.p || null });
-        if (st.turn === G.me) humanTurn(); else oppTurn();
+        if (s.over) { const tok = G.tok; G.ending = true; G.clock.stop(); gTimeout(() => { if (G && G.tok === tok) finish(s); }, G.slideMs + 150); return; }
+        turn();
       }
 
-      function finish(s) {
-        G.over = true;
+      async function finish(s) {
+        if (G.done) return; G.done = true;
+        G.over = true; G.S.over = true;
         G.clock.stop();
         render();
-        const meW = G.me === 'w';
+        const S = G.S, tok = G.tok;
         let res = 'draw', title = 'Draw', sub = '';
         if (s.winner) { res = s.winner === G.me ? 'win' : 'loss'; }
-        if (s.kind === 'mate') sub = res === 'win' ? (G.online ? 'Checkmate! You won.' : 'Checkmate! You beat the AI.') : G.online ? 'Checkmate. Good game!' : 'Checkmate. The AI got you this time.';
+        const opp = S.online ? oppName() : 'The AI';
+        if (s.kind === 'mate') sub = res === 'win' ? (S.online ? 'Checkmate! You won.' : 'Checkmate! You beat the AI.') : S.online ? 'Checkmate. Good game!' : 'Checkmate. The AI got you this time.';
         else if (s.kind === 'resign') sub = 'You resigned.';
-        else if (s.kind === 'oppresign') sub = 'Your opponent resigned.';
-        else if (s.kind === 'abandon') sub = 'Your opponent left the game. You win!';
-        else if (s.kind === 'disconnect') sub = 'Your opponent disconnected. You win!';
+        else if (s.kind === 'oppresign') sub = `${opp} resigned.`;
+        else if (s.kind === 'abandon') sub = `${opp} left the game. You win!`;
+        else if (s.kind === 'disconnect') sub = `${opp} disconnected. You win!`;
         else if (s.kind === 'stalemate') sub = 'Stalemate: no legal moves but not in check.';
         else if (s.kind === 'fifty') sub = 'Draw by the 50-move rule.';
         else if (s.kind === 'repetition') sub = 'Draw by threefold repetition.';
         else sub = 'Draw: not enough pieces left to checkmate.';
         title = res === 'win' ? 'Victory!' : res === 'loss' ? 'Defeat' : 'Draw';
-        if (G.online) return finishOnline(res, title, sub, s);
-        const eloTab = { win: [10, 16, 24], loss: [-6, -9, -12], draw: [1, 2, 4] };
-        const elo = eloTab[res][G.lvl - 1];
-        const g = gstat('chess');
-        if (res === 'win' && s.kind === 'mate') g.mates = (g.mates || 0) + 1;
-        reportGame('chess', res, { elo, xp: res === 'win' ? 20 + G.lvl * 15 : res === 'draw' ? 20 : 12, label: `vs ${LV[G.lvl - 1]} AI · ${G.hist.length} moves` });
         document.getElementById('ch-status').textContent = title.toUpperCase();
         document.getElementById('ch-msg').textContent = sub;
         SFX.play(res === 'win' ? 'win' : res === 'loss' ? 'lose' : 'pop');
-        gTimeout(() => gameResult({ title, sub, tone: res === 'loss' ? 'coral' : 'amber', sprite: res === 'win' ? 'trophy' : 'anchor', rows: [['Moves', Math.ceil(G.hist.length / 2)], ['Elo', elo > 0 ? '+' + elo : String(elo), elo >= 0 ? 'text-emerald' : 'text-coral'], ['Level', LV[G.lvl - 1], 'text-amber']], againLabel: 'New Game', again: () => open(document.getElementById('game-root')) }), 900);
+        const g = gstat('chess');
+        if (res === 'win' && s.kind === 'mate') g.mates = (g.mates || 0) + 1;
+        if (S.online) g.online = (g.online || 0) + 1;
+        const eloTab = { win: [10, 16, 24], loss: [-6, -9, -12], draw: [1, 2, 4] };
+        const elo = S.online ? 0 : eloTab[res][G.lvl - 1];
+        const eloRow = S.online ? await S.finish(res) : ['Elo', elo > 0 ? '+' + elo : String(elo), elo >= 0 ? 'text-emerald' : 'text-coral'];
+        if (!G || G.tok !== tok) return;
+        reportGame('chess', res, { elo, xp: S.online ? (res === 'win' ? 50 : res === 'draw' ? 25 : 15) : res === 'win' ? 20 + G.lvl * 15 : res === 'draw' ? 20 : 12, label: `${S.online ? 'Online vs ' + oppName() : 'vs ' + LV[G.lvl - 1] + ' AI'} · ${G.hist.length} moves` });
+        const rows = S.online ? [['Opponent', `${S.avatar(oppSeat())} ${oppName()}`, 'text-bone'], ['Moves', Math.ceil(G.hist.length / 2)]].concat(eloRow ? [eloRow] : [])
+          : [['Moves', Math.ceil(G.hist.length / 2)], eloRow, ['Level', LV[G.lvl - 1], 'text-amber']];
+        gTimeout(() => gameResult({ title, sub, tone: res === 'loss' ? 'coral' : 'amber', sprite: res === 'win' ? 'trophy' : 'anchor', rows, againLabel: S.online ? 'Back to setup' : 'New Game', again: () => open(document.getElementById('game-root')) }), 900);
       }
 
       function onSquare(i) {
-        if (!G || G.over || G.st.turn !== G.me || G.promo) return;
+        if (!G || G.over || G.ending || G.busy || G.st.turn !== G.me || !G.S.mine(seatOf(G.st.turn)) || G.promo) return;
         const p = G.st.b[i];
         if (G.sel !== null) {
           const mv = G.targets.filter((m) => m.t === i);
           if (mv.length) {
             if (mv.length > 1) return askPromo(mv); // promotion
-            return play(mv[0]);
+            return send(mv[0]);
           }
         }
         if (p && isW(p) === (G.me === 'w')) {
@@ -675,7 +482,7 @@
         const w = G.me === 'w';
         el.className = 'absolute inset-0 z-10 flex items-center justify-center bg-black/60';
         el.innerHTML = `<div class="win p-4 space-y-3 text-center"><div class="pix text-sm text-muted">PROMOTE TO</div><div class="flex gap-3">${['q', 'r', 'b', 'n'].map((c) => `<button data-p="${c}" class="avatar-tile w-16 h-16 hover:bg-amber" style="padding:6px">${pieceSVG(w ? c.toUpperCase() : c)}</button>`).join('')}</div></div>`;
-        el.querySelectorAll('button').forEach((b) => { b.onclick = () => { const m = mv.find((x) => x.p === b.dataset.p); G.promo = null; el.className = 'hidden'; play(m); }; });
+        el.querySelectorAll('button').forEach((b) => { b.onclick = () => { const m = mv.find((x) => x.p === b.dataset.p); G.promo = null; el.className = 'hidden'; send(m); }; });
       }
 
       function render() {
@@ -695,10 +502,10 @@
         board.innerHTML = h;
         board.querySelectorAll('.chsq').forEach((el) => { el.onclick = () => onSquare(+el.dataset.i); });
         const cap = (arr) => arr.slice().sort((a, b) => VAL[b.toLowerCase()] - VAL[a.toLowerCase()]).map((p) => `<span class="w-5 h-5 inline-block">${pieceSVG(p)}</span>`).join('');
-        const meN = profile.username, aiN = G.online ? `${esc(G.online.opp.name)} <span class="pix text-xs text-muted">${G.online.opp.elo}</span>` : 'AI (' + LV[G.lvl - 1] + ')';
+        const meN = G.S.online ? G.S.name(G.S.me) : profile.username, aiN = esc(oppName());
         const mine = G.me === 'w' ? G.capB : G.capW, theirs = G.me === 'w' ? G.capW : G.capB;
-        document.getElementById('ch-bot').innerHTML = `<span class="flex items-center gap-2 font-display font-extrabold text-sm"><span class="avatar-tile w-8 h-8 text-lg">${profile.avatar}</span>${esc(meN)}</span><span class="flex">${cap(mine)}</span>`;
-        document.getElementById('ch-top').innerHTML = `<span class="flex items-center gap-2 font-display font-extrabold text-sm"><span class="avatar-tile w-8 h-8 text-lg">${G.online ? esc(G.online.opp.avatar) : '🤖'}</span>${aiN}</span><span class="flex">${cap(theirs)}</span>`;
+        document.getElementById('ch-bot').innerHTML = `<span class="flex items-center gap-2 font-display font-extrabold text-sm"><span class="avatar-tile w-8 h-8 text-lg">${G.S.online ? esc(G.S.avatar(G.S.me)) : profile.avatar}</span>${esc(meN)}</span><span class="flex">${cap(mine)}</span>`;
+        document.getElementById('ch-top').innerHTML = `<span class="flex items-center gap-2 font-display font-extrabold text-sm"><span class="avatar-tile w-8 h-8 text-lg">${G.S.online ? esc(G.S.avatar(oppSeat())) : '🤖'}</span>${aiN}</span><span class="flex">${cap(theirs)}</span>`;
         const mv = document.getElementById('ch-moves');
         let mh = '';
         for (let i = 0; i < G.hist.length; i += 2) mh += `<div><span class="text-muted">${i / 2 + 1}.</span> <b>${G.hist[i]}</b> ${G.hist[i + 1] ? '<b>' + G.hist[i + 1] + '</b>' : ''}</div>`;
@@ -722,12 +529,8 @@
         extraRows: (s) => srow('Checkmates delivered', s.mates || 0),
         art: { piece: (p) => pieceSVG(p) },
         engine: { newPos, fromFEN, legal, make, unmake, perft, status, bestMove, evaluate },
-        open, close() {
-          if (G && G.online && !G.over) {
-            quitOnline(); G.over = true;
-          }
-          if (netOff) { netOff(); netOff = null; } G = null;
-        },
+        open, close() { G = null; },
+        online: { seats: () => 2, ranked: true, start: (body, sel, S) => start(body, sel, S) },
       };
       registerGame(mod);
     })();

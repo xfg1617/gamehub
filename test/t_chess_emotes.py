@@ -1,10 +1,10 @@
-"""Emotes in online Chess (Chess has its own online system): both players get the emote button, and an emote sent by
+"""Emotes in online Chess (on the shared online table since Nov 2026): both players get the emote button, and an emote sent by
 A pops up on B's screen."""
 import sys, time; sys.path.insert(0, 'test')
 from nplib import *
 with sync_playwright() as p:
     A, B = players(p, 2)
-    A.evaluate("openGame('chess')"); A.wait_for_timeout(400); A.click('[data-mode="friend"]'); A.wait_for_timeout(2000)
+    A.evaluate("openGame('chess')"); A.wait_for_timeout(400); A.click('[data-mode="room"]'); A.wait_for_timeout(2000)
     code = A.evaluate("document.querySelector('#np-lob .room-code').textContent")
     B.fill('#quick-room-input', code); B.click('.code-row button'); B.wait_for_timeout(3000)
     A.click('#np-start'); A.wait_for_timeout(3500)

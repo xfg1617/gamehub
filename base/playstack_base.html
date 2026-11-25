@@ -1823,7 +1823,7 @@
       if (typeof NET !== 'undefined' && NET.on) {
         NET.getRoom(code).then((r) => {
           if (!r || r.status === 'done') return showToast(`No open room with the code ${code}.`, 'error');
-          netJoin(code, r.game, r.game === 'chess' ? 'friend' : 'room');
+          netJoin(code, r.game, 'room');
         }).catch(() => showToast('Could not reach the online service.', 'error'));
         return;
       }
@@ -1910,7 +1910,7 @@
       const online = typeof NET !== 'undefined' && NET.on;
       closeModal('room-modal');
       if (!online) { openSetup(id === 'navalnet' ? 'naval' : id); return; }
-      SETUP_PRESET = { id, sel: id === 'chess' ? { opp: 'online' } : { net: 'quick', n: 2, seats: 2 } };
+      SETUP_PRESET = { id, sel: { net: 'quick', n: 2, seats: 2 } };
       if (GAME_MODS[id]) openGame(id); else openSetup(id);
     }
 
@@ -1919,7 +1919,7 @@
       if (id === 'naval' && typeof NET !== 'undefined' && NET.on) id = 'navalnet';
       closeModal('room-modal');
       const code = generateRoomCode();
-      SETUP_PRESET = { id, sel: id === 'chess' ? { opp: 'friend' } : { net: 'room', mode: 'local' }, code, host: true };
+      SETUP_PRESET = { id, sel: { net: 'room', mode: 'local' }, code, host: true };
       if (GAME_MODS[id]) openGame(id); else openSetup(id);
     }
 

@@ -9,7 +9,7 @@ def pair(A, B):
     for pg in (A, B):
         pg.evaluate("document.getElementById('g-modal') && document.getElementById('g-modal').classList.add('hidden'); navigateTo('play', true)")
         pg.evaluate("openGame('chess')"); pg.wait_for_timeout(400)
-        pg.click('[data-k="opp"][data-v="online"]'); pg.click('#su-go'); pg.wait_for_timeout(2500)
+        pg.click('[data-mode="quick"]'); pg.wait_for_timeout(2500)
     A.wait_for_timeout(3000)
     return A.query_selector('#ch-board') is not None and B.query_selector('#ch-board') is not None
 def modal(pg, t=40000):
@@ -32,7 +32,7 @@ with sync_playwright() as p:
     # 2. losing the connection
     check(pair(A, B), 'ranked game 2 started')
     A.context.set_offline(True); t0 = time.time()
-    B.wait_for_function("document.getElementById('ch-dc')", timeout=45000)
+    B.wait_for_function("((document.getElementById('np-bar') || {}).textContent || '').includes('disconnected')", timeout=45000)
     print(f'   DISCONNECTED shown after {time.time() - t0:.0f}s:', B.evaluate("document.getElementById('ch-msg').innerText"))
     B.screenshot(path='test/shots/leave_dc.png')
     check(True, 'disconnect warning with countdown')

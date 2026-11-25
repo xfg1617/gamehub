@@ -57,7 +57,7 @@
             <div id="fb-prompt" class="win p-3 text-center min-h-[52px] text-sm"></div>
             <div class="text-center"><button id="fb-quit" class="hidden btn-game btn-amber py-2 px-6 text-sm">See the results now</button></div>
             <div id="fb-hand" class="fb-hand"></div></div>
-          <div class="hidden"><div id="fb-clock"></div><span id="fb-status"></span><span id="fb-step"></span><div id="fb-log" class="logbox" style="height:240px"></div></div></div>`;
+          <div class="hidden"><div id="fb-clock"></div><span id="fb-status"></span><span id="fb-step"></span></div><div id="fb-log" class="logbox" style="height:240px"></div></div>`;
         S.track();
         G.clock = makeClock($('fb-clock'));
         S.onLeft = (a) => {

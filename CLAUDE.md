@@ -839,3 +839,9 @@ folder that was handed over, so they do not exist here.)
   middle (`.bjs-side.l` | you | `.bjs-side.r`, three grid columns), lowest and with full-size cards; the others sit in
   an arc to your left/right (ends higher). Phones: the others in a compact row on top, you underneath. Seat ids
   `bjo-seat-N` (emotes, chat bubbles). `t_np_bj.py` compares seats by id (each screen sees itself in the middle).
+* **Log button fix**: the hide rule `.logbox:not(#ch-moves)` counts as an id, so it beat the show rule and the log never
+  opened; the show rule now has the same `:not(#ch-moves)`. Bullshit's `#fb-log` sits outside its hidden box.
+* **Daily Word**: no tile in the ALL GAMES grid (`noTile` in `renderShelves`; it's in the side menu) and it is not a
+  full-screen game any more (`navigateTo` no longer adds `in-game` for 'daily'), so the side menu stays.
+* **Button shadows**: the game bar, Poker's bet bar and the card-game prompts have more padding at the bottom so the
+  3D buttons' 5 px shadow stays inside the bar.

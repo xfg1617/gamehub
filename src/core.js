@@ -928,9 +928,11 @@
       const order = []; SHELVES.forEach((sh) => sh.ids.forEach((id) => { if (byId[id] && !order.includes(id)) order.push(id); }));
       CATALOG.forEach((c) => { if (!order.includes(c.id)) order.push(c.id); });
       const sel = cats.find((c) => c[0] === shelfCat) || cats[0];
-      const ids = sel[1] ? sel[1].ids.filter((id) => byId[id]) : order;
+      // Daily Word lives in the side menu, not in the games grid (Inna, Nov 2026)
+      const noTile = (id) => id !== 'daily';
+      const ids = (sel[1] ? sel[1].ids.filter((id) => byId[id]) : order).filter(noTile);
       let seenBadge = false;
-      host.innerHTML = `<div class="hp-tabs"><span class="hp-all pix">ALL GAMES <span class="text-muted">${order.length}</span></span>${cats.map(([k]) => `<button data-cat="${k}" class="${k === sel[0] ? 'on' : ''}">${k}</button>`).join('')}</div>
+      host.innerHTML = `<div class="hp-tabs"><span class="hp-all pix">ALL GAMES <span class="text-muted">${order.filter(noTile).length}</span></span>${cats.map(([k]) => `<button data-cat="${k}" class="${k === sel[0] ? 'on' : ''}">${k}</button>`).join('')}</div>
         <div class="hp-grid">${ids.map((id) => {
           const c = byId[id]; let flag = '';
           // calmer grid (Nov 2026): no NEW / SOON labels; only HOT (and Daily Word's own badge) stay

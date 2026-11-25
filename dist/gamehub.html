@@ -1243,7 +1243,7 @@
     #gs-wrap:has(#gs-body .logbox:not(#ch-moves)) .gs-moves { display: inline-flex !important; }
     body.in-game #game-root .logbox:not(#ch-moves) { display: none !important; }
     body.in-game #ch-moves { height: 260px !important; }
-    body.in-game.show-moves #game-root .logbox { display: block !important; position: fixed; right: 16px; top: 64px; width: min(340px, calc(100vw - 32px)); height: min(60vh, 460px) !important; z-index: 75; box-shadow: 0 6px 0 var(--ink); }
+    body.in-game.show-moves #game-root .logbox:not(#ch-moves), body.in-game.show-moves #game-root .logbox { display: block !important; position: fixed; right: 16px; top: 64px; width: min(340px, calc(100vw - 32px)); height: min(60vh, 460px) !important; z-index: 75; box-shadow: 0 6px 0 var(--ink); }
 
     /* ---------- the whole-table layout for card games: the table is the screen ---------- */
     body.in-game .ft-cards { display: block !important; }
@@ -1567,6 +1567,14 @@
       body.in-game[data-game="poker"] #gs-body .pcard.pc-real:not(.sm) .pc-corner { font-size: .8rem !important; }
       body.in-game[data-game="poker"] #gs-body .pcard.pc-real .pc-corner i svg { width: 7px !important; height: 7px !important; }
     }
+    /* button shadows stay inside their bars (Inna, Nov 2026): the 3D buttons have a 5 px shadow under them, so every
+       bar that holds them gets more room at the bottom than at the top */
+    @media (min-width: 1024px) {
+      body.in-game #gs-wrap > .panel:first-child,
+      body.in-game #view-naval > .panel:first-child, body.in-game #view-connect4 > .panel:first-child { padding: 6px 9px 12px !important; }
+    }
+    #fb-prompt, #cc-prompt, #kk-prompt { padding: 7px 16px 12px !important; }
+    body.in-game[data-game="poker"] #pk-ctl .win { padding: 10px 14px 15px !important; }
     /* ---------- home page top (Nov 2026): one slim bar to create / join a room, two slim links ---------- */
     .nh { min-width: 0; max-width: 100%; box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); border: 4px solid #050E18; box-shadow: 0 6px 0 #050E18; margin-bottom: 14px; }
     .nh-l { background: #F5B041; padding: 16px 24px; display: flex; flex-direction: column; justify-content: center; gap: 8px; min-width: 0; }
@@ -3337,7 +3345,8 @@
       }
       activeView = view;
       // every game plays full screen: the side menu and footer step aside (Inna, Nov 2026)
-      document.body.classList.toggle('in-game', ['game', 'naval', 'daily', 'connect4'].includes(view));
+      // Daily Word keeps the side menu (Inna, Nov 2026); the other games go full screen
+      document.body.classList.toggle('in-game', ['game', 'naval', 'connect4'].includes(view));
       if (view !== 'game' && typeof closeActiveGame === 'function') closeActiveGame();
       if (view !== 'game' && typeof GT !== 'undefined') GT.started = false;
       if (view !== 'naval' && typeof stopNgTimer === 'function') stopNgTimer();
@@ -6665,9 +6674,11 @@
       const order = []; SHELVES.forEach((sh) => sh.ids.forEach((id) => { if (byId[id] && !order.includes(id)) order.push(id); }));
       CATALOG.forEach((c) => { if (!order.includes(c.id)) order.push(c.id); });
       const sel = cats.find((c) => c[0] === shelfCat) || cats[0];
-      const ids = sel[1] ? sel[1].ids.filter((id) => byId[id]) : order;
+      // Daily Word lives in the side menu, not in the games grid (Inna, Nov 2026)
+      const noTile = (id) => id !== 'daily';
+      const ids = (sel[1] ? sel[1].ids.filter((id) => byId[id]) : order).filter(noTile);
       let seenBadge = false;
-      host.innerHTML = `<div class="hp-tabs"><span class="hp-all pix">ALL GAMES <span class="text-muted">${order.length}</span></span>${cats.map(([k]) => `<button data-cat="${k}" class="${k === sel[0] ? 'on' : ''}">${k}</button>`).join('')}</div>
+      host.innerHTML = `<div class="hp-tabs"><span class="hp-all pix">ALL GAMES <span class="text-muted">${order.filter(noTile).length}</span></span>${cats.map(([k]) => `<button data-cat="${k}" class="${k === sel[0] ? 'on' : ''}">${k}</button>`).join('')}</div>
         <div class="hp-grid">${ids.map((id) => {
           const c = byId[id]; let flag = '';
           // calmer grid (Nov 2026): no NEW / SOON labels; only HOT (and Daily Word's own badge) stay
@@ -11050,7 +11061,7 @@
             <div id="fb-prompt" class="win p-3 text-center min-h-[52px] text-sm"></div>
             <div class="text-center"><button id="fb-quit" class="hidden btn-game btn-amber py-2 px-6 text-sm">See the results now</button></div>
             <div id="fb-hand" class="fb-hand"></div></div>
-          <div class="hidden"><div id="fb-clock"></div><span id="fb-status"></span><span id="fb-step"></span><div id="fb-log" class="logbox" style="height:240px"></div></div></div>`;
+          <div class="hidden"><div id="fb-clock"></div><span id="fb-status"></span><span id="fb-step"></span></div><div id="fb-log" class="logbox" style="height:240px"></div></div>`;
         S.track();
         G.clock = makeClock($('fb-clock'));
         S.onLeft = (a) => {

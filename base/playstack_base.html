@@ -1782,7 +1782,8 @@
       }
       activeView = view;
       // every game plays full screen: the side menu and footer step aside (Inna, Nov 2026)
-      document.body.classList.toggle('in-game', ['game', 'naval', 'daily', 'connect4'].includes(view));
+      // Daily Word keeps the side menu (Inna, Nov 2026); the other games go full screen
+      document.body.classList.toggle('in-game', ['game', 'naval', 'connect4'].includes(view));
       if (view !== 'game' && typeof closeActiveGame === 'function') closeActiveGame();
       if (view !== 'game' && typeof GT !== 'undefined') GT.started = false;
       if (view !== 'naval' && typeof stopNgTimer === 'function') stopNgTimer();

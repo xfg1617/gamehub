@@ -21,7 +21,7 @@
     #gs-wrap:has(#gs-body .logbox:not(#ch-moves)) .gs-moves { display: inline-flex !important; }
     body.in-game #game-root .logbox:not(#ch-moves) { display: none !important; }
     body.in-game #ch-moves { height: 260px !important; }
-    body.in-game.show-moves #game-root .logbox { display: block !important; position: fixed; right: 16px; top: 64px; width: min(340px, calc(100vw - 32px)); height: min(60vh, 460px) !important; z-index: 75; box-shadow: 0 6px 0 var(--ink); }
+    body.in-game.show-moves #game-root .logbox:not(#ch-moves), body.in-game.show-moves #game-root .logbox { display: block !important; position: fixed; right: 16px; top: 64px; width: min(340px, calc(100vw - 32px)); height: min(60vh, 460px) !important; z-index: 75; box-shadow: 0 6px 0 var(--ink); }
 
     /* ---------- the whole-table layout for card games: the table is the screen ---------- */
     body.in-game .ft-cards { display: block !important; }
@@ -345,3 +345,11 @@
       body.in-game[data-game="poker"] #gs-body .pcard.pc-real:not(.sm) .pc-corner { font-size: .8rem !important; }
       body.in-game[data-game="poker"] #gs-body .pcard.pc-real .pc-corner i svg { width: 7px !important; height: 7px !important; }
     }
+    /* button shadows stay inside their bars (Inna, Nov 2026): the 3D buttons have a 5 px shadow under them, so every
+       bar that holds them gets more room at the bottom than at the top */
+    @media (min-width: 1024px) {
+      body.in-game #gs-wrap > .panel:first-child,
+      body.in-game #view-naval > .panel:first-child, body.in-game #view-connect4 > .panel:first-child { padding: 6px 9px 12px !important; }
+    }
+    #fb-prompt, #cc-prompt, #kk-prompt { padding: 7px 16px 12px !important; }
+    body.in-game[data-game="poker"] #pk-ctl .win { padding: 10px 14px 15px !important; }

@@ -896,3 +896,13 @@ folder that was handed over, so they do not exist here.)
   the server: the error says "Sign up (and confirm your email) to ...".
 * Tests: `nplib.players(..., account=True)` by default gives stand-in players an account (`psnet_email`); `t_accounts.py`
   and `t_welcome.py` pass `account=False`. `test/t_guest_limits.py`.
+
+## 5aa. Landlord: property pop-up + "why can't I build" (Nov 25 2026, Inna)
+
+* YOUR PROPERTIES (`renderMine`, `#ty-mine`) is a pop-up in the middle of the screen (`.ty-mine-win` + dim `.ty-mine-bg`,
+  60-tycoon.css), with a line saying the building rule; Done or a tap outside closes it. It used to sit at the bottom,
+  under CHAT.
+* `buildWhy(S, pi, i)` gives the reason in plain words (not on that plot / already built this visit / missing plots of the
+  colour set / build evenly / unmortgage / costs $X) and is shown when +🏠 is pressed where you can't build.
+* After the roll, "🏠 Build / Mortgage" shows whenever you own anything (so you can try and be told why); before the roll
+  it still only shows when something can be done. `test/t_ty_build_why.py`.

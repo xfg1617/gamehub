@@ -97,6 +97,28 @@
         const min = Math.min(...GROUPS[t.g].map((x) => S.houses[x]));
         return S.houses[i] === min && S.cash[pi] >= t.hc;
       }
+      // why you can't build on plot i right now, in plain words ('' = you can) (Inna, Nov 2026: "tell them why")
+      const GNAME = { br: 'brown', lb: 'light blue', pk: 'pink', or: 'orange', rd: 'red', yl: 'yellow', gn: 'green', bl: 'dark blue' };
+      function buildWhy(S, pi, i) {
+        const t = BOARD[i]; if (!t || t.k !== 'prop') return 'You can only build houses on coloured properties, not on rails or utilities.';
+        if (S.own[i] !== pi) return `You don't own ${t.n}.`;
+        if (S.mort[i]) return `${t.n} is mortgaged. Unmortgage it first.`;
+        if (S.houses[i] >= 5) return `${t.n} already has a hotel. That's the most you can build.`;
+        if (G && G.landBuild && G.S === S) {
+          if (G.cur !== pi) return 'You can only build on your own turn.';
+          const here = G.players[pi] && G.players[pi].pos;
+          if (G.buildSpot === null || G.buildSpot === undefined) return here === i ? `One house per visit: you already built on ${t.n} this turn.` : `Build rule in this game: you build by landing on your own plot. Land on ${t.n} to build a house there.`;
+          if (G.buildSpot !== i) return `You're standing on ${BOARD[G.buildSpot].n}, not ${t.n}. You can only build on the plot you landed on.`;
+          if (S.cash[pi] < t.hc) return `A house here costs ${money(t.hc)}. You only have ${money(S.cash[pi])}.`;
+          return '';
+        }
+        if (!owns(S, pi, t.g)) { const miss = GROUPS[t.g].filter((x) => S.own[x] !== pi).map((x) => BOARD[x].n); return `You need the whole ${GNAME[t.g] || ''} set to build. Still missing: ${miss.join(', ')}.`; }
+        const mg = GROUPS[t.g].filter((x) => S.mort[x]); if (mg.length) return `Unmortgage ${mg.map((x) => BOARD[x].n).join(', ')} first.`;
+        const min = Math.min(...GROUPS[t.g].map((x) => S.houses[x]));
+        if (S.houses[i] !== min) { const lo = GROUPS[t.g].filter((x) => S.houses[x] === min).map((x) => BOARD[x].n); return `Build evenly: put a house on ${lo.join(' or ')} first.`; }
+        if (S.cash[pi] < t.hc) return `A house here costs ${money(t.hc)}. You only have ${money(S.cash[pi])}.`;
+        return '';
+      }
       function canSell(S, pi, i) {
         const t = BOARD[i]; if (t.k !== 'prop' || S.own[i] !== pi || !(S.houses[i] > 0)) return false;
         if (G && G.landBuild && G.S === S) return true;
@@ -518,8 +540,10 @@
           const S = G.S;
           const mineBuild = BOARD.some((t) => canBuild(S, p.i, t.i) || canSell(S, p.i, t.i) || (S.own[t.i] === p.i && S.mort[t.i]));
           if (when === 'before' && !mineBuild) return;
+          // after the roll the button shows whenever you own something, so you can try (and be told why not) (Nov 2026)
+          const showPanel = mineBuild || (when !== 'before' && BOARD.some((t) => S.own[t.i] === p.i));
           if (!mine(p)) setBanner(when === 'before' ? `${p.name} is getting ready...` : `${p.name} is finishing the turn...`);
-          const v = await decide(p, 'mg', () => manageUI(p, when, mineBuild), () => 'go', 300);
+          const v = await decide(p, 'mg', () => manageUI(p, when, showPanel), () => 'go', 300);
           if (v && typeof v === 'object' && v.kind) { panelAct(p, v.kind, +v.i); continue; }
           if (mine(p)) { G.panelOpen = false; renderMine(); }
           return;
@@ -544,14 +568,14 @@
         else if (kind === 'sell' && canSell(S, pi, i)) { moneyFlow('tile:' + i, pi, t.hc / 2); S.cash[pi] += t.hc / 2; S.houses[i]--; SFX.play('coin'); log(`${who} sell${me ? '' : 's'} a house on <b>${t.n}</b>.`); }
         else if (kind === 'mort' && S.own[i] === pi && !S.mort[i] && !(S.houses[i] > 0)) { moneyFlow('bank', pi, t.pr / 2); S.mort[i] = true; S.cash[pi] += t.pr / 2; SFX.play('coin'); log(`${who} mortgage${me ? '' : 's'} <b>${t.n}</b> for ${money(t.pr / 2)}.`); }
         else if (kind === 'unmort' && S.own[i] === pi && S.mort[i] && S.cash[pi] >= Math.round(t.pr * 0.55)) { moneyFlow(pi, 'bank', Math.round(t.pr * 0.55)); S.cash[pi] -= Math.round(t.pr * 0.55); S.mort[i] = false; SFX.play('coin'); log(`${who} unmortgage${me ? '' : 's'} <b>${t.n}</b>.`); }
-        else if (me) { SFX.play('wrong'); showToast(kind === 'build' ? (G.landBuild ? 'You can build one house on the plot you are standing on (and need the cash).' : 'You need the whole colour set, even building and enough cash.') : 'Cannot do that.', 'error'); }
+        else if (me) { SFX.play('wrong'); showToast(kind === 'build' ? (buildWhy(S, pi, i) || 'You can\'t build there right now.') : 'Cannot do that.', 'error'); }
         render();
       }
       // a button on your property panel: it becomes your decision (only while you are deciding)
       function panelClick(kind, i) {
         const S = G.S, me = G.players[G.me], t = BOARD[i];
         const ok = (kind === 'build' && canBuild(S, me.i, i)) || (kind === 'sell' && canSell(S, me.i, i)) || (kind === 'mort' && S.own[i] === me.i && !S.mort[i] && !(S.houses[i] > 0)) || (kind === 'unmort' && S.own[i] === me.i && S.mort[i] && S.cash[me.i] >= Math.round(t.pr * 0.55));
-        if (!ok) { SFX.play('wrong'); return showToast(kind === 'build' ? (G.landBuild ? 'You can build one house on the plot you are standing on (and need the cash).' : 'You need the whole colour set, even building and enough cash.') : 'Cannot do that.', 'error'); }
+        if (!ok) { SFX.play('wrong'); return showToast(kind === 'build' ? (buildWhy(S, me.i, i) || 'You can\'t build there right now.') : kind === 'sell' ? 'Nothing to sell there (or sell evenly: start with the plot that has the most houses).' : kind === 'mort' ? 'Sell the houses on this colour first, then you can mortgage it.' : 'You need more cash to unmortgage it.', 'error'); }
         if (G.mgRes) G.mgRes({ kind, i });
       }
 
@@ -834,11 +858,15 @@
         if (!G.panelOpen) { el.innerHTML = ''; return; }
         const S = G.S;
         const me = G.me, mineP = BOARD.filter((t) => S.own[t.i] === me);
-        el.innerHTML = `<div class="win overflow-hidden"><div class="winbar teal"><span>YOUR PROPERTIES · ${money(S.cash[me])}</span><button id="pn-close" class="btn-game btn-amber py-0.5 px-3 text-xs">Done</button></div>
-          <div class="p-3 grid grid-cols-1 sm:grid-cols-2 gap-2">${mineP.map((t) => `<div class="ty-pl flex items-center justify-between gap-2"><span class="text-sm"><span class="ty-dot" style="background:${GR[t.g]}"></span><button class="font-bold underline decoration-dotted" onclick="tyDeed(${t.i})" title="See the property card">${t.n}</button>${S.mort[t.i] ? ' <span class="text-coral">(mortgaged)</span>' : ''}<br><span class="text-xs text-muted">${t.k === 'prop' ? (S.houses[t.i] === 5 ? 'Hotel' : S.houses[t.i] + ' houses') + ` · house ${money(t.hc)}` : 'Value ' + money(t.pr)}</span></span>
+        // a pop-up window in the middle of the screen (Nov 2026, Inna: it used to sit at the bottom, under CHAT)
+        const rule = G.landBuild ? 'Build rule: land on your own plot to build one house there.' : 'Build rule: own the whole colour set, then build evenly.';
+        el.innerHTML = `<div class="ty-mine-bg"></div><div class="win overflow-hidden ty-mine-win" role="dialog" aria-label="Your properties"><div class="winbar teal"><span>YOUR PROPERTIES · ${money(S.cash[me])}</span><button id="pn-close" class="btn-game btn-amber py-0.5 px-3 text-xs">Done</button></div>
+          <div class="ty-mine-rule">${rule}</div>
+          <div class="p-3 grid grid-cols-1 sm:grid-cols-2 gap-2 ty-mine-list">${mineP.map((t) => `<div class="ty-pl flex items-center justify-between gap-2"><span class="text-sm"><span class="ty-dot" style="background:${GR[t.g]}"></span><button class="font-bold underline decoration-dotted" onclick="tyDeed(${t.i})" title="See the property card">${t.n}</button>${S.mort[t.i] ? ' <span class="text-coral">(mortgaged)</span>' : ''}<br><span class="text-xs text-muted">${t.k === 'prop' ? (S.houses[t.i] === 5 ? 'Hotel' : S.houses[t.i] + ' houses') + ` · house ${money(t.hc)}` : 'Value ' + money(t.pr)}</span></span>
             <span class="flex gap-1 flex-wrap justify-end">${t.k === 'prop' ? `<button data-pa="build" data-i="${t.i}" class="btn-game btn-emerald py-1 px-2 text-xs" ${canBuild(S, me, t.i) ? '' : 'style="opacity:.4"'}>+🏠</button><button data-pa="sell" data-i="${t.i}" class="btn-game btn-graphite py-1 px-2 text-xs" ${canSell(S, me, t.i) ? '' : 'style="opacity:.4"'}>-🏠</button>` : ''}${S.mort[t.i] ? `<button data-pa="unmort" data-i="${t.i}" class="btn-game btn-teal py-1 px-2 text-xs">Unmortgage ${money(Math.round(t.pr * 0.55))}</button>` : `<button data-pa="mort" data-i="${t.i}" class="btn-game btn-graphite py-1 px-2 text-xs" ${S.houses[t.i] > 0 ? 'style="opacity:.4"' : ''}>Mortgage</button>`}</span></div>`).join('') || '<div class="text-sm text-muted">You do not own any properties yet.</div>'}</div></div>`;
         el.querySelectorAll('[data-pa]').forEach((b) => { b.onclick = () => panelClick(b.dataset.pa, +b.dataset.i); });
         $('pn-close').onclick = () => { G.panelOpen = false; renderMine(); };
+        el.querySelector('.ty-mine-bg').onclick = () => { G.panelOpen = false; renderMine(); };
       }
 
       const mod = {
@@ -852,7 +880,7 @@
         profileTiles: (s) => [['WINS', s.wins, 'text-amber'], ['GAMES', s.played, 'text-bone'], ['BEST WORTH', '$' + (s.bestWorth || 0), 'text-emerald'], ['PROPERTIES', s.props || 0, 'text-teal']],
         extraRows: (s) => srow('Houses built', s.houses || 0),
         online: { seats: (sel) => +sel.n || 3, ranked: true, start: (body, sel, S) => start(body, sel, S) },
-        engine: { BOARD, GROUPS, rentFor, netWorth, canBuild, canBuyout, buyoutPrice, get G() { return G; } }, open, close() { if (boardRO) { boardRO.disconnect(); boardRO = null; } G = null; },
+        engine: { BOARD, GROUPS, rentFor, netWorth, canBuild, buildWhy, canBuyout, buyoutPrice, get G() { return G; } }, open, close() { if (boardRO) { boardRO.disconnect(); boardRO = null; } G = null; },
       };
       registerGame(mod);
     })();

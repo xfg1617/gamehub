@@ -116,6 +116,7 @@
       const k = botLevelKey(m.id), o = k && (m._opts || []).find((x) => x.key === k);
       return o ? { key: k, label: /SPEED|STYLE/.test(o.label) ? o.label.replace('BOT ', 'COMPUTER ') : 'COMPUTER LEVEL', def: o.def, choices: o.choices } : null;
     }
+    const npLevelName = (m, v) => { const o = npLevelOption(m), c = o && o.choices.find((x) => String(x[0]) === String(v)); return c ? c[1] : null; };
     // can "just you + nb computer players" run as the game's own on-this-device version?
     function npCanLocal(m, nb) {
       if (['navalnet', 'tictactoe', 'c4', 'checkers', 'chess', 'pool', 'wordduel', 'bowling'].includes(m.id)) return nb === 1;
@@ -155,7 +156,7 @@
       // a running clock while you wait
       const qt0 = Date.now(), qClock = () => { const t = Math.floor((Date.now() - qt0) / 1000); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`; };
       const qTick = gInterval(() => { const el = document.getElementById('np-qt'); if (el) el.textContent = qClock(); if (started || gone) gClearInt(qTick); }, 1000);
-      const shut = () => { if (gone) return; gone = true; if (ch) ch.close(); if (pingT) gClearInt(pingT); if (room && room.host === me && !started) NET.leave(room.code); };
+      const shut = () => { if (gone) return; gone = true; if (NP.lobby === (room && room.code)) { NP.lobby = null; if (window.ROUTER) ROUTER.sync(); } if (ch) ch.close(); if (pingT) gClearInt(pingT); if (room && room.host === me && !started) NET.leave(room.code); };
       const cancel = () => { shut(); reopen(); };
       // left the room some other way (Lobby button, sidebar, another game): close it quietly
       const watchdog = setInterval(() => { if (started || gone) return clearInterval(watchdog); if (lobEl && !lobEl.isConnected) { clearInterval(watchdog); shut(); } }, 1500);
@@ -187,6 +188,7 @@
       } catch (e) { showToast(e.message || 'Could not connect.', 'error'); return reopen(); }
       if (gone || activeGame !== m.id) return;
       const code = room.code, isHost = room.host === me, ranked = !!room.is_public && max === 2 && O.ranked !== false;
+      NP.lobby = code; if (window.ROUTER) ROUTER.sync();   // the address bar shows the room's link (gamehub.us.com/r/CODE)
       const meta = { name: NET.me.name, avatar: NET.me.avatar, at: Date.now() };
       ch = NET.channel(code, meta);
       let seats = isHost ? [{ uid: me, name: meta.name, avatar: meta.avatar }] : [], hostSel = isHost ? settings : null, present = [];
@@ -293,7 +295,7 @@
         try { ch.close(); } catch (e) {} NET.leave(code);
         const ls = npLocalSel(m, Object.assign({}, hostSel || settings), nb, lvl);
         if (m.id === 'navalnet') { GT.started = false; return npNavalVsComputer(ls); }
-        if (m._onStart) m._onStart(ls);
+        if (m._onStart) settingsPop(m, ls, () => { if (m.id === activeGame) m._onStart(ls); }, { extra: [['🤖', 'Computer players', nb + (lvl != null ? ' · ' + (npLevelName(m, lvl) || lvl) : '')]] });
       }
       function begin() {
         if (started || !isHost) return; if (autoT) gClearInt(autoT);
@@ -311,13 +313,20 @@
         if (myIdx < 0) { showToast('That game started without you.', 'error'); return cancel(); }
         started = true; if (autoT) gClearInt(autoT);
         S = npOnline({ code, ch, seats: d.seats, me: myIdx, seed: d.seed, sel: d.sel, ranked, room });
-        NP.table = code; CHAT.mode = 'table'; if (typeof chatOnView === 'function') chatOnView('game');
+        NP.table = code; NP.lobby = null; CHAT.mode = 'table'; if (typeof chatOnView === 'function') chatOnView('game');
+        if (window.ROUTER) ROUTER.sync();
         npRemember({ code, game: m.id, start: d, net: sel.net, ranked });
         NP.last = { code, game: m.id, sel: Object.assign({}, d.sel), ranked, bots: d.seats.filter((x) => x.bot).length, uids: d.seats.filter((x) => x.uid).map((x) => x.uid), names: Object.fromEntries(d.seats.filter((x) => x.uid).map((x) => [x.uid, x.name])) };
         if (ranked && pingT == null) { NET.ping(code); pingT = gInterval(() => NET.ping(code), 10000); }
         SFX.play('reveal');
-        O.start(body, Object.assign({}, d.sel, { net: sel.net, room: code }), S);
         if (m.id === activeGame) { GT.started = true; GT.over = false; }
+        // every screen shows how the game is set up for the same few seconds, then the game begins (Inna, Nov 2026)
+        const nbots = d.seats.filter((x) => x.bot).length, lk = botLevelKey(m.id);
+        const extra = [['👥', 'Players', d.seats.length + (nbots ? ` (${nbots} computer${nbots > 1 ? 's' : ''}${lk && d.sel[lk] != null ? ', ' + (npLevelName(m, d.sel[lk]) || d.sel[lk]) : ''})` : '')]];
+        const go = () => { if (S.left || NP.S !== S && NP.S) return; O.start(body, Object.assign({}, d.sel, { net: sel.net, room: code }), S); };
+        const ss = d.sel && d.sel.session;
+        if (m.id === 'random' || (quick && max === 2 && !ss)) go();
+        else settingsPop(m, d.sel, go, { online: true, extra, secs: ss ? 7 : 5, head: ss ? `GAME ${ss.k} OF ${ss.n} · UP NEXT` : 'GAME SETTINGS', tag: ss || d.sel.rnd ? '🎲 RANDOM' : '', sub: ss || d.sel.rnd ? 'Picked at random. Here is how this game is set up:' : quick ? 'Here is how this table is set up:' : 'Here is how the host set up this game:' });
       }
       await ch.ready;
       if (gone) return;
@@ -455,7 +464,7 @@
       let bar = document.getElementById('np-bar');
       if (!bar) { const body = document.getElementById('gs-body'); if (!body) return; bar = document.createElement('div'); bar.id = 'np-bar'; bar.className = 'np-bar'; body.insertAdjacentElement('beforebegin', bar); }
       const seats = S.seats.map((x, i) => `<span class="np-chip ${x.left ? 'gone' : ''} ${i === S.me ? 'me' : ''}" title="${esc(x.name)}">${esc(x.avatar)} ${esc(x.name)}${x.bot && !x.left ? ' <i>CPU</i>' : ''}${x.left ? ' <i>LEFT</i>' : ''}</span>`).join('');
-      const html = `<span class="pix text-xs text-teal">● ONLINE${S.ranked ? ' · RANKED' : ''} · ${esc(S.code)}</span><span class="np-chips">${seats}</span>${warn ? `<span class="np-warn">${esc(warn)}</span>` : ''}`;
+      const html = `<span class="pix text-xs text-teal">● ONLINE · ${esc(S.code)}</span><span class="np-chips">${seats}</span>${warn ? `<span class="np-warn">${esc(warn)}</span>` : ''}`;
       if (bar.innerHTML !== html) bar.innerHTML = html;
       // Inna (Nov 2026): the strip of player names is clutter during a game (the table already shows everyone);
       // it only appears for a warning such as "X disconnected"
@@ -471,6 +480,60 @@
     /* ---------- REMATCH: after an online game, the same people can go again with one tap ----------
        Everyone still here meets on a small channel ('rm:' + the old room code). When all of them have said yes,
        the first of them opens a new room and the others join it; the table starts by itself. */
+    /* ---------- which games a group can play, and random picks (Random Game, "what next?") ---------- */
+    // the table sizes each online game allows, from its tile ("2-4 PLAYERS", "1v1")
+    function npSizes(id) {
+      const m = GAME_MODS[id]; if (!m || !m.online || id === 'random' || id === 'wordconnect') return null;
+      const sub = String(m.sub || ''), r = /(\d)\s*-\s*(\d)\s*PLAYERS/i.exec(sub), one = /(\d)\s*PLAYERS/i.exec(sub);
+      let lo = 2, hi = 2;
+      if (/1v1/i.test(sub)) { lo = hi = 2; } else if (r) { lo = Math.max(2, +r[1]); hi = +r[2]; } else if (one) { lo = hi = +one[1]; }
+      return { lo: Math.max(lo, m.online.min || 2), hi, bots: m.online.bots !== false };
+    }
+    // games n people can play together (computer players fill empty seats where the game has them)
+    function npFitGames(n, kind) {
+      const KIND = { card: 2, board: 1, party: 4 };
+      const only = kind && KIND[kind] ? new Set(SHELVES[KIND[kind]].ids) : null;
+      return Object.keys(GAME_MODS).filter((id) => { const z = npSizes(id); if (!z) return false;
+        if (only && !only.has(id) && !(id === 'navalnet' && only.has('naval'))) return false;
+        return n <= z.hi && (z.bots || n >= z.lo); });
+    }
+    const npGameName = (id) => (id === 'navalnet' ? 'Sea Battle' : (GAME_MODS[id] || {}).name || id);
+    // the settings for the next table: size = people + computer players, within what the game allows
+    function npNextSel(id, n, bots, extra) {
+      const z = npSizes(id) || { lo: 2, hi: 2, bots: true }, sk = tableSizeKey(id);
+      const total = Math.max(z.lo, Math.min(z.hi, n + (z.bots ? bots : 0)));
+      const sel = Object.assign({ net: 'room', rematch: n, rmBots: z.bots ? Math.max(0, total - n) : 0 }, extra || {});
+      if (sk) sel[sk] = total;
+      return sel;
+    }
+    // everyone in the group moves to a new room for the next game (the leader opens it, the others join it)
+    function npGoNext(d, leader) {
+      const gm = document.getElementById('g-modal'); if (gm) gm.classList.add('hidden');
+      document.querySelectorAll('.np-pick').forEach((e) => e.remove());
+      try { localStorage.removeItem('ps_np_cur:' + (NET.me && NET.me.id)); } catch (e) {}
+      if (typeof GT !== 'undefined') { GT.started = false; GT.over = true; }
+      showToast(d.session ? `Game ${d.session.k} of ${d.session.n}: ${npGameName(d.game)}!` : `Next game: ${npGameName(d.game)}. Setting up the table...`, 'success');
+      SETUP_PRESET = { id: d.game, sel: Object.assign({}, d.sel, { room: d.code, session: d.session || undefined }), code: d.code, host: leader };
+      const start = () => { openGame(d.game); const g = document.querySelector('#game-root #su-go'); if (g) g.click(); };
+      if (leader) return start();
+      let k = 0; const tryJoin = () => NET.getRoom(d.code).then((r) => { if (r) start(); else if (++k < 24) setTimeout(tryJoin, 500); else showToast('The next room did not open.', 'error'); }).catch(() => setTimeout(tryJoin, 800));
+      setTimeout(tryJoin, 400);
+    }
+    window.npFitGames = npFitGames; window.npSizes = npSizes; window.npNextSel = npNextSel; window.npGoNext = npGoNext; window.npGameName = npGameName;
+    // pick the next game of a Random Game session (or a "Random game" choice)
+    function npRandomNext(n, bots, s, rng) {
+      rng = rng || { pick: (a) => a[Math.floor(Math.random() * a.length)] };
+      let list = npFitGames(n, s && s.kind);
+      if (!list.length) list = npFitGames(n);
+      if (s && !s.rep) { const fresh = list.filter((g) => !(s.played || []).includes(g)); if (fresh.length) list = fresh; }
+      return rng.pick(list);
+    }
+    window.npRandomNext = npRandomNext;
+
+    /* ---------- after an online game: the same group stays together (Inna, Nov 2026) ----------
+       The result screen gets a box: the host (the first player who is still here) picks the next game: the same one
+       again, a random one, or any game that fits the group. In a Random Game session it shows the standings and
+       "Next game", and after the last game the champion. Everyone still on the result screen moves on together. */
     function npRematchSlot(slot) {
       if (NP.rm) { try { NP.rm.close(); } catch (e) {} NP.rm = null; }
       const L = NP.last;
@@ -479,40 +542,67 @@
       if (!L.uids.includes(me)) return;
       const ch = NET.channel('rm:' + L.code, { name: NET.me.name, avatar: NET.me.avatar, at: Date.now() });
       NP.rm = ch;
-      const wants = new Set(); let present = [me], gone = false;
+      const ses = L.sel && L.sel.session ? JSON.parse(JSON.stringify(L.sel.session)) : null;
+      let present = [me], gone = false, picking = false, autoT = null, autoLeft = 15;
+      const pts = {}; const myP = (typeof POINTS !== 'undefined' && POINTS.last && Date.now() - POINTS.last.at < 60000) ? POINTS.last.p : 0; pts[me] = myP;
       const others = () => L.uids.filter((u) => u !== me && present.includes(u));
+      const group = () => L.uids.filter((u) => u === me || present.includes(u));
+      const leader = () => group()[0];
+      const nm = (u) => esc(L.names[u] || (u === me ? NET.me.name : 'Player'));
+      const total = (u) => ((ses && ses.sc && ses.sc[u]) || 0) + (pts[u] || 0);
+      const standings = () => { const all = Object.keys(Object.assign({}, (ses && ses.names) || {}, L.names)).filter((u) => L.uids.includes(u) || (ses && ses.sc && ses.sc[u]));
+        return all.sort((a, b) => total(b) - total(a)); };
+      const table = () => `<div class="np-st">${standings().map((u, i) => `<div class="${u === me ? 'me' : ''}"><span class="rk">${i + 1}</span><span class="nm">${i === 0 && ses && ses.k >= ses.n ? '👑 ' : ''}${nm(u)}</span><span class="pl">${pts[u] !== undefined ? '+' + pts[u] : ''}</span><b>${total(u)}</b></div>`).join('')}</div>`;
       const paint = () => {
         if (gone || !document.body.contains(slot)) return;
-        const o = others(), they = o.filter((u) => wants.has(u)), iWant = wants.has(me);
+        const o = others(), lead = leader() === me;
         if (!o.length) { slot.innerHTML = '<div class="text-xs text-muted pt-2">The other players have left the table.</div>'; return; }
-        const nm = (u) => esc(L.names[u] || 'Player');
-        slot.innerHTML = `<div class="pt-3 space-y-2">${they.length && !iWant ? `<div class="text-sm text-emerald font-bold">${they.map(nm).join(', ')} want${they.length === 1 ? 's' : ''} a rematch!</div>` : ''}
-          <button id="np-rm" class="btn-game btn-teal w-full py-2.5 text-sm" ${iWant ? 'disabled style="opacity:.6"' : ''}>${iWant ? `Waiting for ${o.filter((u) => !wants.has(u)).map(nm).join(', ') || 'everyone'}...` : they.length ? '🔁 Accept rematch' : '🔁 Rematch'}</button></div>`;
-        const b = document.getElementById('np-rm'); if (b) b.onclick = () => { wants.add(me); ch.send('want', {}); SFX.play('click'); paint(); check(); };
+        const n = group().length;
+        if (ses) {
+          const last = ses.k >= ses.n, ag = document.getElementById('g-modal-again'); if (ag) ag.style.display = 'none';
+          slot.innerHTML = `<div class="pt-3 text-left space-y-2"><div class="pix text-sm text-amber">${last ? '🏆 SESSION OVER · CHAMPION: ' + nm(standings()[0]).toUpperCase() : `RANDOM SESSION · AFTER GAME ${ses.k} OF ${ses.n}`}</div>${table()}
+            ${lead ? `<button id="np-next" class="btn-game btn-amber w-full py-2.5 text-sm">${last ? '🔁 New session' : `🎲 Next game (${ses.k + 1} of ${ses.n})${autoT ? ' · ' + autoLeft : ''}`}</button>` : `<div class="text-xs text-muted">${last ? '' : `Waiting for ${nm(leader())} to start game ${ses.k + 1}...`}</div>`}</div>`;
+          const b = document.getElementById('np-next'); if (b) b.onclick = () => next(last ? 'newses' : 'random');
+          return;
+        }
+        if (!lead) { slot.innerHTML = `<div class="pt-3 text-sm text-muted">Everyone stays together: <b class="text-bone">${nm(leader())}</b> is choosing the next game...</div>`; return; }
+        const fits = npFitGames(n).filter((g) => g !== L.game);
+        slot.innerHTML = `<div class="pt-3 space-y-2 text-left"><div class="pix text-xs text-muted">NEXT GAME · EVERYONE STAYS TOGETHER</div>
+          <div class="grid grid-cols-2 gap-2"><button id="np-rm" class="btn-game btn-teal py-2.5 text-sm">🔁 ${esc(npGameName(L.game))} again</button><button id="np-rnd" class="btn-game btn-amber py-2.5 text-sm">🎲 Random game</button></div>
+          <button id="np-other" class="btn-game btn-graphite w-full py-2 text-xs">Pick another game (${fits.length} fit ${n} players) ▾</button>
+          <div id="np-grid" class="np-ngrid hidden">${fits.map((g) => `<button data-ng="${g}"><span class="spr">${GICONS[(GAME_MODS[g] || {}).icon] || ''}</span>${esc(npGameName(g))}</button>`).join('')}</div></div>`;
+        document.getElementById('np-rm').onclick = () => next('same');
+        document.getElementById('np-rnd').onclick = () => next('random');
+        document.getElementById('np-other').onclick = () => document.getElementById('np-grid').classList.toggle('hidden');
+        slot.querySelectorAll('[data-ng]').forEach((b) => { b.onclick = () => next(b.dataset.ng); });
       };
-      const check = () => {
-        const o = others(); if (gone || !o.length || !wants.has(me) || !o.every((u) => wants.has(u))) return;
-        const group = [me].concat(o), leader = L.uids.find((u) => group.includes(u));
-        if (leader !== me) return;
-        const code = generateRoomCode();
-        ch.send('go', { code, n: group.length }); go(code, true, group.length);
+      // the leader decides; the choice goes to everyone still here
+      const next = (what) => {
+        if (gone || picking || leader() !== me) return; picking = true; SFX.play('click');
+        const g = group(), n = g.length, bots = L.bots || 0, code = generateRoomCode();
+        let game, sel, session = null;
+        if (what === 'newses' && ses) { session = Object.assign({}, ses, { k: 1, played: [], sc: {} }); game = npRandomNext(n, bots, session); sel = npNextSel(game, n, bots, { rnd: 1, quick: session.spd === 'quick' ? 1 : 0 }); session.played = [game]; }
+        else if (ses) { session = Object.assign({}, ses, { k: ses.k + 1, sc: Object.fromEntries(standings().map((u) => [u, total(u)])) }); game = npRandomNext(n, bots, session); session.played = (ses.played || []).concat(game); sel = npNextSel(game, n, bots, { rnd: 1, quick: session.spd === 'quick' ? 1 : 0 }); }
+        else if (what === 'same') { game = L.game; sel = Object.assign({}, L.sel, { net: 'room', rematch: n, rmRanked: L.ranked, rmBots: bots }); }
+        else if (what === 'random') { game = npRandomNext(n, bots, { played: [L.game] }); sel = npNextSel(game, n, bots, { rnd: 1 }); }
+        else { game = what; sel = npNextSel(game, n, bots); }
+        if (session) session.names = Object.assign({}, session.names || {}, L.names);
+        const d = { code, n, game, sel, session };
+        ch.send('go', d); go(d, true);
       };
-      const go = (code, host, n) => {
-        if (gone) return; gone = true;
+      const go = (d, lead) => {
+        if (gone) return; gone = true; if (autoT) clearInterval(autoT);
         setTimeout(() => ch.close(), 500); NP.rm = null;
-        const gm = document.getElementById('g-modal'); if (gm) gm.classList.add('hidden');
-        showToast('Rematch! Setting up the table...', 'success');
-        const id = L.game;
-        SETUP_PRESET = { id, sel: Object.assign({}, L.sel, { net: 'room', room: code, rematch: n, rmRanked: L.ranked, rmBots: L.bots || 0 }), code, host };
-        const start = () => { openGame(id); const g = document.querySelector('#game-root #su-go'); if (g) g.click(); };
-        if (host) return start();
-        // joiners wait until the new room exists, so they join it instead of opening their own
-        let k = 0; const tryJoin = () => NET.getRoom(code).then((r) => { if (r) start(); else if (++k < 20) setTimeout(tryJoin, 500); else showToast('The rematch room did not open.', 'error'); }).catch(() => setTimeout(tryJoin, 800));
-        setTimeout(tryJoin, 400);
+        npGoNext(d, lead);
       };
-      ch.on('want', (d, from) => { wants.add(from); SFX.play('pop'); paint(); check(); });
-      ch.on('go', (d) => { if (d && d.code) go(d.code, false, d.n); });
-      ch.presence((list) => { present = list.map((x) => x.uid); if (!present.includes(me)) present.push(me); paint(); check(); });
+      ch.on('go', (d) => { if (d && d.code && d.game) go(d, false); });
+      ch.on('pts', (d, from) => { if (d && isFinite(d.p)) { pts[from] = Math.max(0, Math.min(40, +d.p)); paint(); } });
+      ch.presence((list) => { present = list.map((x) => x.uid); if (!present.includes(me)) present.push(me); paint(); });
+      // tell the others how many points this game gave me (for the session standings)
+      const sayPts = () => { if (!gone) ch.send('pts', { p: myP }); };
+      ch.ready && ch.ready.then ? ch.ready.then(() => { sayPts(); setTimeout(sayPts, 1500); }) : setTimeout(sayPts, 500);
+      // in a session the next game starts by itself after a short countdown (the leader can press it sooner)
+      if (ses && ses.k < ses.n) autoT = setInterval(() => { if (gone || !document.body.contains(slot)) return clearInterval(autoT); if (leader() !== me) return; autoLeft--; if (autoLeft <= 0) { clearInterval(autoT); autoT = null; next('random'); } else paint(); }, 1000);
       paint();
     }
 
@@ -565,7 +655,7 @@
       if (me < 0) { ch.close(); return; }
       NP.catchup = true;
       const S = npOnline({ code: sv.code, ch, seats, me, seed: sv.start.seed, sel: sv.start.sel, ranked: sv.ranked, room: null });
-      NP.table = sv.code; if (typeof CHAT !== 'undefined') CHAT.mode = 'table'; if (typeof chatOnView === 'function') chatOnView('game');
+      NP.table = sv.code; if (window.ROUTER) ROUTER.sync(); if (typeof CHAT !== 'undefined') CHAT.mode = 'table'; if (typeof chatOnView === 'function') chatOnView('game');
       body.innerHTML = '';
       m.online.start(body, Object.assign({}, sv.start.sel, { net: sv.net, room: sv.code }), S);
       GT.started = true; GT.over = false;
@@ -581,7 +671,7 @@
     window.npRejoin = npRejoin;
     // when the page connects, offer to go back to the table you were at
     document.addEventListener('ps-online', () => setTimeout(() => {
-      const sv = npSaved(); if (!sv || (NP.S && NP.S.online) || document.getElementById('np-rj')) return;
+      const sv = npSaved(); if (!sv || (NP.S && NP.S.online) || document.getElementById('np-rj') || NP.joining === sv.code) return;
       const nm = (GAME_MODS[sv.game] || {}).name || 'game';
       const el = document.createElement('div'); el.id = 'np-rj'; el.className = 'np-rj';
       el.innerHTML = `<div class="font-bold text-bone">You were in a ${esc(nm)} game (room ${esc(sv.code)}).</div><div class="text-sm text-muted">Go back to your seat?</div>

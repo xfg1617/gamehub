@@ -56,6 +56,13 @@
           ['Jumping', 'If another pawn is right next to you, you can jump over it. If there is a hedge behind it, step to the side of it instead.']],
           items: () => row([[`<span style="display:inline-block;width:44px;height:10px;background:#1E7A3E;border:2px solid #050E18"></span>`, 'Hedge', '2 squares long. You have 10 (5 with 4 players)'], [`<span style="display:inline-block;width:30px;height:30px;background:#F7EBC0;box-shadow:inset 0 0 0 3px #2DD4BF"></span>`, 'Glowing square', 'Where you can move now'], [`<span style="display:inline-block;width:40px;height:6px;background:#F5B041"></span>`, 'Coloured edge', 'The side each player is racing to']]),
           tip: 'The panel shows how many steps everyone still needs. Save your hedges for when a rival is close to the finish.', online: NET_TABLE },
+        random: { tag: '2-8 PLAYERS · SURPRISE', goal: 'Score the most points over a session of random games.', steps: [
+          ['Meet up', 'Open a private room and send the link to your friends, or join an online match. The host can add computer players to fill seats.'],
+          ['Choose the session', 'Quickie is 1 game, or play 3 or 5 games in a row. You can keep it to card games, board games or party games.'],
+          ['Surprise!', 'When the host presses Start, a random game is picked that fits everyone. A box shows how it is set up before it begins.'],
+          ['Points add up', 'Every game gives points: 1st 10, 2nd 6, 3rd 3, everyone else 1. After each game you see the standings, then the next game starts.'],
+          ['The champion', 'After the last game, the player with the most points is the champion. Press New session to go again.']],
+          tip: 'Not sure how a game works? Every game has its own guide and video, one tap away in its top bar.', online: 'Everyone stays together from game to game: the same people, the same chat. The host starts each next game.' },
         fibber: { tag: '3-5 PLAYERS · BLUFFING', goal: 'Be the first to get rid of all your cards. The others play on for 2nd, 3rd... until one player is left holding cards.', steps: [
           ['A new rank every turn', 'Every turn has a rank, picked at random (never the same one twice in a row). The middle of the table shows which rank it is now.'],
           ['Put cards down', 'On your turn, tap 1 to 4 of your cards and press <b>Put down</b>. They go face down and you say they are that rank. Don’t have any? Bluff!'],
@@ -139,7 +146,7 @@
           ['Cat combos', 'Cat cards do nothing alone. A pair: pick one of a player’s face-down cards. Three of a kind: name a card, and if they have it they must hand it over. Five different cats: take any card from the discard pile.']],
           items: () => { const c = A('kittens').card; return c ? row([[c('bomb'), 'Hot Potato', 'Draw it and you are out'], [c('defuse'), 'Oven Mitt', 'Saves you once'], [c('nope'), 'No Way', 'Stop any card'], [c('peek'), 'Peek', 'See the top 3 cards'], [c('nap'), 'Skip', 'End your turn without drawing'], [c('pounce'), 'Attack', 'Next player takes 2 turns'], [c('beg'), 'Favor', 'They give you a card'], [c('c3'), 'Cat cards', 'Pairs, threes, five different']]) : ''; },
           tip: 'Peek before you draw. If the Hot Potato is next, play Skip or Attack so you don’t have to draw it. Save your Oven Mitt: when someone asks with three cats, they usually name it!', online: NET_TABLE },
-        colorclash: { tag: '2-4 PLAYERS · MATCH COLOURS', goal: 'Be the first to play all of your cards.', steps: [
+        colorclash: { tag: '2-4 PLAYERS · MATCH COLOURS', goal: 'Be the first to play all of your cards. The others play on for 2nd, 3rd and 4th place until one player is left holding cards.', steps: [
           ['Match', 'Play a card that matches the top card by <b>colour</b> or by <b>number/symbol</b>.'],
           ['Can’t play?', 'Draw a card from the pile. If it fits, you can play it right away.'],
           ['Special cards', 'Some cards skip a player, reverse the direction, or make the next player draw (see below).'],
@@ -199,8 +206,9 @@
         impostor: { tag: '4-6 PLAYERS · PARTY', goal: 'Civilians: find the impostor. Impostor: blend in and don’t get caught.', steps: [
           ['Secret words', 'Everyone gets the same secret word except one player, the impostor, who gets a similar but different word. Nobody knows who it is, not even the impostor!'],
           ['Hints', 'Taking turns, each player types one word as a hint about their word. Clear enough for your team, vague enough to fool the impostor.'],
-          ['Vote', 'Everyone votes for who they think the impostor is.'],
-          ['Last chance', 'A caught impostor gets one guess at the group’s word. Guess right and they still win! A tied vote lets the impostor escape.']],
+          ['Vote', 'Everyone votes for who they think the impostor is. If the group votes out someone who is NOT the impostor, that player is out and a new round of hints begins.'],
+          ['Until 2 are left', 'Keep going round after round. If only 2 players are left, the impostor wins. Two tied votes in a row also let the impostor escape.'],
+          ['Last chance', 'A caught impostor gets one guess at the group’s word. Guess right and they still win!']],
           items: () => row([[`<span class="ht-mark">🕵️</span>`, 'Impostor', 'Has a different word'], [`<span class="ht-mark">🗳️</span>`, 'Vote', 'Point at the odd one out']]),
           tip: 'If you think you might be the impostor, copy the style of the other hints.', online: 'Everyone types their hint on their own screen, then everyone votes at the same time. ' + NET_TABLE },
         doodle: { tag: '2-8 PLAYERS · DRAW & GUESS', goal: 'Guess other players’ drawings fast, and draw well so they can guess yours.', steps: [
@@ -220,7 +228,9 @@
       if (typeof LANG !== 'undefined' && LANG.code === 'vi' && window.HOWTO_VI && HOWTO_VI[id]) h = Object.assign({}, h, HOWTO_VI[id]);   // Vietnamese guide
       let items = ''; try { items = h.items ? h.items() : ''; } catch (e) { items = ''; }
       const c = CATALOG.find((x) => x.id === id) || {};
-      return `<div class="flex items-center gap-4"><span class="ht-ico big">${GICONS[c.icon] || ''}</span><div><div class="pix text-xs text-muted">THE GOAL</div><div class="text-lg font-extrabold text-bone leading-snug">${h.goal}</div></div></div>
+      const vi = typeof LANG !== 'undefined' && LANG.code === 'vi';
+      return `<button class="btn-game btn-teal w-full py-3 text-base hv-btn" onclick="playHowTo('${id}')">▶ ${vi ? 'Xem cách chơi (có giọng đọc)' : 'Watch how to play (with voice)'}</button>
+            <div class="flex items-center gap-4"><span class="ht-ico big">${GICONS[c.icon] || ''}</span><div><div class="pix text-xs text-muted">THE GOAL</div><div class="text-lg font-extrabold text-bone leading-snug">${h.goal}</div></div></div>
             <ol class="ht-steps">${h.steps.map(([t, x], i) => `<li><span class="step-n">${i + 1}</span><div><div class="font-bold text-bone">${t}</div><div class="text-sm text-muted leading-relaxed">${x}</div></div></li>`).join('')}</ol>
             ${items ? `<div><div class="pix text-xs text-muted mb-2">WHAT THINGS MEAN</div>${items}</div>` : ''}
             <div class="tip text-sm text-muted"><span class="tip-tag bg-amber">TIP</span>${h.tip}</div>

@@ -1,0 +1,63 @@
+    /* ===== points leaderboard (Nov 2026, replaces the Elo boards) ===== */
+    .pb-me { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .pb-list { display: grid; gap: 5px; }
+    .pb-row { display: grid; grid-template-columns: 40px 32px minmax(0, 1fr) auto 96px; align-items: center; gap: 10px; background: #0B1B2B; border: 2px solid var(--ink); padding: 7px 12px; color: #F7F4EC; cursor: pointer; }
+    .pb-row:hover { background: #12304C; }
+    .pb-row.me { border-color: #2DD4BF; }
+    .pb-row .rk { font-family: 'Arcade Pixel', monospace; font-size: 1.2rem; color: #9DB4CC; }
+    .pb-row.g1 .rk { color: #F5B041; } .pb-row.g2 .rk { color: #C9D6E3; } .pb-row.g3 .rk { color: #D08A4E; }
+    .pb-row .av { font-size: 1.3rem; text-align: center; }
+    .pb-row .nm { font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pb-row .gm { color: #9DB4CC; font-size: .75rem; white-space: nowrap; }
+    .pb-row .pt { font-family: 'Outfit', sans-serif; font-weight: 800; text-align: right; }
+    .pb-gap { text-align: center; color: #5C7A99; letter-spacing: .3em; }
+    .pb-how { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .pb-how div { background: #0B1B2B; border: 2px solid var(--ink); padding: 6px; text-align: center; color: #F7F4EC; font-weight: 800; font-size: 1.1rem; }
+    .pb-how small { display: block; color: #9DB4CC; font-weight: 500; font-size: .7rem; }
+    @media (max-width: 560px) { .pb-row { grid-template-columns: 30px 26px minmax(0, 1fr) 70px; } .pb-row .gm { display: none; } }
+
+    /* ===== the "how this game is set up" pop-up before a game ===== */
+    .set-pop { position: fixed; inset: 0; z-index: 85; background: rgba(5, 14, 24, .78); display: flex; align-items: center; justify-content: center; padding: 16px; }
+    .set-pop.closed { display: none; }
+    .set-pop-win { width: min(470px, 100%); max-height: calc(100vh - 32px); overflow-y: auto; }
+    .set-rows { display: grid; gap: 6px; margin: 14px 0; }
+    .set-row { display: grid; grid-template-columns: 28px 1fr auto; align-items: center; gap: 10px; background: #0B1B2B; border: 2px solid var(--ink); padding: 8px 10px; }
+    .set-row .i { text-align: center; font-size: 1.05rem; } .set-row .l { color: #9DB4CC; font-size: .85rem; } .set-row .v { color: #F7F4EC; font-weight: 800; font-size: .9rem; text-align: right; }
+    .set-bar { height: 10px; background: #0B1B2B; border: 2px solid var(--ink); margin-top: 6px; overflow: hidden; }
+    .set-bar i { display: block; height: 100%; background: #F5B041; width: 100%; transform-origin: left; animation: setBar linear forwards; }
+    @keyframes setBar { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+    /* ===== Random Game + "next game" box on result screens ===== */
+    .np-st { display: grid; gap: 4px; }
+    .np-st > div { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto 40px; gap: 8px; align-items: center; background: #0B1B2B; border: 2px solid var(--ink); padding: 5px 9px; font-size: .85rem; color: #F7F4EC; }
+    .np-st > div.me { border-color: #2DD4BF; }
+    .np-st .rk { font-family: 'Arcade Pixel', monospace; color: #9DB4CC; } .np-st > div:first-child .rk { color: #F5B041; }
+    .np-st .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
+    .np-st .pl { color: #34D399; font-weight: 800; font-size: .75rem; } .np-st b { text-align: right; }
+    .np-ngrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; max-height: 210px; overflow-y: auto; }
+    .np-ngrid button { background: #0B1B2B; border: 2px solid var(--ink); padding: 6px 2px; font-size: .7rem; font-weight: 800; color: #F7F4EC; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .np-ngrid button:hover { border-color: #F5B041; }
+    .np-ngrid .spr { width: 28px; height: 28px; display: block; }
+    .np-ngrid .spr svg { width: 100%; height: 100%; }
+    .rg-spin { width: 96px; height: 96px; margin: 0 auto; background: #0B1B2B; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); padding: 12px; }
+    .rg-spin svg { width: 100%; height: 100%; display: block; }
+
+    /* ===== turn timer chip (games without their own clock) ===== */
+    #tt-host { display: none; position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 72; width: 230px; background: rgba(5, 14, 24, .92); border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); padding: 4px 8px; }
+    #tt-host.on { display: block; }
+    #tt-host .timer-box { padding: 2px 8px; } #tt-host .clk-lab { font-size: .62rem; } #tt-host .clk-val { font-size: 1.05rem; }
+    @media (max-width: 1023px) { #tt-host { top: auto; bottom: 12px; left: auto; right: 8px; transform: none; width: 118px; padding: 1px 6px; } #tt-host .timer-bar { display: none; } }
+
+    /* ===== fun moments: burst + badges on name tags ===== */
+    .fx-burst { position: fixed; left: 50%; top: 36%; transform: translate(-50%, -50%) rotate(-4deg); z-index: 74; text-align: center; pointer-events: none; animation: fxPop 2.6s ease forwards; }
+    .fx-burst b { display: block; font-family: 'Arcade Pixel', monospace; font-weight: 400; font-size: clamp(36px, 7vw, 68px); color: #F97316; text-shadow: 4px 4px 0 #050E18, -2px -2px 0 #FDE68A; line-height: 1; white-space: nowrap; }
+    .fx-burst span { display: inline-block; background: #050E18; color: #F7F4EC; font-weight: 800; padding: 4px 12px; font-size: 14px; margin-top: 6px; }
+    @keyframes fxPop { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.4) rotate(-4deg); } 12% { opacity: 1; transform: translate(-50%, -50%) scale(1.08) rotate(-4deg); } 20% { transform: translate(-50%, -50%) scale(1) rotate(-4deg); } 85% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -60%) scale(1) rotate(-4deg); } }
+    .fx-minis { position: absolute; left: 50%; top: 100%; transform: translate(-50%, 3px); display: flex; gap: 3px; white-space: nowrap; z-index: 3; pointer-events: none; }
+    .fx-mini { font-family: 'Arcade Pixel', monospace; font-size: 12px; background: #050E18; color: #FDE68A; padding: 0 5px; border: 2px solid #F97316; line-height: 16px; }
+    .fx-fire { border-color: #FB923C !important; box-shadow: 0 0 0 2px #F97316 !important; }
+    .fx-flames { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(100% - 4px); display: flex; gap: 1px; pointer-events: none; z-index: 3; }
+    .fx-flames svg { width: 14px; height: 19px; animation: fxFl .35s steps(2) infinite alternate; transform-origin: bottom; }
+    .fx-flames svg:nth-child(2) { width: 19px; height: 25px; animation-delay: .12s; }
+    @keyframes fxFl { 0% { transform: scaleY(1); } 100% { transform: scaleY(1.18) translateY(-2px); } }
+    @media (prefers-reduced-motion: reduce) { .fx-burst { animation: none; } .fx-flames svg { animation: none; } }

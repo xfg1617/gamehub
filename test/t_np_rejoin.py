@@ -28,7 +28,7 @@ with sync_playwright() as p:
     join(B, code); A.wait_for_timeout(2000); start(A); A.wait_for_timeout(2500)
     play(25)
     before = B.evaluate("document.querySelectorAll('#cc-hand .cc-card').length")
-    B.reload(); B.wait_for_function("typeof NET !== 'undefined' && NET.on && NET.me", timeout=20000); B.wait_for_timeout(1500)
+    B.goto('http://gamehub.test/gamehub.html'); B.wait_for_function("typeof NET !== 'undefined' && NET.on && NET.me", timeout=20000); B.wait_for_timeout(1500)
     check(B.query_selector('#np-rj') is not None, 'after a reload B is offered to rejoin')
     B.screenshot(path='test/shots/rejoin_offer.png')
     B.click('[data-rj="yes"]'); B.wait_for_timeout(1000)

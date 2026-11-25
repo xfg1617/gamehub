@@ -153,6 +153,7 @@
         prompt('');
         if (a.t !== 'doubt') {
           if (isMe(p) && cards.some((c) => c.r !== G.need)) G.stats.fooled++;
+          if (cards.some((c) => c.r !== G.need)) { G.lies = G.lies || {}; const pi = G.players.indexOf(p); G.lies[pi] = (G.lies[pi] || 0) + 1; if (G.lies[pi] === 3) funMoment('fb-seat-' + p.seat, { key: 'liar', icon: '🎭', label: 'SMOOTH LIAR', burst: 'SMOOTH LIAR!', sub: `${p.name} got away with 3 bluffs`, mine: isMe(p) }); }
           if (!p.hand.length) return placeOut(p);
           return;
         }
@@ -167,6 +168,11 @@
         if (lie) log(`It was a lie! ${nm(p)} picks up the pile (${G.pile.length} cards).`);
         else log(`It was true! ${nm(caller)} picks up the pile (${G.pile.length} cards).`);
         if (lie && isMe(caller)) G.stats.caught++;
+        // fun moments: right BULLSHIT calls in a row = on fire; a lie that gets through 3 times = smooth liar
+        G.streak = G.streak || {}; const ci = G.players.indexOf(caller);
+        G.streak[ci] = lie ? (G.streak[ci] || 0) + 1 : 0;
+        if (lie && G.streak[ci] >= 2) funMoment('fb-seat-' + caller.seat, { key: 'fire', icon: '🔥', label: 'x' + G.streak[ci], fire: true, burst: 'ON FIRE!', sub: `${caller.name} called BULLSHIT right ${G.streak[ci]} times in a row`, mine: isMe(caller) });
+        if (!lie) G.streak[ci] = 0;
         SFX.play(lie === isMe(caller) || (!lie && isMe(p)) ? 'coin' : 'wrong');
         const n = G.pile.length;
         for (let i = 0; i < Math.min(n, 6); i++) gFly('#fb-pile', seatEl(loser), playingCardHTML(null, { cls: 'sm' }), { ms: 420, delay: i * 70, arc: 30 });
@@ -247,7 +253,7 @@
         const eloRow = S.online ? await S.finish(res) : null;
         if (!G || G.tok !== tok) return;
         const s = gstat('fibber'); s.caught = (s.caught || 0) + G.stats.caught; s.fooled = (s.fooled || 0) + G.stats.fooled;
-        reportGame('fibber', res, { elo: S.online ? 0 : res === 'win' ? 10 : -4, xp: res === 'win' ? 30 : 8, label: S.online ? 'Online table' : `${G.players.length} players` });
+        reportGame('fibber', res, { place: winner ? place : undefined, elo: S.online ? 0 : res === 'win' ? 10 : -4, xp: res === 'win' ? 30 : 8, label: S.online ? 'Online table' : `${G.players.length} players` });
         const order = G.places.map((q, i) => `${ORD(i + 1)} ${q === me ? 'You' : q.name}`).join(' · ');
         gameResult({ title: !winner ? 'You gave up' : res === 'win' ? 'You win!' : `You finished ${ORD(place)}`, sub: !winner ? '' : order,
           tone: res === 'win' ? 'amber' : 'coral', sprite: res === 'win' ? 'trophy' : 'anchor',

@@ -70,13 +70,14 @@
         setupScreen(body, mod, [
           { key: 'n', label: 'PLAYERS', def: 4, choices: [[3, '3'], [4, '4'], [5, '5'], [6, '6']] },
           { key: 'target', label: 'GAME ENDS AT', def: 7, choices: [[6, '6 buildings'], [7, '7 buildings'], [8, '8 buildings']], hint: 'The round finishes once someone has built this many.' },
+          turnOpt(45, [30, 45, 90]),
         ], (sel) => start(body, sel, npLocal([{ name: profile.username, avatar: profile.avatar }].concat(BOTS.slice(0, +sel.n - 1).map(([name, avatar]) => ({ bot: true, name, avatar }))), sel)));
       }
       function start(body, sel, S) {
         const deck = buildDeck(S.rng.shuffle);
         const players = S.seats.map((x, i) => ({ seat: i, name: x.name, av: x.avatar, gold: 2, hand: [], city: [], role: 0 }));
         players.forEach((p) => { for (let k = 0; k < 4; k++) p.hand.push(deck.pop()); });
-        G = { S, me: S.online ? S.me : 0, players, deck, crown: S.rng.rnd(players.length), target: +sel.target || 7, round: 0, step: 0, over: false, tok: ++GT.cur, log: [], out: [], firstDone: null, cur: -1 };
+        G = { S, me: S.online ? S.me : 0, turnT: +sel.turnT || 0, tk: 0, players, deck, crown: S.rng.rnd(players.length), target: +sel.target || 7, round: 0, step: 0, over: false, tok: ++GT.cur, log: [], out: [], firstDone: null, cur: -1 };
         GT.started = true; GT.over = false;
         // instant info box over a building (the browser's own hover box waits about a second; Cael found it slow)
         const tipEl = () => { let t = $('gm-tip'); if (!t) { t = document.createElement('div'); t.id = 'gm-tip'; document.body.appendChild(t); } return t; };
@@ -108,7 +109,13 @@
       const nm = (p) => `<b>${esc(p.name)}</b>`;
       const isMe = (p) => p.seat === G.me;
       const RN = (r) => `<b style="color:${ROLES[r].col}">${r}. ${ROLES[r].name}</b>`;
-      async function ask(p, botFn, filter, ms) { const t = G.tok; const a = await G.S.ask(p.seat, botFn, ms === undefined ? 700 + rnd(700) : ms, (x) => x.s === p.seat && filter(x)); if (!G || G.tok !== t) throw ABORT; return a; }
+      async function ask(p, botFn, filter, ms) {
+        const t = G.tok, mine = G.S.mine(p.seat) && !G.S.bot(p.seat) && (typeof NP === 'undefined' || !NP.catchup);
+        if (mine) turnClock('gm' + (++G.tk), G.turnT, () => { if (!G || G.tok !== t) return; prompt(''); G.S.act(Object.assign({}, botFn(), { s: p.seat })); });
+        const a = await G.S.ask(p.seat, botFn, ms === undefined ? 700 + rnd(700) : ms, (x) => x.s === p.seat && filter(x));
+        if (mine) turnClock(null);
+        if (!G || G.tok !== t) throw ABORT; return a;
+      }
       function drawCard() { return G.deck.length ? G.deck.pop() : null; }
 
       async function run() {
@@ -274,7 +281,7 @@
         const eloRow = S.online ? await S.finish(res) : null;
         if (!G || G.tok !== tok) return;
         const s = gstat('guild'); s.best = Math.max(s.best || 0, score(me, G.firstDone, G.target)); s.built = (s.built || 0) + me.city.length;
-        reportGame('guild', res, { elo: S.online ? 0 : res === 'win' ? 10 : -4, xp: res === 'win' ? 35 : 10, label: `${score(me, G.firstDone, G.target)} points` });
+        reportGame('guild', res, { place: gaveUp ? undefined : sc.findIndex((x) => x.q === me) + 1, elo: S.online ? 0 : res === 'win' ? 10 : -4, xp: res === 'win' ? 35 : 10, label: `${score(me, G.firstDone, G.target)} points` });
         gameResult({ title: gaveUp ? 'You gave up' : res === 'win' ? 'Your town wins!' : `${sc[0].q.name} wins`, sub: gaveUp ? '' : 'Points: building costs, +3 for all five colours, +4 for finishing first, +2 per wonder.',
           tone: res === 'win' ? 'amber' : 'coral', sprite: res === 'win' ? 'trophy' : 'anchor',
           rows: sc.slice(0, 4).map((x) => [x.q === me ? 'You' : x.q.name, x.s, x.q === me ? 'text-amber' : 'text-bone']).concat(eloRow ? [eloRow] : []),

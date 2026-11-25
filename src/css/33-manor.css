@@ -49,3 +49,31 @@
     .mm-pass { right: 5px; top: 5px; width: 18px; height: 18px; background: #7A4A21; border: 2px solid var(--ink); box-shadow: inset 0 0 0 3px #9C6A3A; }
     .mm-pass::after { content: ''; position: absolute; left: 4px; top: 4px; width: 6px; height: 6px; border: 2px solid #F5B041; border-radius: 50%; }
     @media (max-width: 640px) { .mm-roof { height: 44px; } .mm-house { padding: 0 6px 6px; } }
+
+    /* Nov 2026 (Inna): just the 9 rooms, bigger player pieces, a few moving details */
+    .mm-house.mm-clean { background: none; border: 0; box-shadow: none; padding: 0; }
+    .mm-clean .mm-map { border: 4px solid var(--ink); box-shadow: 0 5px 0 var(--ink); background: var(--ink); gap: 6px; padding: 0; }
+    .mm-clean .mm-room { min-height: 150px; }
+    .mm-clean .mm-art { filter: brightness(.72) saturate(.85); }
+    .mm-clean .mm-room.here .mm-art, .mm-clean .mm-room.go .mm-art { filter: brightness(.92); }
+    .mm-clean .mm-rn { font-size: 1.15rem; align-self: center; background: rgba(5, 14, 24, .86); padding: 3px 10px 2px; border: 2px solid var(--ink); }
+    .mm-clean .mm-toks { justify-content: center; gap: 10px; margin: auto 0 16px; z-index: 2; }
+    .mm-clean .mm-tok { width: 44px; height: 44px; font-size: 24px; border: 3px solid #F7F4EC; box-shadow: 0 0 0 3px var(--ink), 0 5px 0 3px var(--ink); position: relative; overflow: visible; }
+    .mm-clean .mm-tok.me { border-color: #2DD4BF; }
+    .mm-you { position: absolute; top: calc(100% + 7px); left: 50%; transform: translateX(-50%); background: #2DD4BF; color: var(--ink); font: 800 10px Outfit, sans-serif; padding: 0 5px; line-height: 15px; }
+    .mm-clean .mm-sus { position: absolute; left: 6px; bottom: 6px; z-index: 2; }
+    .mm-amb { position: absolute; pointer-events: none; z-index: 1; display: block; }
+    @keyframes mmFlick { 0%, 100% { opacity: 1; transform: scale(1); } 40% { opacity: .75; transform: scale(.85, 1.1); } 70% { opacity: .9; transform: scale(1.1, .9); } }
+    @keyframes mmWalk { 0% { left: -12%; } 100% { left: 104%; } }
+    @keyframes mmTw { 0%, 100% { opacity: .15; } 50% { opacity: 1; } }
+    @keyframes mmSway { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+    @keyframes mmSteam { 0% { transform: translateY(0); opacity: .7; } 100% { transform: translateY(-28px); opacity: 0; } }
+    @keyframes mmWave { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(10px); } }
+    .mm-flick { animation: mmFlick .5s steps(3) infinite; }
+    .mm-cat { bottom: 6px; width: 34px; height: 22px; animation: mmWalk 16s linear infinite; }
+    .mm-tw { width: 5px; height: 5px; background: #FDE68A; animation: mmTw 1.6s steps(3) infinite; }
+    .mm-sway { animation: mmSway 3s ease-in-out infinite; transform-origin: bottom center; }
+    .mm-steam { left: calc(50% - 4px); top: 34%; width: 8px; height: 8px; background: rgba(247, 244, 236, .55); animation: mmSteam 1.8s linear infinite; }
+    .mm-wave { animation: mmWave 2.4s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) { .mm-amb { animation: none !important; } }
+    @media (max-width: 640px) { .mm-clean .mm-room { min-height: 104px; } .mm-clean .mm-tok { width: 32px; height: 32px; font-size: 17px; border-width: 2px; } .mm-clean .mm-rn { font-size: .8rem; padding: 2px 6px 1px; } .mm-clean .mm-toks { gap: 6px; margin-bottom: 12px; } }

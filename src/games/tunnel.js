@@ -166,6 +166,7 @@
         const body = gameShell(root, mod, '', 'max-w-[1300px] mx-auto');
         setupScreen(body, mod, [
           { key: 'n', label: 'PLAYERS', def: 4, choices: [[3, '3'], [4, '4'], [5, '5'], [6, '6']] },
+          turnOpt(45, [30, 45, 90]),
         ], (sel) => start(body, sel, npLocal([{ name: profile.username, avatar: profile.avatar }].concat(BOTS.slice(0, +sel.n - 1).map(([name, avatar]) => ({ bot: true, name, avatar }))), sel)));
       }
       function start(body, sel, S) {
@@ -175,7 +176,7 @@
         const deck = buildDeck(S.rng.shuffle), gold = S.rng.rnd(3), hs = n >= 6 ? 5 : 6;
         const players = S.seats.map((x, i) => ({ seat: i, name: x.name, av: x.avatar, role: roles[i], hand: [], broken: { pick: false, lamp: false }, knows: {}, sus: {}, dug: 0 }));
         players.forEach((p) => { for (let k = 0; k < hs; k++) p.hand.push(deck.pop()); });
-        G = { S, me: S.online ? S.me : 0, players, deck, board: newBoard(gold), goals: ['?', '?', '?'], cur: S.rng.rnd(n), step: 0, over: false, tok: ++GT.cur, log: [], sel: null, flip: false };
+        G = { S, me: S.online ? S.me : 0, turnT: +sel.turnT || 0, players, deck, board: newBoard(gold), goals: ['?', '?', '?'], cur: S.rng.rnd(n), step: 0, over: false, tok: ++GT.cur, log: [], sel: null, flip: false };
         GT.started = true; GT.over = false;
         const me = G.players[G.me];
         body.innerHTML = `<div class="tt-wrap grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-4 items-start">
@@ -218,7 +219,9 @@
         G.sel = null; G.flip = false;
         if (mine) { G.myK = k; prompt(myTurnText()); } else prompt(`<span class="text-muted">${esc(p.name)} is thinking...</span>`);
         draw();
+        if (mine && !S.bot(p.seat) && (typeof NP === 'undefined' || !NP.catchup)) turnClock('tt' + k, G.turnT, () => { if (!G || G.tok !== t || G.myK !== k) return; G.myK = null; G.sel = null; prompt(''); S.act(Object.assign({ t: 'x', k, s: p.seat }, botMove(G, p))); });
         const a = await S.ask(p.seat, () => Object.assign({ t: 'x', k }, botMove(G, p)), 900 + rnd(800), (x) => x.s === p.seat && x.k === k);
+        if (mine) turnClock(null);
         if (!G || G.tok !== t) throw ABORT;
         G.myK = null; prompt('');
         await doMove(p, a);

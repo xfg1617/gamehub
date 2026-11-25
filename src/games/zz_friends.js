@@ -150,11 +150,13 @@
       const L = FR.list, fl = L.friends.map((f) => Object.assign({}, f, { dot: NET.isOnline(f.id) })).sort((a, b) => (b.dot - a.dot) || a.name.localeCompare(b.name));
       const cnt = document.getElementById('fr-count'); if (cnt) cnt.textContent = `${fl.filter((f) => f.dot).length} ONLINE · ${fl.length}`;
       box.innerHTML = (L.incoming.length ? `<div class="pix text-xs text-amber px-1">FRIEND REQUESTS</div>${L.incoming.map((p) => frRow(Object.assign({ sub: 'WANTS TO BE FRIENDS' }, p), `<button class="btn-game btn-emerald py-1.5 px-3 text-xs" data-acc="${esc(p.id)}">Accept</button><button class="btn-game btn-graphite py-1.5 px-3 text-xs" data-rm="${esc(p.id)}">Decline</button>`)).join('')}` : '')
-        + (fl.length ? fl.map((p) => frRow(Object.assign({ sub: p.dot ? 'ONLINE' : 'OFFLINE' }, p), `${FR.unread[p.id] ? `<span class="badge on fr-badge">${FR.unread[p.id]}</span>` : ''}<button class="btn-game btn-teal py-1.5 px-3 text-xs" data-chat="${esc(p.id)}">Chat</button>`)).join('')
+        + (fl.length ? fl.map((p) => { const last = (FR.msgs[p.id] || []).slice(-1)[0], pre = last ? (last.from === NET.me.id ? 'You: ' : '') + (frRoomCode(last.text) ? '🎲 room invite' : last.text) : '';
+            return frRow(Object.assign({ sub: pre ? `<span class="fr-pre">${esc(pre.slice(0, 40))}</span>` : p.dot ? 'ONLINE' : 'OFFLINE' }, p), `${FR.unread[p.id] ? `<span class="badge on fr-badge">${FR.unread[p.id]}</span>` : ''}<button class="btn-game btn-teal py-1.5 px-3 text-xs" data-chat="${esc(p.id)}">Chat</button>`).replace('<div class="fr-row">', `<div class="fr-row ${FR.sel === p.id ? 'sel' : ''}" data-row="${esc(p.id)}">`); }).join('')
           : `<div class="text-sm text-muted px-1 py-2">No friends yet. Look players up above, or tap a name in any chat, then press <b class="text-bone">Add friend</b>.</div>`)
         + (L.outgoing.length ? `<div class="pix text-xs text-muted px-1 pt-2">WAITING FOR AN ANSWER</div>${L.outgoing.map((p) => frRow(Object.assign({ sub: 'REQUEST SENT' }, p), `<button class="btn-game btn-graphite py-1.5 px-3 text-xs" data-rm="${esc(p.id)}">Cancel</button>`)).join('')}` : '');
       box.querySelectorAll('[data-card]').forEach((b) => { b.onclick = () => openPlayerCard(b.dataset.card); });
       box.querySelectorAll('[data-chat]').forEach((b) => { b.onclick = () => openFriendChat(b.dataset.chat); });
+      box.querySelectorAll('[data-row]').forEach((r) => { r.onclick = (e) => { if (e.target.closest('button')) return; openFriendChat(r.dataset.row); }; });
       box.querySelectorAll('[data-acc]').forEach((b) => { b.onclick = async () => { b.disabled = true; await NET.acceptFriend(b.dataset.acc).catch((e) => showToast(e.message, 'error')); SFX.play('reveal'); showToast('You are now friends!', 'success'); frLoad(); }; });
       box.querySelectorAll('[data-rm]').forEach((b) => { b.onclick = async () => { b.disabled = true; await NET.removeFriend(b.dataset.rm).catch(() => {}); frLoad(); }; });
     }
@@ -169,15 +171,24 @@
       if (!FR.msgs[f.id]) { FR.msgs[f.id] = []; NET.dmHistory(f.id).then((ms) => { FR.msgs[f.id] = ms; paintFriendChat(); }).catch(() => {}); }
       const on = NET.isOnline(f.id), ms = FR.msgs[f.id];
       const keep = win.querySelector('input') ? win.querySelector('input').value : '';
-      win.innerHTML = `<div class="winbar teal"><span class="flex items-center gap-2"><span class="fr-dot ${on ? 'on' : ''}"></span>${esc(f.name.toUpperCase())}</span><span class="pix text-xs">${on ? 'ONLINE' : 'OFFLINE'}</span></div>
-        <div class="chatbox"><div class="chat-list" id="fr-msgs">${ms.length ? ms.map((m) => {
-          const mine = m.from === NET.me.id, code = frRoomCode(m.text);
-          return `<div class="chat-msg ${mine ? 'me' : ''}"><span class="av">${esc(mine ? NET.me.avatar : f.avatar)}</span><div class="min-w-0 flex-1"><div><span class="who">${esc(mine ? NET.me.name : f.name)}</span><span class="tm">${new Date(m.at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</span></div>
-            <div class="tx">${code ? `🎮 ${mine ? 'You invited them to' : 'Join my'} room <b>${esc(code)}</b>` : esc(m.text)}</div>${code && !mine ? `<button class="btn-game btn-amber py-1 px-3 text-xs mt-1" data-join="${esc(code)}">Join room</button>` : ''}</div></div>`;
-        }).join('') : '<div class="chat-sys">Say hi to your friend!</div>'}</div>
+      // a tidy conversation (Inna, Nov 2026: "friends chat looks unorganized"): bubbles, your messages on the right,
+      // a line for each day, the time inside each bubble, room invites as a card with a Join button
+      const day = (t) => { const d = new Date(t), now = new Date(), y = new Date(Date.now() - 864e5); return d.toDateString() === now.toDateString() ? 'TODAY' : d.toDateString() === y.toDateString() ? 'YESTERDAY' : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase(); };
+      let lastDay = '';
+      const room = typeof NP !== 'undefined' && (NP.lobby || NP.table);
+      const body = ms.map((m) => {
+        const mine = m.from === NET.me.id, code = frRoomCode(m.text), d = day(m.at), tm = new Date(m.at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        const sep = d !== lastDay ? `<div class="dm-day">${d}</div>` : ''; lastDay = d;
+        if (code) return sep + `<div class="dm-inv ${mine ? 'me' : ''}">🎲 ${mine ? `You invited ${esc(f.name)} to room <b>${esc(code)}</b>` : `${esc(f.name)} invited you to room <b>${esc(code)}</b>`}${mine ? '' : ` <button class="btn-game btn-teal py-1 px-3 text-xs" data-join="${esc(code)}">Join</button>`}<time>${tm}</time></div>`;
+        return sep + `<div class="dm-b ${mine ? 'me' : ''}">${esc(m.text)}<time>${tm}</time></div>`;
+      }).join('');
+      win.innerHTML = `<div class="dm-head"><span class="dm-av">${esc(f.avatar)}<i class="${on ? 'on' : ''}"></i></span><div class="min-w-0 flex-1"><b class="truncate block">${esc(f.name)}</b><small class="${on ? 'text-emerald' : 'text-muted'}">${on ? '● Online now' : 'Offline'}</small></div>
+          <button class="btn-game btn-graphite py-1.5 px-3 text-xs" data-card="${esc(f.id)}">Player card</button>${room ? `<button class="btn-game btn-amber py-1.5 px-3 text-xs" id="fr-inv">Invite to my room</button>` : ''}</div>
+        <div class="chatbox dm-box"><div class="chat-list dm-list" id="fr-msgs">${ms.length ? body : '<div class="dm-day">SAY HI TO YOUR FRIEND! ONLY THE TWO OF YOU CAN READ THIS.</div>'}</div>
         <div class="chat-quick">${['Wanna play?', 'GG!', 'Join my room', 'Be right back'].map((q) => `<button type="button">${q}</button>`).join('')}</div>
         <form class="chat-form" autocomplete="off"><input maxlength="300" placeholder="Message ${esc(f.name)}…" aria-label="Message"><button type="submit">Send</button></form></div>
-        <div class="p-3 flex gap-2 border-t-[3px] border-ink"><button class="btn-game btn-graphite py-1.5 px-3 text-xs" data-card="${esc(f.id)}">Player card</button><button class="btn-game btn-graphite py-1.5 px-3 text-xs" id="fr-unf">Remove friend</button></div>`;
+        <div class="dm-foot"><button class="pix text-xs text-muted hover:text-coral" id="fr-unf">Remove friend</button></div>`;
+      { const ib = win.querySelector('#fr-inv'); if (ib) ib.onclick = () => { const c = NP.lobby || NP.table; NET.dmSend(f.id, `Join my room: ${location.origin && /^http/.test(location.origin) ? location.origin : 'https://gamehub.us.com'}/r/${c}`).then(() => { FR.msgs[f.id].push({ id: 'l' + Date.now(), from: NET.me.id, to: f.id, text: '/r/' + c, at: Date.now() }); paintFriendChat(); showToast('Invite sent!', 'success'); }).catch((e) => showToast(e.message || 'Not sent.', 'error')); }; }
       const list = win.querySelector('#fr-msgs'); list.scrollTop = list.scrollHeight;
       const input = win.querySelector('input'); input.value = keep;
       ['keydown', 'keyup', 'keypress'].forEach((t) => input.addEventListener(t, (e) => e.stopPropagation()));
@@ -201,13 +212,24 @@
       const btn = { me: '', friends: `<button class="btn-game btn-teal w-full py-2.5 text-sm" data-act="chat">Chat</button>`, sent: '<button class="btn-game btn-graphite w-full py-2.5 text-sm" disabled>Friend request sent</button>',
         asked: `<button class="btn-game btn-emerald w-full py-2.5 text-sm" data-act="add">Accept friend request</button>`, none: `<button class="btn-game btn-amber w-full py-2.5 text-sm" data-act="add">＋ Add friend</button>` }[c.friend] || '';
       const guestBtn = `<button class="btn-game btn-amber w-full py-2.5 text-sm" onclick="openAuthModal('signup')">🔒 Sign up to add friends</button>`;
+      // a guest (no account yet): a simple card that says so, instead of an empty profile (Inna, Nov 2026)
+      const isGuest = !!(st && st.guest) && c.friend !== 'me' && c.friend !== 'friends';
+      if (isGuest) {
+        el.innerHTML = `<div class="win max-w-sm mx-auto my-6 sm:my-12 overflow-hidden"><div class="winbar"><span>PLAYER</span><button class="pix text-sm" data-act="x" aria-label="Close">✕</button></div>
+          <div class="p-6 space-y-4 text-center"><div class="avatar-tile w-24 h-24 text-5xl mx-auto">${esc(c.avatar)}</div>
+            <div><div class="text-2xl font-extrabold text-bone">${esc(c.name)} <span class="pc-guest">GUEST</span></div><div class="text-sm text-muted mt-1">${on ? '<span class="text-emerald">● Online</span> · ' : ''}Playing without an account</div></div>
+            ${psTiles(st)}${psHere(st)}
+            <div class="pc-note"><span>🔒</span><span>Guests don't have a profile yet, so they can't be added as friends. Once ${esc(c.name)} signs up, you'll be able to add them.</span></div>
+            <button class="btn-game btn-graphite w-full py-2.5 text-sm" data-act="x">Close</button></div></div>`;
+        el.querySelectorAll('[data-act="x"]').forEach((b) => { b.onclick = () => el.classList.add('hidden'); });
+        return;
+      }
       const btnShown = NET.isGuest && NET.isGuest() && c.friend !== 'me' ? guestBtn : btn;
       el.innerHTML = `<div class="win max-w-sm mx-auto my-6 sm:my-12 overflow-hidden"><div class="winbar amber"><span>PLAYER CARD</span><button class="pix text-sm" data-act="x" aria-label="Close">✕</button></div>
         <div class="p-6 space-y-4 text-center">
           <div class="avatar-tile w-24 h-24 text-5xl mx-auto">${esc(c.avatar)}</div>
           <div><div class="text-2xl font-extrabold text-bone">${esc(c.name)}</div><div class="pix text-xs mt-1 ${on ? 'text-emerald' : 'text-muted'}">${on ? '● ONLINE' : 'OFFLINE'} · PLAYING SINCE ${esc(String(c.since || '').toUpperCase())}${c.friend === 'friends' ? ' · FRIEND' : ''}</div></div>
           ${psTiles(st)}${psHere(st)}
-          <div class="text-left"><div class="pix text-xs tracking-wider text-muted mb-1.5">RANKINGS</div>${(c.ratings || []).length ? c.ratings.map((r) => srow(esc(frGameName(r.game)), `${r.elo} Elo · ${r.wins}/${r.games} won`)).join('') : '<div class="text-sm text-muted">No ranked games yet.</div>'}</div>
           ${btnShown}
           <button class="btn-game btn-graphite w-full py-2.5 text-sm" data-act="full">View full profile ▶</button>
           ${c.friend === 'friends' ? '<button class="pix text-xs text-muted hover:text-coral" data-act="rm">Remove friend</button>' : ''}
@@ -226,7 +248,7 @@
     function psTiles(st) {
       if (!st) return '<div class="text-xs text-muted">No games played yet.</div>';
       const t = (lab, val, c) => `<div class="ps-tile"><small>${lab}</small><b class="${c}">${val}</b></div>`;
-      return `<div class="ps-tiles">${t('LEVEL', 'Lv ' + (st.lv || 1), 'text-amber')}${t('GAMES', st.played || 0, 'text-bone')}${t('WIN %', psWr(st.wins || 0, st.played || 0), 'text-teal')}</div>`;
+      return `<div class="ps-tiles four">${t('LEVEL', 'Lv ' + (st.lv || 1), 'text-amber')}${t('GAMES', st.played || 0, 'text-bone')}${t('WIN %', psWr(st.wins || 0, st.played || 0), 'text-teal')}${t('POINTS', st.pts || 0, 'text-emerald')}</div>`;
     }
     function psHere(st) {
       const g = typeof activeGame !== 'undefined' && activeGame;
@@ -239,7 +261,6 @@
       if (!el) { el = document.createElement('div'); el.id = 'pprof-modal'; el.className = 'fixed inset-0 z-[67] bg-black/80 overflow-y-auto p-3 sm:p-6'; document.body.appendChild(el); el.onclick = (e) => { if (e.target === el) el.remove(); }; }
       st = st || {};
       const games = Object.entries(st.games || {}).filter(([, r]) => r[0] > 0).sort((a, b) => b[1][0] - a[1][0]);
-      const elo = {}; (c.ratings || []).forEach((r) => { elo[r.game] = r.elo; });
       const B = (window.REWARDS && REWARDS.BADGES) || [], have = new Set(st.badges || []);
       const ago = (t) => { const m = Math.max(1, Math.round((Date.now() - t) / 60000)); return m < 60 ? m + 'm ago' : m < 1440 ? Math.round(m / 60) + 'h ago' : Math.round(m / 1440) + 'd ago'; };
       const resC = { win: 'text-emerald', loss: 'text-coral', draw: 'text-muted' };
@@ -250,10 +271,10 @@
         <div class="p-4 sm:p-5 space-y-5">
           <div><div class="pp-h">OVERVIEW</div><div class="ps-tiles four">
             <div class="ps-tile"><small>LEVEL</small><b class="text-amber">Lv ${st.lv || 1}</b></div><div class="ps-tile"><small>GAMES</small><b class="text-bone">${st.played || 0}</b></div>
-            <div class="ps-tile"><small>WINS</small><b class="text-emerald">${st.wins || 0}</b></div><div class="ps-tile"><small>WIN %</small><b class="text-teal">${psWr(st.wins || 0, st.played || 0)}</b></div></div></div>
+            <div class="ps-tile"><small>POINTS</small><b class="text-emerald">${st.pts || 0}</b></div><div class="ps-tile"><small>WIN %</small><b class="text-teal">${psWr(st.wins || 0, st.played || 0)}</b></div></div></div>
           ${B.length ? `<div><div class="pp-h">BADGES · ${have.size} / ${B.length}</div><div class="pp-badges">${B.map((b) => `<span class="${have.has(b.id) ? 'on' : ''}" title="${esc(b.name)}: ${esc(b.why)}">${b.icon}<small>${esc(b.name)}</small></span>`).join('')}</div></div>` : ''}
-          <div><div class="pp-h">GAMES PLAYED</div>${games.length ? `<div class="pp-table"><div class="pp-row hd"><span>GAME</span><span>PLAYED</span><span>WON</span><span>WIN %</span><span>RATING</span></div>
-            ${games.map(([g, r]) => `<div class="pp-row"><span>${esc(frGameName(g))}</span><span>${r[0]}</span><span>${r[1]}</span><span>${psWr(r[1], r[0])}</span><span>${elo[g] || '-'}</span></div>`).join('')}</div>` : '<div class="text-sm text-muted">No games played yet.</div>'}</div>
+          <div><div class="pp-h">GAMES PLAYED</div>${games.length ? `<div class="pp-table"><div class="pp-row hd"><span>GAME</span><span>PLAYED</span><span>WON</span><span>WIN %</span><span>LOST</span></div>
+            ${games.map(([g, r]) => `<div class="pp-row"><span>${esc(frGameName(g))}</span><span>${r[0]}</span><span>${r[1]}</span><span>${psWr(r[1], r[0])}</span><span>${r[2] || 0}</span></div>`).join('')}</div>` : '<div class="text-sm text-muted">No games played yet.</div>'}</div>
           <div><div class="pp-h">RECENT GAMES</div>${(st.hist || []).length ? `<div class="pp-hist">${st.hist.map((h) => `<div><span>${esc(frGameName(h[0]))}</span><b class="${resC[h[1]] || 'text-muted'}">${esc(String(h[1] || '').toUpperCase())}</b><small>${h[2] ? ago(h[2]) : ''}</small></div>`).join('')}</div>` : '<div class="text-sm text-muted">No recent games.</div>'}</div>
         </div></div>`;
       el.querySelector('[data-x]').onclick = () => el.remove();
@@ -265,7 +286,7 @@
         const won = g === 'daily' ? (o.solved || o.wins || 0) : (o.wins || 0);
         games[g] = [o.played | 0, won | 0, (o.losses || 0) | 0, (o.draws || 0) | 0]; pl += o.played | 0; w += won | 0;
       });
-      return { lv: Math.floor((profile.xp || 0) / 100) + 1, played: pl, wins: w, games, badges: window.REWARDS ? REWARDS.earned().slice(0, 40) : [],
+      return { lv: Math.floor((profile.xp || 0) / 100) + 1, played: pl, wins: w, games, pts: profile.points || 0, guest: !!(NET.isGuest && NET.isGuest()), badges: window.REWARDS ? REWARDS.earned().slice(0, 40) : [],
         hist: (profile.history || []).slice(0, 12).map((h) => [h.game, h.result, h.at || 0]) };
     }
     let psLast = '';

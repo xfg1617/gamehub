@@ -230,6 +230,8 @@
         G.b = applyMove(G.b, m);
         G.last = { from: m.path[0], to: m.path[m.path.length - 1] };
         if (side === meSide()) G.capMe += m.caps.length; else G.capAi += m.caps.length;
+        // fun moment: a double (or triple...) jump
+        if (m.caps.length >= 2) funMoment('ck-none', { key: 'hop', icon: '🦘', label: 'COMBO', burst: m.caps.length >= 3 ? 'TRIPLE JUMP!' : 'DOUBLE JUMP!', sub: `${side === meSide() ? 'You' : (typeof oppName === 'function' ? oppName() : 'The other side')} took ${m.caps.length} pieces in one move`, mine: side === meSide() });
         if (m.crown && side === meSide()) G.kings++;
         G.quiet = m.caps.length || (wasMan) ? 0 : G.quiet + 1;
         G.plies++;

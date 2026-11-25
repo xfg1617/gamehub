@@ -279,7 +279,7 @@
       function board() {
         const S = G.S, el = $('dg-board'); if (!el) return;
         const order = S.seats.map((_, i) => i).sort((a, b) => G.score[b] - G.score[a]);
-        el.innerHTML = order.map((i) => `<div class="pl-tag flex items-center gap-2.5 ${i === G.drawer ? 'turn' : ''} ${i === G.me ? 'me' : ''}" style="--pc:${G.guessed && G.guessed.has(i) ? '#34D399' : '#9DB4CC'}"><span class="tg-av">${esc(S.seats[i].avatar || '🙂')}</span><span class="min-w-0 flex-1"><b class="block truncate text-bone text-sm">${esc(S.name(i))}${S.bot(i) ? ' <small class="text-muted">CPU</small>' : ''}</b><small class="text-xs ${G.guessed && G.guessed.has(i) ? 'text-emerald' : 'text-muted'}">${i === G.drawer ? '✏️ drawing' : G.guessed && G.guessed.has(i) ? '✓ guessed it' : ''}</small></span><b class="pix text-amber text-lg">${G.score[i]}</b></div>`).join('');
+        el.innerHTML = order.map((i) => `<div id="dg-seat-${i}" class="pl-tag flex items-center gap-2.5 ${i === G.drawer ? 'turn' : ''} ${i === G.me ? 'me' : ''}" style="--pc:${G.guessed && G.guessed.has(i) ? '#34D399' : '#9DB4CC'}"><span class="tg-av">${esc(S.seats[i].avatar || '🙂')}</span><span class="min-w-0 flex-1"><b class="block truncate text-bone text-sm">${esc(S.name(i))}${S.bot(i) ? ' <small class="text-muted">CPU</small>' : ''}</b><small class="text-xs ${G.guessed && G.guessed.has(i) ? 'text-emerald' : 'text-muted'}">${i === G.drawer ? '✏️ drawing' : G.guessed && G.guessed.has(i) ? '✓ guessed it' : ''}</small></span><b class="pix text-amber text-lg">${G.score[i]}</b></div>`).join('');
         $('dg-round').textContent = G.round ? `ROUND ${G.round}/${G.rounds}` : '';
       }
       const LEVELS = { easy: { en: 'EASY', vi: 'DỄ', mult: 1, cls: 'btn-emerald' }, medium: { en: 'MEDIUM', vi: 'TRUNG BÌNH', mult: 1.5, cls: 'btn-amber' }, hard: { en: 'HARD', vi: 'KHÓ', mult: 2, cls: 'btn-coral' } };
@@ -335,7 +335,9 @@
             feed(`<b class="text-emerald">✓ ${esc(S.name(g.s))} guessed the word! +${pts}</b>`);
             SFX.play(g.s === G.me ? 'win' : 'coin'); board();
             if (g.s === G.me) { $('dg-in').disabled = true; $('dg-in').placeholder = 'You got it! Wait for the others...'; }
-            if (others.every((i) => G.guessed.has(i))) break;
+            // fun moments: a guess within 6 seconds; everyone guessed the drawing
+            if ((Date.now() - G.t0) / 1000 < 6) funMoment('dg-seat-' + g.s, { key: 'speed', icon: '⚡', label: 'SPEEDY', burst: 'SPEED GUESSER!', sub: `${S.name(g.s)} got it in a flash`, mine: g.s === G.me });
+            if (others.every((i) => G.guessed.has(i))) { if (others.length >= 2) funMoment('dg-seat-' + d, { key: 'artist', icon: '🎨', label: 'ARTIST', burst: 'ARTIST!', sub: `Everyone guessed ${S.name(d)}'s drawing`, mine: d === G.me }); break; }
           } else if (near(g.txt, word)) {
             // a nearly-right guess is not shown to the others (it would give the word away)
             if (g.s === G.me) { feed(`<b class="text-amber">${esc(String(g.txt || '').slice(0, 40))}: so close! Check the spelling.</b>`); SFX.play('tick'); }
@@ -407,7 +409,7 @@
         const eloRow = S.online ? await S.finish(res) : null;
         if (!G || G.tok !== tok) return;
         const s = gstat('doodle'); s.guessed = (s.guessed || 0); s.bestLive = Math.max(s.bestLive || 0, G.score[me]);
-        reportGame('doodle', res, { elo: 0, xp: 10 + Math.round(G.score[me] / 25), label: `Draw & Guess: ${G.score[me]} pts` });
+        reportGame('doodle', res, { place: gaveUp ? undefined : order.indexOf(me) + 1, elo: 0, xp: 10 + Math.round(G.score[me] / 25), label: `Draw & Guess: ${G.score[me]} pts` });
         gameResult({ title: gaveUp ? 'You gave up' : res === 'win' ? 'You win!' : `${S.name(order[0])} wins`, sub: 'Points for fast guesses, and for the drawer when people guess their drawing.',
           tone: res === 'win' ? 'amber' : 'coral', sprite: res === 'win' ? 'trophy' : 'anchor',
           rows: order.slice(0, 4).map((i) => [i === me ? 'You' : S.name(i), G.score[i], i === me ? 'text-amber' : 'text-bone']).concat(eloRow ? [eloRow] : []),

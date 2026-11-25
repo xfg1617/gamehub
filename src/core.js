@@ -57,7 +57,7 @@
       [/lol|haha|lmao|😂/i, ['😂', 'lol', 'haha']],
     ];
     const CHAT = { rooms: {}, room: null, open: false, unread: 0, next: {}, typing: {}, here: {} };
-    const chatKeyFor = (view) => (view === 'game' ? (typeof NP !== 'undefined' && NP.table && CHAT.mode !== 'game' ? 't:' + NP.table : activeGame) : view === 'naval' ? 'naval' : view === 'connect4' ? 'c4' : view === 'daily' ? 'daily' : null);
+    const chatKeyFor = (view) => (view === 'game' ? (typeof NP !== 'undefined' && NP.table && CHAT.mode !== 'game' ? 't:' + NP.table : activeGame) : view === 'naval' ? 'naval' : view === 'connect4' ? 'c4' : view === 'daily' ? 'daily' : view === 'play' ? 'global' : null);
     const chatRoomName = (k) => (k === 'global' ? 'Global chat' : String(k).startsWith('t:') ? `Table ${k.slice(2)} chat` : ((GAME_MODS[k] && GAME_MODS[k].name) || { naval: 'Sea Battle', c4: 'Four-in-a-Row', daily: 'Daily Word' }[k] || 'Game') + ' room');
     function chatLoad() { try { const d = JSON.parse(localStorage.getItem('ps_chat_v1') || '{}'); if (d && typeof d === 'object') CHAT.rooms = d; } catch (e) {} }
     function chatSave() { try { localStorage.setItem('ps_chat_v1', JSON.stringify(CHAT.rooms)); } catch (e) {} }
@@ -95,7 +95,7 @@
       if (!box) return;
       const k = box.dataset.room, list = box.querySelector('.chat-list'), ms = chatMsgs(k);
       const nearBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 60;
-      if (newest && list.childElementCount) list.insertAdjacentHTML('beforeend', chatMsgHTML(newest, true));
+      if (newest && list.childElementCount) { const e0 = list.querySelector(':scope > .chat-sys:only-child'); if (e0 && /No messages/.test(e0.textContent)) e0.remove(); list.insertAdjacentHTML('beforeend', chatMsgHTML(newest, true)); }
       else list.innerHTML = ms.map((m) => chatMsgHTML(m)).join('') || '<div class="chat-sys">No messages yet. Say hi!</div>';
       while (list.childElementCount > 60) list.firstElementChild.remove();
       if (nearBottom || newest && newest.me || !newest) list.scrollTop = list.scrollHeight;
@@ -138,6 +138,13 @@
       p.classList.toggle('show', CHAT.open && !!CHAT.room);
       if (CHAT.open) { CHAT.unread = 0; chatBadge(); chatPaint(p.querySelector('.chatbox')); const i = p.querySelector('input'); if (i && window.innerWidth >= 1024) i.focus(); }
     }
+    // a tidy second row under the chat window's title: Table / All players, and 👥 Friends (Nov 2026)
+    function chatTabs() {
+      let t = document.getElementById('chat-tabs');
+      if (!t) { const bar = document.querySelector('#chat-panel .winbar'); t = document.createElement('div'); t.id = 'chat-tabs'; t.className = 'chat-tabs'; if (bar) bar.insertAdjacentElement('afterend', t); }
+      return t;
+    }
+    window.chatTabs = chatTabs;
     // the in-game chat button follows the game you are in
     function chatOnView(view) {
       const k = chatKeyFor(view), fab = document.getElementById('chat-fab');
@@ -152,7 +159,7 @@
         let sw = document.getElementById('chat-switch');
         const atTable = view === 'game' && typeof NP !== 'undefined' && NP.table;
         if (atTable) {
-          if (!sw) { sw = document.createElement('span'); sw.id = 'chat-switch'; sw.className = 'chat-switch'; nameEl.insertAdjacentElement('afterend', sw); }
+          if (!sw) { sw = document.createElement('span'); sw.id = 'chat-switch'; sw.className = 'chat-switch'; chatTabs().prepend(sw); }
           const tbl = CHAT.mode !== 'game';
           sw.innerHTML = `<button data-cm="table" class="${tbl ? 'on' : ''}">Table</button><button data-cm="game" class="${tbl ? '' : 'on'}">All players</button>`;
           sw.querySelectorAll('[data-cm]').forEach((b) => { b.onclick = (e) => { e.stopPropagation(); CHAT.mode = b.dataset.cm; chatOnView('game'); }; });
@@ -231,28 +238,84 @@
       const ids = ['chess'].concat(Object.values(GAME_MODS).filter((m) => m.online && m.online.ranked !== false && m.id !== 'chess').map((m) => m.id));
       return ids.filter((id) => GAME_MODS[id]).map((id) => [id, id === 'navalnet' ? 'Sea Battle' : GAME_MODS[id].name]);
     }
-    function netLeaderboard() {
-      let box = document.getElementById('net-lb');
-      if (!box) { const v = document.getElementById('view-leaderboard'); if (!v) return; box = document.createElement('div'); box.id = 'net-lb'; v.firstElementChild.insertAdjacentElement('afterend', box); }
-      const view = document.getElementById('view-leaderboard');
-      if (view) [...view.children].forEach((c) => { if (c !== view.firstElementChild && c !== box) c.style.display = 'none'; });   // the made-up offline board
-      if (view) view.querySelectorAll('.lb-btn').forEach((b) => { const seg = b.parentElement; if (seg) seg.style.display = 'none'; });
-      const games = rankedGames(), name = (games.find((g) => g[0] === lbGame) || games[0])[1];
-      const head = `<div class="winbar teal"><span>RANKED ONLINE · ${esc(name.toUpperCase())}</span><span class="pix text-xs" id="net-lb-n">LIVE</span></div>
-        <div class="p-3 pb-0"><div class="rp-tabs" style="flex-wrap:wrap;overflow:visible">${games.map(([id, nm]) => `<button class="rp-tab ${id === lbGame ? 'on' : ''}" data-lbg="${id}">${esc(nm)}</button>`).join('')}</div></div>`;
-      box.innerHTML = `<div class="win overflow-hidden">${head}<div class="p-4 text-sm text-muted">Loading...</div></div>`;
-      const wire = () => box.querySelectorAll('[data-lbg]').forEach((b) => { b.onclick = () => { lbGame = b.dataset.lbg; SFX.play('click'); netLeaderboard(); }; });
-      wire();
-      const want = lbGame;
-      NET.leaderboard(lbGame).then((rows) => {
-        if (want !== lbGame) return;
-        box.innerHTML = `<div class="win overflow-hidden">${head}
-          ${rows.length ? `<div class="divide-y-2 divide-ink mt-3">${rows.map((r, i) => `<div class="flex items-center gap-3 px-4 py-2 ${r.id === NET.me.id ? 'bg-elevated' : ''}"><span class="pix text-amber w-8">#${i + 1}</span><span class="text-lg">${esc(r.avatar)}</span><span class="font-bold flex-1 min-w-0 truncate">${esc(r.name)}${r.id === NET.me.id ? ' <span class="pix text-xs text-teal">YOU</span>' : ''}</span><span class="text-xs text-muted">${r.wins}W ${r.losses}L ${r.draws}D</span><span class="pix text-lg text-bone w-14 text-right">${r.elo}</span></div>`).join('')}</div>`
-            : `<div class="p-4 text-sm text-muted">No ranked ${esc(name)} games yet. Play an <b class="text-bone">Online · quick match</b> to be first on the board!</div>`}</div>`;
-        const n = document.getElementById('net-lb-n'); if (n) n.textContent = `${rows.length} PLAYERS`;
-        wire();
-      }).catch(() => {});
+    /* ---------- POINTS (Inna, Nov 2026: "add a points system in all games, remove Elo and ranking mode") ----------
+       Every finished game gives points by place: 1st 10 · 2nd 6 · 3rd 3 · everyone else 1. Two-player games: win 10,
+       draw 5, loss 1. Solo games: up to 5. Against computer players only: half (rounded up). Fun moments add +2 each
+       (games call pointsBonus()). A game can pass {place, n, solo} to reportGame / recordMatch; otherwise a win is 1st.
+       Saved on the profile (points, this week's points) and, online, added to the leaderboard (backend/points.sql). */
+    const POINTS = { last: null, bonus: 0 };
+    const weekKey = () => { const t = new Date(); const d = (t.getUTCDay() + 6) % 7; return new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth(), t.getUTCDate() - d)).toISOString().slice(0, 10); };
+    function pointsBonus(n = 1) { POINTS.bonus += 2 * n; }
+    window.pointsBonus = pointsBonus;
+    function pointsFor(game, result, d = {}) {
+      const S = typeof NP !== 'undefined' ? NP.S : null;
+      const n = d.n || (S && S.n) || 2;
+      const solo = !!d.solo || game === 'daily' || n === 1;
+      const humans = S ? S.seats.filter((x) => !x.bot).length : 1;
+      const place = d.place || (result === 'win' ? 1 : null);
+      let p;
+      if (solo) p = result === 'win' ? 5 : result === 'draw' ? 3 : 1;
+      else if (n === 2) p = result === 'win' ? 10 : result === 'draw' ? 5 : 1;
+      else p = place === 1 ? 10 : place === 2 ? 6 : place === 3 ? 3 : result === 'draw' ? 5 : 1;
+      if (!solo && humans <= 1) p = Math.ceil(p / 2);   // only computer players at the table
+      p += POINTS.bonus; POINTS.bonus = 0;
+      return { p, place, n, solo };
     }
+    (function wrapRecord() {
+      const orig = recordMatch;
+      const wrapped = function (game, result, eloDelta, d) {
+        d = d || {};
+        const r = orig.apply(this, arguments);
+        try {
+          const pf = pointsFor(game, result, d);
+          profile.points = (profile.points || 0) + pf.p;
+          const wk = weekKey(); if (!profile.ptsWeek || profile.ptsWeek.w !== wk) profile.ptsWeek = { w: wk, p: 0 }; profile.ptsWeek.p += pf.p;
+          if (profile.history && profile.history[0] && profile.history[0].game === game) profile.history[0].pts = pf.p;
+          POINTS.last = Object.assign({ at: Date.now(), game }, pf);
+          if (typeof NET !== 'undefined' && NET.on && NET.addPoints) NET.addPoints(pf.p, result === 'win');
+          saveProfileToStorage();
+        } catch (e) {}
+        return r;
+      };
+      try { recordMatch = wrapped; } catch (e) {}
+      window.recordMatch = wrapped;
+    })();
+    // the points row for a result screen (the game that just ended)
+    const pointsRow = () => (POINTS.last && Date.now() - POINTS.last.at < 15000 ? ['Points', '+' + POINTS.last.p, 'text-emerald'] : null);
+    window.pointsRow = pointsRow;
+
+    // the leaderboard page: points this week / all time / friends (online), or your own points (offline)
+    let pbScope = 'week';
+    function pointsBoard() {
+      const view = document.getElementById('view-leaderboard'); if (!view) return;
+      let box = document.getElementById('net-lb');
+      if (!box) { box = document.createElement('div'); box.id = 'net-lb'; view.firstElementChild.insertAdjacentElement('afterend', box); }
+      [...view.children].forEach((c) => { if (c !== view.firstElementChild && c !== box) c.style.display = 'none'; });   // the old Elo board
+      view.querySelectorAll('.lb-btn').forEach((b) => { if (b.parentElement) b.parentElement.style.display = 'none'; });
+      const sub = view.querySelector('p.text-sm'); if (sub) sub.textContent = 'Every game you finish earns points. The weekly board starts again every Monday.';
+      const online = typeof NET !== 'undefined' && NET.on;
+      const tabs = online ? [['week', 'This week'], ['all', 'All time'], ['friends', 'Friends']] : [];
+      const how = `<div class="pix text-sm text-muted mt-5 mb-1">HOW POINTS WORK</div>
+        <div class="pb-how"><div>10<small>1st place</small></div><div>6<small>2nd place</small></div><div>3<small>3rd place</small></div><div>1<small>everyone else</small></div></div>
+        <div class="text-xs text-muted mt-2">Two-player games: win 10, draw 5, loss 1. Against computer players only you get half. Fun moments add +2. Solo games give up to 5.</div>`;
+      const mine = `<div class="pb-me"><div class="stat"><div class="lab">THIS WEEK</div><div class="val text-amber">${(profile.ptsWeek && profile.ptsWeek.w === weekKey() ? profile.ptsWeek.p : 0)}</div></div><div class="stat"><div class="lab">ALL TIME</div><div class="val text-bone">${profile.points || 0}</div></div></div>`;
+      const head = `<div class="winbar amber"><span>LEADERBOARD · POINTS</span><span class="pix text-xs">${online ? 'RESETS MONDAY' : 'OFFLINE'}</span></div>`;
+      const tabsH = tabs.length ? `<div class="rp-tabs mb-3" style="flex-wrap:wrap;overflow:visible">${tabs.map(([k, t]) => `<button class="rp-tab ${k === pbScope ? 'on' : ''}" data-pb="${k}">${t}</button>`).join('')}</div>` : '';
+      const paint = (list) => { box.innerHTML = `<div class="win overflow-hidden">${head}<div class="p-4">${tabsH}${mine}<div class="mt-3">${list}</div>${how}</div></div>`;
+        box.querySelectorAll('[data-pb]').forEach((b) => { b.onclick = () => { pbScope = b.dataset.pb; SFX.play('click'); pointsBoard(); }; }); };
+      if (!online) return paint('<div class="text-sm text-muted">The leaderboard needs the online service. Your points are saved on this device.</div>');
+      paint('<div class="text-sm text-muted">Loading...</div>');
+      const want = pbScope;
+      NET.pointsBoard(pbScope).then((rows) => {
+        if (want !== pbScope) return;
+        const row = (r) => `<div class="pb-row ${r.rank <= 3 ? 'g' + r.rank : ''} ${r.me ? 'me' : ''}" data-pid="${esc(r.user_id)}"><span class="rk">${r.rank}</span><span class="av">${esc(r.avatar)}</span><span class="nm">${esc(r.name)}${r.me ? ' <span class="pix text-xs text-teal">YOU</span>' : ''}</span><span class="gm">${r.games} games · ${r.wins} wins</span><span class="pt">${Number(r.points).toLocaleString()} pts</span></div>`;
+        const top = rows.filter((r) => r.rank <= 50), me = rows.find((r) => r.me && r.rank > 50);
+        paint(rows.length ? `<div class="pb-list">${top.map(row).join('')}${me ? '<div class="pb-gap">···</div>' + row(me) : ''}</div>`
+          : `<div class="text-sm text-muted">${pbScope === 'friends' ? 'No points for you or your friends this week yet.' : 'No points this week yet. Finish a game to be first on the board!'}</div>`);
+        box.querySelectorAll('[data-pid]').forEach((el) => { el.onclick = () => { if (typeof openPlayerCard === 'function') openPlayerCard(el.dataset.pid); }; });
+      }).catch(() => paint('<div class="text-sm text-muted">The points leaderboard is not switched on yet. (Supabase: run backend/points.sql.)</div>'));
+    }
+    window.pointsBoard = pointsBoard;
     document.addEventListener('ps-online', () => {
       if (typeof syncProfileUI === 'function') syncProfileUI();   // shows "Sign up · Log in" now that accounts are reachable
       CHAT.net = {};
@@ -419,7 +482,7 @@
     function closeActiveGame() {
       const id = activeGame;
       if (typeof NP !== 'undefined' && NP.S) { try { NP.S.leave(); } catch (e) {} NP.S = null; }
-      if (typeof NP !== 'undefined') NP.table = null;
+      if (typeof NP !== 'undefined') { NP.table = null; NP.lobby = null; }
       activeGame = null; delete document.body.dataset.game; document.body.classList.remove('clk-on', 'clk-low');
       GT.cur++;
       GT.timers.forEach((t) => clearTimeout(t.id)); GT.timers.clear();
@@ -427,7 +490,7 @@
       GT.raf.forEach((t) => cancelAnimationFrame(t.id)); GT.raf.clear();
       GT.ons.forEach(([tg, ty, fn, op]) => tg.removeEventListener(ty, fn, op)); GT.ons = [];
       document.querySelectorAll('.g-fx').forEach((el) => el.remove());
-      document.body.classList.remove('show-moves');
+      document.body.classList.remove('show-moves'); logPlace(); turnClock(null); funReset();
       if (id && GAME_MODS[id] && GAME_MODS[id].close) { try { GAME_MODS[id].close(); } catch (e) {} }
       const gm = document.getElementById('g-modal'); if (gm) gm.classList.add('hidden');
     }
@@ -467,11 +530,11 @@
       root.innerHTML = `<div class="space-y-5 ${maxCls}" id="gs-wrap">
         <div class="panel flex flex-wrap items-center justify-between gap-3 px-4 py-3">
           <div class="flex items-center gap-3.5">
-            <button onclick="navigateTo('play')" class="btn-game btn-graphite px-3.5 py-2 text-xs">← Lobby</button>
+            <button onclick="navigateTo('play')" class="btn-game btn-graphite px-3.5 py-2 text-xs" aria-label="Back to the lobby">← <span class="gs-lbl">Lobby</span></button>
             <span class="spr w-8 h-8">${GICONS[m.icon]}</span>
             <h2 class="text-lg font-extrabold text-bone">${m.name}</h2>
           </div>
-          <div class="flex items-center gap-2.5 flex-wrap" id="gs-tools">${toolsHTML}<button class="btn-game btn-graphite px-3 py-2 text-xs gs-moves" onclick="toggleMoves()" title="Open or close the game log">📜 Log</button><button class="btn-game btn-graphite px-3 py-2 text-xs" onclick="openGuide('${m.id}')" title="How to play ${esc(m.name)}">? Guide</button>${typeof TABLE_GAMES !== 'undefined' && TABLE_GAMES.includes(m.id) ? '<button class="btn-game btn-graphite px-3 py-2 text-xs gs-table" onclick="openTablePicker(this)" title="Change the table design">🎨 Table</button>' : ''}<button class="btn-game btn-graphite px-3 py-2 text-xs gs-snd" onclick="openSoundPanel(this)" title="Sound and music" aria-label="Sound and music">♪</button></div>
+          <div class="flex items-center gap-2.5 flex-wrap" id="gs-tools">${toolsHTML}<button class="btn-game btn-graphite px-3 py-2 text-xs gs-moves" onclick="toggleMoves()" title="Open or close the game log">📜 <span class="gs-lbl">Log</span></button><button class="btn-game btn-graphite px-3 py-2 text-xs" onclick="openGuide('${m.id}')" title="How to play ${esc(m.name)}">? <span class="gs-lbl">Guide</span></button>${typeof TABLE_GAMES !== 'undefined' && TABLE_GAMES.includes(m.id) ? '<button class="btn-game btn-graphite px-3 py-2 text-xs gs-table" onclick="openTablePicker(this)" title="Change the table design">🎨 <span class="gs-lbl">Table</span></button>' : ''}<button class="btn-game btn-graphite px-3 py-2 text-xs gs-snd" onclick="openSoundPanel(this)" title="Sound and music" aria-label="Sound and music">♪</button></div>
         </div>
         <div id="gs-body"></div></div>`;
       return document.getElementById('gs-body');
@@ -482,7 +545,33 @@
       const on = force === undefined ? !document.body.classList.contains('show-moves') : !!force;
       document.body.classList.toggle('show-moves', on);
       if (on) { const lb = document.querySelector('#game-root .logbox'); if (lb) lb.scrollTop = lb.scrollHeight; }
+      logPlace();
     }
+    /* the game log is a little window you can drag anywhere by its title bar (Inna, Nov 2026); the spot is remembered */
+    let LOGPOS = null; try { LOGPOS = JSON.parse(localStorage.getItem('ps_logpos') || 'null'); } catch (e) {}
+    function logPlace() {
+      let g = document.getElementById('lb-grip');
+      const lb = document.body.classList.contains('show-moves') && [...document.querySelectorAll('#game-root .logbox')].find((e) => e.offsetParent !== null || getComputedStyle(e).position === 'fixed');
+      if (!lb) { if (g) g.style.display = 'none'; document.querySelectorAll('#game-root .logbox').forEach((e) => { e.style.left = e.style.top = e.style.right = e.style.width = e.style.margin = ''; }); return; }
+      if (!g) {
+        g = document.createElement('div'); g.id = 'lb-grip'; g.className = 'winbar';
+        g.innerHTML = '<span>📜 GAME LOG</span><span class="lb-hint pix">✥ DRAG</span><button class="lb-x" aria-label="Close the log">✕</button>';
+        document.body.appendChild(g);
+        g.querySelector('.lb-x').onclick = () => toggleMoves(false);
+        let d = null;
+        g.onpointerdown = (e) => { if (e.target.closest('.lb-x')) return; const r = g.getBoundingClientRect(); d = { dx: e.clientX - r.left, dy: e.clientY - r.top }; try { g.setPointerCapture(e.pointerId); } catch (_) {} e.preventDefault(); };
+        g.onpointermove = (e) => { if (!d) return; LOGPOS = { x: e.clientX - d.dx, y: e.clientY - d.dy }; logPlace(); };
+        g.onpointerup = g.onpointercancel = () => { if (!d) return; d = null; try { localStorage.setItem('ps_logpos', JSON.stringify(LOGPOS)); } catch (_) {} };
+        window.addEventListener('resize', () => logPlace());
+      }
+      const w = Math.min(340, innerWidth - 32);
+      Object.assign(g.style, { display: 'flex', width: w + 'px' }); const gh = g.getBoundingClientRect().height || 34;
+      let x = LOGPOS ? LOGPOS.x : innerWidth - 16 - w, y = LOGPOS ? LOGPOS.y : 64;
+      x = Math.max(4, Math.min(innerWidth - w - 4, x)); y = Math.max(4, Math.min(innerHeight - gh - 60, y));
+      Object.assign(g.style, { display: 'flex', left: x + 'px', top: y + 'px', width: w + 'px' });
+      Object.assign(lb.style, { left: x + 'px', top: (y + gh) + 'px', right: 'auto', width: w + 'px', margin: '0' });
+    }
+    window.logPlace = logPlace;
     window.toggleMoves = toggleMoves;
     /* ---------- "what just happened" notices (Inna, Nov 2026) ----------
        The move logs are hidden behind 📜 Log, so the unusual moments (3 doubles = Jail, a skipped turn, a steal, a broken
@@ -600,7 +689,7 @@
           }));
       } else opts = opts.filter((o) => o.key !== 'net');
       const netHint = (sel) => sel.net === 'here' ? 'Just you. Your best scores count on your profile.'
-        : sel.net === 'quick' ? (m.online.seats({}) === 2 && m.online.ranked !== false ? 'We find you a real player. Quick matches are ranked (Elo).' : 'We find you a table with real players. Empty seats get computer players.')
+        : sel.net === 'quick' ? (m.online.seats({}) === 2 ? 'We find you a real player.' : 'We find you a table with real players. Empty seats get computer players.')
         : `Your own room: you get a link to invite friends${m.online && m.online.bots === false ? '' : ', and you can add computer players'}.`;
       const saved = setupLoad(m.id);
       const preset = SETUP_PRESET && SETUP_PRESET.id === m.id ? SETUP_PRESET : null; SETUP_PRESET = null;
@@ -610,7 +699,15 @@
         const v = preset && has(preset.sel[o.key]) ? preset.sel[o.key] : has(saved[o.key]) ? saved[o.key] : o.def;
         sel[o.key] = (o.choices.find((c) => String(c[0]) === String(v)) || o.choices[0])[0];
       });
-      if (preset) ['rematch', 'rmRanked', 'rmBots'].forEach((k) => { if (preset.sel[k] !== undefined) sel[k] = preset.sel[k]; });   // a rematch's extra details ride along
+      if (preset) ['rematch', 'rmRanked', 'rmBots', 'session'].forEach((k) => { if (preset.sel[k] !== undefined) sel[k] = preset.sel[k]; });   // a rematch's extra details ride along
+      // Random Game / "Random game": random settings (the room size and computer level are set by the room).
+      // "Quick versions" take the first (shortest) choice of options about length, rounds or targets.
+      if (preset && preset.sel.rnd) opts.forEach((o) => {
+        if (o.key === 'net' || o.key === lvKey || o.key === sizeKey || o.local || preset.sel[o.key] !== undefined) return;
+        const len = /LENGTH|ROUND|MATCH|PLAY TO|FIRST TO|TARGET|HANDS|BUILDING|GAME|GOAL|POINTS|WIN AT|RACK/i.test(o.label);
+        sel[o.key] = preset.sel.quick && len ? o.choices[0][0] : o.choices[Math.floor(Math.random() * o.choices.length)][0];
+      });
+      if (preset && preset.sel.rnd) sel.rnd = 1;
       const code = preset ? preset.code : generateRoomCode();
       if (m.id === activeGame) { GT.started = false; GT.over = false; }
       const segHTML = (o) => `<div class="seg ${o.toggle ? '' : 'w-full'}">${o.choices.map((c) => `<button data-k="${o.key}" data-v="${c[0]}" class="seg-btn ${o.toggle ? '' : 'flex-1'} ${String(sel[o.key]) === String(c[0]) ? 'on' : ''}">${c[1]}</button>`).join('')}</div>`;
@@ -643,7 +740,8 @@
         const sh = body.querySelector('[data-share]'); if (sh) sh.onclick = () => navigator.share({ title: `GameHub · ${m.name}`, text: `Play ${m.name} with me on GameHub! Room ${code}`, url: link }).catch(() => {});
         const li = body.querySelector('#su-link'); if (li) li.onfocus = () => li.select();
         const bk = body.querySelector('#su-back'); if (bk) bk.onclick = () => { SFX.play('click'); pickMode(); };
-        body.querySelector('#su-go').onclick = () => { setupSave(m.id, sel); if (m.id === activeGame) { GT.started = true; GT.over = false; } const go = Object.assign({}, sel, { room: code }); if (netOn && sel.net && sel.net !== 'here') return npLobby(body, m, go); onStart(go); };
+        body.querySelector('#su-go').onclick = () => { setupSave(m.id, sel); if (m.id === activeGame) { GT.started = true; GT.over = false; } const go = Object.assign({}, sel, { room: code }); if (netOn && sel.net && sel.net !== 'here') return npLobby(body, m, go); const rl = window.RANDOM_LOCAL && RANDOM_LOCAL(), ss = go.session || (rl && go.rnd ? rl.s : null);
+          settingsPop(m, go, () => { if (m.id === activeGame) onStart(go); }, ss ? { head: `GAME ${ss.k} OF ${ss.n} · UP NEXT`, tag: '🎲 RANDOM', sub: 'Picked at random. Here is how this game is set up:' } : go.rnd ? { tag: '🎲 RANDOM' } : {}); };
       };
       // the room settings: everything a private room can change while people wait (not the computer level or
       // table size: the room has its own controls for those)
@@ -654,7 +752,7 @@
       function pickMode() {
         sel.net = undefined;
         const modes = (solo ? [['here', 'Solo', 'Just you. Pick your settings and play.', 'emerald']] : [])
-          .concat([['quick', 'Online match', m.online.seats({}) === 2 && m.online.ranked !== false ? 'Get paired with a real player at your level. Ranked.' : 'Join a table with real players.', 'teal'],
+          .concat([['quick', 'Online match', m.online.seats({}) === 2 ? 'Get paired with a real player.' : 'Join a table with real players.', 'teal'],
             ['room', 'Private room', `Your own room: invite friends with a link${m.online.bots === false ? '' : ', add computer players'}, choose the settings together and chat.`, 'amber']]);
         body.innerHTML = `<div class="win max-w-xl mx-auto overflow-hidden">
           <div class="winbar ${m.tone || 'amber'}"><span>${m.name.toUpperCase()}</span><span class="spr w-5 h-5">${GICONS[m.icon]}</span></div>
@@ -669,6 +767,7 @@
       }
       if (!netOn) return draw();
       if (preset && (preset.sel.net === 'room' || preset.sel.net === 'quick')) return goRoom(preset.sel.net);
+      if (preset && preset.sel.net === 'here') { sel.net = 'here'; return draw(); }   // e.g. a Random Game session against computer players
       pickMode();
     }
 
@@ -727,7 +826,14 @@
       };
       const viaNet = typeof NET !== 'undefined' && NET.mode && NET.mode !== 'off';
       if (!viaNet) return local();
-      const join = () => NET.getRoom(code).then((r) => {
+      if (typeof NP !== 'undefined') NP.joining = code;
+      const join = () => {
+        // the link of a table you were playing at (e.g. after a lost connection): straight back to your seat
+        const sv = typeof npSaved === 'function' ? npSaved() : null;
+        if (sv && sv.code === code) { const el = document.getElementById('np-rj'); if (el) el.remove(); return go(() => npRejoin(sv)); }
+        return joinRoomByLink();
+      };
+      const joinRoomByLink = () => NET.getRoom(code).then((r) => {
         if (!r || r.status === 'done') return showToast(`Room ${code} isn't open right now. Your friend may not have pressed Start yet, or the game has ended. Ask them to check and send the link again.`, 'error');
         if (!GAME_MODS[r.game]) return showToast('That game is not online yet.', 'error');
         go(() => { netJoin(code, r.game, 'room'); showToast(`Joining room ${code}...`, 'success'); });
@@ -775,6 +881,23 @@
     window.addEventListener('beforeunload', (e) => { if (gameInProgress()) { e.preventDefault(); e.returnValue = ''; } });
 
     /* ---------- a turn clock: number + bar ---------- */
+    /* ---------- turn timer for games that had none (Inna, Nov 2026: "turn timer for all games") ----------
+       turnClock(key, secs, onOut): starts a countdown for YOUR turn (a small clock chip at the top of the game, and the
+       outline of your name tag where the game has one). The same key does not restart it (redraws are fine); a new key
+       (the next turn) does; key null or secs 0 stops it. When it runs out, onOut makes a sensible move for you. */
+    const TT = { clock: null, key: null };
+    function turnClock(key, secs, onOut) {
+      if (!key || !secs) { if (TT.clock) TT.clock.stop(); TT.key = null; const h = document.getElementById('tt-host'); if (h) h.classList.remove('on'); return; }
+      if (key === TT.key) return;
+      let h = document.getElementById('tt-host');
+      if (!h || !TT.clock) { if (!h) { h = document.createElement('div'); h.id = 'tt-host'; document.body.appendChild(h); } TT.clock = makeClock(h); }
+      TT.key = key; h.classList.add('on');
+      TT.clock.start(secs, 'Your turn', () => { TT.key = null; h.classList.remove('on'); showToast("Time's up! A move was made for you.", 'error'); try { onOut && onOut(); } catch (e) {} }, 5);
+    }
+    window.turnClock = turnClock;
+    // the turn timer choice those games add to their settings
+    const turnOpt = (def, choices) => ({ key: 'turnT', label: 'TURN TIMER', def, choices: (choices || [15, 30, 60]).map((v) => [v, v + ' sec']).concat([[0, 'Off']]), hint: 'Time for each move. When it runs out, a move is made for you.' });
+    window.turnOpt = turnOpt;
     function makeClock(host, mod) {
       host.innerHTML = `<div class="flex items-center gap-3"><div class="timer-box shrink-0 clk-box"><div class="lab clk-lab">Your time</div><div class="val clk-val">0:00</div></div><div class="timer-bar flex-1 clk-wrap"><span class="clk-bar"></span></div></div>`;
       const q = (s) => host.querySelector(s);
@@ -819,7 +942,7 @@
       if (result === 'win') { g.wins++; profile.wins++; } else if (result === 'loss') { g.losses++; profile.losses++; } else if (result === 'draw') g.draws++;
       const elo = o.elo || 0;
       profile.elo = Math.max(800, profile.elo + elo);
-      recordMatch(id, result, elo, { label: o.label || '' });
+      recordMatch(id, result, elo, { label: o.label || '', place: o.place, n: o.n, solo: o.solo });
       if (o.xp) awardXP(o.xp); else saveProfileToStorage();
     }
 
@@ -836,6 +959,76 @@
       setTimeout(() => box.remove(), 3000);
     }
     window.celebrate = celebrate;
+    /* ---------- fun moments (Inna, Nov 2026): a burst on screen + a badge that stays on the player's name tag for the
+       rest of the game (+2 points when it is you). funMoment(seatId, {icon, label, burst, sub, key, fire, mine}).
+       Each screen sees the same game, so each screen spots the same moments itself: nothing is sent online. ---------- */
+    const FUN = { badges: {}, obs: null, t: null };
+    function funPaint() {
+      Object.entries(FUN.badges).forEach(([sid, list]) => {
+        const el = document.getElementById(sid); if (!el) return;
+        const tag = el.querySelector('.tg-tag, .pl-tag') || el;
+        const html = list.map((b) => `<span class="fx-mini">${b.icon} ${esc(b.label)}</span>`).join('');
+        let box = tag.querySelector(':scope > .fx-minis');
+        if (!box) { box = document.createElement('span'); box.className = 'fx-minis'; tag.appendChild(box); if (getComputedStyle(tag).position === 'static') tag.style.position = 'relative'; }
+        if (box.innerHTML !== html) box.innerHTML = html;
+        tag.classList.toggle('fx-fire', list.some((b) => b.fire));
+        if (list.some((b) => b.fire) && !tag.querySelector(':scope > .fx-flames')) tag.insertAdjacentHTML('beforeend', `<span class="fx-flames">${FX_FLAME}${FX_FLAME}${FX_FLAME}</span>`);
+      });
+    }
+    const FX_FLAME = '<svg viewBox="0 0 8 11" shape-rendering="crispEdges" aria-hidden="true"><rect x="3" y="0" width="2" height="2" fill="#FDE68A"/><rect x="2" y="2" width="4" height="3" fill="#FB923C"/><rect x="1" y="4" width="6" height="5" fill="#F97316"/><rect x="3" y="5" width="2" height="4" fill="#FDE68A"/><rect x="0" y="7" width="8" height="4" fill="#EA580C"/><rect x="2" y="8" width="4" height="3" fill="#FB923C"/></svg>';
+    function funMoment(seatId, o) {
+      if (typeof NP !== 'undefined' && NP.catchup) return;   // replaying after a rejoin: no fireworks
+      const list = FUN.badges[seatId] || (FUN.badges[seatId] = []);
+      const k = o.key || o.label, old = list.findIndex((b) => b.key === k);
+      const b = { key: k, icon: o.icon, label: o.label, fire: !!o.fire };
+      if (old >= 0) list[old] = b; else list.push(b);
+      if (list.length > 2) list.shift();
+      if (o.burst) {
+        document.querySelectorAll('.fx-burst').forEach((e) => e.remove());
+        const d = document.createElement('div'); d.className = 'fx-burst';
+        d.innerHTML = `<b>${esc(o.burst)}</b>${o.sub ? `<span>${esc(o.sub)}</span>` : ''}`;
+        document.body.appendChild(d); setTimeout(() => d.remove(), 2600);
+        SFX.play(o.mine ? 'win' : 'coin');
+      }
+      if (o.mine && typeof pointsBonus === 'function') pointsBonus();
+      funPaint();
+      if (!FUN.obs) { const root = document.getElementById('game-root'); if (root) { FUN.obs = new MutationObserver(() => { clearTimeout(FUN.t); FUN.t = setTimeout(funPaint, 30); }); FUN.obs.observe(root, { childList: true, subtree: true }); } }
+    }
+    function funReset() { FUN.badges = {}; document.querySelectorAll('.fx-burst').forEach((e) => e.remove()); }
+    window.funMoment = funMoment; window.funReset = funReset;
+
+    /* ---------- "how this game is set up" pop-up before every game starts (Inna, Nov 2026: so nobody is confused,
+       especially in Random Game). Lists the game's settings with the chosen value. On this device it can be skipped
+       ("Start now"); at an online table every screen counts down the same few seconds, then the game begins. ---------- */
+    function settingsList(m, sel, extra) {
+      const opts = (m._opts || []).filter((o) => o.key !== 'net' && sel[o.key] !== undefined && (!o.when || o.when(sel)));
+      const ico = (l) => (/time|timer|clock/i.test(l) ? '⏱' : /round|length|match|game|target|play to|first to/i.test(l) ? '🏁' : /player|seat|table/i.test(l) ? '👥' : /computer|level|admiral|bot/i.test(l) ? '🤖' : /chip|cash|money|bank|blind/i.test(l) ? '💰' : /word|lang/i.test(l) ? '🔤' : '⚙');
+      const rows = opts.map((o) => { const c = (o.choices || []).find((x) => String(x[0]) === String(sel[o.key])); const lab = o.toggle ? o.label : String(o.label).toLowerCase().replace(/^./, (x) => x.toUpperCase());
+        return [ico(o.label), lab, c ? c[1] : String(sel[o.key])]; });
+      return rows.concat(extra || []);
+    }
+    function settingsPop(m, sel, done, o = {}) {
+      if (navigator.webdriver && !window.__showSettingsPop) { done(); return; }    // automated tests skip it
+      const rows = settingsList(m, sel, o.extra);
+      if (!rows.length && !o.head) { done(); return; }
+      document.querySelectorAll('.set-pop').forEach((e) => e.remove());
+      const el = document.createElement('div'); el.className = 'set-pop';
+      const secs = o.secs || 6; let left = secs, fired = false;
+      el.innerHTML = `<div class="win set-pop-win"><div class="winbar amber"><span>${esc(o.head || 'GAME SETTINGS')}</span><span class="pix">${esc(o.tag || '')}</span></div>
+        <div class="p-4 sm:p-5"><div class="flex items-center gap-4"><span class="gart" style="--c:${m.color || '#F5B041'}">${GICONS[m.icon] || ''}</span>
+          <div class="min-w-0"><div class="text-2xl font-extrabold text-bone">${esc(m.name)}</div><div class="text-sm text-muted">${esc(o.sub || 'Here is how this game is set up:')}</div></div></div>
+          <div class="set-rows">${rows.map(([i, l, v]) => `<div class="set-row"><span class="i">${i}</span><span class="l">${esc(l)}</span><span class="v">${esc(v)}</span></div>`).join('')}</div>
+          <div class="flex justify-between text-sm text-muted"><span>Starting in <b class="text-bone" data-left>${left}</b></span><span>${o.online ? 'Everyone sees this' : ''}</span></div><div class="set-bar"><i style="animation-duration:${secs}s"></i></div>
+          <div class="grid grid-cols-2 gap-3 mt-4"><button class="btn-game btn-graphite py-3 text-sm" data-guide>? How to play</button><button class="btn-game btn-amber py-3 text-sm" data-ok>${o.online ? 'Got it ✓' : 'Start now ▶'}</button></div></div></div>`;
+      document.body.appendChild(el);
+      const fin = () => { if (fired) return; fired = true; clearInterval(t); el.remove(); done(); };
+      const t = setInterval(() => { left--; const b = el.querySelector('[data-left]'); if (b) b.textContent = Math.max(0, left); if (left <= 0) fin(); }, 1000);
+      el.querySelector('[data-guide]').onclick = () => { if (typeof openGuide === 'function') openGuide(m.id === 'navalnet' ? 'naval' : m.id); };
+      // online the game starts for everyone at the same moment, so "Got it" only closes the box
+      el.querySelector('[data-ok]').onclick = () => { SFX.play('click'); if (o.online) el.classList.add('closed'); else fin(); };
+    }
+    window.settingsPop = settingsPop; window.settingsList = settingsList;
+
     function gameResult(o) {
       GT.over = true;
       try { if (typeof NP !== 'undefined' && NP.S && NP.S.online) localStorage.removeItem('ps_np_cur:' + (NET.me && NET.me.id)); } catch (e) {}   // nothing to rejoin
@@ -845,6 +1038,9 @@
       const tone = o.tone || 'amber';
       const toneCls = { amber: 'bg-amber', teal: 'bg-teal', coral: 'bg-coral', emerald: 'bg-emerald' }[tone] || 'bg-amber';
       const btnCls = { amber: 'btn-amber', teal: 'btn-teal', coral: 'btn-coral', emerald: 'btn-emerald' }[tone] || 'btn-amber';
+      // Elo is gone (Inna, Nov 2026): rating rows are dropped and the points this game earned are shown instead
+      o.rows = (o.rows || []).filter((r) => r && !/elo|rating/i.test(String(r[0])));
+      { const pr = pointsRow(); if (pr && !o.rows.some((r) => /points/i.test(r[0]))) o.rows.splice(Math.min(1, o.rows.length), 0, pr); if (o.rows.length > 3) o.rows.length = 3; }
       const rows = (o.rows || []).map((r) => `<div class="stat"><div class="lab">${r[0]}</div><div class="val ${r[2] || 'text-bone'}">${r[1]}</div></div>`).join('');
       el.innerHTML = `<div class="panel w-full max-w-sm p-6 pt-9 text-center space-y-5 relative">
         <div class="icon-tile absolute -top-9 left-1/2 -translate-x-1/2 w-[72px] h-[72px] ${toneCls}"><span class="spr w-11 h-11">${SPRITES[o.sprite || 'trophy']}</span></div>
@@ -852,7 +1048,8 @@
         ${rows ? `<div class="grid gap-2.5" style="grid-template-columns:repeat(${Math.min(3, o.rows.length)},minmax(0,1fr))">${rows}</div>` : ''}
         <div class="grid grid-cols-2 gap-3 pt-1"><button id="g-modal-lobby" class="btn-game btn-graphite py-3 text-sm">Back to Lobby</button><button id="g-modal-again" class="btn-game ${btnCls} py-3 text-sm">${o.againLabel || 'Play Again'}</button></div><div id="g-modal-rm"></div></div>`;
       el.classList.remove('hidden');
-      if (typeof npRematchSlot === 'function') npRematchSlot(el.querySelector('#g-modal-rm'));
+      const again0 = el.querySelector('#g-modal-again'); if (again0) again0.style.display = '';
+      if (!(window.randomLocalSlot && !(typeof NP !== 'undefined' && NP.S && NP.S.online) && randomLocalSlot(el.querySelector('#g-modal-rm'))) && typeof npRematchSlot === 'function') npRematchSlot(el.querySelector('#g-modal-rm'));
       el.querySelector('#g-modal-lobby').onclick = () => { el.classList.add('hidden'); navigateTo('play'); };
       el.querySelector('#g-modal-again').onclick = () => { el.classList.add('hidden'); o.again && o.again(); };
     }
@@ -930,6 +1127,7 @@
       const cats = [['ALL', null]].concat(SHELVES.slice(1).map((sh) => [sh.title.split(' ')[0].replace('&', '').trim(), sh]));
       const order = []; SHELVES.forEach((sh) => sh.ids.forEach((id) => { if (byId[id] && !order.includes(id)) order.push(id); }));
       CATALOG.forEach((c) => { if (!order.includes(c.id)) order.push(c.id); });
+      if (order.includes('random')) { order.splice(order.indexOf('random'), 1); order.unshift('random'); }   // Random Game comes first (Inna)
       const sel = cats.find((c) => c[0] === shelfCat) || cats[0];
       // Daily Word lives in the side menu, not in the games grid (Inna, Nov 2026)
       const noTile = (id) => id !== 'daily';

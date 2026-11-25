@@ -58,13 +58,14 @@
           { key: 'rule', label: 'RULES', def: 'draw', choices: [['draw', 'Draw game'], ['block', 'Block game']], hint: 'Draw: if you cannot play, take tiles from the boneyard. Block: you just pass.' },
           { key: 'to', label: 'PLAY TO', def: 100, choices: [[0, 'One round'], [100, '100 points'], [150, '150 points']] },
           { key: 'lvl', label: 'BOTS', def: 2, choices: [[1, 'Easy'], [2, 'Smart']] },
+          turnOpt(30, [20, 30, 60]),
         ], (sel) => start(body, sel, npLocal([{ name: profile.username, avatar: profile.avatar }].concat(NAMES.slice(0, +sel.n - 1).map(([name, avatar]) => ({ bot: true, name, avatar }))), sel)));
       }
       const NAMES = [['Domino Dan', '🦊'], ['Tilly', '🐢'], ['Big Ed', '🐻']];
       // seats come from the table (S): on this device seat 0 is you; online every screen has its own seat (G.me)
       function start(body, sel, S) {
         const players = S.seats.map((x, i) => ({ seat: i, name: x.name, av: x.avatar, human: S.mine(i), score: 0 }));
-        G = { S, me: S.online ? S.me : 0, players, rule: sel.rule, to: +sel.to, lvl: +sel.lvl, tok: ++GT.cur, over: false, round: 0, log: [], starter: -1, played: 0, dominoes: 0 };
+        G = { S, me: S.online ? S.me : 0, turnT: +sel.turnT || 0, dk: 0, players, rule: sel.rule, to: +sel.to, lvl: +sel.lvl, tok: ++GT.cur, over: false, round: 0, log: [], starter: -1, played: 0, dominoes: 0 };
         S.track();
         S.onLeft = (a) => {
           if (!G) return;
@@ -136,7 +137,9 @@
       async function decide(p, ui, botFn, ms) {
         const S = G.S, t = G.tok, mine = S.mine(p.seat);
         if (mine) ui();
+        if (mine && !S.bot(p.seat) && (typeof NP === 'undefined' || !NP.catchup)) turnClock('dm' + (++G.dk), G.turnT, () => { if (!G || G.tok !== t) return; G.choose = null; G.pending = null; prompt(''); S.act(Object.assign({}, botFn(), { s: p.seat })); });
         const a = await S.ask(p.seat, botFn, ms);
+        if (mine) turnClock(null);
         if (!G || G.tok !== t) throw ABORT;
         if (mine) prompt('');
         return a;
@@ -221,7 +224,7 @@
         SFX.play(won ? 'win' : 'lose');
         const eloRow = S.online ? await S.finish(won ? 'win' : 'loss') : null;
         if (!G || G.tok !== tok) return;
-        reportGame('dominoes', won ? 'win' : 'loss', { elo, xp: won ? 25 + lvl * 8 : 10, label: gaveUp ? 'Gave up' : `${S.online ? 'Online · ' : ''}${me.score} pts · ${G.round} round${G.round > 1 ? 's' : ''}` });
+        reportGame('dominoes', won ? 'win' : 'loss', { place: won ? 1 : gaveUp ? undefined : ranked.indexOf(me) + 1, elo, xp: won ? 25 + lvl * 8 : 10, label: gaveUp ? 'Gave up' : `${S.online ? 'Online · ' : ''}${me.score} pts · ${G.round} round${G.round > 1 ? 's' : ''}` });
         const oppName = left ? G.S.name(left.s) : '';
         gameResult({ title: left ? 'You win!' : won ? 'You win at dominoes!' : gaveUp ? 'You gave up' : `${ranked[0].name} wins`, sub: left ? `${oppName} ${left.t === '_gone' ? 'disconnected' : 'left the game'}.` : G.to ? `First to ${G.to} points.` : 'One round.', tone: won ? 'amber' : 'coral', sprite: won ? 'trophy' : 'anchor',
           rows: ranked.map((p) => [p.name, p.score, p.seat === G.me ? 'text-amber' : 'text-bone']).concat(eloRow ? [eloRow] : []), againLabel: S.online ? 'Back to setup' : 'New game', again: () => open($('game-root')) });

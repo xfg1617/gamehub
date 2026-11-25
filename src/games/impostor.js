@@ -10,44 +10,102 @@
           ['Ice cream', ['cone', 'scoop', 'cold', 'vanilla', 'sweet', 'melts', 'summer'], 'Cake', ['birthday', 'candles', 'frosting', 'bake', 'slice', 'sweet', 'party']],
           ['Banana', ['yellow', 'peel', 'monkey', 'curved', 'potassium', 'smoothie', 'fruit'], 'Apple', ['red', 'tree', 'crunchy', 'doctor', 'pie', 'core', 'fruit']],
           ['Sushi', ['rice', 'Japan', 'raw fish', 'chopsticks', 'roll', 'seaweed', 'wasabi'], 'Taco', ['Mexico', 'shell', 'salsa', 'Tuesday', 'tortilla', 'spicy', 'folded']],
+          ['Pancakes', ['syrup', 'breakfast', 'stack', 'flip', 'butter', 'fluffy', 'griddle'], 'Waffles', ['squares', 'syrup', 'breakfast', 'crispy', 'iron', 'Belgian', 'toppings']],
+          ['Fries', ['salty', 'potato', 'crispy', 'ketchup', 'golden', 'side', 'dish'], 'Chips', ['bag', 'crunchy', 'potato', 'snack', 'salty', 'party', 'thin']],
+          ['Popcorn', ['movie', 'butter', 'pop', 'kernels', 'microwave', 'salty', 'bucket'], 'Pretzel', ['twisted', 'salty', 'knot', 'dough', 'mall', 'baked', 'mustard']],
+          ['Hot dog', ['bun', 'sausage', 'mustard', 'ballpark', 'grill', 'relish', 'stand'], 'Sandwich', ['bread', 'lunch', 'ham', 'layers', 'deli', 'toast', 'cut']],
+          ['Chocolate', ['cocoa', 'sweet', 'bar', 'melt', 'brown', 'candy', 'dark'], 'Candy', ['sweet', 'sugar', 'wrapper', 'Halloween', 'lollipop', 'colorful', 'gummy']],
+          ['Soup', ['bowl', 'spoon', 'hot', 'broth', 'noodles', 'warm', 'chicken'], 'Salad', ['lettuce', 'bowl', 'dressing', 'green', 'healthy', 'fresh', 'crunchy']],
         ] },
         Animals: { gen: ['furry', 'pet', 'wild', 'tail', 'zoo', 'animal', 'legs'], pairs: [
           ['Dog', ['bark', 'loyal', 'walk', 'fetch', 'bone', 'puppy', 'leash'], 'Cat', ['meow', 'purr', 'whiskers', 'nap', 'claws', 'kitten', 'litter']],
           ['Lion', ['mane', 'roar', 'king', 'savanna', 'pride', 'big cat', 'jungle'], 'Tiger', ['stripes', 'orange', 'Asia', 'roar', 'big cat', 'fierce', 'jungle']],
           ['Dolphin', ['smart', 'ocean', 'jump', 'clicks', 'swim', 'pod', 'flipper'], 'Shark', ['fin', 'teeth', 'ocean', 'jaws', 'swim', 'predator', 'bite']],
           ['Eagle', ['wings', 'soar', 'talons', 'America', 'nest', 'sharp eyes', 'bird'], 'Owl', ['night', 'hoot', 'wise', 'feathers', 'nest', 'wings', 'bird']],
+          ['Horse', ['ride', 'saddle', 'gallop', 'hooves', 'farm', 'mane', 'stable'], 'Zebra', ['stripes', 'Africa', 'black', 'and', 'white', 'savanna', 'herd', 'wild']],
+          ['Penguin', ['ice', 'waddle', 'Antarctica', 'tuxedo', 'cold', 'swim', 'flock'], 'Polar bear', ['ice', 'Arctic', 'white', 'fur', 'cold', 'snow', 'seal']],
+          ['Frog', ['green', 'jump', 'pond', 'croak', 'lily', 'pad', 'tadpole', 'slimy'], 'Turtle', ['shell', 'slow', 'pond', 'swim', 'old', 'green', 'reptile']],
+          ['Bee', ['honey', 'buzz', 'hive', 'sting', 'flower', 'yellow', 'queen'], 'Butterfly', ['wings', 'flower', 'colorful', 'caterpillar', 'flutter', 'garden', 'pretty']],
+          ['Rabbit', ['ears', 'hop', 'carrot', 'bunny', 'fluffy', 'burrow', 'fast'], 'Squirrel', ['nuts', 'tree', 'tail', 'park', 'acorn', 'climb', 'fluffy']],
+          ['Monkey', ['banana', 'climb', 'jungle', 'tail', 'swing', 'funny', 'tree'], 'Gorilla', ['big', 'strong', 'jungle', 'chest', 'silverback', 'ape', 'forest']],
         ] },
         Places: { gen: ['travel', 'visit', 'trip', 'tourists', 'map', 'big', 'famous'], pairs: [
           ['Beach', ['sand', 'waves', 'sunscreen', 'towel', 'shells', 'summer', 'surf'], 'Desert', ['dry', 'cactus', 'dunes', 'camel', 'heat', 'sand', 'oasis']],
           ['Library', ['books', 'quiet', 'shelves', 'borrow', 'read', 'librarian', 'study'], 'Museum', ['art', 'exhibit', 'history', 'tickets', 'quiet', 'statues', 'tour']],
           ['Hospital', ['doctor', 'nurse', 'bed', 'emergency', 'sick', 'white', 'surgery'], 'School', ['teacher', 'class', 'homework', 'bell', 'desk', 'students', 'books']],
           ['New York', ['skyscrapers', 'taxi', 'Broadway', 'Liberty', 'busy', 'subway', 'pizza'], 'Paris', ['tower', 'France', 'romantic', 'baguette', 'Seine', 'fashion', 'Louvre']],
+          ['Airport', ['planes', 'gate', 'luggage', 'security', 'flight', 'travel', 'terminal'], 'Train station', ['platform', 'tracks', 'ticket', 'travel', 'schedule', 'rails', 'conductor']],
+          ['Zoo', ['animals', 'cages', 'visit', 'lions', 'tickets', 'family', 'park'], 'Aquarium', ['fish', 'tank', 'sharks', 'glass', 'water', 'visit', 'jellyfish']],
+          ['Mall', ['stores', 'shopping', 'food', 'court', 'escalator', 'parking', 'clothes'], 'Supermarket', ['groceries', 'cart', 'aisle', 'checkout', 'food', 'milk', 'cashier']],
+          ['Castle', ['king', 'tower', 'medieval', 'walls', 'knights', 'moat', 'stone'], 'Palace', ['royal', 'queen', 'gold', 'rich', 'gardens', 'luxury', 'throne']],
+          ['Gym', ['workout', 'weights', 'treadmill', 'sweat', 'muscles', 'trainer', 'fitness'], 'Park', ['trees', 'grass', 'bench', 'walk', 'dog', 'picnic', 'swings']],
+          ['Las Vegas', ['casino', 'lights', 'desert', 'shows', 'gambling', 'strip', 'neon'], 'Hollywood', ['movies', 'stars', 'sign', 'California', 'actors', 'fame', 'studios']],
         ] },
         Objects: { gen: ['useful', 'everyday', 'home', 'carry', 'object', 'buy', 'use'], pairs: [
           ['Phone', ['call', 'screen', 'text', 'apps', 'charger', 'pocket', 'ring'], 'Laptop', ['keyboard', 'screen', 'work', 'battery', 'desk', 'typing', 'wifi']],
           ['Umbrella', ['rain', 'handle', 'open', 'wet', 'storm', 'protect', 'cover'], 'Sunglasses', ['sun', 'lenses', 'cool', 'summer', 'face', 'shade', 'beach']],
           ['Chair', ['sit', 'legs', 'back', 'table', 'wood', 'four', 'seat'], 'Sofa', ['cushion', 'living room', 'lounge', 'couch', 'sit', 'TV', 'comfy']],
           ['Guitar', ['strings', 'strum', 'band', 'chords', 'pick', 'acoustic', 'rock'], 'Piano', ['keys', 'black and white', 'pedal', 'grand', 'classical', 'notes', 'lessons']],
+          ['Clock', ['time', 'hands', 'tick', 'wall', 'alarm', 'hour', 'minute'], 'Watch', ['time', 'wrist', 'strap', 'tick', 'hour', 'band', 'gift']],
+          ['Mirror', ['reflection', 'glass', 'bathroom', 'look', 'face', 'selfie', 'wall'], 'Window', ['glass', 'view', 'open', 'curtain', 'light', 'house', 'frame']],
+          ['Pillow', ['sleep', 'bed', 'soft', 'head', 'fluffy', 'case', 'night'], 'Blanket', ['warm', 'bed', 'cozy', 'cover', 'soft', 'winter', 'night']],
+          ['Backpack', ['school', 'straps', 'carry', 'books', 'zipper', 'hiking', 'bag'], 'Suitcase', ['travel', 'wheels', 'luggage', 'pack', 'airport', 'clothes', 'trip']],
+          ['Toothbrush', ['teeth', 'bristles', 'morning', 'brush', 'bathroom', 'clean', 'paste'], 'Comb', ['hair', 'teeth', 'plastic', 'brush', 'bathroom', 'neat', 'style']],
+          ['Candle', ['wax', 'flame', 'light', 'birthday', 'smell', 'melt', 'match'], 'Lamp', ['light', 'bulb', 'switch', 'desk', 'night', 'shade', 'lamp', 'post']],
         ] },
         Sports: { gen: ['team', 'score', 'play', 'game', 'win', 'fans', 'coach'], pairs: [
           ['Soccer', ['goal', 'kick', 'pitch', 'World Cup', 'penalty', 'cleats', 'goalie'], 'Basketball', ['hoop', 'dunk', 'court', 'dribble', 'NBA', 'three-pointer', 'sneakers']],
           ['Tennis', ['racket', 'net', 'serve', 'court', 'Wimbledon', 'love', 'match'], 'Golf', ['club', 'hole', 'green', 'caddie', 'par', 'tee', 'course']],
           ['Swimming', ['pool', 'laps', 'goggles', 'stroke', 'water', 'dive', 'lane'], 'Running', ['track', 'marathon', 'shoes', 'sprint', 'race', 'jog', 'miles']],
+          ['Baseball', ['bat', 'glove', 'home', 'run', 'pitcher', 'diamond', 'inning', 'base'], 'Cricket', ['bat', 'wicket', 'England', 'bowler', 'pitch', 'runs', 'innings']],
+          ['Skiing', ['snow', 'mountain', 'poles', 'slope', 'winter', 'lift', 'goggles'], 'Snowboarding', ['board', 'snow', 'mountain', 'tricks', 'winter', 'slope', 'jump']],
+          ['Boxing', ['gloves', 'ring', 'punch', 'knockout', 'round', 'fight', 'belt'], 'Wrestling', ['mat', 'pin', 'grab', 'throw', 'match', 'ring', 'champion']],
+          ['Football', ['touchdown', 'helmet', 'quarterback', 'Super', 'Bowl', 'tackle', 'field', 'pass'], 'Rugby', ['scrum', 'try', 'oval', 'ball', 'tackle', 'field', 'team']],
+          ['Bowling', ['pins', 'strike', 'lane', 'ball', 'shoes', 'spare', 'alley'], 'Darts', ['board', 'bullseye', 'throw', 'pub', 'aim', 'points', 'target']],
         ] },
         Jobs: { gen: ['work', 'career', 'uniform', 'job', 'paid', 'boss', 'office'], pairs: [
           ['Doctor', ['stethoscope', 'hospital', 'patients', 'white coat', 'medicine', 'checkup', 'surgery'], 'Teacher', ['class', 'homework', 'board', 'students', 'school', 'grades', 'chalk']],
           ['Chef', ['kitchen', 'knife', 'recipe', 'restaurant', 'hat', 'cook', 'menu'], 'Farmer', ['field', 'crops', 'tractor', 'barn', 'harvest', 'soil', 'cows']],
           ['Pilot', ['plane', 'cockpit', 'sky', 'captain', 'landing', 'airport', 'wings'], 'Astronaut', ['space', 'rocket', 'moon', 'NASA', 'suit', 'orbit', 'float']],
+          ['Firefighter', ['fire', 'truck', 'hose', 'hero', 'helmet', 'ladder', 'rescue'], 'Police officer', ['badge', 'car', 'siren', 'law', 'arrest', 'uniform', 'patrol']],
+          ['Dentist', ['teeth', 'drill', 'chair', 'cavity', 'braces', 'checkup', 'smile'], 'Barber', ['haircut', 'scissors', 'chair', 'razor', 'shave', 'salon', 'trim']],
+          ['Singer', ['voice', 'microphone', 'songs', 'concert', 'stage', 'band', 'famous'], 'Dancer', ['moves', 'stage', 'music', 'ballet', 'steps', 'rhythm', 'studio']],
+          ['Mail carrier', ['letters', 'packages', 'truck', 'route', 'mailbox', 'uniform', 'deliver'], 'Delivery driver', ['packages', 'van', 'boxes', 'route', 'doorstep', 'app', 'deliver']],
+          ['Scientist', ['lab', 'experiment', 'coat', 'research', 'microscope', 'test', 'discovery'], 'Inventor', ['idea', 'machine', 'create', 'patent', 'build', 'gadget', 'workshop']],
         ] },
         Fun: { gen: ['entertainment', 'popular', 'fun', 'watch', 'enjoy', 'weekend', 'story'], pairs: [
           ['Movie', ['cinema', 'popcorn', 'actor', 'screen', 'ticket', 'director', 'trailer'], 'Video game', ['controller', 'level', 'console', 'player', 'score', 'boss', 'online']],
           ['Birthday', ['cake', 'candles', 'gift', 'party', 'age', 'balloons', 'song'], 'Wedding', ['bride', 'ring', 'dress', 'vows', 'cake', 'dance', 'married']],
           ['Camping', ['tent', 'fire', 'stars', 'woods', 'sleeping bag', 'marshmallows', 'outdoors'], 'Hotel', ['room', 'bed', 'lobby', 'key', 'stay', 'reception', 'pool']],
+          ['Halloween', ['costume', 'candy', 'pumpkin', 'scary', 'trick', 'or', 'treat', 'ghost', 'October'], 'Christmas', ['tree', 'presents', 'Santa', 'December', 'snow', 'lights', 'family']],
+          ['Concert', ['music', 'stage', 'band', 'tickets', 'crowd', 'loud', 'lights'], 'Festival', ['music', 'tents', 'crowd', 'summer', 'food', 'stages', 'outdoors']],
+          ['Roller coaster', ['loop', 'scream', 'fast', 'ride', 'theme', 'park', 'drop', 'thrill'], 'Ferris wheel', ['slow', 'ride', 'view', 'tall', 'round', 'park', 'lights']],
+          ['Board game', ['dice', 'pieces', 'table', 'family', 'turns', 'board', 'rules'], 'Card game', ['deck', 'shuffle', 'deal', 'hand', 'table', 'players', 'poker']],
+          ['Karaoke', ['sing', 'microphone', 'lyrics', 'screen', 'party', 'songs', 'bar'], 'Dance party', ['music', 'dance', 'floor', 'DJ', 'lights', 'party', 'moves']],
         ] },
         Nature: { gen: ['outside', 'natural', 'weather', 'sky', 'earth', 'wild', 'beautiful'], pairs: [
           ['Snow', ['white', 'cold', 'winter', 'flakes', 'sled', 'melt', 'snowman'], 'Rain', ['wet', 'drops', 'umbrella', 'cloud', 'puddle', 'storm', 'gray']],
           ['Volcano', ['lava', 'erupt', 'hot', 'ash', 'mountain', 'magma', 'Hawaii'], 'Earthquake', ['shake', 'tremor', 'crack', 'fault', 'ground', 'scale', 'rumble']],
           ['Moon', ['night', 'craters', 'full', 'orbit', 'glow', 'phases', 'tides'], 'Sun', ['hot', 'day', 'bright', 'star', 'rays', 'sunrise', 'yellow']],
+          ['Ocean', ['waves', 'salty', 'deep', 'blue', 'fish', 'huge', 'tide'], 'Lake', ['fresh', 'water', 'calm', 'boat', 'fishing', 'shore', 'swim']],
+          ['Mountain', ['peak', 'climb', 'snow', 'tall', 'hike', 'rocks', 'summit'], 'Hill', ['small', 'climb', 'grass', 'slope', 'roll', 'green', 'walk']],
+          ['Forest', ['trees', 'woods', 'green', 'animals', 'hike', 'shade', 'leaves'], 'Jungle', ['rainforest', 'vines', 'hot', 'humid', 'monkeys', 'dense', 'wild']],
+          ['Thunder', ['loud', 'storm', 'boom', 'rumble', 'sky', 'scary', 'clouds'], 'Lightning', ['flash', 'storm', 'bright', 'bolt', 'sky', 'electric', 'strike']],
+          ['Rainbow', ['colors', 'sky', 'after', 'rain', 'arc', 'pot', 'of', 'gold', 'seven'], 'Sunset', ['evening', 'orange', 'sky', 'sun', 'goes', 'down', 'beach', 'pink']],
+        ] },
+        'Things in a house': { gen: ['home', 'room', 'house', 'family', 'inside', 'clean', 'furniture'], pairs: [
+          ['Kitchen', ['cook', 'fridge', 'stove', 'sink', 'food', 'oven', 'dishes'], 'Bathroom', ['shower', 'toilet', 'sink', 'towel', 'mirror', 'bath', 'soap']],
+          ['Bed', ['sleep', 'pillow', 'sheets', 'bedroom', 'night', 'mattress', 'dream'], 'Couch', ['sit', 'living', 'room', 'TV', 'cushions', 'relax', 'lounge', 'nap']],
+          ['Fridge', ['cold', 'food', 'milk', 'door', 'kitchen', 'ice', 'magnets'], 'Oven', ['hot', 'bake', 'cook', 'kitchen', 'pizza', 'door', 'timer']],
+          ['Garage', ['car', 'tools', 'door', 'park', 'bikes', 'storage', 'cement'], 'Basement', ['downstairs', 'dark', 'storage', 'stairs', 'cold', 'laundry', 'cellar']],
+          ['Television', ['shows', 'remote', 'screen', 'channels', 'watch', 'couch', 'news'], 'Computer', ['keyboard', 'mouse', 'internet', 'screen', 'work', 'games', 'email']],
+        ] },
+        'Transport': { gen: ['travel', 'ride', 'go', 'fast', 'seats', 'trip', 'move'], pairs: [
+          ['Car', ['drive', 'wheels', 'road', 'gas', 'seatbelt', 'park', 'traffic'], 'Truck', ['big', 'wheels', 'road', 'cargo', 'drive', 'heavy', 'delivery']],
+          ['Bicycle', ['pedal', 'two', 'wheels', 'helmet', 'ride', 'chain', 'bell'], 'Motorcycle', ['two', 'wheels', 'engine', 'fast', 'helmet', 'loud', 'ride']],
+          ['Airplane', ['fly', 'wings', 'pilot', 'airport', 'sky', 'seats', 'takeoff'], 'Helicopter', ['blades', 'hover', 'fly', 'rotor', 'rescue', 'noisy', 'pilot']],
+          ['Boat', ['water', 'sail', 'fish', 'lake', 'float', 'harbor', 'captain'], 'Submarine', ['underwater', 'deep', 'navy', 'periscope', 'ocean', 'dive', 'sealed']],
+          ['Bus', ['stop', 'seats', 'route', 'driver', 'city', 'ticket', 'school'], 'Subway', ['underground', 'train', 'city', 'station', 'tunnel', 'map', 'rush', 'hour']],
         ] },
       };
       const NAMES = [['Mia', '🐙'], ['Kai', '🐸'], ['Zoe', '🦉'], ['Leo', '🐯'], ['Ava', '🦋']];
@@ -60,7 +118,8 @@
         R = R || { pick, shuffle, random: Math.random };
         const cat = R.pick(Object.keys(SETS)); const set = SETS[cat]; const pr = R.pick(set.pairs);
         const flip = R.random() < 0.5;
-        const civ = flip ? { w: pr[2], h: pr[3] } : { w: pr[0], h: pr[1] }, imp = flip ? { w: pr[0], h: pr[1] } : { w: pr[2], h: pr[3] };
+        const okH = (h) => h.filter((x) => !/^(or|of|and|the|a|to|after|goes|down|up|on|in)$/i.test(x));   // no filler words as hints
+        const civ = flip ? { w: pr[2], h: okH(pr[3]) } : { w: pr[0], h: okH(pr[1]) }, imp = flip ? { w: pr[0], h: okH(pr[1]) } : { w: pr[2], h: okH(pr[3]) };
         const decoys = R.shuffle(set.pairs.flatMap((q) => [q[0], q[2]]).filter((w) => w !== civ.w && w !== imp.w)).slice(0, 4);
         return { cat, gen: set.gen, civ, imp, options: R.shuffle([civ.w, imp.w, ...decoys].slice(0, 6)) };
       }
@@ -116,11 +175,25 @@
           $('im-flip').onclick = () => { shown = !shown; $('im-w').textContent = shown ? ME().word.toUpperCase() : '? ? ?'; $('im-myword').textContent = ME().word.toUpperCase(); $('im-ready').disabled = false; $('im-ready').style.opacity = 1; SFX.play('reveal'); };
           $('im-ready').onclick = () => res();
         });
-        // 2) hints, one each
-        phase('HINTS');
-        const bubbles = () => `<div class="space-y-3">${G.order.map((i) => { const p = P(i); const h = G.said[i]; return `<div class="win p-3 ${G.cur === i ? '' : ''}" style="${G.cur === i ? 'box-shadow: inset 0 0 0 3px #F5B041, 0 4px 0 var(--ink)' : ''}">${seatLine(p, i)}${h !== undefined ? `<div class="pix text-lg text-bone">${esc(h)}</div>` : `<div class="text-sm text-muted">${G.cur === i ? 'thinking...' : 'waiting'}</div>`}</div></div></div>`; }).join('')}</div>`;
-        const draw = (extra = '') => main(`<div class="text-sm text-muted">Say <b class="text-bone">one word</b> that hints at your secret word. Be clear enough for your team, vague enough to fool the impostor.</div>${bubbles()}${extra}`);
-        for (const i of G.order) {
+        // 2) rounds of hints and a vote. A wrongly voted-out player leaves the game; play goes on until the impostor is
+        //    caught or only 2 players are left (then the impostor wins). Inna, Nov 2026.
+        G.outs = []; G.rounds = []; G.ties = 0;
+        let res = null;
+        while (!res) res = await oneRound();
+        phase('RESULT');
+        finish(res.votes, res.accused, res.caught, res.guessed, res.guessOk);
+      }
+      const alive = () => G.order.filter((i) => !G.outs.includes(i));
+      // everything a player has said so far, oldest first
+      const allSaid = (i) => G.rounds.map((r) => r[i]).filter((h) => h !== undefined);
+      async function oneRound() {
+        G.said = {}; G.rounds.push(G.said); const rn = G.rounds.length;
+        phase(rn > 1 ? `HINTS · ROUND ${rn}` : 'HINTS');
+        const past = (i) => G.rounds.slice(0, -1).map((r) => r[i]).filter((h) => h !== undefined);
+        const bubbles = () => `<div class="space-y-3">${G.order.map((i) => { const p = P(i), h = G.said[i], out = G.outs.includes(i), pv = past(i);
+          return `<div class="win p-3" style="${G.cur === i ? 'box-shadow: inset 0 0 0 3px #F5B041, 0 4px 0 var(--ink)' : ''}${out ? ';opacity:.45' : ''}">${seatLine(p, i)}${out ? '<div class="text-sm text-coral font-bold">voted out · not the impostor</div>' : h !== undefined ? `<div class="pix text-lg text-bone">${esc(h)}</div>` : `<div class="text-sm text-muted">${G.cur === i ? 'thinking...' : 'waiting'}</div>`}${pv.length ? `<div class="text-xs text-muted mt-1">Before: ${pv.map(esc).join(' · ')}</div>` : ''}</div></div></div>`; }).join('')}</div>`;
+        const draw = (extra = '') => main(`<div class="text-sm text-muted">${rn > 1 ? `<b class="text-amber">Round ${rn}.</b> Give a <b class="text-bone">new</b> one-word hint.` : 'Say <b class="text-bone">one word</b> that hints at your secret word. Be clear enough for your team, vague enough to fool the impostor.'}</div>${bubbles()}${extra}`);
+        for (const i of alive()) {
           G.cur = i; draw();
           const p = P(i);
           if (!G.S.mine(i)) G.clock.idle(p.name, '...');
@@ -129,33 +202,45 @@
           SFX.play('word'); G.cur = -1; draw(); await W(450);
         }
         G.clock.idle('Discuss', '—');
-        // 3) vote
+        // 3) vote: everyone still in votes at the same time (the host votes for computer players, and for anyone too slow)
         phase('VOTE');
-        // everyone votes at the same time (the host votes for computer players, and for anyone too slow)
-        const all = G.players.map((_, i) => i);
-        if (G.S.mine(G.me)) humanVote().then((v) => { if (G && v !== undefined) { G.S.act({ t: 'vote', key: 'vote', v }); if (G.S.online) main(`<div class="win p-6 text-center space-y-2"><div class="pix text-lg text-amber">VOTE CAST</div><div id="im-vwait" class="text-sm text-muted">Waiting for the others to vote...</div></div>`); } });
-        G.S.onCollect = (key, got) => { if (key === 'vote' && !G.S.mine(G.me)) return; const el = $('im-vwait'); if (el) el.textContent = `${Object.keys(got).length} of ${G.players.length} have voted...`; };
-        const got = await G.S.collect('vote', all, (i) => ({ t: 'vote', v: botVote(i) }), (i) => ({ t: 'vote', v: pick(all.filter((j) => j !== i)) }), Math.max(25, G.secs || 30) + 5);
+        const all = alive();
+        if (G.S.mine(G.me) && all.includes(G.me)) humanVote().then((v) => { if (G && v !== undefined) { G.S.act({ t: 'vote', key: 'vote' + rn, v }); if (G.S.online) main(`<div class="win p-6 text-center space-y-2"><div class="pix text-lg text-amber">VOTE CAST</div><div id="im-vwait" class="text-sm text-muted">Waiting for the others to vote...</div></div>`); } });
+        else if (!all.includes(G.me)) main(`<div class="win p-6 text-center space-y-2"><div class="pix text-lg text-amber">THE OTHERS ARE VOTING</div><div id="im-vwait" class="text-sm text-muted">You are out, so you watch this one.</div></div>`);
+        G.S.onCollect = (key, got) => { const el = $('im-vwait'); if (el && all.includes(G.me)) el.textContent = `${Object.keys(got).length} of ${all.length} have voted...`; };
+        const others = (i) => all.filter((j) => j !== i);
+        const got = await G.S.collect('vote' + rn, all, (i) => ({ t: 'vote', v: botVote(i) }), (i) => ({ t: 'vote', v: pick(others(i)) }), Math.max(25, G.secs || 30) + 5);
         if (!G) throw ABORT;
         const votes = {}; G.players.forEach((_, i) => { votes[i] = []; });
-        all.forEach((i) => { let v = +(got[i] && got[i].v); if (!Number.isInteger(v) || v < 0 || v >= all.length || v === i) v = (i + 1) % all.length; votes[v].push(i); });
+        all.forEach((i) => { let v = +(got[i] && got[i].v); if (!Number.isInteger(v) || !all.includes(v) || v === i) v = others(i)[0]; votes[v].push(i); });
         G.votes = votes;
         await W(300);
-        // 4) reveal
-        const max = Math.max(...Object.values(votes).map((v) => v.length));
-        const top = Object.keys(votes).filter((k) => votes[k].length === max).map(Number);
+        // 4) who is out?
+        const max = Math.max(...all.map((i) => votes[i].length));
+        const top = all.filter((i) => votes[i].length === max);
         const accused = top.length === 1 ? top[0] : -1;
-        const caught = accused === G.impIdx;
-        let guessed = null, guessOk = false;
-        if (caught) {
+        const tally = `<div class="space-y-1 mt-3">${all.map((i) => `<div class="flex justify-between text-sm"><span>${P(i).av} ${esc(P(i).name)}</span><span class="text-muted">${votes[i].length} vote${votes[i].length === 1 ? '' : 's'}</span></div>`).join('')}</div>`;
+        if (accused === -1) {
+          G.ties++;
+          if (G.ties >= 2) return { votes, accused: -1, caught: false, guessed: null, guessOk: false };
+          phase('TIE'); SFX.play('nope');
+          main(`<div class="win p-6 text-center space-y-2"><div class="pix text-xl text-amber">TIED VOTE</div><div class="text-sm text-muted">Nobody is out. Another round of hints! (Another tie and the impostor escapes.)</div>${tally}</div>`);
+          await W(3800); return null;
+        }
+        if (accused === G.impIdx) {
           phase('LAST CHANCE');
           if (!G.S.mine(G.impIdx)) main(`<div class="text-center text-sm text-muted py-6">${esc(P(G.impIdx).name)} was caught and gets one guess at the group's word...</div>`);
-          guessed = await decide(G.impIdx, 'guess', () => humanGuess(), () => botGuess(), 800);
+          let guessed = await decide(G.impIdx, 'guess', () => humanGuess(), () => botGuess(), 800);
           if (!G.round.options.includes(guessed)) guessed = null;
-          guessOk = guessed === G.round.civ.w;
+          return { votes, accused, caught: true, guessed, guessOk: guessed === G.round.civ.w };
         }
-        phase('RESULT');
-        finish(votes, accused, caught, guessed, guessOk);
+        // a civilian was voted out
+        G.outs.push(accused); G.ties = 0; SFX.play('lose');
+        const left = alive().length;
+        if (left <= 2) return { votes, accused, caught: false, guessed: null, guessOk: false };
+        phase('VOTED OUT');
+        main(`<div class="win p-6 text-center space-y-2"><div class="pix text-xl text-coral">${esc(P(accused).name).toUpperCase()} IS OUT</div><div class="text-sm text-muted">${accused === G.me ? 'You were' : esc(P(accused).name) + ' was'} <b class="text-bone">not</b> the impostor! The impostor is still among the ${left} players left. Next round...</div>${tally}</div>`);
+        await W(4200); return null;
       }
 
       function humanHint() {
@@ -178,7 +263,7 @@
         });
       }
       function botHint(i) {
-        const p = P(i), used = Object.values(G.said).map(lc);
+        const p = P(i), used = G.rounds.flatMap((r) => Object.values(r)).map(lc);
         const pool = p.hints.filter((h) => !used.includes(lc(h)) && lc(h) !== lc(p.word));
         if (p.imp) { // blend in: prefer hints that fit the civilians' word too, or the category
           const civ = G.round.civ.h.map(lc); const blend = pool.filter((h) => civ.includes(lc(h)));
@@ -192,17 +277,19 @@
         if (r < 0.2) return pick(gen); return pick(pool.length ? pool : gen);
       }
 
-      function suspicion(i, j) { // how suspicious is j's hint, from viewer i's point of view
-        const me = P(i), h = lc(G.said[j] || '');
-        if (!h || h === '(no hint)') return 2;
-        let s = 0;
-        if (me.hints.map(lc).includes(h)) s -= 3;
-        else if (G.round.gen.map(lc).includes(h)) s -= 0.5;
-        else s += 1;
+      function suspicion(i, j) { // how suspicious are j's hints (all rounds), from viewer i's point of view
+        const me = P(i); let s = 0;
+        for (const raw of allSaid(j)) {
+          const h = lc(raw || '');
+          if (!h || h === '(no hint)') s += 2;
+          else if (me.hints.map(lc).includes(h)) s -= 3;
+          else if (G.round.gen.map(lc).includes(h)) s -= 0.5;
+          else s += 1;
+        }
         return s;
       }
       function botVote(i) {
-        const opts = G.players.map((_, j) => j).filter((j) => j !== i);
+        const opts = alive().filter((j) => j !== i);
         if (P(i).imp) { // impostor points at someone random, slightly favouring people whose hints look unusual
           return pick(opts);
         }
@@ -211,7 +298,7 @@
       }
       function botGuess() {
         const imp = P(G.impIdx);
-        const civHints = Object.entries(G.said).filter(([k]) => +k !== G.impIdx).map(([, v]) => lc(v));
+        const civHints = G.rounds.flatMap((r) => Object.entries(r)).filter(([k]) => +k !== G.impIdx).map(([, v]) => lc(v));
         const scored = G.round.options.map((w) => { const hs = (w === G.round.civ.w ? G.round.civ.h : (Object.values(SETS).flatMap((s) => s.pairs).flatMap((q) => [[q[0], q[1]], [q[2], q[3]]]).find((x) => x[0] === w) || [w, []])[1]).map(lc); return { w, s: civHints.filter((h) => hs.includes(h)).length + Math.random() * 0.7 - (w === imp.word ? 5 : 0) }; });
         scored.sort((a, b) => b.s - a.s); return scored[0].w;
       }
@@ -220,10 +307,10 @@
         return new Promise((res) => {
           let done = false;
           const fin = (v) => { if (done) return; done = true; G.clock.stop(); res(v); };
-          const list = G.order.filter((i) => i !== G.me).map((i) => { const p = P(i); return `<button data-v="${i}" class="win p-3 w-full text-left" style="cursor:pointer">${seatLine(p, i)}<div class="pix text-lg text-bone">${esc(G.said[i])}</div></div></div></button>`; }).join('');
-          main(`<div class="text-center space-y-1"><div class="pix text-lg text-amber">WHO IS THE IMPOSTOR?</div><div class="text-sm text-muted">Your word was <b class="text-bone">${esc(ME().word)}</b>. Pick the player whose hint does not fit. ${ME().imp ? '<b class="text-coral">(Hint: it might be you...)</b>' : ''}</div></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-3">${list}</div><div class="win p-3"><div class="pix text-xs text-muted mb-1">YOUR HINT</div><span class="pix">${esc(G.said[0])}</span></div>`);
+          const list = G.order.filter((i) => i !== G.me && !G.outs.includes(i)).map((i) => { const p = P(i); return `<button data-v="${i}" class="win p-3 w-full text-left" style="cursor:pointer">${seatLine(p, i)}<div class="pix text-lg text-bone">${esc(G.said[i])}</div>${allSaid(i).length > 1 ? `<div class="text-xs text-muted mt-1">All: ${allSaid(i).map(esc).join(' · ')}</div>` : ''}</div></div></button>`; }).join('');
+          main(`<div class="text-center space-y-1"><div class="pix text-lg text-amber">WHO IS THE IMPOSTOR?</div><div class="text-sm text-muted">Your word was <b class="text-bone">${esc(ME().word)}</b>. Pick the player whose hint does not fit.</div></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-3">${list}</div><div class="win p-3"><div class="pix text-xs text-muted mb-1">YOUR HINT</div><span class="pix">${esc(G.said[G.me] || '')}</span></div>`);
           document.querySelectorAll('[data-v]').forEach((b) => { b.onclick = () => { SFX.play('vote'); fin(+b.dataset.v); }; });
-          if (G.secs) G.clock.start(Math.max(20, G.secs), 'Vote', () => { if (!done) { showToast("Time's up! A random vote was cast.", 'error'); fin(pick(G.players.map((_, j) => j).filter((j) => j !== G.me))); } }, 6); else G.clock.idle('No timer', '∞');
+          if (G.secs) G.clock.start(Math.max(20, G.secs), 'Vote', () => { if (!done) { showToast("Time's up! A random vote was cast.", 'error'); fin(pick(alive().filter((j) => j !== G.me))); } }, 6); else G.clock.idle('No timer', '∞');
         });
       }
       function humanGuess() {
@@ -242,14 +329,16 @@
         const myVote = Object.keys(votes).find((k) => votes[k].includes(G.me));
         const s = gstat('impostor');
         if (me.imp) { s.asImp = (s.asImp || 0) + 1; if (won) s.impWins = (s.impWins || 0) + 1; } else { s.asCiv = (s.asCiv || 0) + 1; if (won) s.civWins = (s.civWins || 0) + 1; if (+myVote === G.impIdx) s.spotted = (s.spotted || 0) + 1; }
+        // fun moment: an impostor who survived more than one round of votes
+        if (impWin && G.rounds.length >= 2) funMoment('im-none', { key: 'disg', icon: '🕵️', label: 'DISGUISE', burst: 'MASTER OF DISGUISE!', sub: `${P(G.impIdx).name} fooled everyone for ${G.rounds.length} rounds`, mine: me.imp });
         const elo = G.S.online ? 0 : won ? (me.imp ? 12 : 7) : -4;
         reportGame('impostor', won ? 'win' : 'loss', { elo, xp: won ? 30 : 12, label: `${me.imp ? 'Impostor' : 'Civilian'} · ${won ? 'won' : 'lost'}` });
         SFX.play(won ? 'win' : 'lose');
-        const verdict = accused === -1 ? 'The vote was tied, so the impostor escaped!' : caught ? (guessOk ? `${P(G.impIdx).name} was caught but guessed "${G.round.civ.w}" and wins!` : `${P(G.impIdx).name} was caught${guessed ? ' and guessed "' + guessed + '". Wrong!' : '!'}`) : `The group voted for ${P(accused).name}, who was NOT the impostor.`;
+        const verdict = accused === -1 ? 'Two tied votes in a row: the impostor escaped!' : !caught && G.players.length - G.outs.length <= 2 ? `${P(accused).name} was voted out and was NOT the impostor. Only 2 players are left, so the impostor wins!` : caught ? (guessOk ? `${P(G.impIdx).name} was caught but guessed "${G.round.civ.w}" and wins!` : `${P(G.impIdx).name} was caught${guessed ? ' and guessed "' + guessed + '". Wrong!' : '!'}`) : `The group voted for ${P(accused).name}, who was NOT the impostor.`;
         main(`<div class="win overflow-hidden"><div class="winbar ${won ? 'amber' : 'coral'}"><span>${won ? 'YOU WIN!' : 'YOU LOSE'}</span><span class="pix text-xs">${me.imp ? 'You were the impostor' : 'You were a civilian'}</span></div><div class="p-4 space-y-3">
-          <div class="text-sm font-bold">${esc(verdict)}</div>
+          <div class="text-sm font-bold">${esc(verdict)}</div>${(() => { const pr = typeof pointsRow === 'function' && pointsRow(); return pr ? `<div class="pix text-emerald">${pr[1]} POINTS</div>` : ''; })()}
           <div class="grid grid-cols-2 gap-3"><div class="stat"><div class="lab">Civilians had</div><div class="val text-teal">${esc(G.round.civ.w)}</div></div><div class="stat"><div class="lab">Impostor had</div><div class="val text-coral">${esc(G.round.imp.w)}</div></div></div>
-          <div class="space-y-2">${G.players.map((p, i) => `<div class="flex items-center justify-between gap-2 ${p.imp ? 'text-coral' : ''}"><span class="font-bold text-sm">${p.av} ${esc(p.name)}${p.imp ? ' 🕵️ IMPOSTOR' : ''}</span><span class="text-sm text-muted">"${esc(G.said[i])}" · ${votes[i].length} vote${votes[i].length === 1 ? '' : 's'}</span></div>`).join('')}</div>
+          <div class="space-y-2">${G.players.map((p, i) => `<div class="flex items-center justify-between gap-2 ${p.imp ? 'text-coral' : ''}"><span class="font-bold text-sm">${p.av} ${esc(p.name)}${p.imp ? ' 🕵️ IMPOSTOR' : ''}</span><span class="text-sm text-muted">${allSaid(i).map((h) => '"' + esc(h) + '"').join(' ')}${G.outs.includes(i) ? ' · voted out' : ` · ${votes[i].length} vote${votes[i].length === 1 ? '' : 's'}`}</span></div>`).join('')}</div>
           <div class="flex gap-3"><button id="im-again" class="btn-game btn-amber flex-1 py-3">Play again</button><button id="im-lobby" class="btn-game btn-graphite flex-1 py-3">Lobby</button></div></div></div>`);
         if (G.S.online) { $('im-again').textContent = 'Back to setup'; $('im-again').closest('.p-4').insertAdjacentHTML('beforeend', '<div id="im-rm"></div>'); npRematchSlot($('im-rm')); }
         $('im-again').onclick = () => open($('game-root')); $('im-lobby').onclick = () => navigateTo('home');
@@ -260,12 +349,12 @@
         blurb: 'Everyone gets the same secret word except one player. Give hints, then vote out the impostor!',
         rules: { tag: '4-6 PLAYERS', steps: [
           '<strong class="text-bone">Secret words:</strong> Everyone sees a secret word. All players share the <b>same</b> word except one <span class="text-coral font-bold">impostor</span> who gets a similar but different one. Nobody knows who it is, not even the impostor!',
-          '<strong class="text-bone">One round of hints:</strong> In turn, each player says <b>one word</b> as a hint. Be clear for your team but vague enough that the impostor cannot figure out your word.',
-          '<strong class="text-bone">Vote:</strong> Everyone votes for who they think the impostor is. Caught impostors get one last chance: guess the group\'s word to win anyway. A tied vote lets the impostor escape.',
+          '<strong class="text-bone">Rounds of hints:</strong> In turn, each player says <b>one word</b> as a hint. Be clear for your team but vague enough that the impostor cannot figure out your word.',
+          '<strong class="text-bone">Vote:</strong> Everyone votes for who they think the impostor is. A wrongly voted-out player is out and a new round starts; when only 2 players are left, the impostor wins. Caught impostors get one last chance: guess the group\'s word to win anyway.',
         ], tip: 'Impostor? Copy the style of the other hints. Civilian? Watch for the hint that feels slightly off.' },
         profileTiles: (s) => [['WINS', s.wins, 'text-amber'], ['GAMES', s.played, 'text-bone'], ['IMPOSTOR WINS', s.impWins || 0, 'text-coral'], ['CIVILIAN WINS', s.civWins || 0, 'text-teal']],
         extraRows: (s) => srow('Impostors spotted', s.spotted || 0) + srow('Times impostor', s.asImp || 0),
-        engine: { SETS, pickRound }, open, close() { G = null; },
+        engine: { SETS, pickRound, get G() { return G; } }, open, close() { G = null; },
         online: { seats: (sel) => +sel.n || 5, min: 3, ranked: false, start: (body, sel, S) => start(body, sel, S) },
       };
       registerGame(mod);

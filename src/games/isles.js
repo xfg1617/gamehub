@@ -120,6 +120,7 @@
           { key: 'vp', label: 'POINTS TO WIN', def: 10, choices: [[8, '8 (shorter)'], [10, '10 (classic)']] },
           { key: 'rate', label: 'BANK TRADE', def: 4, choices: [[4, '4 for 1'], [3, '3 for 1 (friendly)']] },
           { key: 'lvl', label: 'BOTS', def: 2, choices: [[1, 'Relaxed'], [2, 'Sharp']] },
+          turnOpt(60, [45, 60, 120]),
         ], (sel) => start(body, sel, npLocal([{ name: profile.username, avatar: profile.avatar }].concat(BOTS.slice(0, +sel.n - 1).map(([name, avatar]) => ({ bot: true, name, avatar }))), sel)));
       }
       // seats come from the table (S): on this device seat 0 is you; online every screen has its own seat (G.me)
@@ -127,7 +128,7 @@
         const isl = makeIsland(S.rng.shuffle);
         const players = S.seats.map((x) => ({ name: x.name, av: x.avatar }));
         players.forEach((p, i) => { p.i = i; p.col = PCOL[i]; p.res = { T: 0, C: 0, W: 0, G: 0, S: 0 }; });
-        G = { ...isl, S, me: S.online ? S.me : 0, step: 0, offerN: 0, players, bld: {}, road: {}, lr: -1, goal: +sel.vp, rate: +sel.rate, lvl: +sel.lvl, cur: 0, dice: [3, 4], tok: ++GT.cur, over: false, log: [], turn: 0, built: 0, trades: 0 };
+        G = { ...isl, S, me: S.online ? S.me : 0, turnT: +sel.turnT || 0, step: 0, offerN: 0, players, bld: {}, road: {}, lr: -1, goal: +sel.vp, rate: +sel.rate, lvl: +sel.lvl, cur: 0, dice: [3, 4], tok: ++GT.cur, over: false, log: [], turn: 0, built: 0, trades: 0 };
         body.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_330px] gap-5 items-start">
           <div class="space-y-3 min-w-0"><div class="fi-sea"><svg id="fi-board" class="fi-board"></svg></div><div id="fi-prompt" class="win p-3 text-center text-sm min-h-[50px]"></div></div>
           <div class="space-y-3 min-w-0">
@@ -162,7 +163,10 @@
       async function decide(p, kind, ui, botFn, ms) {
         const NS = G.S, k = ++G.step, t = G.tok;
         if (NS.mine(p.i) && ui) Promise.resolve(ui()).then((v) => { if (G && G.tok === t && v !== undefined) NS.act({ t: kind, s: p.i, k, v }); });
+        const timed = NS.mine(p.i) && ui && !NS.bot(p.i) && G.turnT && (typeof NP === 'undefined' || !NP.catchup);
+        if (timed) turnClock('is' + k, G.turnT, () => { if (!G || G.tok !== t || G.step !== k) return; prompt(''); NS.act({ t: kind, s: p.i, k, v: botFn() }); });
         const a = await NS.ask(p.i, () => ({ t: kind, k, v: botFn() }), ms, (x) => x.s === p.i && x.t === kind && x.k === k);
+        if (timed) turnClock(null);
         if (!G || G.tok !== t) throw ABORT;
         return a.v;
       }
@@ -459,7 +463,7 @@
         const rank = G.players.slice().sort((a, b) => vp(G, b.i) - vp(G, a.i));
         const lvl = G.players.length - 3, elo = G.S.online ? 0 : won ? [12, 16][lvl] + (G.lvl - 1) * 4 : [-5, -6][lvl];
         const s = gstat('isles'); s.best = Math.max(s.best || 0, vp(G, mi)); s.towns = (s.towns || 0) + count(G, mi, 2); s.longest = (s.longest || 0) + (G.lr === mi ? 1 : 0); s.trades = (s.trades || 0) + (G.myTrades || 0);
-        reportGame('isles', won ? 'win' : 'loss', { elo, xp: won ? 45 + lvl * 10 : 15, label: gaveUp ? 'Gave up' : `${G.S.online ? 'Online · ' : ''}${vp(G, mi)} points · ${winner.name} won` });
+        reportGame('isles', won ? 'win' : 'loss', { place: gaveUp ? undefined : rank.findIndex((q) => q.i === mi) + 1, elo, xp: won ? 45 + lvl * 10 : 15, label: gaveUp ? 'Gave up' : `${G.S.online ? 'Online · ' : ''}${vp(G, mi)} points · ${winner.name} won` });
         SFX.play(won ? 'win' : 'lose'); render();
         gTimeout(() => gameResult({ title: won ? 'You rule the isles!' : gaveUp ? 'You gave up' : `${winner.name} wins`, sub: `First to ${G.goal} points.`, tone: won ? 'amber' : 'coral', sprite: won ? 'trophy' : 'anchor',
           rows: [...rank.map((p) => [p.name, vp(G, p.i) + ' pts', isMe(p) ? 'text-amber' : 'text-bone']), ['Your trades', G.myTrades || 0, 'text-teal']], againLabel: G.S.online ? 'Back to setup' : 'New island', again: () => open($('game-root')) }), gaveUp ? 0 : 900);

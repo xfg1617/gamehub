@@ -16,10 +16,13 @@
       const gameSlug = (id) => { const m = GAME_MODS[id]; if (!m) return null; if (id === 'navalnet') return 'sea-battle'; return slug(m.name); };
       // the address for what is on screen right now
       function here() {
+        // in a room or at an online table: the room's own link, so a friend (or you, after a lost connection) can use it
+        if (activeView === 'game' && typeof NP !== 'undefined' && (NP.table || NP.lobby) && activeGame) return '/r/' + (NP.table || NP.lobby);
         if (activeView === 'game' && typeof activeGame !== 'undefined' && activeGame) { const s = gameSlug(activeGame); return s ? '/' + s : '/'; }
         return PAGES[activeView] || '/';
       }
       function titleFor(p) {
+        if (/^\/r\//.test(p)) { const m = activeGame && GAME_MODS[activeGame]; return `${m ? m.name + ' · ' : ''}Room ${p.slice(3)} · GameHub`; }
         if (TITLES[p]) return p === '/' ? 'GameHub · Play with friends' : `${TITLES[p]} · GameHub`;
         const id = idFor(p); const m = id && GAME_MODS[id];
         return m ? `${m.name} · GameHub` : 'GameHub';
@@ -49,7 +52,7 @@
         const p = here();
         if (p === location.pathname) { document.title = titleFor(p); return; }
         // keep an invite address until the friend has actually landed in the game
-        if (/^\/r\//i.test(location.pathname) && p === '/') return;
+        if (/^\/r\//i.test(location.pathname) && p === '/' && typeof NP !== 'undefined' && NP.joining && !NP.lobby && !NP.table) return;
         history.pushState({ p }, '', p);
         last = p; document.title = titleFor(p);
       }
@@ -85,5 +88,5 @@
         } else setTimeout(run, 300);
       } else if (!/^\/r\//i.test(start) && start !== '/') history.replaceState({ p: '/' }, '', '/');   // an unknown address: home
       history.replaceState({ p: location.pathname }, '', location.pathname + location.hash);
-      window.ROUTER = { here, open, idFor, gameSlug };
+      window.ROUTER = { here, open, idFor, gameSlug, sync };
     })();

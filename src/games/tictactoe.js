@@ -46,6 +46,7 @@
           { key: 'lvl', label: 'COMPUTER LEVEL', def: 2, local: true, when: (s) => s.mode === 'ai', choices: [[1, 'Easy'], [2, 'Medium'], [3, 'Unbeatable']] },
           { key: 'len', label: 'MATCH', def: 3, choices: [[1, 'One game'], [3, 'Best of 3'], [5, 'Best of 5']] },
           { key: 'first', label: 'WHO STARTS', def: 'alt', local: true, choices: [['me', 'Me'], ['opp', 'Opponent'], ['alt', 'Take turns']] },
+          turnOpt(15, [10, 15, 30]),
         ], (sel) => {
           const ai = sel.mode === 'ai';
           const S = npLocal([{ name: profile.username, avatar: profile.avatar }, ai ? { bot: true, name: ['', 'Easy AI', 'Medium AI', 'Unbeatable AI'][+sel.lvl], avatar: '🤖' } : { name: 'Player 2', avatar: '🙂' }], sel);
@@ -56,7 +57,7 @@
       const seatOf = (mark) => (mark === 'X' ? 0 : 1);
       function start(body, sel, S) {
         const ai = S.bot(1);
-        G = { S, ai, lvl: +sel.lvl || 2, len: +sel.len, first: S.online ? 'alt' : sel.first, names: [S.name(0), S.name(1)], wins: [0, 0], draws: 0, game: 0, tok: ++GT.cur, over: false };
+        G = { S, turnT: +sel.turnT || 0, ai, lvl: +sel.lvl || 2, len: +sel.len, first: S.online ? 'alt' : sel.first, names: [S.name(0), S.name(1)], wins: [0, 0], draws: 0, game: 0, tok: ++GT.cur, over: false };
         const me = S.online ? S.me : 0, opp = 1 - me;
         body.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-[minmax(0,460px)_1fr] gap-6 items-start justify-center">
           <div class="space-y-3"><div id="ttt-board" class="ttt-board"></div></div>
@@ -99,6 +100,7 @@
         G.turn = xFirst ? 'X' : 'O';
         const bd = $('ttt-board');
         bd.innerHTML = Array.from({ length: 9 }, (_, i) => `<button class="ttt-cell" data-i="${i}" aria-label="Square ${i + 1}"></button>`).join('') + '<svg class="ttt-win" viewBox="0 0 300 300"><line id="ttt-line" x1="0" y1="0" x2="0" y2="0" pathLength="1"/></svg>';
+        tttClock();
         bd.querySelectorAll('.ttt-cell').forEach((c) => { c.onclick = () => humanPlay(+c.dataset.i); });
         $('ttt-game').textContent = G.len > 1 ? `GAME ${G.game} · FIRST TO ${Math.ceil(G.len / 2)}` : '';
         turnUI();
@@ -108,6 +110,10 @@
         $('ttt-status').textContent = S.online ? (mine ? 'YOUR MOVE' : `${S.name(seat).toUpperCase()}'S MOVE`) : G.ai ? (mine ? 'YOUR MOVE' : 'COMPUTER THINKING...') : `${esc(G.names[seat]).toUpperCase()}'S MOVE`;
         $('ttt-board').classList.toggle('wait', !mine);
         document.querySelectorAll('.ttt-cell').forEach((c) => { c.classList.toggle('hov-x', G.turn === 'X'); c.classList.toggle('hov-o', G.turn === 'O'); });
+      }
+      function tttClock() {
+        const seat = G && seatOf(G.turn), mine = G && !G.done && !G.over && G.S.mine(seat) && !G.S.bot(seat) && (typeof NP === 'undefined' || !NP.catchup);
+        turnClock(mine ? `ttt${G.game}:${G.b.filter(Boolean).length}` : null, G && G.turnT, () => { if (G && !G.done && !G.over) humanPlay(aiMove(G.b.slice(), G.turn, 2)); });
       }
       function humanPlay(i) { if (!G || G.done || G.over || G.b[i]) return; const seat = seatOf(G.turn); if (!G.S.mine(seat)) return; G.S.act({ t: 'place', s: seat, i }); }
       function place(i) {

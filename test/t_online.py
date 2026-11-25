@@ -1,6 +1,6 @@
 """Online play, end to end, using the stand-in service (two browser windows on one computer):
 quick match pairs two players, moves travel both ways, a checkmate ends the game for both,
-ranked Elo moves +16 / -16, the leaderboard shows both, chat messages reach the other window,
+the winner gets 10 points and the loser 1, the points leaderboard shows both, chat messages reach the other window,
 a private room code works, and resigning works."""
 import sys; sys.path.insert(0, 'test')
 from tlib import *
@@ -45,10 +45,10 @@ with sync_playwright() as p:
     check('Checkmate' in white.evaluate("document.getElementById('ch-msg').textContent"), "the loser's board shows checkmate too")
     res_w = white.evaluate("document.getElementById('g-modal') && document.getElementById('g-modal').innerText"); res_b = black.evaluate("document.getElementById('g-modal') && document.getElementById('g-modal').innerText")
     print('   winner sees:', (res_b or '').replace('\n', ' ')[:140]); print('   loser sees :', (res_w or '').replace('\n', ' ')[:140])
-    check('1216 (+16)' in (res_b or '') and '1184 (-16)' in (res_w or ''), 'ranked Elo: winner 1216 (+16), loser 1184 (-16)')
+    check('+10' in (res_b or '') and '+1' in (res_w or '') and 'ELO' not in (res_b + res_w).upper(), 'no Elo any more: the winner gets +10 points, the loser +1')
     black.screenshot(path='test/shots/online_result.png')
-    lb = A.evaluate("NET.leaderboard('chess').then(l => l.map(x => x.name + ':' + x.elo))")
-    check(len(lb) == 2, f'leaderboard lists both players {lb}')
+    lb = A.evaluate("NET.pointsBoard('week').then(l => l.map(x => x.name + ':' + x.points))")
+    check(len(lb) == 2, f'the points leaderboard lists both players {lb}')
     # a private room with a code, then a resignation
     for pg in (A, B): pg.evaluate("document.getElementById('g-modal').classList.add('hidden'); navigateTo('play', true)")
     A.evaluate("openGame('chess')"); A.wait_for_timeout(300); A.click('[data-mode="room"]'); A.wait_for_timeout(2000)

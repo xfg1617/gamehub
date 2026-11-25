@@ -17,6 +17,8 @@
       const cfg = window.PS_ONLINE || {};
       const local = (() => { try { return localStorage.getItem('ps_net_local') === '1'; } catch (e) { return false; } })();
       const K = 32;
+      // Monday of this week (UTC), the day the weekly points leaderboard starts again
+      const weekStart = () => { const t = new Date(); const d = (t.getUTCDay() + 6) % 7; return new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth(), t.getUTCDate() - d)).toISOString().slice(0, 10); };
       const eloDelta = (ra, rb, score) => Math.round(K * (score - 1 / (1 + Math.pow(10, (rb - ra) / 400))));
       const scoreOf = (r) => (r === 'win' ? 1 : r === 'draw' ? 0.5 : 0);
       const flip = (r) => (r === 'win' ? 'loss' : r === 'loss' ? 'win' : 'draw');
@@ -150,6 +152,22 @@
           async openRooms() { const d = db(); return Object.values(d.rooms).filter((x) => x.is_public && x.status === 'waiting' && x.host !== uid && now() - x.host_seen < 30000).map((x) => ({ code: x.code, game: x.game, name: (d.profiles[x.host] || {}).name || '?', avatar: (d.profiles[x.host] || {}).avatar || '🙂', elo: (d.ratings[x.host + ':' + x.game] || {}).elo || 1200 })); },
           async leaderboard(game) { const d = db(); return Object.entries(d.ratings).filter(([k]) => k.endsWith(':' + game)).map(([k, v]) => ({ id: k.split(':')[0], ...v, name: (d.profiles[k.split(':')[0]] || {}).name || '?', avatar: (d.profiles[k.split(':')[0]] || {}).avatar || '🙂' })).sort((a, b) => b.elo - a.elo).slice(0, 50); },
           async rating(game) { return (db().ratings[uid + ':' + game] || { elo: 1200, games: 0 }); },
+          /* points (stand-in for backend/points.sql) */
+          async addPoints(n, won) {
+            const d = db(); d.points = d.points || {}; const wk = weekStart(), r = d.points[uid] || { total: 0, week: 0, ws: wk, games: 0, wg: 0, wins: 0, ww: 0 };
+            n = Math.max(0, Math.min(12, n | 0)); if (r.ws !== wk) { r.week = 0; r.wg = 0; r.ww = 0; r.ws = wk; }
+            r.total += n; r.week += n; r.games++; r.wg++; if (won) { r.wins++; r.ww++; }
+            d.points[uid] = r; save(d, { k: 'pts' }); return { total: r.total, week: r.week };
+          },
+          async pointsBoard(scope) {
+            const d = db(), wk = weekStart(), fr = d.friends || [];
+            const isFr = (id) => id === uid || fr.some((f) => f.status === 'accepted' && ((f.from === uid && f.to === id) || (f.from === id && f.to === uid)));
+            const rows = Object.entries(d.points || {}).filter(([id]) => scope !== 'friends' || isFr(id)).map(([id, r]) => { const all = scope === 'all', cur = r.ws === wk;
+              return { user_id: id, name: (d.profiles[id] || {}).name || '?', avatar: (d.profiles[id] || {}).avatar || '🙂', points: all ? r.total : cur ? r.week : 0, games: all ? r.games : cur ? r.wg : 0, wins: all ? r.wins : cur ? r.ww : 0, me: id === uid }; })
+              .filter((r) => r.points > 0).sort((a, b) => b.points - a.points || a.games - b.games);
+            rows.forEach((r, i) => { r.rank = i + 1; });
+            return rows.filter((r) => r.rank <= 50 || r.me);
+          },
           async profileOf(id) { const p = db().profiles[id]; return p || { name: 'Player', avatar: '🙂' }; },
           /* friends (stand-in) */
           async searchPlayers(q) { q = String(q || '').trim().toLowerCase(); if (q.length < 2) return []; const d = db(); return Object.entries(d.profiles).filter(([, p]) => p.name.toLowerCase().includes(q)).slice(0, 20).map(([id, p]) => ({ id, name: p.name, avatar: p.avatar })); },
@@ -323,6 +341,8 @@
           async openRooms() { return ok(await rpc('open_rooms')) || []; },
           async leaderboard(game) { return (ok(await sb.from('ratings').select('user_id,elo,games,wins,losses,draws,profiles(name,avatar)').eq('game', game).gt('games', 0).order('elo', { ascending: false }).limit(50)) || []).map((r) => ({ id: r.user_id, elo: r.elo, games: r.games, wins: r.wins, losses: r.losses, draws: r.draws, name: (r.profiles || {}).name || '?', avatar: (r.profiles || {}).avatar || '🙂' })); },
           async rating(game) { return ok(await sb.from('ratings').select('elo,games').eq('user_id', uid).eq('game', game).maybeSingle()) || { elo: 1200, games: 0 }; },
+          async addPoints(n, won) { return ok(await rpc('add_points', { n, won: !!won })); },
+          async pointsBoard(scope) { return ok(await rpc('points_board', { scope })) || []; },
           async profileOf(id) { if (pcache[id]) return pcache[id]; const p = ok(await sb.from('profiles').select('name,avatar').eq('id', id).maybeSingle()) || { name: 'Player', avatar: '🙂' }; pcache[id] = p; return p; },
           /* friends (backend/friends.sql) */
           async searchPlayers(q) { if (String(q || '').trim().length < 2) return []; return ok(await rpc('search_players', { q: String(q).trim() })) || []; },
@@ -472,6 +492,9 @@
       NET.openRooms = () => B.openRooms();
       NET.leaderboard = (game) => B.leaderboard(game);
       NET.rating = (game) => B.rating(game);
+      // points (backend/points.sql). Until that file is run in Supabase these fail quietly and the board says so.
+      NET.addPoints = (n, won) => (NET.on ? B.addPoints(n, won).catch(() => null) : Promise.resolve(null));
+      NET.pointsBoard = (scope) => B.pointsBoard(scope || 'week');
       NET.profileOf = (id) => B.profileOf(id);
     })();
 

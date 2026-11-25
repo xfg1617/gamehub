@@ -21,7 +21,10 @@
     #gs-wrap:has(#gs-body .logbox:not(#ch-moves)) .gs-moves { display: inline-flex !important; }
     body.in-game #game-root .logbox:not(#ch-moves) { display: none !important; }
     body.in-game #ch-moves { height: 260px !important; }
-    body.in-game.show-moves #game-root .logbox:not(#ch-moves), body.in-game.show-moves #game-root .logbox { display: block !important; position: fixed; right: 16px; top: 64px; width: min(340px, calc(100vw - 32px)); height: min(60vh, 460px) !important; z-index: 75; box-shadow: 0 6px 0 var(--ink); }
+    body.in-game.show-moves #game-root .logbox:not(#ch-moves), body.in-game.show-moves #game-root .logbox { display: block !important; position: fixed; right: 16px; top: 64px; width: min(340px, calc(100vw - 32px)); height: min(60vh, 460px) !important; z-index: 75; box-shadow: 0 6px 0 var(--ink); border-top: 0; }
+    #lb-grip { position: fixed; z-index: 76; height: 34px; align-items: center; justify-content: space-between; gap: 8px; cursor: move; touch-action: none; user-select: none; border: 3px solid var(--ink); }
+    #lb-grip .lb-hint { margin-left: auto; opacity: .75; font-size: .8rem; }
+    #lb-grip .lb-x { font-weight: 900; padding: 0 4px; cursor: pointer; }
 
     /* ---------- the whole-table layout for card games: the table is the screen ---------- */
     body.in-game .ft-cards { display: block !important; }
@@ -361,3 +364,45 @@
     }
     #fb-prompt, #cc-prompt, #kk-prompt { padding: 7px 16px 12px !important; }
     body.in-game[data-game="poker"] #pk-ctl .win { padding: 10px 14px 15px !important; }
+
+    /* phones (Nov 2026, Inna: "less scrolling while playing"): the game's top bar is ONE row of small icon buttons */
+    @media (max-width: 640px) {
+      #gs-wrap > .panel:first-child { flex-wrap: nowrap !important; gap: 6px !important; padding: 6px 8px !important; }
+      #gs-wrap > .panel:first-child > div:first-child { gap: 6px !important; min-width: 0; flex: 1; }
+      #gs-wrap > .panel:first-child h2 { font-size: .95rem !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+      #gs-wrap > .panel:first-child .spr.w-8 { width: 22px !important; height: 22px !important; flex: none; }
+      #gs-wrap > .panel:first-child .btn-game { padding: 5px 8px !important; font-size: 12px !important; }
+      #gs-tools { gap: 4px !important; flex-wrap: nowrap !important; }
+      #gs-wrap .gs-lbl { display: none; }
+    }
+    /* Castles & Kings on phones: what you have to decide comes first (the prompt and the characters), then your town and
+       cards, then the other towns (compact: an empty town is one line) */
+    @media (max-width: 1023px) {
+      body[data-game="guild"] .gm-wrap { display: flex !important; flex-direction: column; gap: 10px; align-items: stretch !important; }
+      body[data-game="guild"] .gm-wrap > div { display: contents; }
+      body[data-game="guild"] #gm-prompt { order: 1; }
+      body[data-game="guild"] .gm-wrap > div > .win:has(#gm-roles) { order: 2; }
+      body[data-game="guild"] #gm-mine { order: 3; }
+      body[data-game="guild"] #gm-towns { order: 4; }
+      body[data-game="guild"] #gm-log, body[data-game="guild"] #gm-quit { order: 5; }
+      body[data-game="guild"] #gm-roles { padding: 6px !important; }
+      body[data-game="guild"] .gm-city:not(:has(.gm-b)) { display: none; }
+    }
+    /* Island Settlers on phones: board, prompt, then your cards and the Roll / build / trade / end buttons; the other
+       players' panels come after (Inna: "less scrolling to do something while playing") */
+    @media (max-width: 1023px) {
+      body[data-game="isles"] #gs-body > .grid { display: flex !important; flex-direction: column; gap: 10px; align-items: stretch !important; }
+      body[data-game="isles"] #gs-body > .grid > div { display: contents; }
+      body[data-game="isles"] .fi-sea { order: 1; } body[data-game="isles"] #fi-prompt { order: 2; }
+      body[data-game="isles"] #gs-body .win:has(#fi-res) { order: 3; } body[data-game="isles"] #gs-body .win:has(#fi-roll) { order: 4; }
+      body[data-game="isles"] #fi-players { order: 5; } body[data-game="isles"] #fi-log, body[data-game="isles"] #fi-quit { order: 6; }
+    }
+    /* Kaboom Cats / Uno on phones: your hand is one row you can swipe sideways, so the table stays on screen */
+    @media (max-width: 640px) {
+      body[data-game="kittens"] #kk-hand, body[data-game="colorclash"] #cc-hand { flex-wrap: nowrap !important; overflow-x: auto; justify-content: flex-start !important; padding-bottom: 6px; scroll-snap-type: x proximity; }
+      body[data-game="kittens"] #kk-hand > *, body[data-game="colorclash"] #cc-hand > * { flex: none; scroll-snap-align: start; }
+    }
+
+    /* Pool on an upright phone: the table stands up and fills the height that is left */
+    #pl-cv.pl-up { width: auto !important; height: calc(100vh - 360px); max-width: 100%; margin: 0 auto; }
+    .pl-up-wrap { display: flex; justify-content: center; }

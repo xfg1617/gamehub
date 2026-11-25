@@ -34,7 +34,7 @@
         const players = S.seats.map((x, i) => ({ seat: i, name: x.name, av: x.avatar, human: S.mine(i) }));
         players.forEach((p) => { p.hand = []; for (let i = 0; i < (+sel.hand || 7); i++) p.hand.push(deck.pop()); });
         let first = deck.pop(); while (first.c === 'w' || typeof first.v !== 'number') { deck.unshift(first); first = deck.pop(); }
-        G = { S, me: S.online ? S.me : 0, players, deck, disc: [first], color: first.c, dir: 1, cur: 0, secs: +sel.clock, clashRule: sel.clash === undefined ? true : !!+sel.clash, over: false, tok: ++GT.cur, log: [], caught: 0, plays: 0, banner: '' };
+        G = { S, me: S.online ? S.me : 0, players, deck, disc: [first], color: first.c, dir: 1, cur: 0, secs: +sel.clock, clashRule: sel.clash === undefined ? true : !!+sel.clash, over: false, tok: ++GT.cur, log: [], caught: 0, plays: 0, banner: '', places: [] };
         body.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_250px] gap-5 items-start">
           <div class="space-y-3 min-w-0"><div id="cc-opp" class="ring4">${ringSlots('cc')}
             <div class="r-mid felt p-4 flex items-center justify-center gap-8 flex-wrap" style="min-height:190px"><div id="cc-pile" class="text-center"></div><div id="cc-top" class="text-center"></div></div></div>
@@ -62,7 +62,11 @@
       const prompt = (h) => { const e = document.getElementById('cc-prompt'); if (e) e.innerHTML = h; };
       const nm = (p) => `<b>${esc(p.name)}</b>`;
       const top = () => G.disc[G.disc.length - 1];
-      function nextIdx(from, skip = 0) { const n = G.players.length; return (((from + G.dir * (1 + skip)) % n) + n) % n; }
+      // play goes on until only one player still has cards (Inna, Nov 2026): players who went out are passed over
+      const isOut = (i) => G.places.includes(i);
+      const live = () => G.players.filter((_, i) => !isOut(i)).length;
+      function nextIdx(from, skip = 0) { const n = G.players.length; let i = from, k = 1 + skip, guard = 0; while (k > 0 && guard++ < 50) { i = (((i + G.dir) % n) + n) % n; if (!isOut(i)) k--; } return i; }
+      const ORD = (k) => k + (k === 1 ? 'st' : k === 2 ? 'nd' : k === 3 ? 'rd' : 'th');
       function take(p, k) {
         for (let i = 0; i < k; i++) {
           if (!G.deck.length) { const t = G.disc.pop(); G.deck = G.S.rng.shuffle(G.disc); G.disc = [t]; G.deck.forEach((c) => { }); }
@@ -123,10 +127,19 @@
         let skip = 0;
         const nxt = nextIdx(G.cur);
         if (c.v === 'skip') { skip = 1; log(`${nm(G.players[nxt])} is skipped.`); }
-        else if (c.v === 'rev') { G.dir *= -1; if (G.players.length === 2) skip = 1; log('Direction reversed!'); }
+        else if (c.v === 'rev') { G.dir *= -1; if (live() === 2) skip = 1; log('Direction reversed!'); }
         else if (c.v === 'd2') { take(G.players[nxt], 2); skip = 1; SFX.play('nope'); log(`${nm(G.players[nxt])} draws 2 and is skipped.`); await W(draw() + 300); }
         else if (c.v === 'w4') { take(G.players[nxt], 4); skip = 1; SFX.play('nope'); log(`${nm(G.players[nxt])} draws 4 and is skipped.`); await W(draw() + 300); }
-        if (!p.hand.length) { finish(p); return { skip: 0 }; }
+        if (!p.hand.length) {
+          const pi = G.players.indexOf(p); G.places.push(pi);
+          log(`${nm(p)} is out of cards: <b>${ORD(G.places.length)} place</b>!`); SFX.play(isMe(p) ? 'win' : 'coin');
+          if (live() <= 1) { G.places.push(G.players.findIndex((_, i) => !isOut(i))); finish(G.players[G.places[0]]); return { skip: 0 }; }
+          // only computer players left (or nobody is watching here any more): no need to play it out, fewer cards = better place
+          const humansLeft = G.players.some((q, i) => !isOut(i) && !G.S.bot(q.seat));
+          if (!humansLeft) { G.players.map((q, i) => i).filter((i) => !isOut(i)).sort((a, b) => G.players[a].hand.length - G.players[b].hand.length).forEach((i) => G.places.push(i)); finish(G.players[G.places[0]]); return { skip: 0 }; }
+          draw(); await W(900);
+          return { skip };
+        }
         if (p.hand.length === 1 && G.clashRule) await clashWindow(p);
         else await W(c.v in SYM ? 700 : 450);
         return { skip };
@@ -217,15 +230,17 @@
         if (G.over) return;
         G.over = true; G.S.over = true; G.clock.stop(); prompt('');
         const won = winner && isMe(winner);
+        const myPlace = G.places.indexOf(G.me) + 1;
         const eloRow = G.S.online ? await G.S.finish(won ? 'win' : 'loss') : null;
         const n = G.players.length, lvl = n - 2;
         const elo = G.S.online ? 0 : won ? [6, 10, 14][lvl] : [-3, -5, -7][lvl];
         const s = gstat('colorclash'); s.caught = (s.caught || 0) + G.caught;
-        reportGame('colorclash', won ? 'win' : 'loss', { elo, xp: won ? 25 + lvl * 10 : 10, label: G.S.online ? `Online · ${won ? 'won' : 'lost'} at a table of ${n}` : won ? `Won vs ${n - 1} bot${n > 2 ? 's' : ''}` : winner ? `${winner.name} went out first` : 'Gave up' });
+        reportGame('colorclash', won ? 'win' : 'loss', { place: myPlace || undefined, elo, xp: won ? 25 + lvl * 10 : 10, label: G.S.online ? `Online · ${won ? 'won' : 'lost'} at a table of ${n}` : won ? `Won vs ${n - 1} bot${n > 2 ? 's' : ''}` : winner ? `${winner.name} went out first` : 'Gave up' });
         SFX.play(won ? 'win' : 'lose'); draw();
         const left = G.players[G.me].hand.length, S = G.S;
-        gTimeout(() => gameResult({ title: quit ? 'You win!' : won ? 'You went out first!' : winner ? `${winner.name} wins` : 'You gave up', sub: quit ? `${S.name(quit.s)} ${quit.t === '_gone' ? 'disconnected' : 'left the game'}.` : won ? 'Empty hand. Nice clash!' : `You still held ${left} card${left === 1 ? '' : 's'}.`, tone: won ? 'amber' : 'coral', sprite: won ? 'trophy' : 'anchor',
-          rows: [['Cards left', left, 'text-coral'], [S.online ? 'Caught' : 'Bots caught', G.caught, 'text-amber']].concat(S.online ? (eloRow ? [eloRow] : []) : [['Elo', (elo > 0 ? '+' : '') + elo, elo >= 0 ? 'text-emerald' : 'text-coral']]), againLabel: S.online ? 'Back to setup' : 'Play again', again: () => open(document.getElementById('game-root')) }), 800);
+        const order = G.places.map((i, k) => `${ORD(k + 1)} ${esc(G.players[i].name)}`).join(' · ');
+        gTimeout(() => gameResult({ title: quit ? 'You win!' : won ? 'You went out first!' : myPlace ? `${ORD(myPlace)} place` : winner ? `${winner.name} wins` : 'You gave up', sub: quit ? `${S.name(quit.s)} ${quit.t === '_gone' ? 'disconnected' : 'left the game'}.` : G.places.length > 1 ? order : won ? 'Empty hand. Nice clash!' : `You still held ${left} card${left === 1 ? '' : 's'}.`, tone: won ? 'amber' : 'coral', sprite: won ? 'trophy' : 'anchor',
+          rows: [myPlace && G.places.length > 2 ? ['Place', ORD(myPlace), 'text-amber'] : ['Cards left', left, 'text-coral'], [S.online ? 'Caught' : 'Bots caught', G.caught, 'text-amber']].concat(S.online ? (eloRow ? [eloRow] : []) : [['Elo', (elo > 0 ? '+' : '') + elo, elo >= 0 ? 'text-emerald' : 'text-coral']]), againLabel: S.online ? 'Back to setup' : 'Play again', again: () => open(document.getElementById('game-root')) }), 800);
       }
 
       function draw() {
@@ -235,6 +250,7 @@
         const others = G.players.map((_, k) => G.players[(G.me + k) % G.players.length]).slice(1);
         ringFill('cc', others.map((q) => { const sid = G.players.indexOf(q), turn = cur === q && !G.over, n = q.hand.length;
           // name tag style: their cards fanned face down on the table, a small tag under them (red count at 1 card)
+          if (isOut(sid)) return `<div id="cc-seat-${sid}" class="tg-seat"><div class="tg-fan"><div class="fb-place">${ORD(G.places.indexOf(sid) + 1).toUpperCase()}</div></div>${nameTag({ av: q.av, name: q.name, sub: '<span class="text-amber">out of cards</span>' })}</div>`;
           return `<div id="cc-seat-${sid}" class="tg-seat ${turn ? 'turn' : ''}"><div class="tg-fan">${q.hand.slice(0, 7).map((c) => `<div class="cc-card cc-back" data-fk="${gKey(c)}" data-face="down"></div>`).join('')}</div>${nameTag({ av: q.av, name: q.name, sub: `<span class="${n === 1 ? 'text-coral' : ''}">${n} card${n === 1 ? '' : 's'}</span>`, badge: n, turn })}</div>`; }));
         document.getElementById('cc-pile').innerHTML = `<div id="cc-draw" style="display:inline-block;cursor:pointer">${backHTML('')}</div><div class="pix text-xs text-bone mt-2">DRAW · ${G.deck.length}</div>`;
         const t = top();
@@ -242,7 +258,7 @@
         const me = G.players[G.me];
         const sorted = me.hand.map((c, i) => ({ c, i })).sort((a, b) => (a.c.c === b.c.c ? String(a.c.v).localeCompare(String(b.c.v), 'en', { numeric: true }) : a.c.c.localeCompare(b.c.c)));
         const myTurn = G.players[G.cur] === me && !G.over && G.choose;
-        { const mp = G.players[G.me], mt = document.getElementById('cc-me'); if (mt && mp) mt.innerHTML = `<div id="cc-seat-${G.me}" class="inline-block">${nameTag({ av: mp.av || mp.avatar, name: mp.name, sub: `${mp.hand.length} cards`, turn: myTurn && !G.over, me: true })}</div>`; }
+        { const mp = G.players[G.me], mt = document.getElementById('cc-me'); if (mt && mp) mt.innerHTML = `<div id="cc-seat-${G.me}" class="inline-block">${nameTag({ av: mp.av || mp.avatar, name: mp.name, sub: isOut(G.me) ? `<span class="text-amber">${ORD(G.places.indexOf(G.me) + 1)} place · watching</span>` : `${mp.hand.length} cards`, turn: myTurn && !G.over, me: true })}</div>`; }
         document.getElementById('cc-hand').innerHTML = sorted.map(({ c, i }) => cardHTML(c, { id: i, fk: gKey(c), cls: myTurn ? (canPlay(c, t, G.color) ? 'ok' : 'no') : '' })).join('');
         document.querySelectorAll('#cc-hand .cc-card').forEach((el) => { el.onclick = () => { if (G.choose) G.choose(+el.dataset.id); }; });
         const dr = document.getElementById('cc-draw'); if (dr) dr.onclick = () => { if (G.choose) G.choose('pile'); };

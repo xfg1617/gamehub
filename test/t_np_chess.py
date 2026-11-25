@@ -38,8 +38,9 @@ with sync_playwright() as p:
     A.screenshot(path='test/shots/np_chess_A.png')
     # B drops out and comes back
     B.reload(); B.wait_for_function("typeof NET !== 'undefined' && NET.on && NET.me", timeout=20000); B.wait_for_timeout(1500)
-    check(B.query_selector('#np-rj') is not None, 'after a reload B is offered to rejoin the chess game')
-    B.click('[data-rj="yes"]'); B.wait_for_function("!NP.catchup && document.getElementById('ch-board')", timeout=40000); B.wait_for_timeout(2500)
+    print('   address after the reload:', B.evaluate('location.pathname'))
+    how = rejoin(B); check(how in ('offer', 'auto'), 'after a reload B goes back to the chess game (' + how + ')')
+    B.wait_for_function("!NP.catchup && document.getElementById('ch-board')", timeout=40000); B.wait_for_timeout(2500)
     pa, pb = A.evaluate(POS).split(','), B.evaluate(POS).split(',')
     if pa != pb: print('   differ at', [(i, pa[i], pb[i]) for i in range(64) if pa[i] != pb[i]], '| A hist', A.evaluate("document.getElementById('ch-moves').innerText.replace(/\\n/g,' ')"), '| B hist', B.evaluate("document.getElementById('ch-moves').innerText.replace(/\\n/g,' ')"))
     check(pa == pb, 'after rejoining B sees the same position')

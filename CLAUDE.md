@@ -963,3 +963,69 @@ folder that was handed over, so they do not exist here.)
   game?" first and stays put on "Keep playing". Opening or refreshing an address waits for the connection (`ps-online` /
   `ps-offline`, max 8 s) and then opens it; an unknown address goes home. Cloudflare Pages serves index.html for any
   path because there is no 404.html (keep it that way). `test/t_router.py` (stand-in at http://gamehub.test).
+
+## 5ae. Nov 25 2026 round 5 (Inna's list; prototypes in `prototypes/round5/`, approved)
+
+* **Pool**: rejoin no longer stalls (during the replay `strike` starts the shot at once and `resolve` begins the next turn
+  at once, so each replayed `end` finds its shot started); ball in hand is watched live (`S.peek({c, h})`, `G.peekCue`;
+  a placed cue ball is shown 0.8 s before the shot); breaks differ (`rack(sh, rnd)` puts each ball up to ~0.4 px off its
+  spot with tiny gaps, shared dice; the break stroke gets a hair of random aim/speed on the shooter's screen).
+  `t_np_pool_rejoin.py`, `t_np_pool_bih.py`.
+* **Uno** plays on for places (`G.places`, `isOut`, `nextIdx` skips players who are out; only computers left → ranked by
+  cards held). `t_uno_places.py`. **Find the Impostor**: rounds until the impostor is caught or 2 are left (`oneRound`,
+  `G.outs`, `G.rounds`; 2 tied votes in a row = impostor escapes), no "it might be you" vote hint, 83 word pairs in 10
+  categories. `t_imp_rounds.py`. **Doodle**: no "cái" in Vietnamese words. **Mine Saboteurs** left as is (no-Rascal
+  games are the original rule; Inna: don't change).
+* **Game log** is a window you drag by its title bar (`#lb-grip`, `logPlace`, spot saved in `ps_logpos`). `t_log_move.py`.
+  **CHAT button** is back on the home page (global chat; `chatKeyFor('play')` = 'global').
+* **No more Elo / ranked mode**: Elo rows are dropped from result screens (gameResult filters /elo|rating/), Ranked Match
+  link → Points leaderboard, profile/player cards show points. The server still keeps old ratings (unused).
+* **Points** (core.js `POINTS`, wraps `recordMatch`): 1st 10 · 2nd 6 · 3rd 3 · others 1; 2-player win 10 / draw 5 / loss 1;
+  solo up to 5; only computers at the table = half; `pointsBonus()` +2 (for fun moments). Games pass `place` to
+  `reportGame` (Uno, Bullshit, Poker, Landlord, Isles, Castles, Dominoes, Doodle). Saved as `profile.points` /
+  `profile.ptsWeek`; online `NET.addPoints` → **`backend/points.sql`** (`add_points` max 12 per call, once per 15 s;
+  `points_board('week'|'all'|'friends')`). Leaderboard page = `pointsBoard()`. Tested on PostgreSQL 16.
+* **Settings pop-up** before every game (`settingsPop(m, sel, done, o)` in core): lists the game's settings; on this device
+  "Start now"; online every screen counts down 5 s then the game starts (`launch` in netplay). Skipped under webdriver
+  unless `window.__showSettingsPop`.
+* **Random Game** (`src/games/random.js`, first tile): setup SESSION 1/3/5 games, GAME LENGTH quick/normal, WHICH GAMES,
+  same game twice. Online: the room is a normal netplay table for 'random' (up to 8 seats, computer players allowed);
+  on Start every screen picks the same game with the shared dice (`npRandomNext`, `npFitGames`, `npSizes` from the tiles'
+  "2-4 PLAYERS"), and the group moves to a new room for it (`npGoNext`: leader opens, others join; `sel.rematch` = auto
+  start, `sel.rnd` = random settings in setupScreen, `sel.session` rides along in the room settings). Solo / offline:
+  `startLocal` / `randomLocalSlot` play random games against computers. `t_random_points.py`, `t_np_random.py`.
+* **Same room after a game** (`npRematchSlot` rewritten): the leader (first player still there) picks "X again", "🎲 Random
+  game" or any game that fits the group (`np-ngrid`); others see who is choosing. In a session: standings (each screen
+  sends its points on `rm:<code>` as `pts`), "Next game" (auto after 15 s), champion after the last game. `t_np_next.py`.
+* **Room address**: in a room or at an online table the address is `/r/CODE` (`NP.lobby` / `NP.table`, `ROUTER.sync`).
+  Opening that link when you were at that table (`npSaved`) rejoins straight away (no box). Tests use `rejoin(pg)` in nplib.
+* **Turn timers** for the games that had none (`turnClock(key, secs, onOut)` + `turnOpt()` in core; clock chip `#tt-host`):
+  Tic-Tac-Toe, Wall Maze, Dominoes, Castles & Kings, Mine Saboteurs, Whodunit, Island Settlers (setting TURN TIMER; when it
+  runs out the computer's choice is played for you). Bowling has none (it is a throw, not a turn). `t_turn_timer.py`.
+* Vietnamese for all of this: `src/games/zz_i18n_vi4.js` (`VI_MORE4`, `VI_PAT4`).
+* Supabase: run **`backend/points.sql`** once (until then the leaderboard says it is not switched on; points still count
+  on each device).
+* **Whodunit map**: only the 9 rooms (`.mm-clean`: no roof/lawn), bigger pieces with a white ring, YOU label, dimmer room
+  art; moving details (`AMBIENT` in manor.js: plants sway, stars twinkle, steam, candle, waves, a cat walking through
+  the Grand Hall, timed by the clock so redraws don't restart them).
+* **Friends chat** (zz_friends.js `paintFriendChat`, css 29-friends-chat.css): header with avatar + online state + Player
+  card / Invite to my room, bubbles (yours right, teal), day lines, invites as amber cards with Join; friend rows open the
+  chat and show the last message. In-game chat: a tab row under the title (`chatTabs()`: Table | All players | 👥 Friends).
+* **Guest player card**: guests publish `guest: true` in their stats; their card says GUEST, explains they can't be added
+  yet, no Add friend button. `t_guest_card.py`.
+* **Fun moments** (`funMoment(seatId, {icon,label,burst,sub,key,fire,mine})` in core; badge re-added after redraws by
+  a MutationObserver; +2 points via `pointsBonus` when it is you; nothing sent online, every screen spots the same
+  moment): Bullshit 🔥 2+ right calls in a row / 🎭 3 bluffs through; Pool 🔥 3 balls in one visit; Bowling 🦃 turkey;
+  Poker ⚡ all-in won / 😎 3 pots in a row without showdown; Chess ⚡ mate within 20 moves; Checkers 🦘 double jump;
+  Kaboom Cats 🛡️ saved twice; Landlord 👑 two full sets; Sea Battle 🎯 3 hits in a row; Doodle ⚡ guess < 6 s / 🎨 everyone
+  guessed; Impostor 🕵️ survived 2+ rounds. `t_fun.py`.
+* **How-to videos** (`src/games/zz_howto_video.js`, `playHowTo(id)`): "▶ Watch how to play (with voice)" at the top of every
+  guide: slides made from the guide (title, goal, steps, each "what things mean" item with its picture, tip, Play) with a
+  typing caption and the browser's own voice (speechSynthesis, en-US / vi-VN; no Vietnamese voice on the device =
+  captions only). Controls ⏮ ⏸ ⏭ 🔊 ✕, arrows, Esc. Sample: `prototypes/round5/how-to-play-uno-video.mp4` (silent recording).
+* **Phones**: the game top bar is one row of icon buttons (`.gs-lbl` hidden ≤640 px); Castles & Kings and Island Settlers
+  put the prompt / choices / your buttons first (CSS `order` with `display: contents`); Kaboom Cats / Uno hands are one
+  swipeable row; Pool stands upright (`G.up`: canvas H×W with `setTransform(0,1,-1,0,H,0)`, taps turned back in `pt`).
+  Turn timer chip sits bottom-right on phones.
+* **Real sounds: not done.** kenney.nl (CC0 Casino Audio / Impact Sounds) is allowed in the `gamehub` environment, but
+  the download is behind a script and the automated download was refused; Inna can download the packs and send them.

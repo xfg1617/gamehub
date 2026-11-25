@@ -100,6 +100,7 @@
       Object.keys(window.VI_MORE || {}).forEach((k) => { if (!(k in VI)) VI[k] = window.VI_MORE[k]; });   // part 1: zz_i18n_vi.js
       Object.keys(window.VI_MORE2 || {}).forEach((k) => { if (!(k in VI)) VI[k] = window.VI_MORE2[k]; });   // part 2: zz_i18n_vi2.js
       Object.keys(window.VI_MORE3 || {}).forEach((k) => { if (!(k in VI)) VI[k] = window.VI_MORE3[k]; });   // part 3: zz_i18n_vi3.js (audit)
+      Object.keys(window.VI_MORE4 || {}).forEach((k) => { if (!(k in VI)) VI[k] = window.VI_MORE4[k]; });   // part 4: zz_i18n_vi4.js (round 5)
       const PAT = [
         [/^(\d+)[–-](\d+) PLAYERS/, (m, a, b) => `${a}-${b} NGƯỜI`], [/(\d+) PLAYERS\b/g, '$1 NGƯỜI'], [/~(\d+) MIN\b/g, '~$1 PHÚT'], [/(\d+) MIN\b/g, '$1 PHÚT'],
         [/\bSOLO\b/g, 'CHƠI ĐƠN'], [/\bCHIPS\b/g, 'CHIP'], [/^(\d+) GAMES$/, '$1 TRÒ'], [/^● (\d+) online$/, '● $1 online'], [/^(\d+) chatting$/, '$1 đang trò chuyện'],
@@ -123,6 +124,7 @@
         [/^Waiting for (.+)\.\.\.$/, 'Đang chờ $1...'], [/^(\d+) online now$/, '$1 đang online'],
       ];
       PAT.push(...(window.VI_PAT_MORE || []));
+      PAT.push(...(window.VI_PAT4 || []));
       // a line in CAPITALS whose normal spelling is known ("CASTLES & KINGS", "GO TO JAIL") gets the Vietnamese in capitals
       let UP = null;
       const upper = (s) => { if (!UP) { UP = {}; Object.keys(VI).forEach((k) => { if (/[a-z]/.test(k)) { const u = k.toUpperCase(); if (!(u in VI) && !(u in UP)) UP[u] = VI[k].toUpperCase(); } }); } return UP[s]; };

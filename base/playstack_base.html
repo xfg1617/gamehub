@@ -986,7 +986,7 @@
         </div>
       </div>
       <div class="nh-links">
-        <button id="rank-link" class="b1" onclick="openRankedModal()"><span>🏆 Ranked match <small>· play someone at your level</small></span><span>▶</span></button>
+        <button id="rank-link" class="b1" onclick="navigateTo('leaderboard')"><span>🏆 Points leaderboard <small>· this week's top players</small></span><span>▶</span></button>
         <button id="discord-link" class="b2" onclick="openDiscord()"><span>💬 Discord <small>· find people to play with</small></span><span>▶</span></button>
       </div>
 
@@ -1028,7 +1028,7 @@
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 class="flex items-center gap-3 hero-title text-bone" style="font-size:clamp(1.9rem,4vw,2.6rem)"><span class="spr w-10 h-10" data-sprite="trophy"></span> Leaderboard</h1>
-          <p class="text-sm text-muted mt-1.5">Top players on GameHub. Win ranked matches to climb the podium!</p>
+          <p class="text-sm text-muted mt-1.5">Every game you finish earns points. The weekly board starts again every Monday.</p>
         </div>
         <div class="seg self-start">
           <button onclick="renderLeaderboard('overall')" data-lb="overall" class="lb-btn seg-btn">Overall Elo</button>
@@ -1293,7 +1293,7 @@
 
       <div class="grid grid-cols-4 gap-2.5 text-center">
         <div class="stat"><div class="lab">Level</div><div id="prof-stat-lvl" class="val text-amber">Lv 4</div></div>
-        <div class="stat"><div class="lab">Elo</div><div id="prof-stat-elo" class="val text-teal">1200</div></div>
+        <div class="stat"><div class="lab">Points</div><div id="prof-stat-elo" class="val text-teal">0</div></div>
         <div class="stat"><div class="lab">Win %</div><div id="prof-stat-wr" class="val text-bone">67%</div></div>
         <div class="stat"><div class="lab">Streak</div><div id="prof-stat-streak" class="val text-emerald">3d</div></div>
       </div>
@@ -1326,7 +1326,7 @@
 
       <div class="grid grid-cols-3 gap-2.5">
         <div class="stat"><div class="lab">Accuracy</div><div id="ng-sum-acc" class="val text-bone">54%</div></div>
-        <div class="stat"><div class="lab">Naval Elo</div><div id="ng-sum-elo" class="val text-teal">+18</div></div>
+        <div class="stat"><div class="lab">Points</div><div id="ng-sum-elo" class="val text-teal">+10</div></div>
         <div class="stat"><div class="lab">XP Earned</div><div id="ng-sum-xp" class="val text-amber">+50</div></div>
       </div>
 
@@ -1933,7 +1933,7 @@
       const wr = total > 0 ? Math.round((profile.wins / total) * 100) : 0;
 
       document.getElementById('prof-stat-lvl').textContent = `Lv ${level}`;
-      document.getElementById('prof-stat-elo').textContent = profile.navalElo;
+      document.getElementById('prof-stat-elo').textContent = profile.points || 0;
       document.getElementById('prof-stat-wr').textContent = `${wr}%`;
       document.getElementById('prof-stat-streak').textContent = `${profile.dailyStreak}d`;
       document.getElementById('prof-username-input').value = profile.username;
@@ -2053,7 +2053,7 @@
     let currentLbTab = 'overall';
 
     function renderLeaderboard(tab = 'overall') {
-      if (typeof NET !== 'undefined' && NET.on) netLeaderboard();
+      if (typeof pointsBoard === 'function') return pointsBoard();   // points board (Nov 2026: no more Elo)
       currentLbTab = tab;
       document.querySelectorAll('.lb-btn').forEach((btn) => {
         btn.className = `lb-btn seg-btn ${btn.dataset.lb === tab ? 'on' : ''}`;
@@ -2970,11 +2970,17 @@
       setTimeout(() => resolvePlayerShot(r, c), 320);
     }
 
+    // fun moment: three hits in a row (Nov 2026)
+    function ngHitRun(hit) {
+      ng.hitRun = hit ? (ng.hitRun || 0) + 1 : 0;
+      if (ng.hitRun === 3 && typeof funMoment === 'function') funMoment('ng-seat-' + (ng.mySeat || 0), { key: 'sharp', icon: '🎯', label: 'SHARPSHOOTER', burst: 'SHARPSHOOTER!', sub: 'Three hits in a row', mine: true });
+    }
     function resolvePlayerShot(r, c) {
       if (ng.phase !== 'battle') return;
       const coord = `${COLS[c]}${r + 1}`;
       ng.shotsFired++;
       const hitId = ng.enemyBoard[r][c];
+      ngHitRun(!!hitId);
 
       if (hitId) {
         ng.shotsHit++;
@@ -3006,6 +3012,7 @@
     // online: the other player's screen says what my missile hit
     function ngNetResult(r, c, res) {
       if (ng.phase !== 'battle') return;
+      ngHitRun(!!(res && res.hit));
       const coord = `${COLS[c]}${r + 1}`;
       ng.shotsFired++;
       if (res.hit) {
@@ -3186,8 +3193,8 @@
         ? `You sank all 5 of ${ng.opponentName}'s ships in ${ng.shotsFired} shots!`
         : `${ng.opponentName} sank your fleet. Ready for a rematch?`;
       document.getElementById('ng-sum-acc').textContent = `${acc}%`;
-      document.getElementById('ng-sum-elo').textContent = eloDelta > 0 ? `+${eloDelta}` : `${eloDelta}`;
-      document.getElementById('ng-sum-elo').className = `font-mono text-base font-bold mt-0.5 ${won ? 'text-emerald' : 'text-coral'}`;
+      { const pr = typeof pointsRow === 'function' ? pointsRow() : null; document.getElementById('ng-sum-elo').textContent = pr ? pr[1] : '+0'; }
+      document.getElementById('ng-sum-elo').className = 'val text-emerald';
       document.getElementById('ng-sum-xp').textContent = `+${xpEarned}`;
 
       setTimeout(() => SFX.play(won ? 'win' : 'lose'), 900);
@@ -3198,12 +3205,11 @@
         const net = ngNet;
         again.textContent = 'Back to setup';
         again.onclick = () => { closeModal('ng-summary-modal'); net.back(); };
-        net.over(won, (eloRow) => { const el = document.getElementById('ng-sum-elo'); if (eloRow) { el.textContent = eloRow[1]; el.className = `val ${eloRow[2]}`; document.querySelector('#ng-summary-modal .stat:nth-child(2) .lab').textContent = 'Ranked Elo'; } });
+        net.over(won, () => {});
         if (rm && typeof npRematchSlot === 'function') npRematchSlot(rm);
       } else {
         again.textContent = 'Play Again';
         again.onclick = () => { closeModal('ng-summary-modal'); initNavalGame(ng.opponentName, ng.opponentElo, ng.roomTag); };
-        const lab = document.querySelector('#ng-summary-modal .stat:nth-child(2) .lab'); if (lab) lab.textContent = 'Naval Elo';
       }
     }
 
@@ -3966,7 +3972,7 @@
           const n = p.stats.naval;
           return {
             tiles: [['MATCHES', n.played, 'text-bone'], ['WIN RATE', `${pct(n.wins, n.played)}%`, 'text-emerald'], ['ACCURACY', `${pct(n.hits, n.shots)}%`, 'text-teal'], ['SHIPS SUNK', n.sunk, 'text-coral']],
-            rows: srow('Won – Lost', `${n.wins} – ${n.losses}`) + srow('Naval Elo', p.navalElo) + srow('Shots fired', n.shots) + srow('Shots that hit', n.hits) + srow('Fastest win', n.bestShots ? `${n.bestShots} shots` : '-'),
+            rows: srow('Won – Lost', `${n.wins} – ${n.losses}`) + srow('Shots fired', n.shots) + srow('Shots that hit', n.hits) + srow('Fastest win', n.bestShots ? `${n.bestShots} shots` : '-'),
             extra: `<div class="xp-track block w-full my-2"><span class="xp-fill block" style="width:${pct(n.hits, n.shots)}%;background:#2DD4BF"></span></div><div class="pix text-xs text-muted">SHOT ACCURACY</div>`,
           };
         },
@@ -4019,7 +4025,7 @@
         <div class="hist-row">
           <span class="res-tag ${resCls[h.result] || resCls.draw}">${h.result.toUpperCase()}</span>
           <div class="min-w-0 flex-1 font-display font-extrabold text-sm text-bone truncate">${esc(h.label || g.name)}</div>
-          <span class="pix text-sm w-10 text-right ${h.elo > 0 ? 'text-emerald' : h.elo < 0 ? 'text-coral' : 'text-muted'}">${h.elo > 0 ? '+' + h.elo : h.elo === 0 ? '–' : h.elo}</span>
+          <span class="pix text-sm w-14 text-right ${h.pts ? 'text-emerald' : 'text-muted'}">${h.pts ? '+' + h.pts + ' pts' : '–'}</span>
           <span class="pix text-xs text-muted w-20 text-right hidden sm:block">${timeAgo(h.at)}</span>
         </div>`).join('');
     }
@@ -4073,7 +4079,7 @@
             <div class="text-left pt-1">
               ${srow('Account', isAcct ? `<span id="prof-email" data-full="${esc(p.account.email)}">${esc(maskEmail(p.account.email))}</span> <button class="pix text-xs text-amber underline ml-1" onclick="toggleEmail(this)">SHOW</button>` : 'Guest (not saved)')}
               ${isAcct ? srow('Member since', esc(p.account.since)) : ''}
-              ${srow('Overall Elo', p.elo)}
+              ${srow('Points', `${p.points || 0} <span class="text-muted">(${p.ptsWeek && p.ptsWeek.w === (typeof weekKey === 'function' ? weekKey() : '') ? p.ptsWeek.p : 0} this week)</span>`)}
             </div>
             <div class="space-y-2.5 pt-1">
               <button onclick="openProfileModal()" class="btn-game btn-graphite w-full py-2.5 text-sm">Edit player card</button>
@@ -4125,7 +4131,7 @@
               <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <div class="bigstat"><div class="lab">MATCHES</div><div class="val text-bone">${matches}</div></div>
                 <div class="bigstat"><div class="lab">WIN RATE</div><div class="val text-emerald">${pct(p.wins, p.wins + p.losses)}%</div></div>
-                <div class="bigstat"><div class="lab">NAVAL ELO</div><div class="val text-amber">${p.navalElo}</div></div>
+                <div class="bigstat"><div class="lab">POINTS</div><div class="val text-amber">${p.points || 0}</div></div>
                 <div class="bigstat"><div class="lab">BEST STREAK</div><div class="val text-coral">${s.daily.bestStreak}d</div></div>
                 <div class="bigstat"><div class="lab">FAVORITE GAME</div><div class="val text-teal" style="font-size:1.25rem;line-height:2.4rem">${fav ? fav.name : '-'}</div></div>
                 <div class="bigstat"><div class="lab">BADGES</div><div class="val text-amber">${earned.length}/${BADGES.length}</div></div>

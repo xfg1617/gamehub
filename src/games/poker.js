@@ -80,7 +80,7 @@
       let G = null;
 
       function open(root) {
-        const body = gameShell(root, mod, '<button id="pk-ranks-btn" class="btn-game btn-amber px-3 py-2 text-xs" onclick="pkRanks()" title="Which poker hands beat which">🃏 Hand ranks</button>', 'max-w-[1000px] mx-auto');
+        const body = gameShell(root, mod, '<button id="pk-ranks-btn" class="btn-game btn-amber px-3 py-2 text-xs" onclick="pkRanks()" title="Which poker hands beat which">🃏 <span class="gs-lbl">Hand ranks</span></button>', 'max-w-[1000px] mx-auto');
         setupScreen(body, mod, [
           { key: 'clock', label: 'ACTION TIMER', def: 20, choices: [[0, 'Off'], [15, '15 s'], [20, '20 s'], [30, '30 s']] },
           { key: 'speed', label: 'BLIND LEVELS', def: 6, choices: [[8, 'Slow'], [6, 'Normal'], [4, 'Fast']] },
@@ -307,6 +307,9 @@
         const w = live()[0]; const amt = pot();
         w.chips += amt; if (w.seat === G.me) { G.handsWon++; G.bigPot = Math.max(G.bigPot, amt); }
         G.result = { text: `${w.name} wins ${amt}` }; log(`<b>${esc(w.name)}</b> wins <b>${amt}</b> (everyone else folded).`);
+        // fun moment: 3 hands in a row won without showing the cards
+        G.bluffs = G.bluffs || {}; const wi = G.players.indexOf(w); Object.keys(G.bluffs).forEach((k) => { if (+k !== wi) G.bluffs[k] = 0; }); G.bluffs[wi] = (G.bluffs[wi] || 0) + 1;
+        if (G.bluffs[wi] === 3) funMoment('pk-seat-' + wi, { key: 'bluff', icon: '😎', label: 'BLUFF KING', burst: 'BLUFF KING!', sub: `${w.name} took 3 pots in a row without showing`, mine: wi === G.me });
         const sw = sweep();
         G.players.forEach((p) => { p.bet = 0; });
         SFX.play(w.seat === G.me ? 'win' : 'chip'); draw();
@@ -326,6 +329,8 @@
         const winners = [];
         G.players.forEach((p, i) => { p.chips += won[i]; if (won[i] > 0) winners.push(i); });
         winners.forEach((i) => log(`<b>${esc(G.players[i].name)}</b> wins <b>${won[i]}</b> with ${handName(sc[i])}.`));
+        // fun moment: winning a showdown after going all in
+        winners.forEach((i) => { if (G.players[i].allIn) funMoment('pk-seat-' + i, { key: 'allin', icon: '⚡', label: 'ALL-IN HERO', burst: 'ALL-IN HERO!', sub: `${G.players[i].name} went all in and won`, mine: i === G.me }); });
         if (won[G.me] > 0) { G.handsWon++; G.bigPot = Math.max(G.bigPot, won[G.me]); }
         const winCards = new Set(); winners.forEach((i) => best5(G.players[i].hole.concat(G.board)).forEach((c) => winCards.add(gKey(c))));
         G.result = { won, sc, winCards, text: winners.map((i) => `${G.players[i].name} wins ${won[i]}`).join(' · '),
@@ -359,7 +364,7 @@
         const win = place === 1;
         const elo = G.S.online ? 0 : [20, 4, -4, -10][place - 1];
         const s = gstat('poker'); s.handsWon = (s.handsWon || 0) + G.handsWon; s.bigPot = Math.max(s.bigPot || 0, G.bigPot); s.bestPlace = Math.min(s.bestPlace || 4, place);
-        reportGame('poker', win ? 'win' : 'loss', { elo, xp: [60, 35, 20, 12][place - 1], label: `${G.S.online ? 'Online · ' : ''}Finished ${['1st', '2nd', '3rd', '4th'][place - 1]} · ${G.hand} hands` });
+        reportGame('poker', win ? 'win' : 'loss', { place, elo, xp: [60, 35, 20, 12][place - 1], label: `${G.S.online ? 'Online · ' : ''}Finished ${['1st', '2nd', '3rd', '4th'][place - 1]} · ${G.hand} hands` });
         SFX.play(win ? 'win' : 'lose');
         gameResult({ title: win ? 'You won the table!' : `You finished ${['1st', '2nd', '3rd', '4th'][place - 1]}`, sub: quit ? 'You left the table.' : win ? (G.S.online ? 'Everyone else is out of chips.' : 'Every bot is out of chips.') : G.S.online ? `${ranking[0].name} took every chip.` : 'You ran out of chips.', tone: win ? 'amber' : 'coral', sprite: win ? 'trophy' : 'anchor', rows: [['Hands played', G.hand, 'text-bone'], ['Hands won', G.handsWon, 'text-amber'], ['Biggest pot', G.bigPot, 'text-teal']].concat(G.S.online ? [] : [['Elo', (elo > 0 ? '+' : '') + elo, elo >= 0 ? 'text-emerald' : 'text-coral']]), againLabel: G.S.online ? 'Back to setup' : 'New table', again: () => open(document.getElementById('game-root')) });
       }

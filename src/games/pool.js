@@ -43,7 +43,7 @@
         const m = [c * Q[0] - s * Q[3], c * Q[1] - s * Q[4], c * Q[2] - s * Q[5], s * Q[0] + c * Q[3], s * Q[1] + c * Q[4], s * Q[2] + c * Q[5], Q[6], Q[7], Q[8]];
         return { n, x, y, vx: 0, vy: 0, wx: 0, wy: 0, wz: 0, on: true, m, dirty: true };
       }
-      function rack(sh = shuffle) {
+      function rack(sh = shuffle, rnd = Math.random) {
         const balls = [newBall(0, HEAD[0], HEAD[1])];
         const rest = sh([1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15]);
         const cells = []; for (let k = 0; k < 5; k++) for (let j = 0; j <= k; j++) cells.push([k, j]);
@@ -53,7 +53,9 @@
         const a = rest[p0], b = rest[s0], order = rest.filter((n) => n !== a && n !== b);
         const seq = []; let oi = 0;
         for (let i = 0; i < 15; i++) { if (i === 10) seq.push(a); else if (i === 14) seq.push(b); else if (i === 4) seq.push(8); else seq.push(order[oi++]); }
-        cells.forEach(([k, j], i) => balls.push(newBall(seq[i], FOOT[0] + k * dx, FOOT[1] + (j - k / 2) * dy)));
+        // a real rack is never perfect: every ball sits up to ~0.4 px off its spot with a tiny gap, so no two breaks match
+        const jit = () => (rnd() - 0.5) * 0.8;
+        cells.forEach(([k, j], i) => balls.push(newBall(seq[i], FOOT[0] + k * (dx + 0.05 + rnd() * 0.3) + jit(), FOOT[1] + (j - k / 2) * dy + jit())));
         return balls;
       }
       const isMoving = (b) => b.vx !== 0 || b.vy !== 0 || b.wx !== 0 || b.wy !== 0;
@@ -241,7 +243,7 @@
       // seats come from the table (S): seat 0 breaks. Online the shooter's screen decides where the balls stopped
       // ('end'), so every screen agrees even if a ball rolls a hair differently.
       function start(body, sel, S) {
-        G = { S, me: S.online ? S.me : 0, body, guide: ['classic', 'pro', 'off'].includes(sel.guide) ? sel.guide : 'classic', lvl: +sel.lvl || 2, secs: +sel.clock, balls: rack(S.rng.shuffle), turn: 0, groups: [null, null], bih: false, placing: false, aim: 0, power: 0, lastPower: 0.45, spin: { a: 0, b: 0 }, phase: 'aim', shots: 0, tok: ++GT.cur, over: false, msg: '', fouls: 0, pocketedBy: [[], []], lastSnd: 0, pocketedTotal: 0, resign: false, drops: [], pull: null, aimDrag: false, cueVis: true, cuePull: 8, pred: null, predKey: '', lastTs: 0 };
+        G = { S, me: S.online ? S.me : 0, body, guide: ['classic', 'pro', 'off'].includes(sel.guide) ? sel.guide : 'classic', lvl: +sel.lvl || 2, secs: +sel.clock, balls: rack(S.rng.shuffle, S.rng.random), turn: 0, groups: [null, null], bih: false, placing: false, aim: 0, power: 0, lastPower: 0.45, spin: { a: 0, b: 0 }, phase: 'aim', shots: 0, tok: ++GT.cur, over: false, msg: '', fouls: 0, pocketedBy: [[], []], lastSnd: 0, pocketedTotal: 0, resign: false, drops: [], pull: null, aimDrag: false, cueVis: true, cuePull: 8, pred: null, predKey: '', lastTs: 0 };
         body.innerHTML = `<div class="pl-lay space-y-3"><div class="pl-seats grid grid-cols-2 gap-3" data-bub="left">
           <div id="pl-seat-0" class="seat" style="text-align:left"></div><div id="pl-seat-1" class="seat" style="text-align:left"></div></div>
           <div class="pl-table relative"><canvas id="pl-cv" width="${W}" height="${H}" style="width:100%;display:block;border:4px solid var(--ink);box-shadow:0 5px 0 var(--ink);touch-action:none;cursor:grab;background:#4B2E1A"></canvas></div>
@@ -263,6 +265,9 @@
             <div id="pl-clock"></div></div>
           <div class="grid grid-cols-2 gap-3"><button id="pl-resign" class="btn-game btn-coral py-2 text-sm">Resign</button><button id="pl-new" class="btn-game btn-graphite py-2 text-sm">${S.online ? 'Leave' : 'New game'}</button></div></div>`;
         G.cv = $('pl-cv'); G.ctx = G.cv.getContext('2d'); G.clock = makeClock($('pl-clock'));
+        // phones held upright (Inna, Nov 2026): the table stands up. Only the drawing turns; the physics is the same.
+        G.up = window.innerWidth < 640 && window.innerHeight > window.innerWidth;
+        if (G.up) { G.cv.width = H; G.cv.height = W; G.ctx.setTransform(0, 1, -1, 0, H, 0); G.cv.classList.add('pl-up'); body.querySelector('.pl-table').classList.add('pl-up-wrap'); }
         G.bg = document.createElement('canvas'); G.bg.width = W; G.bg.height = H; drawTable(G.bg.getContext('2d'));
         wireInput();
         $('pl-new').onclick = () => npConfirmLeave(() => open($('game-root')));
@@ -305,7 +310,9 @@
         c.fillStyle = '#E4572E'; c.strokeStyle = '#050E18'; c.lineWidth = 3; c.beginPath(); c.arc(S / 2 + G.spin.a * r, S / 2 - G.spin.b * r, 9, 0, 7); c.fill(); c.stroke();
       }
       function wireInput() {
-        const cv = G.cv, pt = (e) => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) * W / r.width, (e.clientY - r.top) * H / r.height]; };
+        const cv = G.cv, pt = (e) => { const r = cv.getBoundingClientRect();
+          if (G.up) { const X = (e.clientX - r.left) * H / r.width, Y = (e.clientY - r.top) * W / r.height; return [Y, H - X]; }   // upright table: turn the tap back
+          return [(e.clientX - r.left) * W / r.width, (e.clientY - r.top) * H / r.height]; };
         const aimAt = (x, y) => { const c = G.balls[0]; if (hyp(x - c.x, y - c.y) < 16) return; G.aim = Math.atan2(y - c.y, x - c.x); };
         cv.onpointermove = (e) => {
           if (G.over) return; const [x, y] = pt(e);
@@ -359,7 +366,13 @@
       function beginTurn() {
         if (G.over) return;
         G.phase = 'aim'; G.cueVis = true; G.cuePull = 8; G.predKey = ''; G.peekAim = undefined; G.peekPow = 0; G.peekPowT = 0;
-        G.S.onPeek = (i, d) => { if (G && G.phase === 'aim' && i === G.turn && d && isFinite(d.a)) { G.peekAim = +d.a; G.peekPowT = Math.max(0, Math.min(1, +d.p || 0)); } };
+        G.S.onPeek = (i, d) => {
+          if (!G || G.phase !== 'aim' || i !== G.turn || !d) return;
+          if (isFinite(d.a) && !d.h) { G.peekAim = +d.a; G.peekPowT = Math.max(0, Math.min(1, +d.p || 0)); }
+          // ball in hand on another screen: move our cue ball where they are dragging / dropped it
+          if (G.bih && Array.isArray(d.c) && isFinite(d.c[0]) && isFinite(d.c[1])) { G.peekCue = [+d.c[0], +d.c[1]]; G.peekHand = !!d.h; }
+        };
+        G.peekCue = null; G.peekHand = false;
         const me = myTurn(), c = G.balls[0];
         if (G.bih && me) { G.placing = true; say('Foul! You have the cue ball in hand: drag it anywhere on the table and let go.'); }
         panels(); setPower(0);
@@ -373,7 +386,7 @@
           const tok = G.tok;
           if (G.S.isHost) gTimeout(() => { if (G && G.tok === tok && !G.over && G.phase === 'aim') aiShoot(); }, 900);
         } else {
-          say(`${G.S.name(G.turn)} is lining up a shot...`);
+          say(G.bih ? `${G.S.name(G.turn)} has the cue ball in hand and is placing it...` : `${G.S.name(G.turn)} is lining up a shot...`);
           if (G.secs) G.clock.start(G.secs + 5, 'Their shot', () => {}, 6); else G.clock.idle('Their shot', '...');
         }
       }
@@ -401,6 +414,7 @@
       function sendShot(ang, speed, a, b, pull) {
         G.phase = 'sent';
         const c = G.balls[0];
+        if (G.shots === 0) { ang += (Math.random() - 0.5) * 0.006; speed *= 0.97 + Math.random() * 0.06; }   // a human break is never twice the same
         G.S.act({ t: 'shot', s: G.turn, n: G.shots, ang, speed, a, b, pull, cx: c.x, cy: c.y });
       }
       function apply(a) {
@@ -409,9 +423,13 @@
         if (a.t === 'shot') {
           if (a.s !== G.turn || a.n !== G.shots || !['aim', 'sent'].includes(G.phase)) return 0;
           const c = G.balls[0];
-          if (G.bih && validCue(+a.cx, +a.cy)) { c.x = +a.cx; c.y = +a.cy; } G.placing = false; G.bih = false; G.ghost = null;
+          let moved = 0;
+          if (G.bih && validCue(+a.cx, +a.cy)) { moved = hyp(c.x - a.cx, c.y - a.cy); c.x = +a.cx; c.y = +a.cy; } G.placing = false; G.bih = false; G.ghost = null; G.peekCue = null;
           G.aim = num(a.ang, -10, 10);
-          strike(G.aim, num(a.speed, 0, VMAX), num(a.a, -1, 1), num(a.b, -1, 1), num(a.pull, 0, 140));
+          const go = () => strike(G.aim, num(a.speed, 0, VMAX), num(a.a, -1, 1), num(a.b, -1, 1), num(a.pull, 0, 140));
+          // the cue ball was just placed somewhere new (e.g. a computer player's ball in hand): let everyone see it first
+          if (moved > 3 && !(typeof NP !== 'undefined' && NP.catchup)) { G.phase = 'sent'; const tok = G.tok; gTimeout(() => { if (G && G.tok === tok && !G.over) go(); }, 800); return 800; }
+          go();
           return 0;
         }
         if (a.t === 'end') {
@@ -439,6 +457,8 @@
       function strike(ang, speed, a, b, pull) {
         G.phase = 'stroke'; G.cueVis = true; G.cueFrom = pull; G.strokeT0 = performance.now(); G.pull = null; setPower(0);
         const tok = G.tok;
+        // replaying missed shots after a rejoin: start the shot at once, so its result (the next move) finds it started
+        if (typeof NP !== 'undefined' && NP.catchup) { G.cuePull = 8; launch(ang, speed, a, b); return; }
         gTimeout(() => { if (G && G.tok === tok && !G.over) { G.cuePull = 8; launch(ang, speed, a, b); } }, 150);
       }
       function launch(ang, speed, a = 0, b = 0) {
@@ -447,7 +467,7 @@
         G.follow = { t0: performance.now(), x: c.x, y: c.y, aim: ang, f: Math.min(1, speed / VMAX) };
         G.shotLegal = legalSet(G.balls, G.groups[G.turn]); G.shotOn8 = G.shotLegal.length === 1 && G.shotLegal[0] === 8 && !!G.groups[G.turn];
         G.isBreak = G.shots === 0;
-        poolSnd('cue', Math.min(1, speed / VMAX)); panels();
+        if (!(typeof NP !== 'undefined' && NP.catchup)) poolSnd('cue', Math.min(1, speed / VMAX)); panels();
       }
       // pool sounds follow how hard things hit: a soft kiss is a quiet tick, a hard break is a loud crack
       function poolSnd(kind, s) {
@@ -503,13 +523,18 @@
           const now = performance.now();
           if ((ev.snd || ev.pocketSound) && now - G.lastSnd > 45) { poolSnd(ev.pocketSound ? 'pocket' : ev.ballHit ? 'ball' : 'rail', ev.snd || 0.5); G.lastSnd = now; ev.snd = 0; ev.pocketSound = false; ev.ballHit = false; }
           if (!moving(G.balls)) settle();
+        } else if (G.phase === 'aim' && myTurn() && G.placing) {
+          // ball in hand: the other screens watch the cue ball being moved (Inna: "can't see where the opponent places the ball")
+          const gh = G.ghost || [G.balls[0].x, G.balls[0].y];
+          if (G.S.online && ts - (G.peekT || 0) > 80) { const k = (gh[0] | 0) + ',' + (gh[1] | 0); if (k !== G.peekK) { G.peekK = k; G.peekT = ts; G.S.peek({ a: +G.aim.toFixed(4), p: 0, c: [Math.round(gh[0]), Math.round(gh[1])], h: 1 }); } }
         } else if (G.phase === 'aim' && myTurn() && !G.placing) {
           // online: the other screens watch you aim and pull back live (about 12 times a second)
-          if (G.S.online && ts - (G.peekT || 0) > 80) { const k = G.aim.toFixed(3) + '|' + G.power.toFixed(2); if (k !== G.peekK) { G.peekK = k; G.peekT = ts; G.S.peek({ a: +G.aim.toFixed(4), p: +G.power.toFixed(3) }); } }
+          if (G.S.online && ts - (G.peekT || 0) > 80) { const c0 = G.balls[0], k = G.aim.toFixed(3) + '|' + G.power.toFixed(2) + '|' + (c0.x | 0) + ',' + (c0.y | 0); if (k !== G.peekK) { G.peekK = k; G.peekT = ts; G.S.peek({ a: +G.aim.toFixed(4), p: +G.power.toFixed(3), c: G.bih ? [Math.round(c0.x), Math.round(c0.y)] : undefined }); } }
           const pw = G.power > 0.02 ? G.power : G.lastPower, key = [G.aim.toFixed(4), G.spin.a.toFixed(2), G.spin.b.toFixed(2), pw.toFixed(2), G.balls[0].x | 0, G.balls[0].y | 0].join('|');
           if (key !== G.predKey) { G.predKey = key; G.pred = predict(G.balls, G.aim, speedOf(pw), G.spin.a, G.spin.b); }
         }
         // watching someone else aim: glide towards their live aim so it looks smooth
+        if (G.phase === 'aim' && !myTurn() && G.bih && G.peekCue) { const c = G.balls[0]; c.x += (G.peekCue[0] - c.x) * 0.4; c.y += (G.peekCue[1] - c.y) * 0.4; }
         if (G.phase === 'aim' && !myTurn() && G.peekAim !== undefined) { let d = G.peekAim - G.aim; d = Math.atan2(Math.sin(d), Math.cos(d)); G.aim += d * 0.35; G.peekPow += ((G.peekPowT || 0) - (G.peekPow || 0)) * 0.35; }
         draw();
         gRaf(loop);
@@ -537,6 +562,10 @@
           if (first) { G.groups[me] = groupOf(first); G.groups[opp] = G.groups[me] === 'solid' ? 'stripe' : 'solid'; msg = `${who(me) === 'You' ? 'You are' : who(me) + ' is'} ${G.groups[me] === 'solid' ? 'SOLIDS (1-7)' : 'STRIPES (9-15)'}.`; SFX.play('coin'); }
         }
         objPocketed.forEach((n) => { if (n !== 8 || result !== null) G.pocketedBy[me].push(n); });
+        // fun moment: 3 balls (or more) in one visit to the table
+        G.run = G.run || [0, 0]; G.run[opp] = 0;
+        const before = G.run[me]; G.run[me] = foul ? 0 : before + objPocketed.filter((n) => n !== 8).length;
+        if (before < 3 && G.run[me] >= 3) funMoment('pl-seat-' + me, { key: 'fire', icon: '🔥', label: 'ON FIRE', fire: true, burst: 'ON FIRE!', sub: `${G.S.name(me)}: ${G.run[me]} balls in a row`, mine: me === G.me });
         if (cueIn) { const c = G.balls[0]; c.on = true; c.x = HEAD[0]; c.y = HEAD[1]; c.vx = c.vy = c.wx = c.wy = c.wz = 0; if (!validCue(c.x, c.y)) { c.x = HEAD[0] - 50; } }
         G.pocketedTotal += objPocketed.length;
         panels();
@@ -549,6 +578,7 @@
         else if (keeps) { say(msg ? msg + ' Shoot again!' : `${who(me) === 'You' ? 'Nice shot! Shoot again.' : who(me) + ' sank a ball and shoots again.'}`); }
         else { G.turn = opp; G.bih = false; say((msg ? msg + ' ' : '') + (who(opp) === 'You' ? 'Your turn.' : `${G.S.name(opp)}'s turn.`)); }
         G.phase = 'wait'; G.ev = {};
+        if (typeof NP !== 'undefined' && NP.catchup) return beginTurn();   // replaying after a rejoin: the next shot follows at once
         gTimeout(() => beginTurn(), 450);
       }
       function respot8() { const b = G.balls.find((x) => x.n === 8); b.on = true; b.vx = b.vy = b.wx = b.wy = b.wz = 0; b.x = FOOT[0]; b.y = FOOT[1]; let k = 0; while (G.balls.some((o) => o !== b && o.on && hyp(o.x - b.x, o.y - b.y) < 2 * BR) && k++ < 20) b.x += BR * 2.1; }

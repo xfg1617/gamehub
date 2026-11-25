@@ -500,6 +500,9 @@
         const isSpare = !isStrike && knocked > 0 && left.length === 0;
         G.phase = 'result';
         if (isStrike) { SFX.play('strike'); flash('STRIKE!'); if (p.seat === G.me) G.strikes++; msg(`${p.name}: STRIKE!`); }
+        // fun moment: three strikes in a row is a turkey
+        p.strk = isStrike ? (p.strk || 0) + 1 : 0;
+        if (isStrike && p.strk === 3) funMoment('bw-seat-' + p.seat, { key: 'turkey', icon: '🦃', label: 'TURKEY', burst: 'TURKEY!', sub: `${p.name}: three strikes in a row`, mine: p.seat === G.me });
         else if (isSpare) { SFX.play('coin'); flash('SPARE!', '#34D399'); if (p.seat === G.me) G.spares++; msg(`${p.name}: Spare!`); }
         else if (G.ev.gutter && !knocked) { flash('GUTTER', '#FB7185'); SFX.play('nope'); msg(`${p.name} rolled a gutter ball.`); }
         else { flash(String(knocked), '#F7F4EC'); msg(`${p.name} knocked down ${knocked} pin${knocked === 1 ? '' : 's'}.`); }

@@ -315,7 +315,7 @@
             <div class="grid grid-cols-2 gap-3"><button id="ch-resign" class="btn-game btn-coral py-2.5 text-sm">Resign</button><button id="ch-new" class="btn-game btn-graphite py-2.5 text-sm">${S.online ? 'Leave' : 'New game'}</button></div>
           </div></div>`;
         G.clock = makeClock(document.getElementById('ch-clock'));
-        document.getElementById('ch-lvl').textContent = S.online ? (S.ranked ? 'ONLINE · RANKED' : `ONLINE · ROOM ${S.code}`) : `vs ${LV[G.lvl - 1]} AI`;
+        document.getElementById('ch-lvl').textContent = S.online ? (S.ranked ? 'ONLINE MATCH' : `ONLINE · ROOM ${S.code}`) : `vs ${LV[G.lvl - 1]} AI`;
         document.getElementById('ch-new').onclick = () => npConfirmLeave(() => open(document.getElementById('game-root')));
         document.getElementById('ch-resign').onclick = (e) => {
           if (G.over) return;
@@ -431,6 +431,8 @@
         const S = G.S, tok = G.tok;
         let res = 'draw', title = 'Draw', sub = '';
         if (s.winner) { res = s.winner === G.me ? 'win' : 'loss'; }
+        // fun moment: checkmate in 20 moves or fewer
+        if (s.kind === 'mate' && G.hist.length <= 40) funMoment('ch-none', { key: 'fast', icon: '⚡', label: 'LIGHTNING', burst: 'LIGHTNING MATE!', sub: `Checkmate in ${Math.ceil(G.hist.length / 2)} moves`, mine: res === 'win' });
         const opp = S.online ? oppName() : 'The AI';
         if (s.kind === 'mate') sub = res === 'win' ? (S.online ? 'Checkmate! You won.' : 'Checkmate! You beat the AI.') : S.online ? 'Checkmate. Good game!' : 'Checkmate. The AI got you this time.';
         else if (s.kind === 'resign') sub = 'You resigned.';

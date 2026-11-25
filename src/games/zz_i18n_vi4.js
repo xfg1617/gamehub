@@ -1,0 +1,68 @@
+    /* =========================================================================
+       VIETNAMESE, part 4 (Nov 2026 round 5): Random Game, points, the settings pop-up, "what next", turn timers,
+       Uno places, Find the Impostor rounds, the movable log. VI_MORE4 = exact lines, VI_PAT4 = lines with numbers.
+       ========================================================================= */
+    window.VI_MORE4 = {
+      'Random Game': 'Trò ngẫu nhiên', 'RANDOM GAME': 'TRÒ NGẪU NHIÊN',
+      'We pick the game and the settings. Play one game or a whole session: points from every game add up, and the most points wins.': 'Chúng tôi chọn trò chơi và cài đặt. Chơi một ván hoặc cả loạt: điểm của mọi ván được cộng dồn, ai nhiều điểm nhất thắng.',
+      'SESSION': 'LOẠT CHƠI', 'Quickie · 1 game': 'Nhanh · 1 ván', '3 games': '3 ván', 'Long · 5 games': 'Dài · 5 ván',
+      'Points from every game add up. Most points at the end is the champion.': 'Điểm của mọi ván được cộng dồn. Nhiều điểm nhất cuối cùng là nhà vô địch.',
+      'GAME LENGTH': 'ĐỘ DÀI VÁN', 'Quick versions': 'Bản nhanh', 'Normal': 'Bình thường',
+      'Quick versions use the short settings of each game.': 'Bản nhanh dùng cài đặt ngắn của từng trò.',
+      'WHICH GAMES': 'TRÒ NÀO', 'Any game': 'Bất kỳ', 'Card games': 'Trò bài', 'Board games': 'Trò bàn cờ', 'Party games': 'Trò nhóm',
+      'Same game twice': 'Một trò hai lần', 'Off: every game in the session is different.': 'Tắt: mỗi ván trong loạt là một trò khác nhau.',
+      '🎲 PICKING A GAME': '🎲 ĐANG CHỌN TRÒ', 'QUICKIE': 'NHANH',
+      // points
+      'Points': 'Điểm', 'POINTS': 'ĐIỂM', 'THIS WEEK': 'TUẦN NÀY', 'ALL TIME': 'MỌI LÚC', 'This week': 'Tuần này', 'All time': 'Mọi lúc', 'Friends': 'Bạn bè',
+      'LEADERBOARD · POINTS': 'BẢNG XẾP HẠNG · ĐIỂM', 'RESETS MONDAY': 'LÀM MỚI THỨ HAI', 'OFFLINE': 'NGOẠI TUYẾN', 'HOW POINTS WORK': 'CÁCH TÍNH ĐIỂM',
+      '1st place': 'Hạng nhất', '2nd place': 'Hạng nhì', '3rd place': 'Hạng ba', 'everyone else': 'những người khác',
+      'Two-player games: win 10, draw 5, loss 1. Against computer players only you get half. Fun moments add +2. Solo games give up to 5.': 'Trò hai người: thắng 10, hòa 5, thua 1. Chỉ chơi với máy thì được một nửa. Khoảnh khắc đặc biệt cộng +2. Trò chơi đơn tối đa 5.',
+      'Every game you finish earns points. The weekly board starts again every Monday.': 'Mỗi ván bạn chơi xong đều được điểm. Bảng tuần bắt đầu lại vào thứ Hai.',
+      'The leaderboard needs the online service. Your points are saved on this device.': 'Bảng xếp hạng cần dịch vụ trực tuyến. Điểm của bạn được lưu trên thiết bị này.',
+      'No points this week yet. Finish a game to be first on the board!': 'Tuần này chưa có điểm. Chơi xong một ván để đứng đầu bảng!',
+      'No points for you or your friends this week yet.': 'Tuần này bạn và bạn bè chưa có điểm.',
+      'The points leaderboard is not switched on yet. (Supabase: run backend/points.sql.)': 'Bảng điểm chưa được bật. (Supabase: chạy backend/points.sql.)',
+      '🏆 Points leaderboard': '🏆 Bảng điểm', "· this week's top players": '· người chơi giỏi nhất tuần này', 'Leaderboard': 'Bảng xếp hạng',
+      // settings pop-up
+      'GAME SETTINGS': 'CÀI ĐẶT VÁN CHƠI', 'Here is how this game is set up:': 'Ván này được cài đặt như sau:', 'Here is how the host set up this game:': 'Chủ phòng đã cài đặt ván này như sau:',
+      'Here is how this table is set up:': 'Bàn này được cài đặt như sau:', 'Picked at random. Here is how this game is set up:': 'Được chọn ngẫu nhiên. Ván này được cài đặt như sau:',
+      'Starting in': 'Bắt đầu sau', 'Everyone sees this': 'Mọi người đều thấy', 'Got it ✓': 'Đã hiểu ✓', 'Start now ▶': 'Bắt đầu ngay ▶', '? How to play': '? Cách chơi',
+      'Players': 'Người chơi', 'Computer players': 'Người chơi máy', '🎲 RANDOM': '🎲 NGẪU NHIÊN',
+      // what next
+      'NEXT GAME · EVERYONE STAYS TOGETHER': 'VÁN TIẾP · MỌI NGƯỜI Ở LẠI CÙNG NHAU', '🎲 Random game': '🎲 Trò ngẫu nhiên', '🔁 New session': '🔁 Loạt mới',
+      'The other players have left the table.': 'Những người chơi khác đã rời bàn.',
+      // turn timer
+      'TURN TIMER': 'ĐỒNG HỒ LƯỢT', 'Time for each move. When it runs out, a move is made for you.': 'Thời gian cho mỗi nước đi. Hết giờ, máy sẽ đi giúp bạn.',
+      "Time's up! A move was made for you.": 'Hết giờ! Máy đã đi giúp bạn.', 'Your turn': 'Lượt của bạn',
+      // log, uno, impostor
+      '📜 GAME LOG': '📜 NHẬT KÝ', '✥ DRAG': '✥ KÉO', 'out of cards': 'hết bài',
+      'Two tied votes in a row: the impostor escaped!': 'Hai lần phiếu hòa liên tiếp: kẻ giả mạo đã thoát!',
+      'voted out · not the impostor': 'bị loại · không phải kẻ giả mạo', 'TIED VOTE': 'PHIẾU HÒA', 'THE OTHERS ARE VOTING': 'NHỮNG NGƯỜI KHÁC ĐANG BỎ PHIẾU',
+      'You are out, so you watch this one.': 'Bạn đã bị loại, nên bạn xem vòng này.', 'VOTED OUT': 'BỊ LOẠI',
+      'Nobody is out. Another round of hints! (Another tie and the impostor escapes.)': 'Không ai bị loại. Thêm một vòng gợi ý! (Hòa thêm lần nữa thì kẻ giả mạo thoát.)',
+      'PLAYER': 'NGƯỜI CHƠI', 'GUEST': 'KHÁCH', 'Playing without an account': 'Đang chơi không có tài khoản', 'Close': 'Đóng',
+      '● Online now': '● Đang online', 'Invite to my room': 'Mời vào phòng tôi', 'Player card': 'Thẻ người chơi', 'Remove friend': 'Xóa bạn',
+      'TODAY': 'HÔM NAY', 'YESTERDAY': 'HÔM QUA', 'SAY HI TO YOUR FRIEND! ONLY THE TWO OF YOU CAN READ THIS.': 'CHÀO BẠN CỦA BẠN ĐI! CHỈ HAI BẠN ĐỌC ĐƯỢC.',
+      'Invite sent!': 'Đã gửi lời mời!', 'You: ': 'Bạn: ', '🎲 room invite': '🎲 lời mời vào phòng',
+      'ON FIRE!': 'NÓNG RỰC!', 'ON FIRE': 'NÓNG RỰC', 'SMOOTH LIAR!': 'NÓI DỐI ĐỈNH!', 'SMOOTH LIAR': 'NÓI DỐI ĐỈNH', 'TURKEY!': 'GÀ TÂY!', 'TURKEY': 'GÀ TÂY',
+      'ALL-IN HERO!': 'ANH HÙNG ALL-IN!', 'ALL-IN HERO': 'ANH HÙNG ALL-IN', 'BLUFF KING!': 'VUA LỪA!', 'BLUFF KING': 'VUA LỪA', 'LIGHTNING MATE!': 'CHIẾU HẾT CHỚP NHOÁNG!', 'LIGHTNING': 'CHỚP NHOÁNG',
+      'DOUBLE JUMP!': 'NHẢY ĐÔI!', 'TRIPLE JUMP!': 'NHẢY BA!', 'COMBO': 'COMBO', 'SURVIVOR!': 'SỐNG SÓT!', 'SURVIVOR': 'SỐNG SÓT', 'TYCOON!': 'ĐẠI GIA!', 'TYCOON': 'ĐẠI GIA',
+      'SHARPSHOOTER!': 'XẠ THỦ!', 'SHARPSHOOTER': 'XẠ THỦ', 'SPEED GUESSER!': 'ĐOÁN NHANH!', 'SPEEDY': 'NHANH', 'ARTIST!': 'HỌA SĨ!', 'ARTIST': 'HỌA SĨ', 'MASTER OF DISGUISE!': 'BẬC THẦY NGỤY TRANG!', 'DISGUISE': 'NGỤY TRANG',
+      'Three hits in a row': 'Ba phát trúng liên tiếp',
+      'Give a': 'Hãy đưa một', 'one-word hint.': 'gợi ý một từ.', 'new': 'mới',
+    };
+    window.VI_PAT4 = [
+      [/^GAME (\d+) OF (\d+) · UP NEXT$/, 'VÁN $1 / $2 · SẮP TỚI'], [/^RANDOM SESSION · AFTER GAME (\d+) OF (\d+)$/, 'LOẠT NGẪU NHIÊN · SAU VÁN $1 / $2'],
+      [/^SESSION · (\d+) GAMES$/, 'LOẠT · $1 VÁN'], [/^🎲 Next game \((\d+) of (\d+)\)(.*)$/, '🎲 Ván tiếp ($1 / $2)$3'],
+      [/^Waiting for (.+) to start game (\d+)\.\.\.$/, 'Đang chờ $1 bắt đầu ván $2...'], [/^Game (\d+) of (\d+): (.+)!$/, 'Ván $1 / $2: $3!'],
+      [/^🏆 SESSION OVER · CHAMPION: (.+)$/, '🏆 HẾT LOẠT · VÔ ĐỊCH: $1'], [/^🏆 SESSION OVER$/, '🏆 HẾT LOẠT'],
+      [/^🔁 (.+) again$/, '🔁 Chơi lại $1'], [/^Pick another game \((\d+) fit (\d+) players\) ▾$/, 'Chọn trò khác ($1 trò hợp với $2 người) ▾'],
+      [/^Everyone stays together: (.+) is choosing the next game\.\.\.$/, 'Mọi người ở lại cùng nhau: $1 đang chọn ván tiếp...'],
+      [/^Next game: (.+)\. Setting up the table\.\.\.$/, 'Ván tiếp: $1. Đang dọn bàn...'],
+      [/^(\d+) games · (\d+) wins$/, '$1 ván · $2 thắng'], [/^([\d,]+) pts$/, '$1 điểm'], [/^\+(\d+) pts$/, '+$1 điểm'], [/^\+(\d+) POINTS$/, '+$1 ĐIỂM'],
+      [/^(\d+) sec$/, '$1 giây'], [/^(\d+)(st|nd|rd|th) place$/, 'Hạng $1'], [/^(\d+)(ST|ND|RD|TH)$/, 'HẠNG $1'],
+      [/^(.+) IS OUT$/, '$1 BỊ LOẠI'],
+      [/^Guests don't have a profile yet, so they can't be added as friends\. Once (.+) signs up, you'll be able to add them\.$/, 'Khách chưa có hồ sơ nên chưa thể kết bạn. Khi $1 đăng ký, bạn sẽ thêm được.'],
+      [/^You invited (.+) to room (\w+)$/, 'Bạn đã mời $1 vào phòng $2'], [/^(.+) invited you to room (\w+)$/, '$1 mời bạn vào phòng $2'], [/^HINTS · ROUND (\d+)$/, 'GỢI Ý · VÒNG $1'], [/^Round (\d+)\.$/, 'Vòng $1.'],
+      [/^(\d+) player(s?)( \+ (\d+) computers?)?$/, (m, n, s, x, b) => `${n} người${b ? ` + ${b} máy` : ''}`],
+    ];

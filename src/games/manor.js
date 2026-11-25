@@ -74,6 +74,7 @@
           { key: 'n', label: 'DETECTIVES', def: 4, choices: [[3, '3'], [4, '4'], [5, '5'], [6, '6']], hint: 'On this device the others are computer detectives. Online, empty seats get computer detectives.' },
           { key: 'lvl', label: 'RIVAL DETECTIVES', def: 2, choices: [[1, 'Hasty'], [2, 'Sharp']], hint: 'Sharp detectives use every clue, including who could not show a card.' },
           { key: 'auto', label: 'Auto-fill notebook', toggle: true, def: 1, hint: 'Ticks your own cards, cards shown to you, and crosses for players who could not answer.', choices: [[1, 'On'], [0, 'Off']] },
+          turnOpt(60, [45, 60, 120]),
         ], (sel) => start(body, sel, npLocal([{ name: profile.username, avatar: profile.avatar }].concat(BOTS.slice(0, +sel.n - 1).map(([name, avatar]) => ({ bot: true, name, avatar }))), sel)));
       }
       // seats come from the table (S): on this device seat 0 is you; online every screen has its own seat (G.me).
@@ -85,7 +86,7 @@
         const sol = ['s', 't', 'r'].map((k) => { const c = deck.find((x) => x.k === k); deck.splice(deck.indexOf(c), 1); return c.id; });
         players.forEach((p, i) => { p.i = i; p.col = PCOL[i]; p.hand = []; p.room = 4; p.out = false; });
         deck.forEach((c, k) => players[k % n].hand.push(c.id));
-        G = { S, me: S.online ? S.me : 0, step: 0, players, sol, lvl: +sel.lvl, auto: !!+sel.auto, tok: ++GT.cur, over: false, log: [], cur: 0, turn: 0, sus: SUS.map((_, i) => [0, 1, 2, 6, 7, 8][i]), sugg: 0, marks: {} };
+        G = { S, me: S.online ? S.me : 0, turnT: +sel.turnT || 0, step: 0, players, sol, lvl: +sel.lvl, auto: !!+sel.auto, tok: ++GT.cur, over: false, log: [], cur: 0, turn: 0, sus: SUS.map((_, i) => [0, 1, 2, 6, 7, 8][i]), sugg: 0, marks: {} };
         const sizes = players.map((p) => p.hand.length).concat([3]);
         G.sizes = sizes;
         players.forEach((p) => { p.K = newKnow(n); p.shows = []; p.hand.forEach((c) => { p.K[p.i][c] = 1; }); CARDS.forEach((c) => { if (!p.hand.includes(c.id)) p.K[p.i][c.id] = -1; }); deduce(p.K, sizes, p.shows, G.lvl === 2); });
@@ -94,7 +95,7 @@
         players[meI].hand.forEach((c) => { G.note[meI][c] = 1; });
         if (G.auto) CARDS.forEach((c) => { if (!players[meI].hand.includes(c.id)) G.note[meI][c.id] = -1; });
         body.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_380px] gap-5 items-start">
-          <div class="space-y-3 min-w-0"><div class="mm-house"><div class="mm-roof">${MANOR_ART.roof}</div><div id="mm-map" class="mm-map"></div><div class="mm-lawn"></div></div><div id="mm-prompt" class="win p-3 text-sm min-h-[52px]"></div>
+          <div class="space-y-3 min-w-0"><div class="mm-house mm-clean"><div id="mm-map" class="mm-map"></div></div><div id="mm-prompt" class="win p-3 text-sm min-h-[52px]"></div>
             <div><div class="pix text-xs text-muted mb-1">YOUR CARDS</div><div id="mm-hand" class="flex gap-2 flex-wrap"></div></div>
             <div id="mm-players" class="flex gap-2 flex-wrap"></div></div>
           <div class="space-y-3 min-w-0"><div class="win overflow-hidden"><div class="winbar teal"><span>DETECTIVE NOTEBOOK</span><span class="pix text-xs">TAP TO MARK</span></div><div id="mm-note" class="mm-note"></div></div>
@@ -126,7 +127,10 @@
       async function decide(p, kind, ui, botFn, ms) {
         const NS = G.S, k = ++G.step, t = G.tok;
         if (NS.mine(p.i) && ui) Promise.resolve(ui()).then((v) => { if (G && G.tok === t && v !== undefined) NS.act({ t: kind, s: p.i, k, v }); });
+        const timed = NS.mine(p.i) && ui && !NS.bot(p.i) && G.turnT && (typeof NP === 'undefined' || !NP.catchup);
+        if (timed) turnClock('ma' + k, G.turnT, () => { if (!G || G.tok !== t || G.step !== k) return; prompt(''); NS.act({ t: kind, s: p.i, k, v: botFn() }); });
         const a = await NS.ask(p.i, () => ({ t: kind, k, v: botFn() }), ms, (x) => x.s === p.i && x.t === kind && x.k === k);
+        if (timed) turnClock(null);
         if (!G || G.tok !== t) throw ABORT;
         return a.v;
       }
@@ -290,6 +294,17 @@
       }
 
       /* ---------- drawing ---------- */
+      const px = (w, h, rs) => `<svg viewBox="0 0 ${w} ${h}" shape-rendering="crispEdges" width="100%" height="100%" aria-hidden="true">${rs}</svg>`;
+      const K0 = '#050E18', ph = (ms) => `animation-delay:-${Date.now() % ms}ms`;
+      const AMBIENT = {
+        0: `<span class="mm-amb mm-sway" style="left:14px;bottom:10px;width:22px;height:30px">${px(11, 15, '<rect x="5" y="4" width="1" height="11" fill="#1E7A3E"/><rect x="1" y="2" width="4" height="3" fill="#34D399"/><rect x="6" y="0" width="4" height="3" fill="#34D399"/><rect x="2" y="7" width="3" height="2" fill="#2EB67D"/><rect x="6" y="6" width="4" height="2" fill="#2EB67D"/>')}</span>`,
+        2: [[12, 22], [40, 48], [70, 18], [28, 70], [84, 40]].map(([x, y], k) => `<span class="mm-amb mm-tw" style="left:${x}%;top:${y}%;animation-delay:${k * 0.35}s"></span>`).join(''),
+        4: '', 5: [0, 0.6, 1.2].map((d) => `<span class="mm-amb mm-steam" style="animation-delay:${d}s"></span>`).join(''),
+        6: `<span class="mm-amb mm-flick" style="right:22px;top:30px;width:10px;height:14px">${px(5, 7, '<rect x="1" y="0" width="3" height="4" fill="#FDE68A"/><rect x="0" y="3" width="5" height="4" fill="#F97316"/>')}</span>`,
+        8: `<span class="mm-amb mm-wave" style="right:18%;bottom:14%;width:40px;height:8px">${px(10, 2, '<rect x="0" y="1" width="3" height="1" fill="#BFE6FF"/><rect x="3" y="0" width="4" height="1" fill="#BFE6FF"/><rect x="7" y="1" width="3" height="1" fill="#BFE6FF"/>')}</span>`,
+      };
+      const catHTML = () => `<span class="mm-amb mm-cat" style="${ph(16000)}">${px(17, 11, `<rect x="0" y="2" width="2" height="5" fill="${K0}"/><rect x="2" y="4" width="11" height="5" fill="${K0}"/><rect x="3" y="5" width="9" height="3" fill="#F5B041"/><rect x="12" y="1" width="5" height="6" fill="${K0}"/><rect x="13" y="2" width="3" height="4" fill="#F5B041"/><rect x="12" y="0" width="1" height="2" fill="${K0}"/><rect x="16" y="0" width="1" height="2" fill="${K0}"/><rect x="3" y="9" width="2" height="2" fill="${K0}"/><rect x="10" y="9" width="2" height="2" fill="${K0}"/>`)}</span>`;
+      Object.defineProperty(AMBIENT, 4, { get: catHTML, enumerable: true });
       const ROOM_ART = ['#1F6B42', '#5B3A1C', '#12314F', '#6B2D3F', '#23476C', '#7A5A20', '#3A2333', '#1F5F5B', '#1F5F93'];
       const catCol = { s: '#FB7185', t: '#2DD4BF', r: '#F5B041' };
       const cardHTML = (c, attrs = '') => { const C = CARDS[c]; return `<div class="mm-card" ${attrs} style="--cc:${catCol[C.k]}"><span class="mm-cat">${CAT[C.k].toUpperCase()}</span><span class="mm-cn">${C.n}</span>${C.k === 's' ? `<span class="mm-dot" style="background:${SUS_COL[C.i]}"></span>` : ''}</div>`; };
@@ -302,7 +317,7 @@
         area.innerHTML = ROOMS.map((r, i) => `<div class="mm-room ${canGo.includes(i) ? 'go' : ''} ${me.room === i ? 'here' : ''}" data-r="${i}" style="--rc:${ROOM_ART[i]}">
           <div class="mm-art">${MANOR_ART.rooms[i]}</div>${i % 3 < 2 ? '<span class="mm-door r"></span>' : ''}${i < 6 ? '<span class="mm-door b"></span>' : ''}
           <span class="mm-rn">${r}</span>${PASS_TO[i] !== undefined ? `<span class="mm-pass" title="Secret passage to the ${ROOMS[PASS_TO[i]]}"></span>` : ''}
-          <div class="mm-toks">${G.players.filter((p) => p.room === i).map((p) => `<span class="mm-tok ${p.out ? 'out' : ''}" data-fk="p${p.i}" style="background:${p.col}" title="${esc(p.name)}">${p.av}</span>`).join('')}</div>
+          <div class="mm-toks">${G.players.filter((p) => p.room === i).map((p) => `<span class="mm-tok ${p.out ? 'out' : ''} ${p.i === G.me ? 'me' : ''}" data-fk="p${p.i}" style="background:${p.col}" title="${esc(p.name)}">${p.av}${p.i === G.me ? '<span class="mm-you">YOU</span>' : ''}</span>`).join('')}</div>${AMBIENT[i] || ''}
           <div class="mm-sus">${SUS.map((s, k) => (G.sus[k] === i ? `<span class="mm-st" data-fk="s${k}" style="background:${SUS_COL[k]}" title="${s}">${s.split(' ').pop()[0]}</span>` : '')).join('')}</div></div>`).join('');
         area.querySelectorAll('.mm-room.go').forEach((el) => { el.onclick = () => { if (G.pickRoom) G.pickRoom(+el.dataset.r); }; });
         gFlip(area, before, { enter: false });

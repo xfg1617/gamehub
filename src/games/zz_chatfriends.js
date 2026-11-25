@@ -11,7 +11,7 @@
         if (!bar || document.getElementById('chat-fr-btn')) return;
         const b = document.createElement('button'); b.id = 'chat-fr-btn'; b.className = 'chat-fr-btn'; b.textContent = '👥 Friends'; b.title = 'Message your friends';
         b.onclick = (e) => { e.stopPropagation(); CF.on ? back() : openList(); };
-        const name = document.getElementById('chat-room-name'); name.insertAdjacentElement('afterend', b);
+        (window.chatTabs ? chatTabs() : bar).appendChild(b);
       }
       function back() {
         CF.on = false; CF.sel = null; clearInterval(CF.timer);

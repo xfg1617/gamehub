@@ -124,11 +124,12 @@
         setupScreen(body, mod, [
           { key: 'n', label: 'PLAYERS', def: 2, choices: [[2, '2 players'], [4, '4 players']] },
           { key: 'lvl', label: 'COMPUTER LEVEL', def: 2, choices: [[1, 'Easy'], [2, 'Medium'], [3, 'Hard']] },
+          turnOpt(30, [20, 30, 60]),
         ], (sel) => start(body, sel, npLocal([{ name: profile.username, avatar: profile.avatar }].concat(BOTS.slice(0, +sel.n - 1).map(([name, avatar]) => ({ bot: true, name, avatar }))), sel)));
       }
       function start(body, sel, S) {
         const n = S.n === 4 || +sel.n === 4 ? 4 : 2;
-        G = { S, n, st: newState(n), lvl: +sel.lvl || 2, tok: ++GT.cur, over: false, ghostW: null, lastWall: null };
+        G = { S, n, turnT: +sel.turnT || 0, mv: 0, st: newState(n), lvl: +sel.lvl || 2, tok: ++GT.cur, over: false, ghostW: null, lastWall: null };
         GT.started = true; GT.over = false;
         const me = S.online ? S.me : 0;
         G.me = me; G.rot = ROT[G.st.side[me]];
@@ -163,14 +164,14 @@
         if (a.t === 'move') {
           if (!pawnMoves(st, a.s).some(([r, c]) => r === a.r && c === a.c)) return 0;
           const before = gSnap($('hr-board'));
-          doMove(st, a.s, a.r, a.c); SFX.play('move'); G.ghostW = null; draw();
+          doMove(st, a.s, a.r, a.c); G.mv++; SFX.play('move'); G.ghostW = null; draw();
           const ms = gFlip($('hr-board'), before) || 0;
           if (st.win >= 0) { const tok = G.tok; gTimeout(() => { if (G && G.tok === tok) finish(st.win); }, ms + 350); return ms + 400; }
           return ms + 120;
         }
         if (a.t === 'wall') {
           if (wallProblem(st, a.s, a.o, a.r, a.c)) return 0;
-          doWall(st, a.s, a.o, a.r, a.c); G.lastWall = `${a.o}${a.r},${a.c}`; SFX.play('card'); G.ghostW = null; draw(); G.lastWall = null;
+          doWall(st, a.s, a.o, a.r, a.c); G.mv++; G.lastWall = `${a.o}${a.r},${a.c}`; SFX.play('card'); G.ghostW = null; draw(); G.lastWall = null;
           return 420;
         }
         return 0;
@@ -183,6 +184,7 @@
       function draw() {
         const st = G.st, bd = $('hr-board'); if (!bd) return;
         const mine = myTurn(), moves = mine ? pawnMoves(st, G.me) : [];
+        turnClock(mine && !G.S.bot(G.me) && (typeof NP === 'undefined' || !NP.catchup) ? 'hr' + G.mv : null, G.turnT, () => { if (myTurn()) G.S.act(Object.assign({ s: G.me }, aiAction(G.st, G.me, 2))); });
         const mv = new Set(moves.map(([r, c]) => r * N + c));
         const route = st.p[G.me] ? dist(st.walls, st.p[G.me], st.side[G.me], true) || [] : [];
         const onRoute = new Set(route.slice(1).map(([r, c]) => r * N + c));

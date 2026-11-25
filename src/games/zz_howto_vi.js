@@ -104,7 +104,14 @@
           ['Xem trước, Xáo bài, Xin bài', 'Xem trước cho xem 3 lá trên cùng. Xáo bài trộn lại chồng bài. Xin bài bắt một người phải đưa bạn một lá họ chọn.'],
           ['Không Đời Nào!', 'Ai cũng có thể đánh Không Đời Nào bất cứ lúc nào để chặn một lá bài. Có thể Không Đời Nào cả một lá Không Đời Nào!'],
           ['Bộ mèo', 'Lá mèo đánh lẻ không làm gì. Một đôi: chọn một lá úp của một người. Bộ ba: gọi tên một lá, nếu họ có thì phải đưa. Năm con mèo khác nhau: lấy bất kỳ lá nào trong chồng bài đã đánh.']], online: ONT },
-        colorclash: { goal: 'Là người đầu tiên đánh hết bài.', steps: [
+        random: { goal: 'Ghi nhiều điểm nhất qua một loạt trò ngẫu nhiên.', steps: [
+          ['Tập hợp', 'Mở phòng riêng và gửi link cho bạn bè, hoặc vào trận trực tuyến. Chủ phòng có thể thêm người chơi máy.'],
+          ['Chọn loạt chơi', 'Nhanh là 1 ván, hoặc chơi liền 3 hay 5 ván. Có thể chỉ chọn trò bài, trò bàn cờ hoặc trò nhóm.'],
+          ['Bất ngờ!', 'Khi chủ phòng bấm Bắt đầu, một trò hợp với mọi người được chọn ngẫu nhiên. Một hộp hiện cách cài đặt trước khi chơi.'],
+          ['Cộng điểm', 'Mỗi ván cho điểm: hạng nhất 10, nhì 6, ba 3, còn lại 1. Sau mỗi ván bạn xem bảng điểm, rồi ván tiếp bắt đầu.'],
+          ['Nhà vô địch', 'Sau ván cuối, người nhiều điểm nhất là nhà vô địch. Bấm Loạt mới để chơi tiếp.']],
+          tip: 'Chưa biết chơi trò nào? Mỗi trò đều có hướng dẫn và video ngay trên thanh trên cùng.', online: 'Mọi người ở cùng nhau qua từng ván: cùng người, cùng phòng chat. Chủ phòng bắt đầu ván tiếp theo.' },
+        colorclash: { goal: 'Là người đầu tiên đánh hết bài. Những người còn lại chơi tiếp để giành hạng 2, 3, 4 cho đến khi chỉ còn một người giữ bài.', steps: [
           ['Đánh trùng', 'Đánh một lá trùng với lá trên cùng về <b>màu</b> hoặc <b>số/ký hiệu</b>.'],
           ['Không đánh được?', 'Rút một lá từ chồng bài. Nếu hợp, bạn có thể đánh luôn.'],
           ['Lá đặc biệt', 'Một số lá cho người kế bị mất lượt, đổi chiều chơi, hoặc bắt người kế phải rút bài (xem bên dưới).'],
@@ -154,8 +161,9 @@
         impostor: { goal: 'Dân thường: tìm ra kẻ giả mạo. Kẻ giả mạo: trà trộn và đừng để bị bắt.', steps: [
           ['Từ bí mật', 'Mọi người nhận cùng một từ bí mật, trừ một người là kẻ giả mạo, nhận một từ gần giống nhưng khác. Không ai biết ai là kẻ giả mạo, kể cả chính họ!'],
           ['Gợi ý', 'Lần lượt, mỗi người gõ một từ để gợi ý về từ của mình. Đủ rõ để đồng đội hiểu, đủ mơ hồ để kẻ giả mạo không đoán được.'],
-          ['Bỏ phiếu', 'Mọi người bỏ phiếu cho người mình nghĩ là kẻ giả mạo.'],
-          ['Cơ hội cuối', 'Kẻ giả mạo bị bắt được đoán một lần từ của cả nhóm. Đoán đúng thì vẫn thắng! Phiếu hòa thì kẻ giả mạo thoát.']],
+          ['Bỏ phiếu', 'Mọi người bỏ phiếu cho người mình nghĩ là kẻ giả mạo. Nếu cả nhóm loại nhầm một người KHÔNG phải kẻ giả mạo, người đó bị loại và một vòng gợi ý mới bắt đầu.'],
+          ['Đến khi còn 2 người', 'Chơi tiếp từng vòng. Nếu chỉ còn 2 người, kẻ giả mạo thắng. Hai lần phiếu hòa liên tiếp cũng giúp kẻ giả mạo thoát.'],
+          ['Cơ hội cuối', 'Kẻ giả mạo bị bắt được đoán một lần từ của cả nhóm. Đoán đúng thì vẫn thắng!']],
           online: 'Mọi người gõ gợi ý trên màn hình của mình, rồi cùng bỏ phiếu một lúc. ' + ONT },
         doodle: { goal: 'Đoán thật nhanh hình người khác vẽ, và vẽ thật dễ hiểu để họ đoán được hình của bạn.', steps: [
           ['Chọn từ', 'Đến lượt vẽ, chọn một từ <b>dễ</b>, <b>vừa</b> hoặc <b>khó</b>. Từ càng khó càng nhiều điểm (×1, ×1,5, ×2). Chỉ bạn thấy từ đó.'],

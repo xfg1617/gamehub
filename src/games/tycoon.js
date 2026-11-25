@@ -651,7 +651,7 @@
         const eloRow = G.NS.online ? await G.NS.finish(won ? 'win' : 'loss') : null;
         if (!G || G.tok !== tok) return;
         const s = gstat('tycoon'); s.bestWorth = Math.max(s.bestWorth || 0, S.cash[me] ? netWorth(S, me) : 0); s.houses = (s.houses || 0) + G.built; s.props = (s.props || 0) + G.boughtN;
-        reportGame('tycoon', won ? 'win' : 'loss', { elo, xp: won ? 35 + lvl * 10 : 12, label: gaveUp ? 'Gave up' : `${G.NS.online ? 'Online · ' : ''}Finished ${['1st', '2nd', '3rd', '4th'][place - 1]} of ${n}` });
+        reportGame('tycoon', won ? 'win' : 'loss', { place: gaveUp ? undefined : place, elo, xp: won ? 35 + lvl * 10 : 12, label: gaveUp ? 'Gave up' : `${G.NS.online ? 'Online · ' : ''}Finished ${['1st', '2nd', '3rd', '4th'][place - 1]} of ${n}` });
         SFX.play(won ? 'win' : 'lose'); render();
         const rows = ranks.map((r, i) => [`${i + 1}. ${r.p.name}`, r.p.out ? 'Bankrupt' : money(r.w), r.p.i === me ? 'text-amber' : 'text-bone']).concat(eloRow ? [eloRow] : []);
         gTimeout(() => gameResult({ title: won ? 'You are the Tycoon!' : gaveUp ? 'You gave up' : `You finished ${['1st', '2nd', '3rd', '4th'][place - 1]}`, sub: won ? 'Richest player at the table.' : 'Net worth = cash + properties + buildings.', tone: won ? 'amber' : 'coral', sprite: won ? 'trophy' : 'anchor', rows: [...rows, ['Elo', (elo > 0 ? '+' : '') + elo, elo >= 0 ? 'text-emerald' : 'text-coral']], againLabel: 'New game', again: () => open($('game-root')) }), 800);
@@ -823,7 +823,14 @@
           if (hopWho === p && !motionOff()) el.firstElementChild.animate([{ translate: '0 0' }, { translate: '0 -9px', offset: 0.45 }, { translate: '0 0' }], { duration: 250, easing: 'ease-out' });
         });
       }
+      // fun moment: owning two whole colour sets
+      function tycoonCheck() {
+        if (!G || !G.S || !G.players) return; G.tyDone = G.tyDone || {};
+        G.players.forEach((p) => { if (G.tyDone[p.i] || p.out) return; const n = Object.keys(GROUPS).filter((g) => owns(G.S, p.i, g)).length;
+          if (n >= 2) { G.tyDone[p.i] = 1; funMoment('ty-pl-' + p.i, { key: 'tycoon', icon: '👑', label: 'TYCOON', burst: 'TYCOON!', sub: `${p.name} owns two whole colour sets`, mine: p.i === G.me }); } });
+      }
       function render(hopWho) {
+        try { tycoonCheck(); } catch (e) {}
         const bd = $('ty-board'); if (!bd) return;
         if (!bd.firstElementChild || G.tall !== (bd.parentElement.clientWidth < 560)) buildBoard();
         else if (G.boardW !== bd.parentElement.getBoundingClientRect().width) sizeBoard(bd, G.tall);

@@ -31,6 +31,11 @@ def _ctx(br, real, account=True):
         if account: ctx.add_init_script("try { if (!sessionStorage.getItem('psnet_email')) sessionStorage.setItem('psnet_email', 'tester@gamehub.test'); } catch (e) {}")
     return ctx
 
+def rejoin(pg):
+    """After a reload: press Rejoin if the box is offered; opening the room's own link (/r/CODE) rejoins by itself."""
+    b = pg.query_selector('[data-rj="yes"]')
+    if b: b.click(); return 'offer'
+    return 'auto'
 def players(p, n=2, real=False, account=True):
     br = launch(p); out = []
     if real:

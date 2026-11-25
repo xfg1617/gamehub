@@ -390,6 +390,9 @@
         if (p.hand.includes('defuse')) {
           await flyCard(handCardEl(p, 'defuse'), discEl(), cardHTML('defuse'));
           p.hand.splice(p.hand.indexOf('defuse'), 1); G.discard.push('defuse'); if (isMe(p)) G.stats.defused++;
+          // fun moment: saved by an Oven Mitt twice
+          p.saves = (p.saves || 0) + 1;
+          if (p.saves === 2) funMoment(isMe(p) ? 'kk-me' : 'kk-seat-' + G.players.indexOf(p), { key: 'surv', icon: '🛡️', label: 'SURVIVOR', burst: 'SURVIVOR!', sub: `${p.name} escaped the Hot Potato twice`, mine: isMe(p) });
           SFX.play('reveal'); log(`${nm(p)} grabs it with an 🧤 <b>OVEN MITT</b> and sneaks it back into the pile.`);
           let pos;
           const k = ++G.step;

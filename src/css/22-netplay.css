@@ -93,12 +93,19 @@
       .np-room { max-width: 1560px; }
       body.in-game .np-room { margin-top: 18px; }
       .np-room:has(#np-chatwin:not(.hidden)) { grid-template-columns: minmax(0, 1fr) 400px; }
-      .np-room:has(.np-bots) .np-room-main { max-width: none; }
-      .np-room:has(.np-bots) #np-lob { column-count: 2; column-gap: 2.25rem; padding: 1.75rem 2rem; }
-      #np-lob:has(.np-bots) > * { break-inside: avoid; }
+      .np-room:has(.np-bots, .np-sets) .np-room-main { max-width: none; }
+      .np-room:has(.np-bots, .np-sets) #np-lob { column-count: 2; column-gap: 2.25rem; padding: 1.75rem 2rem; }
+      #np-lob:has(.np-bots, .np-sets) > * { break-inside: avoid; }
+      #np-lob:not(:has(.np-bots)) > .np-sets { break-before: column; margin-top: 0 !important; }
       #np-lob > .np-bots { break-before: column; margin-top: 0 !important; }
-      #np-lob:has(.np-bots) .room-code { font-size: 3rem; padding: .6rem 2.4rem; }
-      #np-lob:has(.np-bots) .np-seat { padding: 12px 14px; font-size: 1.05rem; }
-      #np-lob:has(.np-bots) > *:last-child { margin-top: 1rem; }
+      #np-lob:has(.np-bots, .np-sets) .room-code { font-size: 3rem; padding: .6rem 2.4rem; }
+      #np-lob:has(.np-bots, .np-sets) .np-seat { padding: 12px 14px; font-size: 1.05rem; }
+      #np-lob:has(.np-bots, .np-sets) > *:last-child { margin-top: 1rem; }
       .np-room-chat .chatbox { height: calc(100vh - 230px); min-height: 460px; max-height: 720px; }
     }
+    /* a setting that matters a lot (Doodle Guess's word language, `hero: true`): first, in an amber frame, big buttons */
+    .np-set-hero { background: #122A40; border: 3px solid var(--ink); box-shadow: inset 0 0 0 2px #F5B041; padding: .6rem .7rem .75rem; margin: 0 -.2rem .2rem; }
+    .np-set-hero .np-set-l { color: #F5B041; font-size: 1rem; }
+    .np-set-h { font-size: .8rem; color: #9DB4CC; margin: -.15rem 0 .45rem; }
+    .np-set-hero .seg-btn { font-size: 1rem; padding-top: .7rem; padding-bottom: .7rem; }
+    .np-set-hero .np-set-v { font-size: 1.25rem; color: #F5B041; }

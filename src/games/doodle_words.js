@@ -53,4 +53,67 @@
           'thức khuya', 'nghiện điện thoại'],
       },
     };
+
+    // more words (Nov 25 2026, Inna: "add more words, both languages"); a word already in any level is skipped
+    const DOODLE_MORE = {
+      en: {
+        easy: ['orange', 'strawberry', 'watermelon', 'pineapple', 'corn', 'potato', 'tomato', 'pumpkin', 'candy', 'juice', 'milk', 'chicken', 'monkey',
+          'tiger', 'zebra', 'panda', 'fox', 'wolf', 'deer', 'goat', 'worm', 'ladybug', 'fly', 'sword', 'shield', 'sofa', 'toilet', 'bathtub', 'sink',
+          'mirror', 'towel', 'pillow', 'blanket', 'broom', 'soap', 'comb', 'brush', 'nail', 'glove', 'scarf', 'coat', 'dress', 'skirt', 'pants',
+          'boots', 'belt', 'wallet', 'watch', 'necklace', 'coin', 'money', 'envelope', 'stamp', 'map', 'newspaper', 'calendar', 'gift', 'toy', 'doll',
+          'teddy bear', 'puzzle', 'dice', 'swing', 'slide', 'beach', 'sea', 'river', 'lake', 'wave', 'fire', 'smoke', 'sunflower', 'rose', 'tulip',
+          'grass', 'bush', 'rock', 'sand', 'shell', 'starfish', 'feather', 'nest', 'spider web', 'bone', 'skull', 'tongue', 'lips', 'hair', 'beard',
+          'mustache', 'finger', 'arm', 'leg', 'knee', 'baby', 'girl', 'boy', 'tent', 'wheel', 'gate', 'fence', 'roof', 'stairs', 'tv'],
+        medium: ['helicopter', 'tractor', 'motorcycle', 'truck', 'taxi', 'ship', 'canoe', 'hot air balloon', 'jellyfish', 'seahorse', 'dolphin',
+          'flamingo', 'peacock', 'parrot', 'eagle', 'squirrel', 'hedgehog', 'raccoon', 'koala', 'sloth', 'hippo', 'rhino', 'crocodile', 'camel',
+          'llama', 'gorilla', 'scorpion', 'lobster', 'pyramid', 'statue', 'tower', 'skyscraper', 'church', 'temple', 'hospital', 'school', 'library',
+          'farm', 'barn', 'zoo', 'circus', 'stadium', 'playground', 'swimming pool', 'fountain', 'cave', 'jungle', 'forest', 'sunglasses', 'backpack',
+          'suitcase', 'wheelchair', 'stethoscope', 'thermometer', 'microscope', 'magnet', 'battery', 'light bulb', 'washing machine', 'fridge', 'oven',
+          'microwave', 'blender', 'vacuum cleaner', 'fan', 'calculator', 'keyboard', 'remote control', 'game controller', 'trophy', 'medal', 'whistle',
+          'trumpet', 'violin', 'saxophone', 'harp', 'sushi', 'taco', 'spaghetti', 'noodles', 'waffle', 'cupcake', 'muffin', 'pretzel', 'croissant',
+          'milkshake', 'firefighter', 'teacher', 'nurse', 'police officer', 'mail carrier', 'clown', 'ninja', 'cowboy', 'mummy', 'fairy', 'genie',
+          'troll', 'giant', 'elf', 'santa claus', 'reindeer', 'easter egg', 'jack o lantern', 'christmas tree', 'snow globe', 'treasure chest'],
+        hard: ['sunburn', 'hiccups', 'daydreaming', 'stage fright', 'jet lag', 'homesick', 'rush hour', 'garage sale', 'pillow fight', 'sleepover',
+          'road trip', 'picnic', 'barbecue', 'karaoke', 'marathon', 'tightrope', 'trampoline', 'bungee jumping', 'skydiving', 'scuba diving',
+          'mountain climbing', 'ice skating', 'snowball fight', 'sandstorm', 'avalanche', 'tsunami', 'northern lights', 'meteor shower', 'full moon',
+          'sunrise', 'sunset', 'heatwave', 'blizzard', 'fog', 'gossip', 'secret', 'promise', 'apology', 'birthday wish', 'blind date', 'lottery',
+          'online shopping', 'social media', 'podcast', 'livestream', 'screenshot', 'emoji', 'autocorrect', 'low battery', 'deadline', 'job interview',
+          'retirement', 'babysitting', 'haircut', 'bad hair day', 'monday morning', 'missing the bus', 'lost keys', 'stepping on a lego', 'stubbed toe',
+          'spilled milk', 'burnt toast', 'flat tire', 'parallel parking', 'speed bump', 'drive through', 'pay day', 'loading screen', 'game over',
+          'high five', 'group hug', 'secret handshake', 'mind reading', 'teleport', 'superpower', 'time machine', 'parallel universe', 'fortune teller',
+          'thunderstorm', 'spring break', 'world record', 'red carpet', 'standing ovation', 'photo bomb', 'sore loser', 'beginner luck'],
+      },
+      vi: {
+        easy: ['con gà', 'con heo', 'con trâu', 'con khỉ', 'con hổ', 'con ngựa', 'con thỏ', 'con kiến', 'con ong', 'con muỗi', 'con nhện', 'con rắn',
+          'con ếch', 'con chuột', 'con gấu', 'con sư tử', 'con bò', 'con dê', 'con cừu', 'quả cam', 'quả chuối', 'quả táo', 'quả dưa hấu', 'quả xoài',
+          'quả dừa', 'chùm nho', 'quả dâu', 'quả chanh', 'quả dứa', 'bắp ngô', 'củ cà rốt', 'củ khoai', 'quả cà chua', 'quả bí ngô', 'cây nấm',
+          'hoa sen', 'hoa hồng', 'hoa mai', 'hoa đào', 'chiếc lá', 'mặt trăng', 'ngôi sao', 'đám mây', 'cơn mưa', 'xe đạp', 'xe máy', 'ô tô',
+          'xe buýt', 'máy bay', 'tàu thủy', 'nón lá', 'đôi giày', 'đôi dép', 'cái áo', 'cái quần', 'cái váy', 'cái mũ', 'cái ô', 'chìa khóa',
+          'đồng hồ', 'quyển sách', 'cây bút', 'cái cốc', 'cái chai', 'cái bát', 'con dao', 'cái gương', 'cái lược', 'khăn tắm', 'cái gối', 'cái chăn',
+          'quạt máy', 'ngôi nhà', 'cái cửa', 'cầu thang', 'con mắt', 'cái mũi', 'cái miệng', 'bàn tay', 'bàn chân', 'cái tai', 'mái tóc', 'cái răng',
+          'nụ cười', 'ngọn núi', 'dòng sông', 'bãi biển', 'hòn đảo', 'cái giếng', 'em bé', 'cái xô', 'cục xà phòng', 'cái chổi', 'cái thang', 'hàng rào'],
+        medium: ['cá heo', 'con sứa', 'cá ngựa', 'hồng hạc', 'con công', 'con vẹt', 'đại bàng', 'con sóc', 'con nhím', 'gấu túi', 'hà mã', 'tê giác',
+          'cá sấu', 'lạc đà', 'khỉ đột', 'bọ cạp', 'tôm hùm', 'kim tự tháp', 'bức tượng', 'tòa nhà chọc trời', 'ngôi chùa', 'nhà thờ', 'bệnh viện',
+          'trường học', 'thư viện', 'nông trại', 'sở thú', 'rạp xiếc', 'sân vận động', 'sân chơi', 'hồ bơi', 'đài phun nước', 'hang động', 'khu rừng',
+          'kính râm', 'ba lô', 'va li', 'xe lăn', 'nhiệt kế', 'kính hiển vi', 'nam châm', 'cục pin', 'bóng đèn', 'máy giặt', 'tủ lạnh', 'lò vi sóng',
+          'máy xay sinh tố', 'máy hút bụi', 'máy tính bỏ túi', 'bàn phím', 'điều khiển ti vi', 'tay cầm chơi game', 'huy chương', 'cái còi',
+          'kèn trumpet', 'đàn violin', 'đàn bầu', 'sáo trúc', 'bánh cuốn', 'bún chả', 'bún bò', 'cơm tấm', 'gỏi cuốn', 'chè', 'bánh bao', 'xôi',
+          'bánh tráng trộn', 'trà đào', 'sinh tố', 'lính cứu hỏa', 'giáo viên', 'y tá', 'công an', 'chú hề', 'cao bồi', 'xác ướp', 'bà tiên',
+          'thần đèn', 'ông già Noel', 'tuần lộc', 'cây thông Noel', 'mâm ngũ quả', 'bánh trung thu', 'đèn ông sao', 'xe ba gác', 'chợ nổi',
+          'mũ bảo hiểm', 'cây đa', 'con trâu cày', 'bình hoa', 'rương kho báu', 'quả cầu tuyết'],
+        hard: ['say nắng', 'mơ mộng', 'sợ độ cao', 'lệch múi giờ', 'nhớ nhà', 'dọn nhà đón Tết', 'giờ cao điểm', 'đánh nhau bằng gối', 'ngủ lại nhà bạn',
+          'đi phượt', 'dã ngoại', 'tiệc nướng', 'chạy marathon', 'đi trên dây', 'nhảy dù', 'lặn biển', 'leo núi', 'trượt băng', 'ném tuyết', 'bão cát',
+          'sóng thần', 'cực quang', 'mưa sao băng', 'trăng tròn', 'bình minh', 'hoàng hôn', 'nắng nóng', 'sương mù', 'buôn chuyện', 'bí mật', 'lời hứa',
+          'nói dối', 'xin lỗi', 'ước sinh nhật', 'hẹn hò giấu mặt', 'xổ số', 'phá sản', 'mua sắm trực tuyến', 'mạng xã hội', 'người nổi tiếng',
+          'phát trực tiếp', 'chụp màn hình', 'hết pin', 'thư rác', 'hạn chót', 'tăng ca', 'phỏng vấn xin việc', 'thăng chức', 'nghỉ hưu', 'trông em',
+          'đi nha sĩ', 'cắt tóc', 'sáng thứ Hai', 'báo thức reo', 'lỡ xe buýt', 'mất chìa khóa', 'dẫm phải lego', 'vấp ngón chân', 'đổ sữa',
+          'bánh mì cháy', 'thủng lốp', 'đỗ xe', 'gờ giảm tốc', 'wifi miễn phí', 'ngày lĩnh lương', 'thua cuộc', 'đập tay', 'ôm tập thể',
+          'đọc suy nghĩ', 'dịch chuyển tức thời', 'siêu năng lực', 'cỗ máy thời gian', 'vũ trụ song song', 'gói bánh chưng', 'bắn pháo hoa',
+          'chúc Tết', 'đi chùa', 'xông đất', 'rước đèn', 'đua thuyền', 'nhảy dây', 'ô ăn quan', 'bói toán', 'giông bão', 'thảm đỏ', 'kỷ lục thế giới'],
+      },
+    };
+    Object.keys(DOODLE_MORE).forEach((lang) => {
+      const seen = new Set(); Object.values(DOODLE_WORDS[lang]).forEach((l) => l.forEach((w) => seen.add(w.toLowerCase())));
+      Object.keys(DOODLE_MORE[lang]).forEach((lvl) => DOODLE_MORE[lang][lvl].forEach((w) => { if (!seen.has(w.toLowerCase())) { seen.add(w.toLowerCase()); DOODLE_WORDS[lang][lvl].push(w); } }));
+    });
     window.DOODLE_WORDS = DOODLE_WORDS;

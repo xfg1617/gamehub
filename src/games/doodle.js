@@ -37,8 +37,8 @@
         const body = gameShell(root, mod, '', 'max-w-[900px] mx-auto');
         setupScreen(body, mod, [
           { key: 'n', label: 'PLAYERS', def: 8, choices: [[2, '2'], [3, '3'], [4, '4'], [5, '5'], [6, '6'], [8, '8']] },
-          { key: 'lang', label: 'WORDS', def: (typeof LANG !== 'undefined' && LANG.code === 'vi') ? 'vi' : 'en', choices: [['en', 'English'], ['vi', 'Tiếng Việt']] },
-          { key: 'rounds', label: 'ROUNDS', def: 2, choices: [[1, '1'], [2, '2'], [3, '3']], hint: 'In each round, everyone draws once.' },
+          { key: 'lang', label: 'WORD LANGUAGE', hero: true, def: (typeof LANG !== 'undefined' && LANG.code === 'vi') ? 'vi' : 'en', choices: [['en', '🇺🇸 English'], ['vi', '🇻🇳 Tiếng Việt']], hint: 'Which language the words to draw are in.' },
+          { key: 'rounds', label: 'ROUNDS', def: 5, choices: [[1, '1'], [2, '2'], [3, '3'], [5, '5']], hint: 'In each round, everyone draws once.' },
           { key: 'dtime', label: 'DRAWING TIME', def: 60, choices: [[60, '60 sec'], [80, '80 sec'], [100, '100 sec']] },
         ], (sel) => showToast('Draw & Guess is played with friends online: create a room and invite them.', 'info'),
           'Take turns drawing a word while everyone else races to guess it. Play with friends: create a room and send them the link.');
@@ -195,7 +195,10 @@
       /* ====================== SOLO: GUESS THE DOODLE ====================== */
       const norm = (s) => String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9]/g, '');
       function lev(a, b) { const m = a.length, n = b.length; const d = Array.from({ length: m + 1 }, (_, i) => [i, ...Array(n).fill(0)]); for (let j = 1; j <= n; j++) d[0][j] = j; for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); return d[m][n]; }
-      function matches(guess, doodle) { const g = norm(guess); if (!g) return false; return doodle.w.some((w) => { const x = norm(w); return g === x || g === x + 's' || (x.length >= 5 && lev(g, x) <= 1); }); }
+      // stricter (Nov 2026, Inna: "reduce correct tolerance"): the whole word must be right. Only capitals, spaces and
+      // Vietnamese accent marks may differ. One wrong letter or an extra 's' is NOT accepted any more: it shows as "close".
+      function matches(guess, doodle) { const g = norm(guess); if (!g) return false; return doodle.w.some((w) => g === norm(w)); }
+      function near(guess, word) { const g = norm(guess), x = norm(word); return !!g && g !== x && x.length >= 4 && lev(g, x) <= 1; }
       const ROUNDS = 6, TIME = 30;
       function solo(body) {
         G = { mode: 'solo', body, round: 0, score: 0, right: 0, order: shuffle(DOODLES.map((_, i) => i)).slice(0, ROUNDS), tok: ++GT.cur, over: false };
@@ -250,7 +253,7 @@
       const WORDS = ['apple', 'banana', 'rocket', 'castle', 'guitar', 'snowman', 'pizza', 'rainbow', 'spider', 'umbrella', 'robot', 'dragon', 'island', 'camera', 'balloon', 'penguin', 'volcano', 'sandwich', 'ladder', 'candle', 'glasses', 'trophy', 'whale', 'turtle', 'cactus', 'kite', 'anchor', 'crown', 'ghost', 'bridge', 'cookie', 'flower', 'pirate', 'rabbit', 'shoe', 'clock', 'moon', 'star', 'bicycle', 'giraffe'];
       async function LW(ms) { const t = G && G.tok; await gSleep(window.__fast && !G.S.online ? Math.min(ms, 40) : ms); if (!G || G.tok !== t) throw ABORT; }
       function live(body, sel, S) {
-        G = { mode: 'live', lang: sel.lang === 'vi' ? 'vi' : 'en', S, body, me: S.online ? S.me : 0, score: S.seats.map(() => 0), rounds: +sel.rounds || 2, time: +sel.dtime || 80, tok: ++GT.cur, over: false, step: 0, view: {} };
+        G = { mode: 'live', lang: sel.lang === 'vi' ? 'vi' : 'en', S, body, me: S.online ? S.me : 0, score: S.seats.map(() => 0), rounds: +sel.rounds || 5, time: +sel.dtime || 80, tok: ++GT.cur, over: false, step: 0, view: {} };
         GT.started = true; GT.over = false;
         S.track(); npBar('');
         body.innerHTML = `<div class="dg-wrap grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-4 items-start">
@@ -333,6 +336,10 @@
             SFX.play(g.s === G.me ? 'win' : 'coin'); board();
             if (g.s === G.me) { $('dg-in').disabled = true; $('dg-in').placeholder = 'You got it! Wait for the others...'; }
             if (others.every((i) => G.guessed.has(i))) break;
+          } else if (near(g.txt, word)) {
+            // a nearly-right guess is not shown to the others (it would give the word away)
+            if (g.s === G.me) { feed(`<b class="text-amber">${esc(String(g.txt || '').slice(0, 40))}: so close! Check the spelling.</b>`); SFX.play('tick'); }
+            else feed(`<b>${esc(S.name(g.s))}</b> <span class="text-amber">is close!</span>`);
           } else feed(`<b>${esc(S.name(g.s))}:</b> ${esc(String(g.txt || '').slice(0, 40))}`);
         }
         gClearInt(hintT); G.clock.stop(); G.k = null;
@@ -413,12 +420,12 @@
         rules: { tag: 'DRAW & GUESS · 2-8 PLAYERS', steps: [
           '<strong class="text-bone">Drawing:</strong> When it is your turn, pick an <b>easy</b>, <b>medium</b> or <b>hard</b> word (harder words score more) and draw it. No letters or numbers! Everyone sees your drawing as you make it.',
           '<strong class="text-bone">Guessing:</strong> Everyone else sees the level and a dash for every letter, and types guesses. The faster you guess right, the more points you get. Some letters show up when time runs low.',
-          '<strong class="text-bone">Points:</strong> The drawer gets points too, for every player who guesses, so the more people get it, the more the drawer scores. After everyone has drawn (1, 2 or 3 rounds), the most points wins.',
+          '<strong class="text-bone">Points:</strong> The drawer gets points too, for every player who guesses, so the more people get it, the more the drawer scores. After everyone has drawn (1 to 5 rounds), the most points wins.',
         ], tip: 'Draw the most important shape first, big and simple. Details can wait.' },
         profileTiles: (s) => [['GAMES', s.played, 'text-bone'], ['WINS', s.wins || 0, 'text-amber'], ['GUESSED', s.guessed || 0, 'text-emerald'], ['BEST SOLO', s.bestSolo || 0, 'text-teal']],
         extraRows: (s) => srow('Drawings made', s.drawings || 0),
         online: { seats: (sel) => +sel.n || 8, min: 2, bots: false, ranked: false, start: (body, sel, S) => live(body, sel, S) },
-        engine: { DOODLES, matches, norm, word: () => (G && G.word) || '' }, open, close() { G = null; },
+        engine: { DOODLES, matches, near, norm, word: () => (G && G.word) || '' }, open, close() { G = null; },
       };
       registerGame(mod);
     })();

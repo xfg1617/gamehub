@@ -14,6 +14,8 @@ with sync_playwright() as p:
     A, B = players(p, 2)
     code = open_table(A, 'doodle', 'room', {'n': 2, 'rounds': 1, 'dtime': 60, 'lang': 'vi'})
     check(not A.query_selector('.np-bots-hi'), 'the room has no computer players box')
+    check(A.evaluate("(document.querySelector('.np-set-hero') || {}).innerText || ''").startswith('WORD LANGUAGE'), 'the word language is the first, framed setting in the room')
+    A.screenshot(path=S + '14_doodle_room.png')
     join(B, code); A.wait_for_timeout(2000); start(A); A.wait_for_timeout(2500)
     check(A.query_selector('#dg-stage') and B.query_selector('#dg-stage'), 'the game started on both screens')
     w = A.evaluate("DOODLE_WORDS"); counts = {l: len(w['en'][l]) + len(w['vi'][l]) for l in ('easy', 'medium', 'hard')}
@@ -40,6 +42,13 @@ with sync_playwright() as p:
         if k == 0: guesser.screenshot(path=S + '14_doodle_guesser.png')
         plain = guesser.evaluate("(w) => w.normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').replace(/đ/g, 'd')", word)
         before = guesser.evaluate("GAME_MODS.doodle.engine.word() && 0")
+        # one wrong letter is not accepted any more (Nov 2026): the guesser hears "so close", the others only "is close!"
+        if len(plain.replace(' ', '')) >= 4:
+            wrong = plain[:-1] + ('x' if plain[-1] != 'x' else 'q')
+            guesser.fill('#dg-in', wrong); guesser.press('#dg-in', 'Enter'); guesser.wait_for_timeout(2000)
+            gf = guesser.inner_text('#dg-feed').split('drawing now')[-1]; df = drawer.inner_text('#dg-feed').split('drawing now')[-1]
+            check('so close' in gf and 'guessed the word' not in gf, f'"{wrong}" (one letter off) is not accepted, the guesser sees "so close"')
+            check('is close' in df and wrong not in df, 'the drawer sees "is close!", not the nearly-right word')
         guesser.fill('#dg-in', plain); guesser.press('#dg-in', 'Enter'); guesser.wait_for_timeout(2000)
         feed = guesser.inner_text('#dg-feed')
         check('guessed the word' in feed.split('drawing now')[-1], f'"{plain}" (no accents) counts for "{word}"')

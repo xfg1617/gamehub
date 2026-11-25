@@ -215,7 +215,7 @@
         const ropts = !(quick && max === 2) ? (m._roomOpts || []).filter((o) => !o.when || o.when(rsel)) : [];
         const valTxt = (o) => esc((o.choices.find((c) => String(c[0]) === String(cur[o.key])) || o.choices.find((c) => String(c[0]) === String(o.def)) || ['', '?'])[1]);
         const setsUI = ropts.length ? `<div class="np-sets"><div class="flex items-center justify-between gap-2 mb-1"><span class="pix text-xs tracking-wider text-muted">GAME SETTINGS</span><span class="pix text-xs ${isHost ? 'text-amber' : 'text-muted'}">${isHost ? 'TAP TO CHANGE' : 'THE HOST CHOOSES'}</span></div>
-          ${ropts.map((o) => `<div class="np-set"><div class="np-set-l">${esc(o.label)}</div>${isHost
+          ${ropts.slice().sort((a, b) => (b.hero ? 1 : 0) - (a.hero ? 1 : 0)).map((o) => `<div class="np-set${o.hero ? ' np-set-hero' : ''}"><div class="np-set-l">${esc(o.label)}</div>${o.hero && o.hint ? `<div class="np-set-h">${esc(o.hint)}</div>` : ''}${isHost
             ? `<div class="seg w-full">${o.choices.map((c) => `<button data-sk="${esc(o.key)}" data-sv="${esc(c[0])}" class="seg-btn flex-1 ${String(c[0]) === String(cur[o.key] !== undefined ? cur[o.key] : o.def) ? 'on' : ''}">${esc(c[1])}</button>`).join('')}</div>`
             : `<div class="np-set-v">${valTxt(o)}</div>`}</div>`).join('')}</div>` : '';
         const auto = autoAt ? Math.max(0, Math.ceil((autoAt - Date.now()) / 1000)) : 0;

@@ -871,3 +871,14 @@ folder that was handed over, so they do not exist here.)
 * Each player picks their own: **🎨 Table** in those games' header (`gameShell` → `openTablePicker`), saved in
   `ps_table_v1`, not sent online. Colours are CSS variables `--tb-*` set on `<html>` by `TABLES.apply`.
   `test/t_tables.py`. Mine Saboteurs / Castles & Kings have their own boards and are not included.
+
+## 5y. Doodle Guess tweaks (Nov 25 2026, Inna)
+
+* **Stricter guesses**: `matches` accepts only the exact word (capitals, spaces and Vietnamese accents may differ); the old
+  "one typo / extra s" allowance is gone. A guess one letter off (`near`) shows "so close! Check the spelling." to the
+  guesser only; everyone else sees "X is close!" (never the nearly-right text).
+* **ROUNDS** 1 / 2 / 3 / 5, default 5.
+* **More words**: `DOODLE_MORE` in doodle_words.js is merged in (duplicates skipped): ~550 English, ~460 Vietnamese.
+* **Word language stands out**: setting `hero: true` (netplay sorts it first, `.np-set-hero` amber frame, hint line,
+  bigger buttons, flags). Rooms with settings but no computer-players box (Doodle) also use the two-column room layout.
+  `test/t_doodle_live.py` checks the near guess and the hero setting.

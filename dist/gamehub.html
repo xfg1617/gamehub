@@ -1065,15 +1065,22 @@
       .np-room { max-width: 1560px; }
       body.in-game .np-room { margin-top: 18px; }
       .np-room:has(#np-chatwin:not(.hidden)) { grid-template-columns: minmax(0, 1fr) 400px; }
-      .np-room:has(.np-bots) .np-room-main { max-width: none; }
-      .np-room:has(.np-bots) #np-lob { column-count: 2; column-gap: 2.25rem; padding: 1.75rem 2rem; }
-      #np-lob:has(.np-bots) > * { break-inside: avoid; }
+      .np-room:has(.np-bots, .np-sets) .np-room-main { max-width: none; }
+      .np-room:has(.np-bots, .np-sets) #np-lob { column-count: 2; column-gap: 2.25rem; padding: 1.75rem 2rem; }
+      #np-lob:has(.np-bots, .np-sets) > * { break-inside: avoid; }
+      #np-lob:not(:has(.np-bots)) > .np-sets { break-before: column; margin-top: 0 !important; }
       #np-lob > .np-bots { break-before: column; margin-top: 0 !important; }
-      #np-lob:has(.np-bots) .room-code { font-size: 3rem; padding: .6rem 2.4rem; }
-      #np-lob:has(.np-bots) .np-seat { padding: 12px 14px; font-size: 1.05rem; }
-      #np-lob:has(.np-bots) > *:last-child { margin-top: 1rem; }
+      #np-lob:has(.np-bots, .np-sets) .room-code { font-size: 3rem; padding: .6rem 2.4rem; }
+      #np-lob:has(.np-bots, .np-sets) .np-seat { padding: 12px 14px; font-size: 1.05rem; }
+      #np-lob:has(.np-bots, .np-sets) > *:last-child { margin-top: 1rem; }
       .np-room-chat .chatbox { height: calc(100vh - 230px); min-height: 460px; max-height: 720px; }
     }
+    /* a setting that matters a lot (Doodle Guess's word language, `hero: true`): first, in an amber frame, big buttons */
+    .np-set-hero { background: #122A40; border: 3px solid var(--ink); box-shadow: inset 0 0 0 2px #F5B041; padding: .6rem .7rem .75rem; margin: 0 -.2rem .2rem; }
+    .np-set-hero .np-set-l { color: #F5B041; font-size: 1rem; }
+    .np-set-h { font-size: .8rem; color: #9DB4CC; margin: -.15rem 0 .45rem; }
+    .np-set-hero .seg-btn { font-size: 1rem; padding-top: .7rem; padding-bottom: .7rem; }
+    .np-set-hero .np-set-v { font-size: 1.25rem; color: #F5B041; }
     /* ===== HOW TO PLAY: title grid + step-by-step guides ===== */
     .ht-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
     .ht-tile { display: flex; align-items: center; gap: 10px; padding: 12px; background: #0F2A44; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); text-align: left; color: #F7F4EC; transition: transform .08s; }
@@ -7601,7 +7608,7 @@
         const ropts = !(quick && max === 2) ? (m._roomOpts || []).filter((o) => !o.when || o.when(rsel)) : [];
         const valTxt = (o) => esc((o.choices.find((c) => String(c[0]) === String(cur[o.key])) || o.choices.find((c) => String(c[0]) === String(o.def)) || ['', '?'])[1]);
         const setsUI = ropts.length ? `<div class="np-sets"><div class="flex items-center justify-between gap-2 mb-1"><span class="pix text-xs tracking-wider text-muted">GAME SETTINGS</span><span class="pix text-xs ${isHost ? 'text-amber' : 'text-muted'}">${isHost ? 'TAP TO CHANGE' : 'THE HOST CHOOSES'}</span></div>
-          ${ropts.map((o) => `<div class="np-set"><div class="np-set-l">${esc(o.label)}</div>${isHost
+          ${ropts.slice().sort((a, b) => (b.hero ? 1 : 0) - (a.hero ? 1 : 0)).map((o) => `<div class="np-set${o.hero ? ' np-set-hero' : ''}"><div class="np-set-l">${esc(o.label)}</div>${o.hero && o.hint ? `<div class="np-set-h">${esc(o.hint)}</div>` : ''}${isHost
             ? `<div class="seg w-full">${o.choices.map((c) => `<button data-sk="${esc(o.key)}" data-sv="${esc(c[0])}" class="seg-btn flex-1 ${String(c[0]) === String(cur[o.key] !== undefined ? cur[o.key] : o.def) ? 'on' : ''}">${esc(c[1])}</button>`).join('')}</div>`
             : `<div class="np-set-v">${valTxt(o)}</div>`}</div>`).join('')}</div>` : '';
         const auto = autoAt ? Math.max(0, Math.ceil((autoAt - Date.now()) / 1000)) : 0;
@@ -10637,8 +10644,8 @@
         const body = gameShell(root, mod, '', 'max-w-[900px] mx-auto');
         setupScreen(body, mod, [
           { key: 'n', label: 'PLAYERS', def: 8, choices: [[2, '2'], [3, '3'], [4, '4'], [5, '5'], [6, '6'], [8, '8']] },
-          { key: 'lang', label: 'WORDS', def: (typeof LANG !== 'undefined' && LANG.code === 'vi') ? 'vi' : 'en', choices: [['en', 'English'], ['vi', 'Tiếng Việt']] },
-          { key: 'rounds', label: 'ROUNDS', def: 2, choices: [[1, '1'], [2, '2'], [3, '3']], hint: 'In each round, everyone draws once.' },
+          { key: 'lang', label: 'WORD LANGUAGE', hero: true, def: (typeof LANG !== 'undefined' && LANG.code === 'vi') ? 'vi' : 'en', choices: [['en', '🇺🇸 English'], ['vi', '🇻🇳 Tiếng Việt']], hint: 'Which language the words to draw are in.' },
+          { key: 'rounds', label: 'ROUNDS', def: 5, choices: [[1, '1'], [2, '2'], [3, '3'], [5, '5']], hint: 'In each round, everyone draws once.' },
           { key: 'dtime', label: 'DRAWING TIME', def: 60, choices: [[60, '60 sec'], [80, '80 sec'], [100, '100 sec']] },
         ], (sel) => showToast('Draw & Guess is played with friends online: create a room and invite them.', 'info'),
           'Take turns drawing a word while everyone else races to guess it. Play with friends: create a room and send them the link.');
@@ -10795,7 +10802,10 @@
       /* ====================== SOLO: GUESS THE DOODLE ====================== */
       const norm = (s) => String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9]/g, '');
       function lev(a, b) { const m = a.length, n = b.length; const d = Array.from({ length: m + 1 }, (_, i) => [i, ...Array(n).fill(0)]); for (let j = 1; j <= n; j++) d[0][j] = j; for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); return d[m][n]; }
-      function matches(guess, doodle) { const g = norm(guess); if (!g) return false; return doodle.w.some((w) => { const x = norm(w); return g === x || g === x + 's' || (x.length >= 5 && lev(g, x) <= 1); }); }
+      // stricter (Nov 2026, Inna: "reduce correct tolerance"): the whole word must be right. Only capitals, spaces and
+      // Vietnamese accent marks may differ. One wrong letter or an extra 's' is NOT accepted any more: it shows as "close".
+      function matches(guess, doodle) { const g = norm(guess); if (!g) return false; return doodle.w.some((w) => g === norm(w)); }
+      function near(guess, word) { const g = norm(guess), x = norm(word); return !!g && g !== x && x.length >= 4 && lev(g, x) <= 1; }
       const ROUNDS = 6, TIME = 30;
       function solo(body) {
         G = { mode: 'solo', body, round: 0, score: 0, right: 0, order: shuffle(DOODLES.map((_, i) => i)).slice(0, ROUNDS), tok: ++GT.cur, over: false };
@@ -10850,7 +10860,7 @@
       const WORDS = ['apple', 'banana', 'rocket', 'castle', 'guitar', 'snowman', 'pizza', 'rainbow', 'spider', 'umbrella', 'robot', 'dragon', 'island', 'camera', 'balloon', 'penguin', 'volcano', 'sandwich', 'ladder', 'candle', 'glasses', 'trophy', 'whale', 'turtle', 'cactus', 'kite', 'anchor', 'crown', 'ghost', 'bridge', 'cookie', 'flower', 'pirate', 'rabbit', 'shoe', 'clock', 'moon', 'star', 'bicycle', 'giraffe'];
       async function LW(ms) { const t = G && G.tok; await gSleep(window.__fast && !G.S.online ? Math.min(ms, 40) : ms); if (!G || G.tok !== t) throw ABORT; }
       function live(body, sel, S) {
-        G = { mode: 'live', lang: sel.lang === 'vi' ? 'vi' : 'en', S, body, me: S.online ? S.me : 0, score: S.seats.map(() => 0), rounds: +sel.rounds || 2, time: +sel.dtime || 80, tok: ++GT.cur, over: false, step: 0, view: {} };
+        G = { mode: 'live', lang: sel.lang === 'vi' ? 'vi' : 'en', S, body, me: S.online ? S.me : 0, score: S.seats.map(() => 0), rounds: +sel.rounds || 5, time: +sel.dtime || 80, tok: ++GT.cur, over: false, step: 0, view: {} };
         GT.started = true; GT.over = false;
         S.track(); npBar('');
         body.innerHTML = `<div class="dg-wrap grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-4 items-start">
@@ -10933,6 +10943,10 @@
             SFX.play(g.s === G.me ? 'win' : 'coin'); board();
             if (g.s === G.me) { $('dg-in').disabled = true; $('dg-in').placeholder = 'You got it! Wait for the others...'; }
             if (others.every((i) => G.guessed.has(i))) break;
+          } else if (near(g.txt, word)) {
+            // a nearly-right guess is not shown to the others (it would give the word away)
+            if (g.s === G.me) { feed(`<b class="text-amber">${esc(String(g.txt || '').slice(0, 40))}: so close! Check the spelling.</b>`); SFX.play('tick'); }
+            else feed(`<b>${esc(S.name(g.s))}</b> <span class="text-amber">is close!</span>`);
           } else feed(`<b>${esc(S.name(g.s))}:</b> ${esc(String(g.txt || '').slice(0, 40))}`);
         }
         gClearInt(hintT); G.clock.stop(); G.k = null;
@@ -11013,12 +11027,12 @@
         rules: { tag: 'DRAW & GUESS · 2-8 PLAYERS', steps: [
           '<strong class="text-bone">Drawing:</strong> When it is your turn, pick an <b>easy</b>, <b>medium</b> or <b>hard</b> word (harder words score more) and draw it. No letters or numbers! Everyone sees your drawing as you make it.',
           '<strong class="text-bone">Guessing:</strong> Everyone else sees the level and a dash for every letter, and types guesses. The faster you guess right, the more points you get. Some letters show up when time runs low.',
-          '<strong class="text-bone">Points:</strong> The drawer gets points too, for every player who guesses, so the more people get it, the more the drawer scores. After everyone has drawn (1, 2 or 3 rounds), the most points wins.',
+          '<strong class="text-bone">Points:</strong> The drawer gets points too, for every player who guesses, so the more people get it, the more the drawer scores. After everyone has drawn (1 to 5 rounds), the most points wins.',
         ], tip: 'Draw the most important shape first, big and simple. Details can wait.' },
         profileTiles: (s) => [['GAMES', s.played, 'text-bone'], ['WINS', s.wins || 0, 'text-amber'], ['GUESSED', s.guessed || 0, 'text-emerald'], ['BEST SOLO', s.bestSolo || 0, 'text-teal']],
         extraRows: (s) => srow('Drawings made', s.drawings || 0),
         online: { seats: (sel) => +sel.n || 8, min: 2, bots: false, ranked: false, start: (body, sel, S) => live(body, sel, S) },
-        engine: { DOODLES, matches, norm, word: () => (G && G.word) || '' }, open, close() { G = null; },
+        engine: { DOODLES, matches, near, norm, word: () => (G && G.word) || '' }, open, close() { G = null; },
       };
       registerGame(mod);
     })();
@@ -11078,6 +11092,69 @@
           'thức khuya', 'nghiện điện thoại'],
       },
     };
+
+    // more words (Nov 25 2026, Inna: "add more words, both languages"); a word already in any level is skipped
+    const DOODLE_MORE = {
+      en: {
+        easy: ['orange', 'strawberry', 'watermelon', 'pineapple', 'corn', 'potato', 'tomato', 'pumpkin', 'candy', 'juice', 'milk', 'chicken', 'monkey',
+          'tiger', 'zebra', 'panda', 'fox', 'wolf', 'deer', 'goat', 'worm', 'ladybug', 'fly', 'sword', 'shield', 'sofa', 'toilet', 'bathtub', 'sink',
+          'mirror', 'towel', 'pillow', 'blanket', 'broom', 'soap', 'comb', 'brush', 'nail', 'glove', 'scarf', 'coat', 'dress', 'skirt', 'pants',
+          'boots', 'belt', 'wallet', 'watch', 'necklace', 'coin', 'money', 'envelope', 'stamp', 'map', 'newspaper', 'calendar', 'gift', 'toy', 'doll',
+          'teddy bear', 'puzzle', 'dice', 'swing', 'slide', 'beach', 'sea', 'river', 'lake', 'wave', 'fire', 'smoke', 'sunflower', 'rose', 'tulip',
+          'grass', 'bush', 'rock', 'sand', 'shell', 'starfish', 'feather', 'nest', 'spider web', 'bone', 'skull', 'tongue', 'lips', 'hair', 'beard',
+          'mustache', 'finger', 'arm', 'leg', 'knee', 'baby', 'girl', 'boy', 'tent', 'wheel', 'gate', 'fence', 'roof', 'stairs', 'tv'],
+        medium: ['helicopter', 'tractor', 'motorcycle', 'truck', 'taxi', 'ship', 'canoe', 'hot air balloon', 'jellyfish', 'seahorse', 'dolphin',
+          'flamingo', 'peacock', 'parrot', 'eagle', 'squirrel', 'hedgehog', 'raccoon', 'koala', 'sloth', 'hippo', 'rhino', 'crocodile', 'camel',
+          'llama', 'gorilla', 'scorpion', 'lobster', 'pyramid', 'statue', 'tower', 'skyscraper', 'church', 'temple', 'hospital', 'school', 'library',
+          'farm', 'barn', 'zoo', 'circus', 'stadium', 'playground', 'swimming pool', 'fountain', 'cave', 'jungle', 'forest', 'sunglasses', 'backpack',
+          'suitcase', 'wheelchair', 'stethoscope', 'thermometer', 'microscope', 'magnet', 'battery', 'light bulb', 'washing machine', 'fridge', 'oven',
+          'microwave', 'blender', 'vacuum cleaner', 'fan', 'calculator', 'keyboard', 'remote control', 'game controller', 'trophy', 'medal', 'whistle',
+          'trumpet', 'violin', 'saxophone', 'harp', 'sushi', 'taco', 'spaghetti', 'noodles', 'waffle', 'cupcake', 'muffin', 'pretzel', 'croissant',
+          'milkshake', 'firefighter', 'teacher', 'nurse', 'police officer', 'mail carrier', 'clown', 'ninja', 'cowboy', 'mummy', 'fairy', 'genie',
+          'troll', 'giant', 'elf', 'santa claus', 'reindeer', 'easter egg', 'jack o lantern', 'christmas tree', 'snow globe', 'treasure chest'],
+        hard: ['sunburn', 'hiccups', 'daydreaming', 'stage fright', 'jet lag', 'homesick', 'rush hour', 'garage sale', 'pillow fight', 'sleepover',
+          'road trip', 'picnic', 'barbecue', 'karaoke', 'marathon', 'tightrope', 'trampoline', 'bungee jumping', 'skydiving', 'scuba diving',
+          'mountain climbing', 'ice skating', 'snowball fight', 'sandstorm', 'avalanche', 'tsunami', 'northern lights', 'meteor shower', 'full moon',
+          'sunrise', 'sunset', 'heatwave', 'blizzard', 'fog', 'gossip', 'secret', 'promise', 'apology', 'birthday wish', 'blind date', 'lottery',
+          'online shopping', 'social media', 'podcast', 'livestream', 'screenshot', 'emoji', 'autocorrect', 'low battery', 'deadline', 'job interview',
+          'retirement', 'babysitting', 'haircut', 'bad hair day', 'monday morning', 'missing the bus', 'lost keys', 'stepping on a lego', 'stubbed toe',
+          'spilled milk', 'burnt toast', 'flat tire', 'parallel parking', 'speed bump', 'drive through', 'pay day', 'loading screen', 'game over',
+          'high five', 'group hug', 'secret handshake', 'mind reading', 'teleport', 'superpower', 'time machine', 'parallel universe', 'fortune teller',
+          'thunderstorm', 'spring break', 'world record', 'red carpet', 'standing ovation', 'photo bomb', 'sore loser', 'beginner luck'],
+      },
+      vi: {
+        easy: ['con gà', 'con heo', 'con trâu', 'con khỉ', 'con hổ', 'con ngựa', 'con thỏ', 'con kiến', 'con ong', 'con muỗi', 'con nhện', 'con rắn',
+          'con ếch', 'con chuột', 'con gấu', 'con sư tử', 'con bò', 'con dê', 'con cừu', 'quả cam', 'quả chuối', 'quả táo', 'quả dưa hấu', 'quả xoài',
+          'quả dừa', 'chùm nho', 'quả dâu', 'quả chanh', 'quả dứa', 'bắp ngô', 'củ cà rốt', 'củ khoai', 'quả cà chua', 'quả bí ngô', 'cây nấm',
+          'hoa sen', 'hoa hồng', 'hoa mai', 'hoa đào', 'chiếc lá', 'mặt trăng', 'ngôi sao', 'đám mây', 'cơn mưa', 'xe đạp', 'xe máy', 'ô tô',
+          'xe buýt', 'máy bay', 'tàu thủy', 'nón lá', 'đôi giày', 'đôi dép', 'cái áo', 'cái quần', 'cái váy', 'cái mũ', 'cái ô', 'chìa khóa',
+          'đồng hồ', 'quyển sách', 'cây bút', 'cái cốc', 'cái chai', 'cái bát', 'con dao', 'cái gương', 'cái lược', 'khăn tắm', 'cái gối', 'cái chăn',
+          'quạt máy', 'ngôi nhà', 'cái cửa', 'cầu thang', 'con mắt', 'cái mũi', 'cái miệng', 'bàn tay', 'bàn chân', 'cái tai', 'mái tóc', 'cái răng',
+          'nụ cười', 'ngọn núi', 'dòng sông', 'bãi biển', 'hòn đảo', 'cái giếng', 'em bé', 'cái xô', 'cục xà phòng', 'cái chổi', 'cái thang', 'hàng rào'],
+        medium: ['cá heo', 'con sứa', 'cá ngựa', 'hồng hạc', 'con công', 'con vẹt', 'đại bàng', 'con sóc', 'con nhím', 'gấu túi', 'hà mã', 'tê giác',
+          'cá sấu', 'lạc đà', 'khỉ đột', 'bọ cạp', 'tôm hùm', 'kim tự tháp', 'bức tượng', 'tòa nhà chọc trời', 'ngôi chùa', 'nhà thờ', 'bệnh viện',
+          'trường học', 'thư viện', 'nông trại', 'sở thú', 'rạp xiếc', 'sân vận động', 'sân chơi', 'hồ bơi', 'đài phun nước', 'hang động', 'khu rừng',
+          'kính râm', 'ba lô', 'va li', 'xe lăn', 'nhiệt kế', 'kính hiển vi', 'nam châm', 'cục pin', 'bóng đèn', 'máy giặt', 'tủ lạnh', 'lò vi sóng',
+          'máy xay sinh tố', 'máy hút bụi', 'máy tính bỏ túi', 'bàn phím', 'điều khiển ti vi', 'tay cầm chơi game', 'huy chương', 'cái còi',
+          'kèn trumpet', 'đàn violin', 'đàn bầu', 'sáo trúc', 'bánh cuốn', 'bún chả', 'bún bò', 'cơm tấm', 'gỏi cuốn', 'chè', 'bánh bao', 'xôi',
+          'bánh tráng trộn', 'trà đào', 'sinh tố', 'lính cứu hỏa', 'giáo viên', 'y tá', 'công an', 'chú hề', 'cao bồi', 'xác ướp', 'bà tiên',
+          'thần đèn', 'ông già Noel', 'tuần lộc', 'cây thông Noel', 'mâm ngũ quả', 'bánh trung thu', 'đèn ông sao', 'xe ba gác', 'chợ nổi',
+          'mũ bảo hiểm', 'cây đa', 'con trâu cày', 'bình hoa', 'rương kho báu', 'quả cầu tuyết'],
+        hard: ['say nắng', 'mơ mộng', 'sợ độ cao', 'lệch múi giờ', 'nhớ nhà', 'dọn nhà đón Tết', 'giờ cao điểm', 'đánh nhau bằng gối', 'ngủ lại nhà bạn',
+          'đi phượt', 'dã ngoại', 'tiệc nướng', 'chạy marathon', 'đi trên dây', 'nhảy dù', 'lặn biển', 'leo núi', 'trượt băng', 'ném tuyết', 'bão cát',
+          'sóng thần', 'cực quang', 'mưa sao băng', 'trăng tròn', 'bình minh', 'hoàng hôn', 'nắng nóng', 'sương mù', 'buôn chuyện', 'bí mật', 'lời hứa',
+          'nói dối', 'xin lỗi', 'ước sinh nhật', 'hẹn hò giấu mặt', 'xổ số', 'phá sản', 'mua sắm trực tuyến', 'mạng xã hội', 'người nổi tiếng',
+          'phát trực tiếp', 'chụp màn hình', 'hết pin', 'thư rác', 'hạn chót', 'tăng ca', 'phỏng vấn xin việc', 'thăng chức', 'nghỉ hưu', 'trông em',
+          'đi nha sĩ', 'cắt tóc', 'sáng thứ Hai', 'báo thức reo', 'lỡ xe buýt', 'mất chìa khóa', 'dẫm phải lego', 'vấp ngón chân', 'đổ sữa',
+          'bánh mì cháy', 'thủng lốp', 'đỗ xe', 'gờ giảm tốc', 'wifi miễn phí', 'ngày lĩnh lương', 'thua cuộc', 'đập tay', 'ôm tập thể',
+          'đọc suy nghĩ', 'dịch chuyển tức thời', 'siêu năng lực', 'cỗ máy thời gian', 'vũ trụ song song', 'gói bánh chưng', 'bắn pháo hoa',
+          'chúc Tết', 'đi chùa', 'xông đất', 'rước đèn', 'đua thuyền', 'nhảy dây', 'ô ăn quan', 'bói toán', 'giông bão', 'thảm đỏ', 'kỷ lục thế giới'],
+      },
+    };
+    Object.keys(DOODLE_MORE).forEach((lang) => {
+      const seen = new Set(); Object.values(DOODLE_WORDS[lang]).forEach((l) => l.forEach((w) => seen.add(w.toLowerCase())));
+      Object.keys(DOODLE_MORE[lang]).forEach((lvl) => DOODLE_MORE[lang][lvl].forEach((w) => { if (!seen.has(w.toLowerCase())) { seen.add(w.toLowerCase()); DOODLE_WORDS[lang][lvl].push(w); } }));
+    });
     window.DOODLE_WORDS = DOODLE_WORDS;
     /* =========================================================================
        FIBBER (original game, Nov 2026): a family-friendly bluffing card game for 3-5 players.
@@ -18155,6 +18232,8 @@
        table in zz_lang.js like part 1 (this file loads just before it). Keys are the exact English lines.
        ========================================================================= */
     window.VI_MORE2 = {
+      // Doodle Guess room
+      'WORD LANGUAGE': 'NGÔN NGỮ CỦA TỪ', '🇺🇸 English': '🇺🇸 Tiếng Anh', '🇻🇳 Tiếng Việt': '🇻🇳 Tiếng Việt', 'Which language the words to draw are in.': 'Các từ để vẽ sẽ bằng ngôn ngữ nào.',
       // table designs (zz_tables.js)
       '🎨 Table': '🎨 Bàn', 'TABLE DESIGN': 'KIỂU BÀN', 'Only you see your choice.': 'Chỉ bạn thấy lựa chọn này.', 'Change the table design': 'Đổi kiểu bàn',
       'Classic Felt': 'Nỉ cổ điển', 'Harbor Night': 'Đêm bến cảng', 'Royal Red': 'Đỏ hoàng gia', 'Saloon Planks': 'Ván gỗ quán rượu', 'Arcade Grid': 'Lưới arcade', 'Lagoon': 'Đầm phá',

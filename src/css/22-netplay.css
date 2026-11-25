@@ -109,3 +109,5 @@
     .np-set-h { font-size: .8rem; color: #9DB4CC; margin: -.15rem 0 .45rem; }
     .np-set-hero .seg-btn { font-size: 1rem; padding-top: .7rem; padding-bottom: .7rem; }
     .np-set-hero .np-set-v { font-size: 1.25rem; color: #F5B041; }
+    /* "You were in a game: Rejoin?" (rejoining after a reload / lost connection) */
+    .np-rj { position: fixed; z-index: 90; left: 50%; top: 18px; transform: translateX(-50%); width: min(440px, calc(100vw - 24px)); padding: 12px 14px; background: #12304C; border: 3px solid var(--ink); box-shadow: 0 6px 0 var(--ink), inset 0 0 0 2px #F5B041; }

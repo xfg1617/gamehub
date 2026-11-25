@@ -1093,6 +1093,8 @@
     .np-set-h { font-size: .8rem; color: #9DB4CC; margin: -.15rem 0 .45rem; }
     .np-set-hero .seg-btn { font-size: 1rem; padding-top: .7rem; padding-bottom: .7rem; }
     .np-set-hero .np-set-v { font-size: 1.25rem; color: #F5B041; }
+    /* "You were in a game: Rejoin?" (rejoining after a reload / lost connection) */
+    .np-rj { position: fixed; z-index: 90; left: 50%; top: 18px; transform: translateX(-50%); width: min(440px, calc(100vw - 24px)); padding: 12px 14px; background: #12304C; border: 3px solid var(--ink); box-shadow: 0 6px 0 var(--ink), inset 0 0 0 2px #F5B041; }
     /* ===== HOW TO PLAY: title grid + step-by-step guides ===== */
     .ht-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
     .ht-tile { display: flex; align-items: center; gap: 10px; padding: 12px; background: #0F2A44; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); text-align: left; color: #F7F4EC; transition: transform .08s; }
@@ -5867,6 +5869,7 @@
 
     // timers that are cleaned up automatically when you leave a game
     function gTimeout(fn, ms) {
+      if (typeof NP !== 'undefined' && NP.catchup) ms = 0;   // rejoining a table: replay the missed moves at full speed
       const t = { id: null };
       t.id = setTimeout(() => { GT.timers.delete(t); fn(); }, ms);
       GT.timers.add(t);
@@ -6165,7 +6168,7 @@
        readable instead of instant: pieces slide, dealt cards fly out of the deck, cards flip,
        removed pieces fade. Nothing here changes game state, it only animates what is drawn. */
     const MOTION = { slide: 480, hop: 260, deal: 440, flip: 340, fade: 320, stagger: 150, think: 900, ease: 'cubic-bezier(.3,.7,.25,1)' };
-    const motionOff = () => !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+    const motionOff = () => !!((typeof NP !== 'undefined' && NP.catchup) || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches));
     const _gkeys = new WeakMap(); let _gkeyN = 0;
     // a stable id for any object (a card, a token...) so it can be followed from one redraw to the next
     function gKey(o) { if (o === null || typeof o !== 'object') return String(o); let k = _gkeys.get(o); if (!k) { k = 'k' + (++_gkeyN); _gkeys.set(o, k); } return k; }
@@ -6695,6 +6698,7 @@
     window.celebrate = celebrate;
     function gameResult(o) {
       GT.over = true;
+      try { if (typeof NP !== 'undefined' && NP.S && NP.S.online) localStorage.removeItem('ps_np_cur:' + (NET.me && NET.me.id)); } catch (e) {}   // nothing to rejoin
       if (o && (o.tone || 'amber') === 'amber' && /win|won|victory|tycoon|champion|first|last cat|best/i.test(o.title || '') && !/lose|lost|gave up/i.test(o.title || '')) setTimeout(celebrate, 250);
       let el = document.getElementById('g-modal');
       if (!el) { el = document.createElement('div'); el.id = 'g-modal'; el.className = 'hidden fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4'; document.body.appendChild(el); }
@@ -7477,6 +7481,7 @@
         while (q.length && !busy && alive()) {
           const a = q.shift(); S.version++;
           if (a.t === '_left' || a.t === '_gone') { const st = S.seats[a.s]; if (st && !st.bot) { st.bot = true; st.left = true; } }
+          if (a.t === '_back') { const st = S.seats[a.s]; if (st && st.left && st.uid) { st.bot = false; st.left = false; } if (S.script) continue; }
           if (S.script) { if (waiter) { const f = waiter; waiter = null; f(a); } else inbox.push(a); continue; }
           let w = 0; try { w = +apply(a) || 0; } catch (e) { console.error('game action failed', a, e); }
           if (w > 0) { busy = true; gTimeout(() => { busy = false; drain(); }, w); return; }
@@ -7499,6 +7504,7 @@
           S._wait = w; S._maybeBot();
           const a = inbox.length ? inbox.shift() : await new Promise((res) => { waiter = res; });
           if (a.t === '_left' || a.t === '_gone') { if (S.onLeft) S.onLeft(a); if (S.over) return new Promise(() => {}); continue; }
+          if (a.t === '_back') continue;
           if (filter ? !filter(a) : a.s !== seat) continue;
           S._wait = null; return a;
         }
@@ -7524,7 +7530,9 @@
         gTimeout(() => { if (alive() && S._wait === w && S.isHost) { let a = null; try { a = w.botFn(); } catch (e) { console.error(e); } if (a) S.act(Object.assign({ s: w.seat }, a)); } else w.sent = false; }, w.ms);
       };
       S.script = false;
-      S.act = (a) => { if (a.s === undefined) a.s = S.me; if (o.send) o.send(a); else S._push(a); };
+      // while a rejoining screen replays the missed moves it never sends anything itself
+      S.act = (a) => { if (NP.catchup) return; if (a.s === undefined) a.s = S.me; if (o.send) o.send(a); else S._push(a); };
+      S._idle = () => !q.length && !busy && !inbox.length;
       S.finish = async () => null;   // ranked Elo (online only), replaced below
       S.leave = () => {};
       S.peek = () => {};
@@ -7740,6 +7748,7 @@
         started = true; if (autoT) gClearInt(autoT);
         S = npOnline({ code, ch, seats: d.seats, me: myIdx, seed: d.seed, sel: d.sel, ranked, room });
         NP.table = code; CHAT.mode = 'table'; if (typeof chatOnView === 'function') chatOnView('game');
+        if (m.id !== 'navalnet') npRemember({ code, game: m.id, start: d, net: sel.net, ranked });   // Sea Battle fleets stay on one screen: no rejoin
         NP.last = { code, game: m.id, sel: Object.assign({}, d.sel), ranked, bots: d.seats.filter((x) => x.bot).length, uids: d.seats.filter((x) => x.uid).map((x) => x.uid), names: Object.fromEntries(d.seats.filter((x) => x.uid).map((x) => [x.uid, x.name])) };
         if (ranked && pingT == null) { NET.ping(code); pingT = gInterval(() => NET.ping(code), 10000); }
         SFX.play('reveal');
@@ -7782,6 +7791,7 @@
         while (buf[next]) { const b = buf[next]; delete buf[next]; mark(b); log.push(b); next++; S._push(b); }
       }
       ch.on('act', (a) => { if (!S.isHost) take(a); });
+      S._load = (list) => { (list || []).forEach((a) => { if (a && a._n !== undefined) take(a); }); };
       ch.on('acts', (d) => { if (!S.isHost) (d.list || []).forEach(take); });
       ch.on('sync', (d) => { if (S.isHost && log.length > (d.from || 0)) ch.send('acts', { list: log.slice(d.from || 0) }); });
       // every 3 s: send again any of my decisions the table hasn't confirmed yet, and ask whether I missed the
@@ -7837,9 +7847,20 @@
         }
         npBar(warn);
       }, 1000);
+      // a player who dropped out comes back (Nov 2026, Inna: "allow player to rejoin if disconnect"): every screen still
+      // at the table sends the moves so far (in parts); the host gives the seat back if a computer had taken it.
+      ch.on('rejoin', (d, from) => {
+        const i = S.seats.findIndex((x) => x && x.uid === from); if (i < 0 || i === S.me) return;
+        if (S.over) return ch.send('rejoin-ok', { to: from, over: true });
+        if (S.isHost && S.seats[i].bot && S.seats[i].left) seq({ t: '_back', s: i });
+        delete missing[i];
+        const parts = Math.max(1, Math.ceil(log.length / 150));
+        for (let k = 0; k < parts; k++) ch.send('rejoin-ok', { to: from, part: k, total: parts, list: log.slice(k * 150, k * 150 + 150), n: log.length });
+      });
       // leaving: tell the table, then the seat becomes a computer player (2 players: the other one wins)
       S.leave = () => {
         if (S._left) return; S._left = true;
+        try { localStorage.removeItem('ps_np_cur:' + (NET.me && NET.me.id)); } catch (e) {}
         gClearInt(watch); gClearInt(resend);
         if (!S.over) { ch.send(S.isHost ? 'act' : 'req', S.isHost ? { t: '_left', s: S.me, _n: log.length } : { t: '_left', s: S.me }); if (S.ranked) NET.reportResult(S.code, 'loss').catch(() => {}); }
         setTimeout(() => ch.close(), 400);
@@ -7938,6 +7959,71 @@
         showToast(r && r.error ? r.error : 'Password changed!', r && r.error ? 'error' : 'success');
       }, 300);
     };
+
+    /* ---------- rejoining a table after a reload, a closed tab or a lost connection (Nov 2026) ---------- */
+    function npRemember(o) {
+      try { localStorage.setItem('ps_np_cur:' + (NET.me && NET.me.id), JSON.stringify({ code: o.code, game: o.game, start: o.start, net: o.net, ranked: !!o.ranked, uid: NET.me && NET.me.id, at: Date.now() })); } catch (e) {}
+    }
+    function npSaved() {
+      try { const v = JSON.parse(localStorage.getItem('ps_np_cur:' + (NET.me && NET.me.id)) || 'null'); if (v && v.code && Date.now() - v.at < 3 * 3600e3 && NET.me && v.uid === NET.me.id && GAME_MODS[v.game]) return v; } catch (e) {}
+      return null;
+    }
+    async function npRejoin(sv) {
+      const m = GAME_MODS[sv.game]; if (!m || !m.online || !NET.on) return;
+      document.getElementById('np-rj') && document.getElementById('np-rj').remove();
+      openGame(sv.game); await new Promise((r) => setTimeout(r, 350));
+      const body = document.getElementById('gs-body'); if (!body) return;
+      body.innerHTML = '<div class="win max-w-md mx-auto my-10 p-6 text-center space-y-2"><div class="pix text-xl text-amber">REJOINING...</div><div class="text-sm text-muted">Getting the moves you missed from the other players.</div></div>';
+      const ch = NET.channel(sv.code, { name: NET.me.name, avatar: NET.me.avatar, at: Date.now() });
+      await ch.ready;
+      const got = await new Promise((res) => {
+        let from = null, parts = [], done = false;
+        const fin = (v) => { if (done) return; done = true; clearInterval(iv); clearTimeout(to); res(v); };
+        ch.on('rejoin-ok', (d, who) => {
+          if (!d || d.to !== NET.me.id) return;
+          if (d.over) return fin({ over: true });
+          if (from && who !== from) return; from = who;
+          parts[d.part] = d.list || [];
+          if (parts.filter(Boolean).length === d.total) fin({ log: [].concat(...parts) });
+        });
+        const ask = () => ch.send('rejoin', {}); ask();
+        const iv = setInterval(ask, 3000), to = setTimeout(() => fin(null), 15000);
+      });
+      if (!got || got.over || activeGame !== sv.game) {
+        try { localStorage.removeItem('ps_np_cur:' + (NET.me && NET.me.id)); } catch (e) {}
+        ch.close(); showToast(got && got.over ? 'That game has already finished.' : 'Could not find that table any more. The game may have ended.', 'error');
+        if (activeGame === sv.game) navigateTo('play', true);
+        return;
+      }
+      const seats = JSON.parse(JSON.stringify(sv.start.seats)), me = seats.findIndex((x) => x.uid === NET.me.id);
+      if (me < 0) { ch.close(); return; }
+      NP.catchup = true;
+      const S = npOnline({ code: sv.code, ch, seats, me, seed: sv.start.seed, sel: sv.start.sel, ranked: sv.ranked, room: null });
+      NP.table = sv.code; if (typeof CHAT !== 'undefined') CHAT.mode = 'table'; if (typeof chatOnView === 'function') chatOnView('game');
+      body.innerHTML = '';
+      m.online.start(body, Object.assign({}, sv.start.sel, { net: sv.net, room: sv.code }), S);
+      GT.started = true; GT.over = false;
+      npRemember(sv);
+      S._load(got.log);
+      // replay at full speed until every missed move has been used, then play on as normal
+      const t0 = Date.now(); let calm = 0;
+      await new Promise((res) => { const iv = setInterval(() => { calm = S._idle() ? calm + 1 : 0; if (calm >= 4 || Date.now() - t0 > 25000) { clearInterval(iv); res(); } }, 80); });
+      NP.catchup = false;
+      S._kick(); window.dispatchEvent(new Event('resize'));
+      SFX.play('reveal'); showToast('Welcome back! You are in your seat again.', 'success');
+    }
+    window.npRejoin = npRejoin;
+    // when the page connects, offer to go back to the table you were at
+    document.addEventListener('ps-online', () => setTimeout(() => {
+      const sv = npSaved(); if (!sv || (NP.S && NP.S.online) || document.getElementById('np-rj')) return;
+      const nm = (GAME_MODS[sv.game] || {}).name || 'game';
+      const el = document.createElement('div'); el.id = 'np-rj'; el.className = 'np-rj';
+      el.innerHTML = `<div class="font-bold text-bone">You were in a ${esc(nm)} game (room ${esc(sv.code)}).</div><div class="text-sm text-muted">Go back to your seat?</div>
+        <div class="flex gap-2 mt-2"><button class="btn-game btn-amber px-5 py-2" data-rj="yes">Rejoin</button><button class="btn-game btn-graphite px-4 py-2" data-rj="no">No thanks</button></div>`;
+      document.body.appendChild(el);
+      el.querySelector('[data-rj="yes"]').onclick = () => { el.remove(); npRejoin(sv); };
+      el.querySelector('[data-rj="no"]').onclick = () => { el.remove(); try { localStorage.removeItem('ps_np_cur:' + (NET.me && NET.me.id)); } catch (e) {} };
+    }, 600));
     /* ---------- pixel icons for the new games ---------- */
     (function addIcons() {
       const K = '#050E18';
@@ -18577,6 +18663,9 @@
             '+ Friend': '+ Kết bạn', '✓ Accept': '✓ Đồng ý',
       'After paying rent you may make the owner an offer for that plot; they can accept, refuse or ask for more. Not plots with a hotel, not plots from a full colour set.': 'Sau khi trả tiền thuê, bạn có thể trả giá mua ô đó; chủ đất có thể đồng ý, từ chối hoặc đòi thêm. Không áp dụng cho ô có khách sạn hoặc thuộc bộ màu đã đủ.',
       'No thanks': 'Thôi', 'No, keep it': 'Không, giữ lại', 'No deal': 'Không mua', '📄 See the card': '📄 Xem thẻ',
+      'REJOINING...': 'ĐANG VÀO LẠI...', 'Getting the moves you missed from the other players.': 'Đang lấy các nước đi bạn đã lỡ từ những người chơi khác.',
+      'Go back to your seat?': 'Quay lại chỗ ngồi của bạn?', 'Rejoin': 'Vào lại', 'Welcome back! You are in your seat again.': 'Chào mừng trở lại! Bạn đã về chỗ ngồi.',
+      'That game has already finished.': 'Ván đó đã kết thúc.', 'Could not find that table any more. The game may have ended.': 'Không tìm thấy bàn đó nữa. Có thể ván đã kết thúc.',
       'It was a lie!': 'Là nói dối!', 'It was true!': 'Là thật!', 'shouts': 'hô', 'Places': 'Địa điểm', 'ENTER': 'NHẬP',
       'press on the ball and hold. Slide left or right to pick your spot, then flick it up the lane and let go. A faster flick throws a faster ball, but it is harder to aim. Curve your flick at the end to put spin on it. Keyboard: ← → to move, hold Space and let go to throw.': 'nhấn giữ quả bóng. Trượt trái hoặc phải để chọn chỗ, rồi vuốt lên đường lăn và thả ra. Vuốt càng nhanh bóng càng nhanh nhưng khó ngắm hơn. Uốn cong cú vuốt ở cuối để tạo xoáy. Bàn phím: ← → để di chuyển, giữ Space rồi thả để ném.',
       // uno
@@ -18607,6 +18696,7 @@
       [/^YOUR PROPERTIES · \$(\d+)$/, 'ĐẤT CỦA BẠN · $$$1'],
       [/^picks up the pile \((\d+) cards?\)\.$/, 'nhặt cả chồng bài ($1 lá).'], [/^(\d+) (Aces?|Twos?|Threes?|Fours?|Fives?|Sixes?|Sevens?|Eights?|Nines?|Tens?|Jacks?|Queens?|Kings?)$/, (m, n, r) => `${n} lá ${vr(r)}`],
       [/^(\d+)\/(\d+) TRIED$/, '$1/$2 ĐÃ THỬ'],
+      [/^You were in an? (.+) game \(room (\w+)\)\.$/, (m, g, c) => `Bạn đang chơi ${(window.VI_TABLE && window.VI_TABLE[g]) || g} (phòng ${c}).`],
       [/^Offer \$(\d+)$/, 'Trả $$$1'], [/^Ask for \$(\d+)$/, 'Đòi $$$1'], [/^Sell for \$(\d+)$/, 'Bán với giá $$$1'], [/^Pay \$(\d+)$/, 'Trả $$$1'], [/^From \$(\d+) to \$(\d+)$/, 'Từ $$$1 đến $$$2'],
       [/^Make (.+) an offer for (.+)\? It's worth \$(\d+)\. You have \$(\d+)\.$/, 'Trả giá với $1 để mua $2? Giá trị $$$3. Bạn có $$$4.'],
       [/^(.+) wants \$(\d+) for (.+) \(you offered \$(\d+)\)\. You have \$(\d+)\.$/, '$1 đòi $$$2 cho $3 (bạn trả $$$4). Bạn có $$$5.'],

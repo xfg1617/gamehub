@@ -928,3 +928,12 @@ folder that was handed over, so they do not exist here.)
   buyer pays that or walks away (`bo3`, `bo-yes` / `bo-no`). Computers: `botMax` (buyer, 1.5x worth, 2.4x if it helps a
   set, keeps a cash reserve) and `botMin` (owner, 1.6x, 2.6x+ if they own others of the set). `+ Friend` labels on tags
   are drawn with CSS `::before` so they never mix into game text the tests compare.
+* **Rejoin an online table** (Nov 25 2026, Inna): when a netplay table starts, the browser remembers it
+  (`npRemember` → localStorage `ps_np_cur:<uid>`: code, game, start message, net, ranked; not for Sea Battle, whose fleets
+  live on one screen). Leaving on purpose (`S.leave`) or a finished game (`gameResult`) forgets it. When the page connects
+  (`ps-online`) and a table is remembered (< 3 h), a box offers **Rejoin** (`#np-rj`, `npRejoin`): it joins the channel,
+  sends `rejoin`; every screen still there answers `rejoin-ok` with the move list (parts of 150); the host gives the seat
+  back if a computer had taken it (`_back` action: `st.bot = false`). The game is started again from the same seed and
+  the moves are replayed with `NP.catchup = true` (gTimeout waits 0, motionOff, `S.act` sends nothing) until the session
+  is idle (`S._idle`). 2-player games that already gave the win to the other player can't be rejoined ("already
+  finished"). Chess has its own system and no rejoin yet. `test/t_np_rejoin.py` (reload, and away > 45 s).

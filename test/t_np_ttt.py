@@ -20,7 +20,7 @@ with sync_playwright() as p:
         if A.evaluate("!document.getElementById('g-modal') || document.getElementById('g-modal').classList.contains('hidden')") is False: break
         for pg in (A, B):
             if pg.evaluate("document.getElementById('ttt-status') && document.getElementById('ttt-status').textContent") == 'YOUR MOVE':
-                free = pg.evaluate("[...document.querySelectorAll('.ttt-cell')].findIndex(c => !c.classList.contains('filled'))")
+                free = pg.evaluate("[...document.querySelectorAll('.ttt-cell')].findIndex(c => !c.classList.contains('filled') && !c.disabled)")
                 if free >= 0: pg.click(f'.ttt-cell[data-i="{free}"]'); pg.wait_for_timeout(700 if not REAL else 1200); break
         else: A.wait_for_timeout(500)
         if k == 3: check(board(A) == board(B) and board(A).count('.') < 9, f'boards match on both screens ({board(A)} / {board(B)})')

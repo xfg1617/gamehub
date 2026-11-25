@@ -9,6 +9,7 @@
 
     // timers that are cleaned up automatically when you leave a game
     function gTimeout(fn, ms) {
+      if (typeof NP !== 'undefined' && NP.catchup) ms = 0;   // rejoining a table: replay the missed moves at full speed
       const t = { id: null };
       t.id = setTimeout(() => { GT.timers.delete(t); fn(); }, ms);
       GT.timers.add(t);
@@ -307,7 +308,7 @@
        readable instead of instant: pieces slide, dealt cards fly out of the deck, cards flip,
        removed pieces fade. Nothing here changes game state, it only animates what is drawn. */
     const MOTION = { slide: 480, hop: 260, deal: 440, flip: 340, fade: 320, stagger: 150, think: 900, ease: 'cubic-bezier(.3,.7,.25,1)' };
-    const motionOff = () => !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+    const motionOff = () => !!((typeof NP !== 'undefined' && NP.catchup) || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches));
     const _gkeys = new WeakMap(); let _gkeyN = 0;
     // a stable id for any object (a card, a token...) so it can be followed from one redraw to the next
     function gKey(o) { if (o === null || typeof o !== 'object') return String(o); let k = _gkeys.get(o); if (!k) { k = 'k' + (++_gkeyN); _gkeys.set(o, k); } return k; }
@@ -837,6 +838,7 @@
     window.celebrate = celebrate;
     function gameResult(o) {
       GT.over = true;
+      try { if (typeof NP !== 'undefined' && NP.S && NP.S.online) localStorage.removeItem('ps_np_cur:' + (NET.me && NET.me.id)); } catch (e) {}   // nothing to rejoin
       if (o && (o.tone || 'amber') === 'amber' && /win|won|victory|tycoon|champion|first|last cat|best/i.test(o.title || '') && !/lose|lost|gave up/i.test(o.title || '')) setTimeout(celebrate, 250);
       let el = document.getElementById('g-modal');
       if (!el) { el = document.createElement('div'); el.id = 'g-modal'; el.className = 'hidden fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4'; document.body.appendChild(el); }

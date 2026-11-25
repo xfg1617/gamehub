@@ -1634,6 +1634,58 @@
       .nh-code button { height: 56px; width: 88px; }
       .nh-links { flex-direction: column; }
     }
+    /* =========================================================================
+       TABLE DESIGNS (zz_tables.js sets the --tb-* variables): the card games' screen background, the table (rim +
+       cloth + faint picture, stepped pixel corners) and the back of playing cards.
+       ========================================================================= */
+    :root { --tb-poly: 8% 0%, 92% 0%, 92% 4.2%, 95% 4.2%, 95% 9.4%, 97.8% 9.4%, 97.8% 15.2%, 100% 15.2%, 100% 84.8%, 97.8% 84.8%, 97.8% 90.6%, 95% 90.6%, 95% 95.8%, 92% 95.8%, 92% 100%, 8% 100%, 8% 95.8%, 5% 95.8%, 5% 90.6%, 2.2% 90.6%, 2.2% 84.8%, 0% 84.8%, 0% 15.2%, 2.2% 15.2%, 2.2% 9.4%, 5% 9.4%, 5% 4.2%, 8% 4.2%; }
+    /* back of playing cards (Poker, Blackjack, Bullshit). Uno and Kaboom Cats keep their own printed backs. */
+    .pcard.back { background: var(--tb-backc, #1A3856); }
+    .pcard.back .pc-back { background: var(--tb-back) 0 0 / var(--tb-back-s), var(--tb-backc) !important; }
+    /* the whole screen behind the table */
+    body.in-game:is([data-game="poker"], [data-game="kittens"], [data-game="colorclash"], [data-game="dominoes"], [data-game="blackjack"], [data-game="fibber"]) {
+      background: var(--tb-bg) 0 0 / var(--tb-bg-s), var(--tb-bgc) !important; background-attachment: fixed !important;
+    }
+    /* phones and tablets: the game's own table box gets the cloth, with a rim of the table's colour */
+    @media (max-width: 1023px) {
+      body.in-game:is([data-game="poker"], [data-game="kittens"], [data-game="colorclash"], [data-game="dominoes"], [data-game="blackjack"], [data-game="fibber"]) #gs-body .felt {
+        background: var(--tb-emb) center / min(46%, 180px) no-repeat, var(--tb-felt) 0 0 / var(--tb-felt-s), var(--tb-feltc) !important;
+        box-shadow: inset 0 0 0 6px var(--tb-rimc), 0 5px 0 var(--ink) !important;
+      }
+    }
+    /* computers: a real table in the middle of the screen (replaces the old faint dashed oval) */
+    @media (min-width: 1024px) {
+      body.in-game[data-game="poker"] #pk-table > .ring4, body.in-game[data-game="kittens"] #kk-opp > .r-mid, body.in-game[data-game="colorclash"] #cc-opp > .r-mid,
+      body.in-game[data-game="fibber"] #fb-opp > .r-mid, body.in-game[data-game="dominoes"] #gs-body .felt, body.in-game[data-game="blackjack"] #gs-body .felt { position: relative; isolation: isolate; }
+      body.in-game[data-game="poker"] #pk-table > .ring4::before, body.in-game[data-game="kittens"] #kk-opp > .r-mid::before, body.in-game[data-game="colorclash"] #cc-opp > .r-mid::before,
+      body.in-game[data-game="fibber"] #fb-opp > .r-mid::before, body.in-game[data-game="dominoes"] #gs-body .felt::before, body.in-game[data-game="blackjack"] #gs-body .felt::before {
+        content: ''; position: absolute; inset: 2% 1%; z-index: -1; border: 0 !important; border-radius: 0 !important; pointer-events: none;
+        clip-path: polygon(var(--tb-poly)); background: var(--tb-rim) 0 0 / var(--tb-rim-s), var(--tb-rimc);
+      }
+      body.in-game[data-game="poker"] #pk-table > .ring4::after, body.in-game[data-game="kittens"] #kk-opp > .r-mid::after, body.in-game[data-game="colorclash"] #cc-opp > .r-mid::after,
+      body.in-game[data-game="fibber"] #fb-opp > .r-mid::after, body.in-game[data-game="dominoes"] #gs-body .felt::after, body.in-game[data-game="blackjack"] #gs-body .felt::after {
+        content: ''; position: absolute; inset: calc(2% + 14px) calc(1% + 14px); z-index: -1; pointer-events: none; clip-path: polygon(var(--tb-poly));
+        background: var(--tb-emb) center / min(34%, 240px) no-repeat, var(--tb-felt) 0 0 / var(--tb-felt-s), var(--tb-feltc);
+      }
+      /* Poker: the table sits under the whole ring of seats, so players sit round its edge */
+      body.in-game[data-game="poker"] #pk-table > .ring4::before { inset: 19% 9% 21%; }
+      body.in-game[data-game="poker"] #pk-table > .ring4::after { inset: calc(19% + 14px) calc(9% + 14px) calc(21% + 14px); }
+      body.in-game[data-game="poker"] #pk-table .r-mid::before { content: none !important; }
+    }
+    /* the picker */
+    .tbp { position: fixed; z-index: 95; left: 50%; top: 80px; transform: none; width: min(470px, calc(100vw - 16px)); background: #12304C; border: 3px solid var(--ink); box-shadow: 0 6px 0 var(--ink); padding: 10px 12px 12px; }
+    .tbp-h { font-size: 1.15rem; color: #F5B041; letter-spacing: .08em; margin-bottom: 8px; }
+    .tbp-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .tbp-o { display: flex; flex-direction: column; gap: 5px; padding: 5px; background: #0A1624; border: 3px solid var(--ink); cursor: pointer; text-align: left; }
+    .tbp-o:hover { border-color: #9DB4CC; }
+    .tbp-o.on { border-color: #F5B041; box-shadow: inset 0 0 0 2px #F5B041; }
+    .tbp-sw { position: relative; display: block; height: 70px; border: 2px solid var(--ink); }
+    .tbp-rim { position: absolute; inset: 9px 8px; clip-path: polygon(var(--tb-poly)); }
+    .tbp-felt { position: absolute; inset: 5px; clip-path: polygon(var(--tb-poly)); }
+    .tbp-back { position: absolute; right: 5px; bottom: 5px; width: 17px; height: 24px; border: 2px solid var(--ink); }
+    .tbp-n { font-size: .78rem; font-weight: 800; color: #F7F4EC; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tbp-note { margin-top: 8px; font-size: .75rem; color: #9DB4CC; }
+    @media (max-width: 420px) { .tbp-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     /* ===== tic-tac-toe ===== */
     .ttt-board { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 6px; background: var(--ink); border: 4px solid var(--ink); box-shadow: 0 5px 0 var(--ink); aspect-ratio: 1 / 1; width: 100%; max-width: 460px; margin: 0 auto; }
     .ttt-cell { position: relative; min-width: 0; min-height: 0; overflow: hidden; background: #12314F; box-shadow: inset 0 0 0 3px #1A3856, inset 0 -6px 0 #0F2A44; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 12%; }
@@ -6240,7 +6292,7 @@
             <span class="spr w-8 h-8">${GICONS[m.icon]}</span>
             <h2 class="text-lg font-extrabold text-bone">${m.name}</h2>
           </div>
-          <div class="flex items-center gap-2.5 flex-wrap" id="gs-tools">${toolsHTML}<button class="btn-game btn-graphite px-3 py-2 text-xs gs-moves" onclick="toggleMoves()" title="Open or close the game log">📜 Log</button><button class="btn-game btn-graphite px-3 py-2 text-xs" onclick="openGuide('${m.id}')" title="How to play ${esc(m.name)}">? Guide</button><button class="btn-game btn-graphite px-3 py-2 text-xs gs-snd" onclick="openSoundPanel(this)" title="Sound and music" aria-label="Sound and music">♪</button></div>
+          <div class="flex items-center gap-2.5 flex-wrap" id="gs-tools">${toolsHTML}<button class="btn-game btn-graphite px-3 py-2 text-xs gs-moves" onclick="toggleMoves()" title="Open or close the game log">📜 Log</button><button class="btn-game btn-graphite px-3 py-2 text-xs" onclick="openGuide('${m.id}')" title="How to play ${esc(m.name)}">? Guide</button>${typeof TABLE_GAMES !== 'undefined' && TABLE_GAMES.includes(m.id) ? '<button class="btn-game btn-graphite px-3 py-2 text-xs gs-table" onclick="openTablePicker(this)" title="Change the table design">🎨 Table</button>' : ''}<button class="btn-game btn-graphite px-3 py-2 text-xs gs-snd" onclick="openSoundPanel(this)" title="Sound and music" aria-label="Sound and music">♪</button></div>
         </div>
         <div id="gs-body"></div></div>`;
       return document.getElementById('gs-body');
@@ -18103,6 +18155,9 @@
        table in zz_lang.js like part 1 (this file loads just before it). Keys are the exact English lines.
        ========================================================================= */
     window.VI_MORE2 = {
+      // table designs (zz_tables.js)
+      '🎨 Table': '🎨 Bàn', 'TABLE DESIGN': 'KIỂU BÀN', 'Only you see your choice.': 'Chỉ bạn thấy lựa chọn này.', 'Change the table design': 'Đổi kiểu bàn',
+      'Classic Felt': 'Nỉ cổ điển', 'Harbor Night': 'Đêm bến cảng', 'Royal Red': 'Đỏ hoàng gia', 'Saloon Planks': 'Ván gỗ quán rượu', 'Arcade Grid': 'Lưới arcade', 'Lagoon': 'Đầm phá',
       // result screens
       'You lose': 'Bạn thua', 'You lost': 'Bạn thua', 'It’s a draw': 'Hòa', "It's a draw": 'Hòa', 'Draw!': 'Hòa!', 'You gave up': 'Bạn đã bỏ cuộc',
       'Your place': 'Hạng của bạn', 'Rematch': 'Đấu lại', '🔁 Rematch': '🔁 Đấu lại', 'Bowl again': 'Chơi bowling lại', 'New Game': 'Ván mới',
@@ -18672,6 +18727,110 @@
         mark('win'); setTimeout(() => welcome('win'), 1800);
       }, 1500);
       window.showWelcome = welcome;
+    })();
+    /* =========================================================================
+       TABLE DESIGNS (Nov 2026, Inna picked them from prototypes/table-designs.html)
+       Six looks for the card-game tables: Classic Felt, Harbor Night, Royal Red, Saloon Planks, Arcade Grid, Lagoon.
+       Each = a background for the whole screen, a table with stepped pixel corners (a rim + the cloth + a faint
+       picture in the middle) and a matching back for playing cards. Each player picks their own (🎨 Table in the
+       game header); it is saved in this browser (ps_table_v1) and never sent to anyone.
+       The look is set as CSS variables on <html> (--tb-*); 27-tables.css paints with them.
+       ========================================================================= */
+    (function () {
+      const KEY = 'ps_table_v1';
+      window.TABLE_GAMES = ['poker', 'blackjack', 'colorclash', 'kittens', 'fibber', 'dominoes'];
+      // a small pixel tile (rows of letters → colours) as an SVG background
+      function svgOf(rows, pal, op) {
+        const h = rows.length, w = rows[0].length; let r = '';
+        rows.forEach((row, y) => [...row].forEach((c, x) => { if (pal[c]) r += `<rect x="${x}" y="${y}" width="1" height="1" fill="${pal[c]}"/>`; }));
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" shape-rendering="crispEdges"${op ? ` fill-opacity="${op}"` : ''}>${r}</svg>`;
+      }
+      const url = (svg) => `url('data:image/svg+xml;utf8,${encodeURIComponent(svg)}')`;
+      const tile = (rows, pal, scale) => ({ img: url(svgOf(rows, pal)), size: `${rows[0].length * scale}px ${rows.length * scale}px` });
+
+      const EMB = {
+        spade: ['.....k.....', '....kkk....', '...kkkkk...', '..kkkkkkk..', '.kkkkkkkkk.', 'kkkkkkkkkkk', 'kkkkkkkkkkk', '.kkk.k.kkk.', '.....k.....', '....kkk....', '...kkkkk...'],
+        anchor: ['.....kk.....', '....k..k....', '....k..k....', '.....kk.....', '..kkkkkkkk..', '.....kk.....', '.....kk.....', 'k....kk....k', 'kk...kk...kk', '.kk..kk..kk.', '..kkkkkkkk..', '....kkkk....'],
+        crown: ['k....k....k', 'kk..kkk..kk', 'kkk.kkk.kkk', 'kkkkkkkkkkk', 'kkkkkkkkkkk', 'k.k.k.k.k.k', 'kkkkkkkkkkk', 'kkkkkkkkkkk'],
+        star: ['.....k.....', '.....k.....', '....kkk....', 'kkkkkkkkkkk', '.kkkkkkkkk.', '..kkkkkkk..', '..kkk.kkk..', '.kkk...kkk.', '.kk.....kk.'],
+        joy: ['....kkk....', '...kkkkk...', '...kkkkk...', '....kkk....', '.....k.....', '.....k.....', '.kkkkkkkkk.', 'kkkkkkkkkkk', 'kk.kkkkk.kk', 'kkkkkkkkkkk'],
+        palm: ['..kk...kk..', '.kkkk.kkkk.', 'kk..kkk..kk', 'k...kkk...k', '.....k.....', '.....k.....', '....k......', '....k......', '....k......', 'kkkkkkkkkkk', '.kkkkkkkkk.'],
+      };
+
+      const THEMES = [
+        { id: 'classic', name: 'Classic Felt', bgc: '#174F3B', bg: tile(['ab', 'ba'], { a: '#185440', b: '#164B38' }, 6),
+          rimc: '#6B4226', rim: tile(['aaaaaaaaaaaaaaaaaaaaaaaa', 'aaaaaaaaaaaaaaaaaaaaaaaa', 'aaaaaaaaaaaaaaaaaaaaaaaa', 'aaaaaaaaaaaayaaaaaaaaaaa'], { a: '#6B4226', y: '#E9C46A' }, 4),
+          feltc: '#1E7A57', felt: tile(['abaa', 'aaab', 'abaa', 'baaa'], { a: '#1E7A57', b: '#1B7150' }, 4), emb: 'spade', ec: '#0B3A29',
+          backc: '#12304C', back: tile(['aab', 'aba', 'baa'], { a: '#12304C', b: '#F5B041' }, 4) },
+        { id: 'harbor', name: 'Harbor Night', bgc: '#0A1D30', bg: tile(['........', '........', '..aa....', '.a..a..a', '......a.', '........'], { a: '#12304C' }, 4),
+          rimc: '#B07A3E', rim: tile(['aabb', 'abba', 'bbaa', 'baab'], { a: '#C9934F', b: '#8C5A2B' }, 4),
+          feltc: '#123A5C', felt: tile(['........', '...aa...', '..a..a.a', '.......a', '........', '........'], { a: '#17466E' }, 5), emb: 'anchor', ec: '#2DD4BF',
+          backc: '#0A1D30', back: tile(['abba', 'baab'], { a: '#0A1D30', b: '#2DD4BF' }, 4) },
+        { id: 'royal', name: 'Royal Red', bgc: '#2A0A12', bg: tile(['a...', '.b..', '..a.', '...b'], { a: '#330E18', b: '#2F0C15' }, 6),
+          rimc: '#D9A441', rim: tile(['aaaa', 'aaaa', 'bbbb', 'aaaa'], { a: '#E6B54E', b: '#8A5F16' }, 4),
+          feltc: '#7A1E2E', felt: tile(['...a...', '..a.a..', '.a...a.', 'a.....a', '.a...a.', '..a.a..', '...a...'], { a: '#862638' }, 5), emb: 'crown', ec: '#F5B041',
+          backc: '#7A1E2E', back: tile(['abbba', 'babab', 'bbabb', 'babab', 'abbba'], { a: '#F5B041', b: '#7A1E2E' }, 3) },
+        { id: 'saloon', name: 'Saloon Planks', bgc: '#3B2414', bg: tile(['aaaaaaaaaaaaaaaa', 'aaaaaaaaaaaaaaaa', 'bbbbbbbbbbbbbbbb', 'aaaaaaaaaaaaaaaa'], { a: '#3E2716', b: '#2E1B0E' }, 6),
+          rimc: '#2B1A10', rim: tile(['aaaaaaaa', 'aaaaaaaa', 'aaabaaaa', 'aaaaaaaa'], { a: '#30200F', b: '#7A5A3A' }, 4),
+          feltc: '#A0683A', felt: tile(['aaaaaaaaaaaaaaaaaaaa', 'aaaaaacaaaaaaaaaaaaa', 'aaaaaaaaaaaaaaaaaaaa', 'aaaaaaaaaaaaaacaaaaa', 'aaaaaaaaaaaaaaaaaaaa', 'bbbbbbbbbbbbbbbbbbbb', 'dddddddddddddddddddd', 'ddddddddddcddddddddd', 'dddddddddddddddddddd', 'dddddddddddddddddddd', 'dddcdddddddddddddddd', 'bbbbbbbbbbbbbbbbbbbb'], { a: '#A66E3E', b: '#5E3A1C', c: '#8E5A2E', d: '#9A6235' }, 4), emb: 'star', ec: '#3B2414',
+          backc: '#5E3A1C', back: tile(['aaaa', 'abba', 'abba', 'aaaa'], { a: '#5E3A1C', b: '#E9C46A' }, 4) },
+        { id: 'arcade', name: 'Arcade Grid', bgc: '#060F1A', bg: tile(['a.......', '........', '........', '........'], { a: '#0E2236' }, 5),
+          rimc: '#F5B041', rim: tile(['aaab', 'aaab', 'aaab', 'bbbb'], { a: '#F5B041', b: '#B97A1A' }, 5),
+          feltc: '#0B1A2A', felt: tile(['abbbbbbbbb', 'b.........', 'b.........', 'b.........', 'b.........', 'b.........', 'b.........', 'b.........', 'b.........', 'b.........'], { a: '#2DD4BF', b: '#123A44' }, 3), emb: 'joy', ec: '#2DD4BF',
+          backc: '#0B1A2A', back: tile(['ab', 'ba'], { a: '#0B1A2A', b: '#FB7185' }, 4) },
+        { id: 'lagoon', name: 'Lagoon', bgc: '#0E5C66', bg: tile(['......', '..a...', '......', '.....a', '......'], { a: '#13707A' }, 5),
+          rimc: '#E3C38A', rim: tile(['aaaaaa', 'aabaaa', 'aaaaaa', 'aaaaba', 'acaaaa', 'aaaaaa'], { a: '#E3C38A', b: '#C9A469', c: '#F7F4EC' }, 4),
+          feltc: '#178A86', felt: tile(['........', '........', '...a....', '........', '........', '......a.', '........'], { a: '#5ED4C8' }, 5), emb: 'palm', ec: '#0B4E4C',
+          backc: '#178A86', back: tile(['aaba', 'abaa', 'aaab', 'baaa'], { a: '#178A86', b: '#E3C38A' }, 4) },
+      ];
+      const BY = {}; THEMES.forEach((t) => { BY[t.id] = t; });
+
+      let cur = 'classic'; try { const v = localStorage.getItem(KEY); if (v && BY[v]) cur = v; } catch (e) {}
+
+      function apply(id) {
+        const t = BY[id] || BY.classic; cur = t.id;
+        const s = document.documentElement.style, set = (k, v) => s.setProperty(k, v);
+        set('--tb-bgc', t.bgc); set('--tb-bg', t.bg.img); set('--tb-bg-s', t.bg.size);
+        set('--tb-rimc', t.rimc); set('--tb-rim', t.rim.img); set('--tb-rim-s', t.rim.size);
+        set('--tb-feltc', t.feltc); set('--tb-felt', t.felt.img); set('--tb-felt-s', t.felt.size);
+        set('--tb-emb', url(svgOf(EMB[t.emb], { k: t.ec }, 0.16)));
+        set('--tb-backc', t.backc); set('--tb-back', t.back.img); set('--tb-back-s', t.back.size);
+        document.documentElement.dataset.table = t.id;
+      }
+      function choose(id) { apply(id); try { localStorage.setItem(KEY, cur); } catch (e) {} if (typeof SFX !== 'undefined') SFX.play('card'); draw(); }
+
+      // the picker: six small swatches (rim + cloth + card back), tap one to use it at once
+      let pop = null;
+      function draw() {
+        if (!pop) return;
+        pop.innerHTML = `<div class="tbp-h pix">TABLE DESIGN</div><div class="tbp-grid">${THEMES.map((t) => `
+          <button class="tbp-o${t.id === cur ? ' on' : ''}" data-tb="${t.id}" aria-label="${t.name}">
+            <span class="tbp-sw" style="background:${t.bg.img} 0 0 / ${t.bg.size}, ${t.bgc}">
+              <span class="tbp-rim" style="background:${t.rim.img} 0 0 / ${t.rim.size}, ${t.rimc}"><span class="tbp-felt" style="background:${url(svgOf(EMB[t.emb], { k: t.ec }, 0.45))} center / 46% no-repeat, ${t.felt.img} 0 0 / ${t.felt.size}, ${t.feltc}"></span></span>
+              <span class="tbp-back" style="background:${t.back.img} 0 0 / ${t.back.size}, ${t.backc}"></span>
+            </span><span class="tbp-n">${t.name}</span></button>`).join('')}</div>
+          <div class="tbp-note">Only you see your choice.</div>`;
+        pop.querySelectorAll('[data-tb]').forEach((b) => { b.onclick = (e) => { e.stopPropagation(); choose(b.dataset.tb); }; });
+      }
+      function close() { if (pop) { pop.remove(); pop = null; document.removeEventListener('pointerdown', outside, true); } }
+      function outside(e) { if (pop && !pop.contains(e.target) && !(e.target.closest && e.target.closest('.gs-table'))) close(); }
+      window.openTablePicker = function (anchor) {
+        if (pop) { close(); return; }
+        pop = document.createElement('div'); pop.id = 'tb-pop'; pop.className = 'tbp'; document.body.appendChild(pop); draw();
+        const r = anchor && anchor.getBoundingClientRect(), w = pop.offsetWidth, h = pop.offsetHeight;
+        if (r && r.width) {
+          const x = Math.max(8, Math.min(window.innerWidth - w - 8, r.left + r.width / 2 - w / 2));
+          const y = r.top - h - 10 > 8 ? r.top - h - 10 : r.bottom + 10;
+          pop.style.left = x + 'px'; pop.style.top = Math.max(8, Math.min(window.innerHeight - h - 8, y)) + 'px';
+        }
+        setTimeout(() => document.addEventListener('pointerdown', outside, true), 0);
+      };
+      window.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+      // leaving the game closes the picker
+      new MutationObserver(() => { if (pop && !document.getElementById('gs-tools')) close(); }).observe(document.body, { attributes: true, attributeFilter: ['data-game', 'class'] });
+
+      window.TABLES = { list: THEMES.map((t) => t.id), get current() { return cur; }, set: choose, apply };
+      apply(cur);
     })();
     /* =========================================================================
        8. KEYBOARD LISTENERS & BOOTSTRAP

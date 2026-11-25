@@ -4,6 +4,9 @@
        table in zz_lang.js like part 1 (this file loads just before it). Keys are the exact English lines.
        ========================================================================= */
     window.VI_MORE2 = {
+      // table designs (zz_tables.js)
+      '🎨 Table': '🎨 Bàn', 'TABLE DESIGN': 'KIỂU BÀN', 'Only you see your choice.': 'Chỉ bạn thấy lựa chọn này.', 'Change the table design': 'Đổi kiểu bàn',
+      'Classic Felt': 'Nỉ cổ điển', 'Harbor Night': 'Đêm bến cảng', 'Royal Red': 'Đỏ hoàng gia', 'Saloon Planks': 'Ván gỗ quán rượu', 'Arcade Grid': 'Lưới arcade', 'Lagoon': 'Đầm phá',
       // result screens
       'You lose': 'Bạn thua', 'You lost': 'Bạn thua', 'It’s a draw': 'Hòa', "It's a draw": 'Hòa', 'Draw!': 'Hòa!', 'You gave up': 'Bạn đã bỏ cuộc',
       'Your place': 'Hạng của bạn', 'Rematch': 'Đấu lại', '🔁 Rematch': '🔁 Đấu lại', 'Bowl again': 'Chơi bowling lại', 'New Game': 'Ván mới',

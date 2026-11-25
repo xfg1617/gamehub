@@ -860,3 +860,14 @@ folder that was handed over, so they do not exist here.)
 * **Emote / chat bubbles on names**: `target()` in zz_emotes.js falls back to the smallest box showing the player's
   name (player panels, score boxes) before the screen corner; boxes inside `[data-bub="left"]` (Pool's side column) get
   the bubble to their left. `EMOTE.target` is exposed; `test/t_emote_targets.py` checks 18 games.
+
+## 5x. Table designs for card games (Nov 25 2026, Inna chose them from `prototypes/table-designs.html`)
+
+* `src/games/zz_tables.js` + `src/css/27-tables.css`: six looks (Classic Felt, Harbor Night, Royal Red, Saloon Planks,
+  Arcade Grid, Lagoon) for `TABLE_GAMES` = Poker, Blackjack, Uno, Kaboom Cats, Bullshit, Dominoes. Each = screen
+  background, a table with stepped pixel corners (rim `::before` + cloth with a faint emblem `::after`, under Poker's whole
+  ring of seats, the middle of the others, Blackjack/Dominoes' felt) and the back of playing cards (`.pc-back`; Uno and
+  Kaboom Cats keep their printed backs). Phones: the `.felt` box gets the cloth + a rim-coloured edge.
+* Each player picks their own: **🎨 Table** in those games' header (`gameShell` → `openTablePicker`), saved in
+  `ps_table_v1`, not sent online. Colours are CSS variables `--tb-*` set on `<html>` by `TABLES.apply`.
+  `test/t_tables.py`. Mine Saboteurs / Castles & Kings have their own boards and are not included.

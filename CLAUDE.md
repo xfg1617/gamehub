@@ -845,3 +845,18 @@ folder that was handed over, so they do not exist here.)
   full-screen game any more (`navigateTo` no longer adds `in-game` for 'daily'), so the side menu stays.
 * **Button shadows**: the game bar, Poker's bet bar and the card-game prompts have more padding at the bottom so the
   3D buttons' 5 px shadow stays inside the bar.
+
+## 5w. Nov 25 2026: Pool bigger, ball in hand, bigger rooms, emotes on names
+
+* **Pool layout (computers)**: `.pl-lay` grid in 25-fullscreen.css: the table fills the left (sized from `--av`), player
+  boxes (`#pl-seat-0/1`, were `pl-p0/1`) + controls (`.pl-ctl`) are a 320 px column on the right, the pull-back power
+  bar runs under the table. Phones keep the stack (players, table, bar, controls).
+* **Ball in hand = drag and drop**: press anywhere (or on the cue ball), drag, let go. After placing, the ball stays "in
+  hand" (`G.bih`) until the shot, so you can grab it again and move it; a spot on another ball is refused.
+  `test/t_pool_bih.py`.
+* **Rooms (≥1280 px)**: private rooms are two columns (code / link / players | computer players / settings / Start),
+  up to 1560 px wide, chat 400 px and as tall as the screen allows (22-netplay.css, CSS columns with a break before
+  `.np-bots`).
+* **Emote / chat bubbles on names**: `target()` in zz_emotes.js falls back to the smallest box showing the player's
+  name (player panels, score boxes) before the screen corner; boxes inside `[data-bub="left"]` (Pool's side column) get
+  the bubble to their left. `EMOTE.target` is exposed; `test/t_emote_targets.py` checks 18 games.

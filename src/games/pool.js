@@ -242,10 +242,11 @@
       // ('end'), so every screen agrees even if a ball rolls a hair differently.
       function start(body, sel, S) {
         G = { S, me: S.online ? S.me : 0, body, guide: ['classic', 'pro', 'off'].includes(sel.guide) ? sel.guide : 'classic', lvl: +sel.lvl || 2, secs: +sel.clock, balls: rack(S.rng.shuffle), turn: 0, groups: [null, null], bih: false, placing: false, aim: 0, power: 0, lastPower: 0.45, spin: { a: 0, b: 0 }, phase: 'aim', shots: 0, tok: ++GT.cur, over: false, msg: '', fouls: 0, pocketedBy: [[], []], lastSnd: 0, pocketedTotal: 0, resign: false, drops: [], pull: null, aimDrag: false, cueVis: true, cuePull: 8, pred: null, predKey: '', lastTs: 0 };
-        body.innerHTML = `<div class="space-y-3"><div class="grid grid-cols-2 gap-3">
-          <div id="pl-p0" class="seat" style="text-align:left"></div><div id="pl-p1" class="seat" style="text-align:left"></div></div>
-          <div class="relative"><canvas id="pl-cv" width="${W}" height="${H}" style="width:100%;display:block;border:4px solid var(--ink);box-shadow:0 5px 0 var(--ink);touch-action:none;cursor:grab;background:#4B2E1A"></canvas></div>
-          <div class="win p-3 space-y-3">
+        body.innerHTML = `<div class="pl-lay space-y-3"><div class="pl-seats grid grid-cols-2 gap-3" data-bub="left">
+          <div id="pl-seat-0" class="seat" style="text-align:left"></div><div id="pl-seat-1" class="seat" style="text-align:left"></div></div>
+          <div class="pl-table relative"><canvas id="pl-cv" width="${W}" height="${H}" style="width:100%;display:block;border:4px solid var(--ink);box-shadow:0 5px 0 var(--ink);touch-action:none;cursor:grab;background:#4B2E1A"></canvas></div>
+          <div id="pl-bar" class="pl-bar"><div id="pl-fill" class="pl-fill"></div><div id="pl-knob" class="pl-knob"></div><span class="pl-lab">PULL BACK  ◀  THEN LET GO TO SHOOT</span></div>
+          <div class="pl-ctl win p-3 space-y-3">
             <div class="flex items-start gap-3">
               <div class="text-center shrink-0" title="Where the cue hits the ball. Up = follow, down = draw, sideways = side-spin.">
                 <canvas id="pl-spin" width="132" height="132" style="width:86px;height:86px;touch-action:none;cursor:crosshair;display:block;margin:0 auto"></canvas>
@@ -259,7 +260,6 @@
                 </div>
               </div>
             </div>
-            <div id="pl-bar" class="pl-bar"><div id="pl-fill" class="pl-fill"></div><div id="pl-knob" class="pl-knob"></div><span class="pl-lab">PULL BACK  ◀  THEN LET GO TO SHOOT</span></div>
             <div id="pl-clock"></div></div>
           <div class="grid grid-cols-2 gap-3"><button id="pl-resign" class="btn-game btn-coral py-2 text-sm">Resign</button><button id="pl-new" class="btn-game btn-graphite py-2 text-sm">${S.online ? 'Leave' : 'New game'}</button></div></div>`;
         G.cv = $('pl-cv'); G.ctx = G.cv.getContext('2d'); G.clock = makeClock($('pl-clock'));
@@ -309,14 +309,27 @@
         const aimAt = (x, y) => { const c = G.balls[0]; if (hyp(x - c.x, y - c.y) < 16) return; G.aim = Math.atan2(y - c.y, x - c.x); };
         cv.onpointermove = (e) => {
           if (G.over) return; const [x, y] = pt(e);
-          if (G.phase === 'aim' && myTurn()) { if (G.placing) G.ghost = [x, y]; else if (G.aimDrag) aimAt(x, y); }
+          if (G.phase === 'aim' && myTurn()) {
+            if (G.placing) G.ghost = [x, y]; else if (G.aimDrag) aimAt(x, y);
+            else cv.style.cursor = G.bih && hyp(x - G.balls[0].x, y - G.balls[0].y) < 28 ? 'move' : 'grab';
+          }
         };
         cv.onpointerdown = (e) => {
           if (!canShoot()) return; const [x, y] = pt(e);
-          if (G.placing) { if (validCue(x, y)) { G.balls[0].x = x; G.balls[0].y = y; G.placing = false; G.bih = false; G.ghost = null; SFX.play('ball'); say('Cue ball placed. Drag to aim, pull the bar back to shoot.'); } else { SFX.play('wrong'); showToast('Cannot place the cue ball there.', 'error'); } return; }
+          // ball in hand: press, drag the cue ball where you want it and let go. Until you shoot you can pick it up again.
+          if (G.placing || (G.bih && hyp(x - G.balls[0].x, y - G.balls[0].y) < 28)) {
+            G.placing = true; G.dragCue = true; G.ghost = [x, y]; cv.style.cursor = 'grabbing'; try { cv.setPointerCapture(e.pointerId); } catch (_) {} return;
+          }
           G.aimDrag = true; cv.style.cursor = 'grabbing'; try { cv.setPointerCapture(e.pointerId); } catch (_) {} aimAt(x, y);
         };
-        const up = () => { G.aimDrag = false; cv.style.cursor = 'grab'; };
+        const up = () => {
+          G.aimDrag = false; cv.style.cursor = 'grab';
+          if (G.dragCue) {
+            G.dragCue = false; const gh = G.ghost;
+            if (gh && validCue(gh[0], gh[1])) { G.balls[0].x = gh[0]; G.balls[0].y = gh[1]; G.placing = false; G.ghost = null; SFX.play('ball'); say('Cue ball placed. Drag it again to move it, or drag the table to aim. Pull the bar back to shoot.'); }
+            else { SFX.play('wrong'); showToast('Cannot place the cue ball there.', 'error'); }
+          }
+        };
         cv.onpointerup = up; cv.onpointercancel = up;
         cv.addEventListener('wheel', (e) => { if (!canShoot() || G.placing) return; G.aim += Math.sign(e.deltaY) * 0.003; e.preventDefault(); }, { passive: false });
         const nudge = (d) => { if (canShoot() && !G.placing) G.aim += d; };
@@ -348,7 +361,7 @@
         G.phase = 'aim'; G.cueVis = true; G.cuePull = 8; G.predKey = ''; G.peekAim = undefined; G.peekPow = 0; G.peekPowT = 0;
         G.S.onPeek = (i, d) => { if (G && G.phase === 'aim' && i === G.turn && d && isFinite(d.a)) { G.peekAim = +d.a; G.peekPowT = Math.max(0, Math.min(1, +d.p || 0)); } };
         const me = myTurn(), c = G.balls[0];
-        if (G.bih && me) { G.placing = true; say('Foul! You have the cue ball in hand: click the table to place it.'); }
+        if (G.bih && me) { G.placing = true; say('Foul! You have the cue ball in hand: drag it anywhere on the table and let go.'); }
         panels(); setPower(0);
         if (me) {
           const tg = legalSet(G.balls, G.groups[G.turn]);
@@ -555,7 +568,7 @@
       /* ---------- rendering ---------- */
       function panels() {
         [0, 1].forEach((i) => {
-          const el = $('pl-p' + i); if (!el) return;
+          const el = $('pl-seat-' + i); if (!el) return;
           const g = G.groups[i], mine = g ? G.balls.filter((b) => groupOf(b.n) === g) : [];
           el.className = 'seat' + (G.turn === i && !G.over ? ' turn' : '');
           el.innerHTML = `<div class="text-sm font-display font-extrabold">${esc(G.S.avatar(i))} ${esc(G.S.name(i))}${G.S.online && i === G.me ? ' <span class="pix text-xs text-teal">YOU</span>' : ''}</div><div class="pix text-xs text-amber mb-1">${g ? (g === 'solid' ? 'SOLIDS' : 'STRIPES') : 'TABLE OPEN'}</div><div class="flex flex-wrap gap-1 min-h-[18px]">${mine.map((b) => `<span style="width:16px;height:16px;border-radius:50%;border:2px solid var(--ink);background:${b.on ? colorOf(b.n) : 'transparent'};opacity:${b.on ? 1 : 0.25};display:inline-block"></span>`).join('')}</div>`;
@@ -709,7 +722,7 @@
             ctx.lineCap = 'butt'; ctx.globalAlpha = 1;
           }
         }
-        if (G.placing && !G.ghost) { ctx.fillStyle = 'rgba(245,176,65,.95)'; ctx.font = 'bold 22px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('Click anywhere to place the cue ball', W / 2, H / 2); }
+        if (G.placing && !G.ghost) { ctx.fillStyle = 'rgba(245,176,65,.95)'; ctx.font = 'bold 22px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('Ball in hand: drag the cue ball where you want it', W / 2, H / 2); }
         const bar = $('pl-bar'); if (bar) bar.classList.toggle('off', !canShoot() || G.placing);
       }
 

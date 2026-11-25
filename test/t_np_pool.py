@@ -4,7 +4,7 @@ import sys; sys.path.insert(0, 'test')
 from nplib import *
 REAL = 'real' in sys.argv
 POS = "[...(window.__poolG ? [] : [])].join()"
-BALLS = "document.getElementById('pl-p0').innerText.replace(/\\s+/g,' ') + ' | ' + document.getElementById('pl-p1').innerText.replace(/\\s+/g,' ') + ' | ' + document.getElementById('pl-msg').textContent"
+BALLS = "document.getElementById('pl-seat-0').innerText.replace(/\\s+/g,' ') + ' | ' + document.getElementById('pl-seat-1').innerText.replace(/\\s+/g,' ') + ' | ' + document.getElementById('pl-msg').textContent"
 with sync_playwright() as p:
     br = launch(p); pg = open_page(br)
     pg.evaluate("openGame('pool')"); pg.wait_for_timeout(300); pg.click('#su-go'); pg.wait_for_timeout(800)

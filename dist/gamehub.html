@@ -1059,6 +1059,21 @@
     .np-sets .seg { display: flex; flex-wrap: wrap; max-width: 100%; }
     .np-sets .seg-btn { white-space: normal; min-width: 0; line-height: 1.15; padding-top: .45rem; padding-bottom: .45rem; }
     @media (max-width: 640px) { .np-sets .seg-btn { flex: 1 1 calc(50% - 4px); } }
+    /* Bigger rooms on computers (Nov 2026, Inna: "lobby needs to expand bigger"): a wide room in two columns
+       (left: code, link, players; right: computer players, game settings, Start), with a taller chat beside it */
+    @media (min-width: 1280px) {
+      .np-room { max-width: 1560px; }
+      body.in-game .np-room { margin-top: 18px; }
+      .np-room:has(#np-chatwin:not(.hidden)) { grid-template-columns: minmax(0, 1fr) 400px; }
+      .np-room:has(.np-bots) .np-room-main { max-width: none; }
+      .np-room:has(.np-bots) #np-lob { column-count: 2; column-gap: 2.25rem; padding: 1.75rem 2rem; }
+      #np-lob:has(.np-bots) > * { break-inside: avoid; }
+      #np-lob > .np-bots { break-before: column; margin-top: 0 !important; }
+      #np-lob:has(.np-bots) .room-code { font-size: 3rem; padding: .6rem 2.4rem; }
+      #np-lob:has(.np-bots) .np-seat { padding: 12px 14px; font-size: 1.05rem; }
+      #np-lob:has(.np-bots) > *:last-child { margin-top: 1rem; }
+      .np-room-chat .chatbox { height: calc(100vh - 230px); min-height: 460px; max-height: 720px; }
+    }
     /* ===== HOW TO PLAY: title grid + step-by-step guides ===== */
     .ht-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
     .ht-tile { display: flex; align-items: center; gap: 10px; padding: 12px; background: #0F2A44; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); text-align: left; color: #F7F4EC; transition: transform .08s; }
@@ -1220,6 +1235,8 @@
       body.in-game #em-fab { width: 42px !important; height: 42px !important; opacity: .92; }
       body.in-game #em-fab svg, body.in-game #em-fab .em-spr { width: 30px !important; height: 30px !important; }
     }
+    /* bubble beside a name box (Pool's player column on computers): the pointer is on its right side */
+    .em-bub.side::after, .em-say.side::after { left: auto; right: -10px; top: 50%; bottom: auto; margin: -6px 0 0; transform: rotate(-45deg); }
     /* =========================================================================
        FULL-SCREEN GAMES (Inna, Nov 2026): while a game is open (body.in-game) the side menu, the phone header
        and the footer step aside and the game uses the whole window. The move log hides behind "📜 Moves".
@@ -1296,7 +1313,16 @@
       body.in-game[data-game="blackjack"] #gs-body .pcard .pc-mid svg { width: 50px; height: 50px; }
       body.in-game[data-game="blackjack"] #gs-body .pcard.sm { width: 64px; height: 90px; }
       /* Pool and Bowling: the table / lane is as wide as the height allows */
-      body.in-game[data-game="pool"] #gs-body { max-width: calc((var(--av) - 450px) * 1000 / 540); min-width: 560px; margin: 0 auto; }
+      /* Pool (Nov 2026, Inna: "table needs to be bigger"): the table fills the left, players + controls are a 320 px column
+         on the right, the pull-back power bar runs under the table */
+      body.in-game[data-game="pool"] #gs-body { max-width: calc((var(--av) - 140px) * 1000 / 540 + 336px); margin: 0 auto; }
+      body.in-game[data-game="pool"] .pl-lay { display: grid; grid-template-columns: minmax(0, 1fr) 320px; grid-template-rows: auto 1fr auto;
+        grid-template-areas: "table seats" "table ctl" "bar ctl"; column-gap: 16px; row-gap: 12px; align-items: start; }
+      body.in-game[data-game="pool"] .pl-lay > * { margin-top: 0 !important; }
+      body.in-game[data-game="pool"] .pl-seats { grid-area: seats; grid-template-columns: minmax(0, 1fr) !important; gap: 8px; }
+      body.in-game[data-game="pool"] .pl-table { grid-area: table; }
+      body.in-game[data-game="pool"] #pl-bar { grid-area: bar; }
+      body.in-game[data-game="pool"] .pl-ctl { grid-area: ctl; }
       body.in-game[data-game="bowling"] #gs-body { max-width: calc((var(--av) - 270px) / .6); min-width: 560px; margin: 0 auto; }
       /* Word Connect, Doodle, Impostor: centred, not stretched */
       body.in-game[data-game="wordconnect"] #gs-body > .grid { grid-template-columns: 400px minmax(0, 760px) !important; }
@@ -1509,7 +1535,6 @@
        row is hidden like the other games' give-up buttons (← Lobby leaves and asks first). */
     body.in-game[data-game="pool"] #gs-body .grid:has(> #pl-resign) { display: none !important; }
     @media (min-width: 1024px) and (max-height: 820px) {
-      body.in-game[data-game="pool"] #gs-body { min-width: 460px; max-width: calc((var(--av) - 330px) * 1000 / 540); }
       body.in-game main.flex-1 { padding-bottom: 8px !important; }
       body.in-game[data-game="manor"] .mm-room { min-height: 84px; }
       body.in-game[data-game="manor"] .mm-roof { height: 40px; }
@@ -14594,10 +14619,11 @@
       // ('end'), so every screen agrees even if a ball rolls a hair differently.
       function start(body, sel, S) {
         G = { S, me: S.online ? S.me : 0, body, guide: ['classic', 'pro', 'off'].includes(sel.guide) ? sel.guide : 'classic', lvl: +sel.lvl || 2, secs: +sel.clock, balls: rack(S.rng.shuffle), turn: 0, groups: [null, null], bih: false, placing: false, aim: 0, power: 0, lastPower: 0.45, spin: { a: 0, b: 0 }, phase: 'aim', shots: 0, tok: ++GT.cur, over: false, msg: '', fouls: 0, pocketedBy: [[], []], lastSnd: 0, pocketedTotal: 0, resign: false, drops: [], pull: null, aimDrag: false, cueVis: true, cuePull: 8, pred: null, predKey: '', lastTs: 0 };
-        body.innerHTML = `<div class="space-y-3"><div class="grid grid-cols-2 gap-3">
-          <div id="pl-p0" class="seat" style="text-align:left"></div><div id="pl-p1" class="seat" style="text-align:left"></div></div>
-          <div class="relative"><canvas id="pl-cv" width="${W}" height="${H}" style="width:100%;display:block;border:4px solid var(--ink);box-shadow:0 5px 0 var(--ink);touch-action:none;cursor:grab;background:#4B2E1A"></canvas></div>
-          <div class="win p-3 space-y-3">
+        body.innerHTML = `<div class="pl-lay space-y-3"><div class="pl-seats grid grid-cols-2 gap-3" data-bub="left">
+          <div id="pl-seat-0" class="seat" style="text-align:left"></div><div id="pl-seat-1" class="seat" style="text-align:left"></div></div>
+          <div class="pl-table relative"><canvas id="pl-cv" width="${W}" height="${H}" style="width:100%;display:block;border:4px solid var(--ink);box-shadow:0 5px 0 var(--ink);touch-action:none;cursor:grab;background:#4B2E1A"></canvas></div>
+          <div id="pl-bar" class="pl-bar"><div id="pl-fill" class="pl-fill"></div><div id="pl-knob" class="pl-knob"></div><span class="pl-lab">PULL BACK  ◀  THEN LET GO TO SHOOT</span></div>
+          <div class="pl-ctl win p-3 space-y-3">
             <div class="flex items-start gap-3">
               <div class="text-center shrink-0" title="Where the cue hits the ball. Up = follow, down = draw, sideways = side-spin.">
                 <canvas id="pl-spin" width="132" height="132" style="width:86px;height:86px;touch-action:none;cursor:crosshair;display:block;margin:0 auto"></canvas>
@@ -14611,7 +14637,6 @@
                 </div>
               </div>
             </div>
-            <div id="pl-bar" class="pl-bar"><div id="pl-fill" class="pl-fill"></div><div id="pl-knob" class="pl-knob"></div><span class="pl-lab">PULL BACK  ◀  THEN LET GO TO SHOOT</span></div>
             <div id="pl-clock"></div></div>
           <div class="grid grid-cols-2 gap-3"><button id="pl-resign" class="btn-game btn-coral py-2 text-sm">Resign</button><button id="pl-new" class="btn-game btn-graphite py-2 text-sm">${S.online ? 'Leave' : 'New game'}</button></div></div>`;
         G.cv = $('pl-cv'); G.ctx = G.cv.getContext('2d'); G.clock = makeClock($('pl-clock'));
@@ -14661,14 +14686,27 @@
         const aimAt = (x, y) => { const c = G.balls[0]; if (hyp(x - c.x, y - c.y) < 16) return; G.aim = Math.atan2(y - c.y, x - c.x); };
         cv.onpointermove = (e) => {
           if (G.over) return; const [x, y] = pt(e);
-          if (G.phase === 'aim' && myTurn()) { if (G.placing) G.ghost = [x, y]; else if (G.aimDrag) aimAt(x, y); }
+          if (G.phase === 'aim' && myTurn()) {
+            if (G.placing) G.ghost = [x, y]; else if (G.aimDrag) aimAt(x, y);
+            else cv.style.cursor = G.bih && hyp(x - G.balls[0].x, y - G.balls[0].y) < 28 ? 'move' : 'grab';
+          }
         };
         cv.onpointerdown = (e) => {
           if (!canShoot()) return; const [x, y] = pt(e);
-          if (G.placing) { if (validCue(x, y)) { G.balls[0].x = x; G.balls[0].y = y; G.placing = false; G.bih = false; G.ghost = null; SFX.play('ball'); say('Cue ball placed. Drag to aim, pull the bar back to shoot.'); } else { SFX.play('wrong'); showToast('Cannot place the cue ball there.', 'error'); } return; }
+          // ball in hand: press, drag the cue ball where you want it and let go. Until you shoot you can pick it up again.
+          if (G.placing || (G.bih && hyp(x - G.balls[0].x, y - G.balls[0].y) < 28)) {
+            G.placing = true; G.dragCue = true; G.ghost = [x, y]; cv.style.cursor = 'grabbing'; try { cv.setPointerCapture(e.pointerId); } catch (_) {} return;
+          }
           G.aimDrag = true; cv.style.cursor = 'grabbing'; try { cv.setPointerCapture(e.pointerId); } catch (_) {} aimAt(x, y);
         };
-        const up = () => { G.aimDrag = false; cv.style.cursor = 'grab'; };
+        const up = () => {
+          G.aimDrag = false; cv.style.cursor = 'grab';
+          if (G.dragCue) {
+            G.dragCue = false; const gh = G.ghost;
+            if (gh && validCue(gh[0], gh[1])) { G.balls[0].x = gh[0]; G.balls[0].y = gh[1]; G.placing = false; G.ghost = null; SFX.play('ball'); say('Cue ball placed. Drag it again to move it, or drag the table to aim. Pull the bar back to shoot.'); }
+            else { SFX.play('wrong'); showToast('Cannot place the cue ball there.', 'error'); }
+          }
+        };
         cv.onpointerup = up; cv.onpointercancel = up;
         cv.addEventListener('wheel', (e) => { if (!canShoot() || G.placing) return; G.aim += Math.sign(e.deltaY) * 0.003; e.preventDefault(); }, { passive: false });
         const nudge = (d) => { if (canShoot() && !G.placing) G.aim += d; };
@@ -14700,7 +14738,7 @@
         G.phase = 'aim'; G.cueVis = true; G.cuePull = 8; G.predKey = ''; G.peekAim = undefined; G.peekPow = 0; G.peekPowT = 0;
         G.S.onPeek = (i, d) => { if (G && G.phase === 'aim' && i === G.turn && d && isFinite(d.a)) { G.peekAim = +d.a; G.peekPowT = Math.max(0, Math.min(1, +d.p || 0)); } };
         const me = myTurn(), c = G.balls[0];
-        if (G.bih && me) { G.placing = true; say('Foul! You have the cue ball in hand: click the table to place it.'); }
+        if (G.bih && me) { G.placing = true; say('Foul! You have the cue ball in hand: drag it anywhere on the table and let go.'); }
         panels(); setPower(0);
         if (me) {
           const tg = legalSet(G.balls, G.groups[G.turn]);
@@ -14907,7 +14945,7 @@
       /* ---------- rendering ---------- */
       function panels() {
         [0, 1].forEach((i) => {
-          const el = $('pl-p' + i); if (!el) return;
+          const el = $('pl-seat-' + i); if (!el) return;
           const g = G.groups[i], mine = g ? G.balls.filter((b) => groupOf(b.n) === g) : [];
           el.className = 'seat' + (G.turn === i && !G.over ? ' turn' : '');
           el.innerHTML = `<div class="text-sm font-display font-extrabold">${esc(G.S.avatar(i))} ${esc(G.S.name(i))}${G.S.online && i === G.me ? ' <span class="pix text-xs text-teal">YOU</span>' : ''}</div><div class="pix text-xs text-amber mb-1">${g ? (g === 'solid' ? 'SOLIDS' : 'STRIPES') : 'TABLE OPEN'}</div><div class="flex flex-wrap gap-1 min-h-[18px]">${mine.map((b) => `<span style="width:16px;height:16px;border-radius:50%;border:2px solid var(--ink);background:${b.on ? colorOf(b.n) : 'transparent'};opacity:${b.on ? 1 : 0.25};display:inline-block"></span>`).join('')}</div>`;
@@ -15061,7 +15099,7 @@
             ctx.lineCap = 'butt'; ctx.globalAlpha = 1;
           }
         }
-        if (G.placing && !G.ghost) { ctx.fillStyle = 'rgba(245,176,65,.95)'; ctx.font = 'bold 22px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('Click anywhere to place the cue ball', W / 2, H / 2); }
+        if (G.placing && !G.ghost) { ctx.fillStyle = 'rgba(245,176,65,.95)'; ctx.font = 'bold 22px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('Ball in hand: drag the cue ball where you want it', W / 2, H / 2); }
         const bar = $('pl-bar'); if (bar) bar.classList.toggle('off', !canShoot() || G.placing);
       }
 
@@ -17048,9 +17086,25 @@
         const els = [...root.querySelectorAll(`[id$="-seat-${seat}"], [id$="-pl-${seat}"]`)].filter((el) => el.getBoundingClientRect().width > 0);
         if (els.length) return els[0];
         const chip = document.querySelectorAll('#np-bar .np-chip')[seat]; if (chip && chip.getBoundingClientRect().width > 0) return chip;
+        // games without seat boxes (Pool, Checkers, Chess, Tic-Tac-Toe...): the place on the table where that player's name
+        // is shown (player panels, score boxes), never a message line or the log
+        const nm = S.seats[seat] && S.seats[seat].name;
+        if (nm) {
+          const skip = '.logbox, [id*="prompt"], [id*="msg"], [id*="status"], [id*="log"], .chat-msg, #np-lob, #gm-note, .em-bub, .em-say';
+          let best = null, bestA = Infinity;
+          root.querySelectorAll('div, span, b, td, th, li').forEach((el) => {
+            if (el.children.length > 6 || el.closest(skip)) return;
+            const t = (el.textContent || '').trim(); if (!t || t.length > nm.length + 40 || !t.includes(nm)) return;
+            const r = el.getBoundingClientRect(); if (!r.width || !r.height) return;
+            const a = r.width * r.height; if (a < bestA) { best = el; bestA = a; }
+          });
+          if (best) { const box = best.closest('.seat, .stat, .pl-tag, .tg-tag'); return box && box.getBoundingClientRect().width < 420 ? box : best; }
+        }
         // games without seat boxes (Tic-Tac-Toe, Checkers...): the other player's emote shows at the top of the board
         return seat === S.me ? document.getElementById('em-fab') : document.getElementById('gs-body');
       }
+      // name boxes stacked in a column at the side (Pool on computers): the bubble pops out to their left
+      const sideways = (t) => window.innerWidth >= 1024 && !!t.closest('[data-bub="left"]');
       function show(seat, id) {
         const S = table(), e = BY[id]; if (!S || !e || !S.seats[seat]) return;
         if (seat !== S.me && muted) return;
@@ -17062,9 +17116,10 @@
         b.el.classList.remove('on'); void b.el.offsetWidth; b.el.classList.add('on');
         const r = t.getBoundingClientRect(), w = 70, h = 70;
         let x = r.left + r.width / 2 - w / 2, y = r.top - h - 12, below = false;
-        if (y < 6) { y = r.bottom + 12; below = true; }
+        if (sideways(t)) { x = r.left - w - 14; y = r.top + r.height / 2 - h / 2; }
+        else if (y < 6) { y = r.bottom + 12; below = true; }
         x = Math.max(6, Math.min(window.innerWidth - w - 6, x));
-        b.el.style.left = x + 'px'; b.el.style.top = y + 'px'; b.el.classList.toggle('below', below);
+        b.el.style.left = x + 'px'; b.el.style.top = y + 'px'; b.el.classList.toggle('below', below); b.el.classList.toggle('side', sideways(t));
         clearTimeout(b.timer); b.timer = setTimeout(() => b.el.classList.remove('on'), 3000);
       }
       window.emoteShow = show;
@@ -17076,10 +17131,11 @@
         let el = says[seat];
         if (!el || !document.body.contains(el)) { el = document.createElement('div'); el.className = 'em-say'; document.body.appendChild(el); says[seat] = el; }
         el.textContent = String(text).slice(0, 120);
-        el.classList.remove('on', 'below'); el.style.left = '0px'; el.style.top = '0px'; el.classList.add('on');
+        el.classList.remove('on', 'below', 'side'); el.style.left = '0px'; el.style.top = '0px'; el.classList.add('on');
         const r = t.getBoundingClientRect(), w = el.offsetWidth, h = el.offsetHeight;
         let x = r.left + r.width / 2 - w / 2, y = r.top - h - 12;
-        if (y < 6) { y = r.bottom + 12; el.classList.add('below'); }
+        if (sideways(t)) { x = r.left - w - 14; y = r.top + r.height / 2 - h / 2; el.classList.add('side'); }
+        else if (y < 6) { y = r.bottom + 12; el.classList.add('below'); }
         el.style.left = Math.max(6, Math.min(window.innerWidth - w - 6, x)) + 'px'; el.style.top = y + 'px';
         clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), 5000);
         return true;
@@ -17157,7 +17213,7 @@
       }
       window.addEventListener('resize', () => { placeChat(); const f = document.getElementById('em-fab'); if (f) place(f); });
       setInterval(syncFab, 500);
-      window.EMOTE = { send, show, list: EMOTES.map((e) => e.id), chars: AVS, charFor, sync: syncFab };
+      window.EMOTE = { send, show, target, list: EMOTES.map((e) => e.id), chars: AVS, charFor, sync: syncFab };
     })();
     /* =========================================================================
        FRIENDS (Nov 2026, Inna): look up players, player cards, friend requests, a friends list with who is

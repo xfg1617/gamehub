@@ -87,3 +87,18 @@
     .np-sets .seg { display: flex; flex-wrap: wrap; max-width: 100%; }
     .np-sets .seg-btn { white-space: normal; min-width: 0; line-height: 1.15; padding-top: .45rem; padding-bottom: .45rem; }
     @media (max-width: 640px) { .np-sets .seg-btn { flex: 1 1 calc(50% - 4px); } }
+    /* Bigger rooms on computers (Nov 2026, Inna: "lobby needs to expand bigger"): a wide room in two columns
+       (left: code, link, players; right: computer players, game settings, Start), with a taller chat beside it */
+    @media (min-width: 1280px) {
+      .np-room { max-width: 1560px; }
+      body.in-game .np-room { margin-top: 18px; }
+      .np-room:has(#np-chatwin:not(.hidden)) { grid-template-columns: minmax(0, 1fr) 400px; }
+      .np-room:has(.np-bots) .np-room-main { max-width: none; }
+      .np-room:has(.np-bots) #np-lob { column-count: 2; column-gap: 2.25rem; padding: 1.75rem 2rem; }
+      #np-lob:has(.np-bots) > * { break-inside: avoid; }
+      #np-lob > .np-bots { break-before: column; margin-top: 0 !important; }
+      #np-lob:has(.np-bots) .room-code { font-size: 3rem; padding: .6rem 2.4rem; }
+      #np-lob:has(.np-bots) .np-seat { padding: 12px 14px; font-size: 1.05rem; }
+      #np-lob:has(.np-bots) > *:last-child { margin-top: 1rem; }
+      .np-room-chat .chatbox { height: calc(100vh - 230px); min-height: 460px; max-height: 720px; }
+    }

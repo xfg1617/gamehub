@@ -105,9 +105,25 @@
         const els = [...root.querySelectorAll(`[id$="-seat-${seat}"], [id$="-pl-${seat}"]`)].filter((el) => el.getBoundingClientRect().width > 0);
         if (els.length) return els[0];
         const chip = document.querySelectorAll('#np-bar .np-chip')[seat]; if (chip && chip.getBoundingClientRect().width > 0) return chip;
+        // games without seat boxes (Pool, Checkers, Chess, Tic-Tac-Toe...): the place on the table where that player's name
+        // is shown (player panels, score boxes), never a message line or the log
+        const nm = S.seats[seat] && S.seats[seat].name;
+        if (nm) {
+          const skip = '.logbox, [id*="prompt"], [id*="msg"], [id*="status"], [id*="log"], .chat-msg, #np-lob, #gm-note, .em-bub, .em-say';
+          let best = null, bestA = Infinity;
+          root.querySelectorAll('div, span, b, td, th, li').forEach((el) => {
+            if (el.children.length > 6 || el.closest(skip)) return;
+            const t = (el.textContent || '').trim(); if (!t || t.length > nm.length + 40 || !t.includes(nm)) return;
+            const r = el.getBoundingClientRect(); if (!r.width || !r.height) return;
+            const a = r.width * r.height; if (a < bestA) { best = el; bestA = a; }
+          });
+          if (best) { const box = best.closest('.seat, .stat, .pl-tag, .tg-tag'); return box && box.getBoundingClientRect().width < 420 ? box : best; }
+        }
         // games without seat boxes (Tic-Tac-Toe, Checkers...): the other player's emote shows at the top of the board
         return seat === S.me ? document.getElementById('em-fab') : document.getElementById('gs-body');
       }
+      // name boxes stacked in a column at the side (Pool on computers): the bubble pops out to their left
+      const sideways = (t) => window.innerWidth >= 1024 && !!t.closest('[data-bub="left"]');
       function show(seat, id) {
         const S = table(), e = BY[id]; if (!S || !e || !S.seats[seat]) return;
         if (seat !== S.me && muted) return;
@@ -119,9 +135,10 @@
         b.el.classList.remove('on'); void b.el.offsetWidth; b.el.classList.add('on');
         const r = t.getBoundingClientRect(), w = 70, h = 70;
         let x = r.left + r.width / 2 - w / 2, y = r.top - h - 12, below = false;
-        if (y < 6) { y = r.bottom + 12; below = true; }
+        if (sideways(t)) { x = r.left - w - 14; y = r.top + r.height / 2 - h / 2; }
+        else if (y < 6) { y = r.bottom + 12; below = true; }
         x = Math.max(6, Math.min(window.innerWidth - w - 6, x));
-        b.el.style.left = x + 'px'; b.el.style.top = y + 'px'; b.el.classList.toggle('below', below);
+        b.el.style.left = x + 'px'; b.el.style.top = y + 'px'; b.el.classList.toggle('below', below); b.el.classList.toggle('side', sideways(t));
         clearTimeout(b.timer); b.timer = setTimeout(() => b.el.classList.remove('on'), 3000);
       }
       window.emoteShow = show;
@@ -133,10 +150,11 @@
         let el = says[seat];
         if (!el || !document.body.contains(el)) { el = document.createElement('div'); el.className = 'em-say'; document.body.appendChild(el); says[seat] = el; }
         el.textContent = String(text).slice(0, 120);
-        el.classList.remove('on', 'below'); el.style.left = '0px'; el.style.top = '0px'; el.classList.add('on');
+        el.classList.remove('on', 'below', 'side'); el.style.left = '0px'; el.style.top = '0px'; el.classList.add('on');
         const r = t.getBoundingClientRect(), w = el.offsetWidth, h = el.offsetHeight;
         let x = r.left + r.width / 2 - w / 2, y = r.top - h - 12;
-        if (y < 6) { y = r.bottom + 12; el.classList.add('below'); }
+        if (sideways(t)) { x = r.left - w - 14; y = r.top + r.height / 2 - h / 2; el.classList.add('side'); }
+        else if (y < 6) { y = r.bottom + 12; el.classList.add('below'); }
         el.style.left = Math.max(6, Math.min(window.innerWidth - w - 6, x)) + 'px'; el.style.top = y + 'px';
         clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), 5000);
         return true;
@@ -214,5 +232,5 @@
       }
       window.addEventListener('resize', () => { placeChat(); const f = document.getElementById('em-fab'); if (f) place(f); });
       setInterval(syncFab, 500);
-      window.EMOTE = { send, show, list: EMOTES.map((e) => e.id), chars: AVS, charFor, sync: syncFab };
+      window.EMOTE = { send, show, target, list: EMOTES.map((e) => e.id), chars: AVS, charFor, sync: syncFab };
     })();

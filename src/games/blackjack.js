@@ -208,9 +208,10 @@
         S.onLeft = (a) => { if (!O) return; O.seats[a.s].name += ' (CPU)'; O.seats[a.s].av = '🤖'; oPaint(); };
         S.track();
         body.innerHTML = `<div class="felt p-4 sm:p-5 space-y-4" id="bjo"><div class="flex items-center justify-between gap-2"><span class="pix text-sm text-bone/80" id="bjo-hand"></span><span class="pix text-xs text-bone/70">DEALER STANDS ON 17 · BLACKJACK PAYS 3:2</span><span class="pix text-xs text-bone/70" id="bjo-shoe">SHOE</span></div>
-          <div class="text-center" id="bjo-dealer"></div><div id="bjo-seats" class="bj-arc"></div>
+          <div class="text-center" id="bjo-dealer"></div><div id="bjo-seats" class="bj-arc bj-arc2"></div><div id="bjo-clock" class="hidden"></div>
           <div id="bjo-ctl" class="flex flex-wrap items-center justify-center gap-3 min-h-[60px]"></div><div id="bjo-msg" class="text-center pix text-sm min-h-[22px] text-amber"></div>
           <div class="flex justify-end"><button id="bjo-leave" class="btn-game btn-graphite py-1.5 px-4 text-xs">Leave table</button></div></div>`;
+        O.clock = makeClock(document.getElementById('bjo-clock'));
         document.getElementById('bjo-leave').onclick = () => npConfirmLeave(() => open(document.getElementById('game-root')));
         npBar('');
         const tok = O.tok, live = () => O && O.tok === tok;
@@ -223,9 +224,11 @@
             if (O.shoe.length < 90) { O.shoe = O.deck(); O.msg = 'Fresh shoe'; }
             oPaint();
             S.onCollect = (key, got) => { if (key === 'bet' + O.hand) { Object.values(got).forEach((a) => { const st = O.seats[a.s]; st.bet = Math.max(5, Math.min(st.chips, Math.floor(+a.amt || 5))); st.ready = true; }); oPaint(); } };
+            if (playing.includes(O.me) && S.mine(O.me)) O.clock.start(25, 'Bet');
             const bets = await S.collect('bet' + O.hand, playing, (i) => ({ t: 'bet', amt: oBotBet(O.seats[i]) }), (i) => ({ t: 'bet', amt: Math.min(O.seats[i].chips, O.seats[i].last || 25) }), 25);
             if (!live()) return;
             Object.values(bets).forEach((a) => { const st = O.seats[a.s]; st.bet = Math.max(5, Math.min(st.chips, Math.floor(+a.amt || 5))); st.chips -= st.bet; st.last = st.bet; });
+            O.clock.stop();
             O.phase = 'deal'; SFX.play('chip'); oPaint(); await W(500);
             for (let r = 0; r < 2; r++) { for (const i of playing) { O.seats[i].cards.push(O.shoe.pop()); SFX.play('deal'); await W(oPaint() + 120); } O.dealer.push(O.shoe.pop()); SFX.play('deal'); await W(oPaint() + 120); }
             const dealerBJ = isBJ(O.dealer);
@@ -235,6 +238,7 @@
               while (live() && total(st.cards).t < 21 && !st.doubled) {
                 const mine = S.mine(i);
                 O.msg = mine ? 'Your turn: hit, stand or double.' : `${st.name} is playing...`; oPaint();
+                if (!S.bot(i)) O.clock.start(30, 'Turn'); else O.clock.stop();
                 const a = await S.ask(i, () => ({ t: 'mv', m: oBotMove(st, O.dealer[0]) }), 900 + Math.floor(Math.random() * 500), (x) => x.s === i && x.t === 'mv');
                 if (!live()) return;
                 if (a.m === 'stand') break;
@@ -243,6 +247,7 @@
                 if (total(st.cards).t > 21) { st.res = 'BUST'; SFX.play('nope'); }
               }
             }
+            O.clock.stop();
             O.cur = -1; O.phase = 'dealer'; O.msg = 'Dealer plays...'; await W(oPaint() + 600);
             const alive = playing.some((i) => total(O.seats[i].cards).t <= 21 && !isBJ(O.seats[i].cards));
             while (alive && !dealerBJ && total(O.dealer).t < 17) { O.dealer.push(O.shoe.pop()); SFX.play('deal'); await W(oPaint() + 450); }
@@ -269,13 +274,21 @@
         document.getElementById('bjo-shoe').textContent = `SHOE · ${O.shoe.length}`;
         const dtv = total(hide ? O.dealer.slice(0, 1) : O.dealer).t;
         document.getElementById('bjo-dealer').innerHTML = `<div class="pix text-xs text-bone/70 mb-2">DEALER${O.dealer.length && O.totals ? ' · ' + dtv : ''}</div><div class="flex gap-2 justify-center flex-wrap min-h-[90px]">${O.dealer.map((c, k) => playingCardHTML(c, { down: hide && k === 1, fk: gKey(c), cls: 'sm' })).join('')}</div>`;
-        document.getElementById('bjo-seats').innerHTML = O.seats.map((st) => {
-          const tt = total(st.cards).t;
-          return `<div class="seat ${O.cur === st.i ? 'turn' : ''} ${st.chips < 5 && !st.bet ? 'out' : ''}" style="min-width:0"><div class="text-sm font-display font-extrabold truncate ${st.i === O.me ? 'text-amber' : ''}">${esc(st.av)} ${esc(st.name)}</div>
-            <div class="pix text-xs text-bone/80">${st.chips} chips</div><div class="chip-spot mx-auto" id="bjo-spot-${st.i}">${st.bet ? stackSVG(st.bet, { scale: 0.9 }) : O.phase === 'bet' ? `<span class="pix text-xs ${st.ready ? 'text-emerald' : 'text-bone/50'}">${st.ready ? 'READY' : 'BETTING...'}</span>` : ''}</div>
-            <div class="flex gap-1 justify-center flex-wrap min-h-[64px]">${st.cards.map((c) => playingCardHTML(c, { fk: gKey(c), cls: 'sm' })).join('')}</div>
-            <div class="pix text-xs ${st.res.startsWith('+') && !st.res.startsWith('+0') ? 'text-emerald' : st.res ? 'text-coral' : 'text-bone/70'}">${st.res || (st.cards.length && O.totals ? tt : '')}</div></div>`;
-        }).join('');
+        const others = O.seats.filter((x) => x.i !== O.me), half = Math.ceil(others.length / 2);
+        const order = [...others.slice(0, half), O.seats[O.me], ...others.slice(half)], mid = others.slice(0, half).length;
+        const far = Math.max(mid, order.length - 1 - mid);
+        const seatHTML = (st, k) => {
+          const tt = total(st.cards).t, isMe = st.i === O.me, betting = O.phase === 'bet' && !st.ready && st.chips >= 5 && S.human(st.i);
+          const turn = (O.cur === st.i && O.phase === 'play') || (isMe && betting);
+          const drop = (far - Math.abs(k - mid)) * 26;   // the ends of the arc sit higher, you sit lowest, nearest the edge of the table
+          return `<div id="bjo-seat-${st.i}" class="bjs ${isMe ? 'me' : ''} ${st.chips < 5 && !st.bet ? 'out' : ''}" style="margin-top:${drop}px">
+            <div class="chip-spot mx-auto" id="bjo-spot-${st.i}">${st.bet ? stackSVG(st.bet, { scale: 0.9 }) : O.phase === 'bet' ? `<span class="pix text-xs ${st.ready ? 'text-emerald' : 'text-bone/50'}">${st.ready ? 'READY' : 'BETTING...'}</span>` : ''}</div>
+            <div class="flex gap-1 justify-center flex-nowrap bjs-cards">${st.cards.map((c) => playingCardHTML(c, { fk: gKey(c), cls: isMe ? '' : 'sm' })).join('')}</div>
+            <div class="bjs-tot pix text-xs ${st.res.startsWith('+') && !st.res.startsWith('+0') ? 'text-emerald' : st.res ? 'text-coral' : 'text-bone/80'}">${st.res || (st.cards.length && O.totals ? tt : '') || '&nbsp;'}</div>
+            ${nameTag({ av: st.av, name: st.name, sub: `${st.chips} chips${st.bet ? ' · bet ' + st.bet : ''}`, turn, me: isMe })}</div>`;
+        };
+        // three parts so you are always exactly in the middle: players on your left | you | players on your right
+        document.getElementById('bjo-seats').innerHTML = `<div class="bjs-side l">${order.slice(0, mid).map((st, k) => seatHTML(st, k)).join('')}</div>${seatHTML(order[mid], mid)}<div class="bjs-side r">${order.slice(mid + 1).map((st, k) => seatHTML(st, mid + 1 + k)).join('')}</div>`;
         const ctl = document.getElementById('bjo-ctl'), me = O.seats[O.me];
         if (O.phase === 'bet' && S.mine(O.me) && !me.ready && me.chips >= 5) {
           const amt = O.myBet === undefined ? Math.min(me.chips, me.last || 25) : O.myBet;
@@ -298,7 +311,7 @@
         return gFlip(O.body, before, { from: '#bjo-shoe' });
       }
       function oFinish() {
-        if (!O || O.over) return; O.over = true; O.S.over = true;
+        if (!O || O.over) return; O.over = true; O.S.over = true; if (O.clock) O.clock.stop();
         const rank = O.seats.slice().sort((a, b) => b.chips - a.chips), me = O.seats[O.me], won = rank[0] === me;
         const s = gstat('blackjack'); s.online = (s.online || 0) + 1;
         reportGame('blackjack', won ? 'win' : 'loss', { elo: 0, xp: won ? 20 : 8, label: `Online table · ${me.chips} chips` });

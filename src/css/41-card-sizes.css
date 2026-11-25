@@ -35,3 +35,30 @@
     html body.in-game #gs-body .pcard.pc-real .pc-corner.br { display: flex !important; left: auto !important; top: auto !important; right: calc(var(--k, 60px) * .06) !important; bottom: calc(var(--k, 60px) * .04) !important; }
     html body.in-game #gs-body .pcard.pc-real .pc-corner i svg { width: calc(var(--k, 60px) * .13) !important; height: calc(var(--k, 60px) * .13) !important; }
     html body.in-game #gs-body .pcard.pc-real .pc-court svg { width: 54% !important; }
+    /* Blackjack table online: you in the middle (lowest, bigger cards), the others in an arc to the left and right */
+    #bjo-seats.bj-arc2 { display: flex !important; justify-content: center; align-items: flex-start; gap: clamp(10px, 3vw, 56px); border-top: 3px dashed rgba(247, 244, 236, .25); padding-top: 14px; }
+    #bjo-seats.bj-arc2 > .bjs { margin-left: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; flex: 0 1 auto; }
+    #bjo-seats.bj-arc2 > .bjs.out { opacity: .5; }
+    #bjo-seats.bj-arc2 .bjs-cards { min-height: 64px; }
+    #bjo-seats.bj-arc2 .bjs-tot { min-height: 16px; font-size: 14px; font-family: 'Outfit', sans-serif; font-weight: 800; }
+    @media (max-width: 640px) { #bjo-seats.bj-arc2 { gap: 6px; } #bjo-seats.bj-arc2 > .bjs { margin-top: 0 !important; } #bjo-seats.bj-arc2 .tg-txt b { max-width: 64px; } }
+    #bjo-seats.bj-arc2 { display: grid !important; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: start; column-gap: clamp(10px, 3vw, 56px); }
+    #bjo-seats.bj-arc2 .bjs-side { display: flex; gap: clamp(8px, 2.6vw, 48px); align-items: flex-start; min-width: 0; }
+    #bjo-seats.bj-arc2 .bjs-side.l { justify-content: flex-end; }
+    #bjo-seats.bj-arc2 .bjs-side.r { justify-content: flex-start; }
+    #bjo-seats.bj-arc2 .bjs { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; }
+    html body.in-game[data-game="blackjack"] #bjo-seats .pcard.sm { width: calc(var(--cw) * .72) !important; height: calc(var(--cw) * .72 * var(--cr)) !important; --k: calc(var(--cw) * .72); }
+    /* phones: the other players in a compact row on top, you underneath in the middle with bigger cards */
+    @media (max-width: 640px) {
+      #bjo-seats.bj-arc2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); row-gap: 12px; column-gap: 6px; }
+      #bjo-seats.bj-arc2 .bjs { margin-top: 0 !important; }
+      #bjo-seats.bj-arc2 .bjs-side.l { grid-column: 1; grid-row: 1; justify-content: space-evenly; gap: 4px; }
+      #bjo-seats.bj-arc2 .bjs-side.r { grid-column: 2; grid-row: 1; justify-content: space-evenly; gap: 4px; }
+      #bjo-seats.bj-arc2 > .bjs.me { grid-column: 1 / -1; grid-row: 2; }
+      html body.in-game[data-game="blackjack"] #bjo-seats .bjs-side .pcard.sm { width: 30px !important; height: 43px !important; --k: 30px; }
+      #bjo-seats.bj-arc2 .bjs-side .tg-tag { padding: 2px 6px 2px 2px; gap: 4px; }
+      #bjo-seats.bj-arc2 .bjs-side .tg-av { display: none; }
+      #bjo-seats.bj-arc2 .bjs-side .tg-txt b { font-size: 11px; max-width: 58px; }
+      #bjo-seats.bj-arc2 .bjs-side .tg-txt small { font-size: 10px; }
+      #bjo-seats.bj-arc2 .bjs-side .chip-spot { min-height: 24px; }
+    }

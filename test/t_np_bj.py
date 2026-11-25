@@ -3,7 +3,7 @@ chip counts must match on both screens and the table ends with the same ranking.
 import sys, random; sys.path.insert(0, 'test')
 from nplib import *
 REAL = 'real' in sys.argv
-CHIPS = "[...document.querySelectorAll('#bjo-seats .seat')].map(s => s.innerText.split('\\n').slice(0, 2).join(' ')).join(' | ')"
+CHIPS = "[...document.querySelectorAll('#bjo-seats .bjs')].sort((a, b) => a.id.localeCompare(b.id)).map(s => s.id + ' ' + (s.querySelector('.tg-txt') || s).innerText.replace(/\\s+/g, ' ')).join(' | ')"
 def act(pg):
     pick = random.choice(['bjo-hit', 'bjo-stand'])
     return pg.evaluate("""(pick) => { const b = document.getElementById('bjo-bet'); if (b) { b.click(); return true; }

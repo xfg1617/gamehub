@@ -834,3 +834,8 @@ folder that was handed over, so they do not exist here.)
   pictures scale from the card (`--k`). Checked at 1280x720, 1366x768, 1440x900, 1536x864, 1690x903, 1920x1080,
   2560x1440 and a 390 px phone: no scrolling, Poker's shared cards in one row and your seat above the button bar,
   Blackjack's Hit/Stand on screen. Re-measure with a script like this if a layout changes.
+* **Blackjack online table** (Inna): players are name tags with the turn ring (`O.clock` = makeClock on a hidden host:
+  25 s while betting on your own tag, 30 s on whoever's turn it is; computers get none). You always sit exactly in the
+  middle (`.bjs-side.l` | you | `.bjs-side.r`, three grid columns), lowest and with full-size cards; the others sit in
+  an arc to your left/right (ends higher). Phones: the others in a compact row on top, you underneath. Seat ids
+  `bjo-seat-N` (emotes, chat bubbles). `t_np_bj.py` compares seats by id (each screen sees itself in the middle).

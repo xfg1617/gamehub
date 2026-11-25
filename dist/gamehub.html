@@ -7797,7 +7797,9 @@
       // every 3 s: send again any of my decisions the table hasn't confirmed yet, and ask whether I missed the
       // latest move (a lost last message used to go unnoticed until the next one arrived)
       const resend = gInterval(() => {
-        if (S.over || S._left) return;
+        // after the game ends this screen still re-sends its own last decisions (e.g. the answer to the winning shot),
+        // or a lost final message would leave the other screen waiting forever
+        if (S._left || (S.over && !Object.keys(pending).length)) return;
         const now = Date.now();
         for (const id in pending) {
           const p = pending[id];
@@ -7806,7 +7808,7 @@
           p.at = now; p.tries++;
           if (S.isHost) { delete pending[id]; seq(p.a); } else ch.send('req', p.a);
         }
-        if (!S.isHost) ch.send('sync', { from: next });
+        if (!S.isHost && !S.over) ch.send('sync', { from: next });
       }, 3000);
       ch.on('req', (a, from) => {
         if (!S.isHost || !a) return;

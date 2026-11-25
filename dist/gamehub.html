@@ -976,11 +976,11 @@
     body.is-guest .chatbox .chat-form, body.is-guest .chatbox .chat-quick { display: none !important; }
     body.is-guest .chatbox .chat-guest { display: flex; }
     /* "+ Friend" on another player's name tag at an online table (zz_friends.js) */
-    .fr-add-mini { position: absolute; top: -11px; left: -6px; z-index: 5; padding: 1px 6px; font-size: 10px; font-weight: 800; line-height: 1.4; color: #231505; background: #F5B041; border: 2px solid var(--ink); box-shadow: 0 2px 0 var(--ink); white-space: nowrap; cursor: pointer; }
+    .fr-add-mini { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); z-index: 5; padding: 1px 6px; font-size: 10px; font-weight: 800; line-height: 1.4; color: #231505; background: #F5B041; border: 2px solid var(--ink); box-shadow: 0 2px 0 var(--ink); white-space: nowrap; cursor: pointer; }
     .fr-add-mini::before { content: '+ Friend'; } .fr-add-mini.in::before { content: '✓ Accept'; }
     html[lang="vi"] .fr-add-mini::before { content: '+ Kết bạn'; } html[lang="vi"] .fr-add-mini.in::before { content: '✓ Đồng ý'; }
     .fr-add-mini.in { background: #34D399; }
-    .fr-add-mini:active { transform: translateY(2px); box-shadow: none; }
+    .fr-add-mini:active { transform: translate(-50%, 2px); box-shadow: none; }
     .fr-add-mini[disabled] { opacity: .5; }
     /* ===== ONLINE TABLES: lobby seats, the bar above an online game, the private-room game picker ===== */
     .np-seats { display: grid; gap: 6px; }
@@ -1259,6 +1259,13 @@
     /* bubble beside a name box (Pool's player column on computers): the pointer is on its right side */
     .em-bub.side::after, .em-say.side::after { left: auto; right: -10px; top: 50%; bottom: auto; margin: -6px 0 0; transform: rotate(-45deg); }
     .em-bub.side-r::after, .em-say.side-r::after { left: -10px; right: auto; top: 50%; bottom: auto; margin: -6px 0 0; transform: rotate(135deg); }
+    /* phones, Daily Word: the CHAT button is a small icon and the page leaves room under the keyboard, so the
+       first keys (Q, W, A) are never hidden behind it */
+    @media (max-width: 1023px) {
+      body:has(#view-daily:not(.hidden)) #chat-fab { padding: 0 !important; width: 42px; height: 42px; min-width: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; opacity: .92; }
+      body:has(#view-daily:not(.hidden)) #chat-fab #chat-fab-lab { display: none; }
+      #view-daily:not(.hidden) { padding-bottom: 72px; }
+    }
     /* =========================================================================
        FULL-SCREEN GAMES (Inna, Nov 2026): while a game is open (body.in-game) the side menu, the phone header
        and the footer step aside and the game uses the whole window. The move log hides behind "📜 Moves".

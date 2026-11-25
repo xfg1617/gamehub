@@ -76,9 +76,9 @@
     body.is-guest .chatbox .chat-form, body.is-guest .chatbox .chat-quick { display: none !important; }
     body.is-guest .chatbox .chat-guest { display: flex; }
     /* "+ Friend" on another player's name tag at an online table (zz_friends.js) */
-    .fr-add-mini { position: absolute; top: -11px; left: -6px; z-index: 5; padding: 1px 6px; font-size: 10px; font-weight: 800; line-height: 1.4; color: #231505; background: #F5B041; border: 2px solid var(--ink); box-shadow: 0 2px 0 var(--ink); white-space: nowrap; cursor: pointer; }
+    .fr-add-mini { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); z-index: 5; padding: 1px 6px; font-size: 10px; font-weight: 800; line-height: 1.4; color: #231505; background: #F5B041; border: 2px solid var(--ink); box-shadow: 0 2px 0 var(--ink); white-space: nowrap; cursor: pointer; }
     .fr-add-mini::before { content: '+ Friend'; } .fr-add-mini.in::before { content: '✓ Accept'; }
     html[lang="vi"] .fr-add-mini::before { content: '+ Kết bạn'; } html[lang="vi"] .fr-add-mini.in::before { content: '✓ Đồng ý'; }
     .fr-add-mini.in { background: #34D399; }
-    .fr-add-mini:active { transform: translateY(2px); box-shadow: none; }
+    .fr-add-mini:active { transform: translate(-50%, 2px); box-shadow: none; }
     .fr-add-mini[disabled] { opacity: .5; }

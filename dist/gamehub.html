@@ -1947,6 +1947,52 @@
     .dm-tile.sm { width: 15px; height: 30px; }
     .dm-bone .dm-tile { width: 20px; height: 40px; }
     @media (max-width: 640px) { .dm-tile.big { width: 32px; height: 64px; } .dm-table { min-height: 180px; } }
+    /* ===== the owner's private stats page (/my-stats) ===== */
+    .os-page { position: fixed; inset: 0; z-index: 80; background: #0B1B2B; overflow-y: auto; color: #F7F4EC; }
+    .os-page.hidden { display: none; }
+    .os-wrap { max-width: 1120px; margin: 0 auto; padding: 18px 16px 40px; display: grid; gap: 16px; }
+    .os-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .os-top h2 { font-size: 1.9rem; color: #F5B041; margin: 0; letter-spacing: .04em; }
+    .os-lock { font-size: .8rem; color: #9DB4CC; background: #050E18; border: 2px solid #1E3A56; padding: 3px 8px; margin-right: auto; }
+    .os-btn { padding: 6px 12px; font-size: .85rem; }
+    .os-intro { color: #9DB4CC; font-size: .88rem; margin: 0; }
+    .os-loading { text-align: center; padding: 60px 0; color: #9DB4CC; font-size: 1.3rem; }
+    .os-note { max-width: 520px; margin: 40px auto 0; } .os-note p { color: #C9D6E3; line-height: 1.5; }
+    .os-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .os-tile { background: #12304C; border: 3px solid #050E18; box-shadow: 0 5px 0 #050E18; padding: 12px 14px; display: grid; gap: 2px; }
+    .os-tile b { font-family: Outfit, sans-serif; font-size: 2rem; font-weight: 800; line-height: 1.1; }
+    .os-tile span { color: #2DD4BF; font-size: 1rem; letter-spacing: .04em; }
+    .os-tile small { color: #9DB4CC; font-size: .75rem; line-height: 1.3; }
+    .os-tile.hi { background: #F5B041; color: #231505; } .os-tile.hi span { color: #231505; } .os-tile.hi small { color: #4A3410; }
+    .os-card { overflow: visible; }
+    .os-legend { display: flex; gap: 16px; font-size: .8rem; color: #C9D6E3; margin-bottom: 8px; }
+    .os-legend i, .os-tip i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: -1px; border: 1px solid #050E18; }
+    .played { background: #2DD4BF; } .only { background: #5C7A99; }
+    .os-chart { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 6px; height: 220px;
+      align-items: end; border-bottom: 2px solid #2C4A6B; padding-top: 70px; }
+    .os-col { height: 100%; display: flex; flex-direction: column; justify-content: flex-end; cursor: pointer; outline: none; position: relative; }
+    .os-col:hover .os-stack, .os-col.on .os-stack, .os-col:focus .os-stack { filter: brightness(1.15); }
+    .os-col.on::before { content: ''; position: absolute; inset: -4px -3px 18px; background: rgba(157, 180, 204, .08); }
+    .os-stack { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; min-height: 0; }
+    .os-b { display: block; width: 100%; min-height: 3px; }
+    .os-b.played { background: #2DD4BF; } .os-b.only { background: #5C7A99; }
+    .os-x { height: 18px; font-size: .68rem; color: #9DB4CC; text-align: center; white-space: nowrap; line-height: 18px; }
+    .os-tip { position: absolute; top: 0; z-index: 2; background: #050E18; border: 2px solid #2C4A6B; padding: 6px 10px; font-size: .78rem; min-width: 170px; pointer-events: none; }
+    .os-tip.hidden { display: none; } .os-tip b { display: block; margin-bottom: 2px; }
+    .os-tip div { display: flex; align-items: center; } .os-tip span { margin-left: auto; padding-left: 12px; font-weight: 700; }
+    .os-tbl { margin-top: 12px; } .os-tbl summary { cursor: pointer; color: #F5B041; font-size: .95rem; }
+    .os-tbl table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: .82rem; }
+    .os-tbl th, .os-tbl td { text-align: right; padding: 4px 8px; border-bottom: 1px solid #1E3A56; }
+    .os-tbl th:first-child, .os-tbl td:first-child { text-align: left; } .os-tbl th { color: #9DB4CC; font-weight: 600; }
+    .os-g { display: grid; grid-template-columns: 150px 1fr auto; gap: 12px; align-items: center; padding: 5px 0; font-size: .88rem; }
+    .os-gbar { height: 12px; background: #12304C; } .os-gbar i { display: block; height: 100%; background: #F5B041; }
+    .os-gv { color: #9DB4CC; font-size: .8rem; white-space: nowrap; }
+    @media (max-width: 760px) {
+      .os-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } .os-tile b { font-size: 1.6rem; }
+      .os-chart { gap: 3px; } .os-x { font-size: .58rem; }
+      .os-g { grid-template-columns: 1fr auto; } .os-gbar { grid-column: 1 / -1; grid-row: 2; }
+      .os-tbl { overflow-x: auto; }
+    }
     /* ===== frontier isles ===== */
     .fi-sea { position: relative; background: #1F5F93; background-image: repeating-linear-gradient(0deg, transparent 0 22px, rgba(255, 255, 255, .06) 22px 24px); border: 4px solid var(--ink); box-shadow: 0 5px 0 var(--ink); padding: 6px; }
     .fi-board { width: 100%; height: auto; display: block; max-height: 78vh; }
@@ -7623,6 +7669,16 @@
             return { id, name: p.name, avatar: p.avatar, since: 'Nov 2026', ratings, friend: rel };
           },
           async publishStats(o) { const d = db(); d.pstats = d.pstats || {}; d.pstats[uid] = o; save(d, { k: 'ps' }); },
+          // stand-in for tests: the owner is the tab with sessionStorage ps_owner_test set; numbers from the players' published stats
+          async isOwner() { try { return sessionStorage.getItem('ps_owner_test') === '1'; } catch (e) { return false; } },
+          async ownerStats() {
+            if (!(await this.isOwner())) throw new Error('This page is private.');
+            const ps = Object.values(db().pstats || {}), games = {}, today = new Date().toISOString().slice(0, 10);
+            ps.forEach((o) => Object.entries(o.games || {}).forEach(([g, a]) => { games[g] = games[g] || { g, n: 0, p: 0 }; games[g].n += a[0]; games[g].p++; }));
+            const days = []; for (let i = 13; i >= 0; i--) { const d = new Date(Date.now() - i * 864e5).toISOString().slice(0, 10); days.push({ d, new: d === today ? ps.length : 0, played: d === today ? ps.filter((o) => o.played > 0).length : 0, accounts: 0, rooms: 0, chats: 0 }); }
+            return { total: ps.length, accounts: ps.filter((o) => !o.guest).length, played: ps.filter((o) => o.played > 0).length, returned: 0, new_today: ps.length, active_today: ps.length,
+              games_total: ps.reduce((t, o) => t + (o.played || 0), 0), days, games: Object.values(games).sort((x, y) => y.n - x.n) };
+          },
           async playerStats(id) { return (db().pstats || {})[id] || null; },
           async friends() {
             const d = db(), fr = d.friends || [], pr = (id) => ({ id, name: (d.profiles[id] || {}).name || 'Player', avatar: (d.profiles[id] || {}).avatar || '🙂' });
@@ -7793,6 +7849,9 @@
           async searchPlayers(q) { if (String(q || '').trim().length < 2) return []; return ok(await rpc('search_players', { q: String(q).trim() })) || []; },
           async playerCard(id) { return ok(await rpc('player_card', { p_id: id })); },
           async publishStats(o) { ok(await rpc('publish_stats', { p: o })); },   // throws on failure, so the page tries again
+          /* the owner's private stats page (backend/owner-stats.sql): the server decides who may see it */
+          async isOwner() { try { return !!ok(await rpc('is_site_owner')); } catch (e) { return false; } },
+          async ownerStats() { return ok(await rpc('owner_stats')); },
           async playerStats(id) { try { return ok(await rpc('player_stats', { p_id: id })); } catch (e) { return null; } },
           async friends() {
             const rows = ok(await sb.from('friend_requests').select('from_id,to_id,status')) || [];
@@ -7898,6 +7957,8 @@
       NET.playerCard = (id) => B.playerCard(id);
       NET.publishStats = (o) => B.publishStats(o);
       NET.playerStats = (id) => B.playerStats(id);
+      NET.isOwner = () => B.isOwner();
+      NET.ownerStats = () => B.ownerStats();
       NET.friends = () => B.friends();
       // Only players with an account can add friends and chat (Inna, Nov 2026). Guests can still read chat. The server
       // checks the same thing (backend/accounts-only.sql), so this can't be skipped.
@@ -20339,6 +20400,119 @@
     })();
     window.MUSIC = MUSIC;
     /* =========================================================================
+       OWNER STATS (Nov 2026, Inna: "a private stats page on the site for me")
+       gamehub.us.com/my-stats, or the "Site stats" button in the side menu (it only appears for the owner).
+       Private by the SERVER: the numbers come from owner_stats() (backend/owner-stats.sql), which refuses anyone who
+       is not in the site_owners table; the page itself holds no numbers. Only counts, never a name or an email.
+       ========================================================================= */
+    (function ownerStats() {
+      const nameOf = (id) => { const c = (typeof CATALOG !== 'undefined' && CATALOG.find((x) => x.id === id)) || (typeof GAME_MODS !== 'undefined' && GAME_MODS.find && GAME_MODS.find((x) => x.id === id)); return c ? c.name : id; };
+      const fmtDay = (d) => { const [y, m, day] = d.split('-').map(Number); return new Date(y, m - 1, day).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); };
+      let el = null;
+
+      function shell(body) {
+        if (!el) {
+          el = document.createElement('div'); el.id = 'os-page'; el.setAttribute('data-no-tr', ''); document.body.appendChild(el);
+          document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && el && !el.classList.contains('hidden')) close(); });
+        }
+        el.className = 'os-page';
+        el.innerHTML = `<div class="os-wrap"><div class="os-top"><h2 class="pix">MY SITE STATS</h2><span class="os-lock">🔒 Private: only your account can see this</span>
+          <button class="btn-game btn-graphite os-btn" id="os-refresh">↻ Refresh</button><button class="btn-game btn-graphite os-btn" id="os-close">✕ Close</button></div>${body}</div>`;
+        el.querySelector('#os-close').onclick = close;
+        el.querySelector('#os-refresh').onclick = load;
+      }
+      function note(title, text, btn) {
+        shell(`<div class="win os-note"><div class="winbar amber"><span>${esc(title)}</span></div><div class="p-5"><p>${text}</p>${btn || ''}</div></div>`);
+      }
+      function close() {
+        if (el) el.classList.add('hidden');
+        if (location.pathname === '/my-stats') history.replaceState({ p: '/' }, '', '/');
+        document.title = 'GameHub';
+      }
+
+      async function load() {
+        if (typeof NET === 'undefined' || !NET.on) return note('NOT CONNECTED', 'The stats page needs the online service. Check your internet connection and press Refresh.');
+        if (!NET.account) return note('LOG IN FIRST', 'Log in with your own GameHub account to see your stats. Nobody else can see them.',
+          `<button class="btn-game btn-amber w-full py-2.5 mt-4" onclick="openAuthModal('signin')">Log in</button>`);
+        shell(`<div class="os-loading pix">Loading numbers…</div>`);
+        let st;
+        try { st = await NET.ownerStats(); } catch (e) {
+          const m = String((e && e.message) || e);
+          if (/private|not allowed/i.test(m)) return note('PRIVATE PAGE', 'This page is private.');
+          if (/does not exist|could not find|schema cache/i.test(m)) return note('ONE STEP LEFT', 'The stats aren\'t switched on yet: run <b>backend/owner-stats.sql</b> in Supabase, then add yourself as the owner (the steps are at the top of that file).');
+          return note('COULD NOT LOAD', 'Something went wrong loading the numbers: ' + esc(m) + '. Press Refresh to try again.');
+        }
+        render(st || {});
+      }
+
+      function tile(n, label, sub, hi) { return `<div class="os-tile${hi ? ' hi' : ''}"><b>${Number(n || 0).toLocaleString('en-US')}</b><span class="pix">${label}</span><small>${sub}</small></div>`; }
+
+      function render(st) {
+        const days = st.days || [], games = st.games || [];
+        const max = Math.max(1, ...days.map((d) => d.new || 0));
+        const bars = days.map((d, i) => {
+          const only = Math.max(0, (d.new || 0) - (d.played || 0)), hp = (d.played || 0) / max * 100, ho = only / max * 100;
+          return `<div class="os-col" data-i="${i}" tabindex="0"><div class="os-stack">${only ? `<i class="os-b only" style="height:${ho}%"></i>` : ''}${d.played ? `<i class="os-b played" style="height:${hp}%"></i>` : ''}</div><span class="os-x">${(days.length - 1 - i) % 2 === 0 || days.length < 8 ? fmtDay(d.d) : ''}</span></div>`;
+        }).join('');
+        const gmax = Math.max(1, ...games.map((g) => g.n));
+        const glist = games.slice(0, 12).map((g) => `<div class="os-g"><span class="os-gn">${esc(nameOf(g.g))}</span><span class="os-gbar"><i style="width:${g.n / gmax * 100}%"></i></span><span class="os-gv">${g.n.toLocaleString('en-US')} games · ${g.p} ${g.p === 1 ? 'player' : 'players'}</span></div>`).join('');
+        const rows = days.slice().reverse().map((d) => `<tr><td>${fmtDay(d.d)}</td><td>${d.new}</td><td>${d.played}</td><td>${d.accounts}</td><td>${d.rooms}</td><td>${d.chats}</td></tr>`).join('');
+        shell(`
+          <p class="os-intro">Counted from your Supabase database. A "player" is one browser: the same person on a phone and a computer counts twice. Test players are left out.</p>
+          <div class="os-tiles">
+            ${tile(st.played, 'REAL PLAYERS', 'played at least one game (the best count of real people)', true)}
+            ${tile(st.total, 'ALL VISITORS', 'every browser that opened the site online, including ones that left at once')}
+            ${tile(st.returned, 'CAME BACK', 'opened the site again later')}
+            ${tile(st.accounts, 'ACCOUNTS', 'signed up with email or Google')}
+            ${tile(st.new_today, 'NEW TODAY', 'first visit today (UTC day)')}
+            ${tile(st.active_today, 'ACTIVE TODAY', 'were on the site today')}
+            ${tile(st.games_total, 'GAMES PLAYED', 'all games ever played, all players')}
+            ${tile(NET.count || 0, 'ONLINE NOW', 'on the site right this moment')}
+          </div>
+          <div class="win os-card"><div class="winbar"><span>NEW VISITORS · LAST 14 DAYS</span></div><div class="p-4">
+            <div class="os-legend"><span><i class="played"></i>Played a game</span><span><i class="only"></i>Only looked</span></div>
+            <div class="os-chart" id="os-chart">${bars}<div class="os-tip hidden" id="os-tip"></div></div>
+            <details class="os-tbl"><summary class="pix">SHOW AS A TABLE</summary><table><thead><tr><th>Day</th><th>New visitors</th><th>Played</th><th>Signed up</th><th>Rooms opened</th><th>Chat messages</th></tr></thead><tbody>${rows}</tbody></table></details>
+          </div></div>
+          <div class="win os-card"><div class="winbar"><span>MOST PLAYED GAMES · ALL TIME</span></div><div class="p-4">${glist || '<p class="text-muted text-sm">No games played yet.</p>'}</div></div>`);
+        // hover / tap on a day: the exact numbers for it
+        const chart = el.querySelector('#os-chart'), tip = el.querySelector('#os-tip');
+        const show = (col) => {
+          const d = days[+col.dataset.i]; if (!d) return;
+          tip.innerHTML = `<b>${fmtDay(d.d)}</b><div><i class="played"></i>Played a game <span>${d.played}</span></div><div><i class="only"></i>Only looked <span>${d.new - d.played}</span></div><div>Signed up <span>${d.accounts}</span></div><div>Rooms opened <span>${d.rooms}</span></div><div>Chat messages <span>${d.chats}</span></div>`;
+          tip.classList.remove('hidden');
+          const c = chart.getBoundingClientRect(), r = col.getBoundingClientRect();
+          let x = r.left - c.left + r.width / 2 - tip.offsetWidth / 2; x = Math.max(0, Math.min(c.width - tip.offsetWidth, x));
+          tip.style.left = x + 'px';
+          chart.querySelectorAll('.os-col').forEach((k) => k.classList.toggle('on', k === col));
+        };
+        chart.querySelectorAll('.os-col').forEach((col) => { col.onmouseenter = col.onfocus = col.onclick = () => show(col); });
+        chart.onmouseleave = () => { tip.classList.add('hidden'); chart.querySelectorAll('.os-col').forEach((k) => k.classList.remove('on')); };
+      }
+
+      function openOwnerStats() {
+        shell(''); el.classList.remove('hidden');
+        if (location.pathname !== '/my-stats' && /^https?:/.test(location.protocol)) history.pushState({ p: '/my-stats' }, '', '/my-stats');
+        document.title = 'Site stats · GameHub';
+        load();
+      }
+      window.openOwnerStats = openOwnerStats;
+
+      // the "Site stats" button in the side menu, only for the owner (the server says who that is)
+      let checked = '';
+      async function ownerButton() {
+        if (typeof NET === 'undefined' || !NET.on || !NET.account || !NET.isOwner || !NET.me) return;
+        const id = NET.me.id || NET.me; if (checked === id) return; checked = id;
+        if (!(await NET.isOwner()) || document.getElementById('nav-stats')) return;
+        const after = document.getElementById('nav-discord'); if (!after) return;
+        const b = document.createElement('button'); b.id = 'nav-stats'; b.className = 'side-link'; b.setAttribute('data-no-tr', '');
+        b.innerHTML = '<svg viewBox="0 0 16 16" fill="currentColor"><rect x="2" y="9" width="3" height="5"/><rect x="6.5" y="5" width="3" height="9"/><rect x="11" y="2" width="3" height="12"/></svg> Site stats';
+        b.onclick = openOwnerStats; after.after(b);
+      }
+      document.addEventListener('ps-online', () => setTimeout(ownerButton, 300));
+      setInterval(ownerButton, 5000);   // also after logging in
+    })();
+    /* =========================================================================
        REWARDS + WELCOME (Inna, Nov 2026)
        * Unlockable avatars: 6 extra pictures on top of the 12 free ones, unlocked by level or wins. Online they need an
          account (guests see them locked with "Make a free account"); offline the condition is enough.
@@ -20546,6 +20720,12 @@
           document.addEventListener('ps-offline', () => setTimeout(run, 50), { once: true });
           setTimeout(run, 8000);
         } else setTimeout(run, 300);
+      } else if (start === '/my-stats') {
+        // the owner's private stats page (zz_ownerstats.js): waits for the connection, then asks the server
+        let done = false; const run = () => { if (done) return; done = true; if (window.openOwnerStats) openOwnerStats(); };
+        document.addEventListener('ps-online', () => setTimeout(run, 50), { once: true });
+        document.addEventListener('ps-offline', () => setTimeout(run, 50), { once: true });
+        setTimeout(run, 8000);
       } else if (!/^\/r\//i.test(start) && start !== '/') history.replaceState({ p: '/' }, '', '/');   // an unknown address: home
       history.replaceState({ p: location.pathname }, '', location.pathname + location.hash);
       window.ROUTER = { here, open, idFor, gameSlug, sync };

@@ -178,6 +178,16 @@
             return { id, name: p.name, avatar: p.avatar, since: 'Nov 2026', ratings, friend: rel };
           },
           async publishStats(o) { const d = db(); d.pstats = d.pstats || {}; d.pstats[uid] = o; save(d, { k: 'ps' }); },
+          // stand-in for tests: the owner is the tab with sessionStorage ps_owner_test set; numbers from the players' published stats
+          async isOwner() { try { return sessionStorage.getItem('ps_owner_test') === '1'; } catch (e) { return false; } },
+          async ownerStats() {
+            if (!(await this.isOwner())) throw new Error('This page is private.');
+            const ps = Object.values(db().pstats || {}), games = {}, today = new Date().toISOString().slice(0, 10);
+            ps.forEach((o) => Object.entries(o.games || {}).forEach(([g, a]) => { games[g] = games[g] || { g, n: 0, p: 0 }; games[g].n += a[0]; games[g].p++; }));
+            const days = []; for (let i = 13; i >= 0; i--) { const d = new Date(Date.now() - i * 864e5).toISOString().slice(0, 10); days.push({ d, new: d === today ? ps.length : 0, played: d === today ? ps.filter((o) => o.played > 0).length : 0, accounts: 0, rooms: 0, chats: 0 }); }
+            return { total: ps.length, accounts: ps.filter((o) => !o.guest).length, played: ps.filter((o) => o.played > 0).length, returned: 0, new_today: ps.length, active_today: ps.length,
+              games_total: ps.reduce((t, o) => t + (o.played || 0), 0), days, games: Object.values(games).sort((x, y) => y.n - x.n) };
+          },
           async playerStats(id) { return (db().pstats || {})[id] || null; },
           async friends() {
             const d = db(), fr = d.friends || [], pr = (id) => ({ id, name: (d.profiles[id] || {}).name || 'Player', avatar: (d.profiles[id] || {}).avatar || '🙂' });
@@ -348,6 +358,9 @@
           async searchPlayers(q) { if (String(q || '').trim().length < 2) return []; return ok(await rpc('search_players', { q: String(q).trim() })) || []; },
           async playerCard(id) { return ok(await rpc('player_card', { p_id: id })); },
           async publishStats(o) { ok(await rpc('publish_stats', { p: o })); },   // throws on failure, so the page tries again
+          /* the owner's private stats page (backend/owner-stats.sql): the server decides who may see it */
+          async isOwner() { try { return !!ok(await rpc('is_site_owner')); } catch (e) { return false; } },
+          async ownerStats() { return ok(await rpc('owner_stats')); },
           async playerStats(id) { try { return ok(await rpc('player_stats', { p_id: id })); } catch (e) { return null; } },
           async friends() {
             const rows = ok(await sb.from('friend_requests').select('from_id,to_id,status')) || [];
@@ -453,6 +466,8 @@
       NET.playerCard = (id) => B.playerCard(id);
       NET.publishStats = (o) => B.publishStats(o);
       NET.playerStats = (id) => B.playerStats(id);
+      NET.isOwner = () => B.isOwner();
+      NET.ownerStats = () => B.ownerStats();
       NET.friends = () => B.friends();
       // Only players with an account can add friends and chat (Inna, Nov 2026). Guests can still read chat. The server
       // checks the same thing (backend/accounts-only.sql), so this can't be skipped.

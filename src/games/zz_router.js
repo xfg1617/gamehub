@@ -86,6 +86,12 @@
           document.addEventListener('ps-offline', () => setTimeout(run, 50), { once: true });
           setTimeout(run, 8000);
         } else setTimeout(run, 300);
+      } else if (start === '/my-stats') {
+        // the owner's private stats page (zz_ownerstats.js): waits for the connection, then asks the server
+        let done = false; const run = () => { if (done) return; done = true; if (window.openOwnerStats) openOwnerStats(); };
+        document.addEventListener('ps-online', () => setTimeout(run, 50), { once: true });
+        document.addEventListener('ps-offline', () => setTimeout(run, 50), { once: true });
+        setTimeout(run, 8000);
       } else if (!/^\/r\//i.test(start) && start !== '/') history.replaceState({ p: '/' }, '', '/');   // an unknown address: home
       history.replaceState({ p: location.pathname }, '', location.pathname + location.hash);
       window.ROUTER = { here, open, idFor, gameSlug, sync };

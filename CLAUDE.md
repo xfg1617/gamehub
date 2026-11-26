@@ -1084,3 +1084,16 @@ folder that was handed over, so they do not exist here.)
   visit only: `!PS_RETURNING`; not when logged in on this device = a non-anonymous `sb-*-auth-token` in localStorage; not
   from an invite link). If the player is in a game / another pop-up is open it waits and shows back on the home screen.
   `test/t_welcome.py` checks it shows within 2 s and waits during a game.
+
+## 5ag. Owner's private stats page (Nov 26 2026, Inna)
+
+* `gamehub.us.com/my-stats` or **Site stats** in the side menu (`#nav-stats`, added only when `NET.isOwner()` is true):
+  `src/games/zz_ownerstats.js` (`openOwnerStats`, full-page `#os-page`, CSS `src/css/31-ownerstats.css`). Tiles (real
+  players = played a game, all visitors, came back, accounts, new today, active today, games played, online now), a
+  14-day stacked bar chart (played / only looked; hover a day for signed up, rooms opened, chat messages; "Show as a
+  table"), most played games. Only counts, never names or emails.
+* **Privacy is on the server**: `backend/owner-stats.sql` = table `site_owners` (no website access), `is_site_owner()` and
+  `owner_stats()` (raises "This page is private." for anyone else; anon can't call it). Inna adds herself once with an
+  insert by email typed in the SQL Editor (never put her email in a file). Tested on PostgreSQL 16 (runs twice, guest
+  refused, anon refused, owner gets correct counts, Test Pilots excluded). Stand-in: the tab with
+  `sessionStorage.ps_owner_test = '1'` is the owner. `test/t_ownerstats.py`.

@@ -1079,3 +1079,8 @@ folder that was handed over, so they do not exist here.)
   (welcome, sign-up, guide, room picker, rejoin box, video). New players are marked up to date silently (they get the
   welcome instead). The welcome (`zz_rewards.js`) waits while the update pop-up is open. Two updates on one day: give
   the second entry an `id` ('2026-11-26b'). Tests: `window.__showUpdPop` / `window.__showWelcome` lift the webdriver skip.
+* **Welcome pop-up timing** (Nov 26 2026, Inna: "takes too long, the player could've joined a game"): `maybeWelcome` in
+  zz_rewards.js no longer waits for the connection: on a site with online play it shows ~0.5 s after the page opens (first
+  visit only: `!PS_RETURNING`; not when logged in on this device = a non-anonymous `sb-*-auth-token` in localStorage; not
+  from an invite link). If the player is in a game / another pop-up is open it waits and shows back on the home screen.
+  `test/t_welcome.py` checks it shows within 2 s and waits during a game.

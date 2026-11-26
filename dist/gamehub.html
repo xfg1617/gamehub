@@ -20419,13 +20419,37 @@
           if (e.target === d || e.target.closest('[data-x]')) d.remove();
         });
       }
-      function maybeWelcome() {
-        if (typeof NET === 'undefined' || !NET.on || NET.account || seen().first) return;
-        if (/\/r\/|join=/i.test(location.pathname + location.hash)) { mark('first'); return; }   // came from an invite: let them play first
-        setTimeout(() => { if (!NET.account && typeof activeView !== 'undefined' && activeView === 'play' && !seen().first) { mark('first'); welcome('first'); } }, 2000);
+      // logged in on this device before? (the sign-in is remembered by the browser, so we know without waiting to connect)
+      function signedInHere() {
+        try {
+          for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i); if (!/^sb-.*-auth-token$/.test(k)) continue;
+            const v = JSON.parse(localStorage.getItem(k) || 'null'), u = v && (v.user || (v.currentSession && v.currentSession.user));
+            if (u && u.is_anonymous === false) return true;
+          }
+        } catch (e) {}
+        return false;
       }
-      document.addEventListener('ps-online', maybeWelcome);   // net.js announces the connection on document
-      if (typeof NET !== 'undefined' && NET.on) maybeWelcome();
+      const onlineSite = () => { try { return !!((window.PS_ONLINE || {}).url) || localStorage.getItem('ps_net_local') === '1'; } catch (e) { return false; } };
+      // Inna: "welcome pop-up takes too long, the player could've joined a game before": it no longer waits for the
+      // connection; it shows ~0.5 s after the page opens, on the home screen. If the player is already in a game (or
+      // another pop-up is open) it waits and shows as soon as they are back on the home screen.
+      let pending = false;
+      function maybeWelcome() {
+        if (pending || seen().first || !onlineSite()) return;
+        if (window.PS_RETURNING) { mark('first'); return; }   // only for a first visit; returning players get the "what's new" note instead
+        if ((typeof NET !== 'undefined' && NET.account) || signedInHere()) return;
+        if (/\/r\/|join=/i.test(location.pathname + location.hash)) { mark('first'); return; }   // came from an invite: let them play first
+        pending = true; let tries = 0;
+        const t = setInterval(() => {
+          if (++tries > 1200 || seen().first || (typeof NET !== 'undefined' && NET.account)) return clearInterval(t);
+          if (typeof activeView === 'undefined' || activeView !== 'play' || document.body.classList.contains('in-game')) return;
+          if (document.querySelector('#auth-modal:not(.hidden), #room-modal:not(.hidden), #guide-modal:not(.hidden), .hv, #np-rj')) return;
+          clearInterval(t); mark('first'); welcome('first');
+        }, 500);
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', maybeWelcome); else maybeWelcome();
+      document.addEventListener('ps-online', maybeWelcome);
       // once more, after a guest's first win
       setInterval(() => {
         if (typeof NET === 'undefined' || !NET.on || NET.account || seen().win || totalWins() < 1) return;

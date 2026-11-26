@@ -1041,3 +1041,12 @@ folder that was handed over, so they do not exist here.)
   needs a new recording: `python3 build.py && python3 tools/voice_lines.py && python3 tools/make_voices.py` (records only
   missing lines; needs the Google key, saved by Inna as a network secret for texttospeech.googleapis.com, header
   X-Goog-Api-Key, in the `gamehub` environment). A missing file or file:// = the device voice as before. `t_hv_voice.py`.
+* **How-to videos v2** (Nov 26 2026, Inna: shorter, natural, like a friend explaining; real game pictures; watchable in a
+  game; no emoji): scripts in `src/games/zz_howto_scripts.js` (`HOWTO_SCRIPT[id] = {shots, lines: [picture, highlight
+  selector, English, Vietnamese]}`, the Vietnamese written to sound natural, not translated). Pictures:
+  `python3 tools/make_howto_shots.py` (after build) plays each game against computers and saves
+  `assets/site/howto/<id>/<n>.jpg` (2x, ~3.6 MB) + `index.json` with where each highlighted part is; the player zooms
+  towards it and outlines it (`.hv-shot`, `.hv-focus`). "▶ Video" in every game's top bar (`gs-video`, opens over the
+  game; its end button goes back to the game). Written guides lose their emoji (`guideHTML`). Voice: 248 lines,
+  re-recorded with Puck. After changing a script line: build → voice_lines.py → make_voices.py (and make_howto_shots.py
+  if a picture or highlight changed). Samples: `prototypes/voices/howto-video-*.mp4`.

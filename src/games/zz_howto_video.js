@@ -17,7 +17,24 @@
         const want = lang === 'vi' ? /^vi/i : /^en/i;
         return vs.find((v) => want.test(v.lang) && /female|samantha|google|natural/i.test(v.name)) || vs.find((v) => want.test(v.lang)) || null;
       }
+      const noEmoji = (t) => String(t || '').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu, '').replace(/\s{2,}/g, ' ').trim();
+      let SHOTS = null;   // where the highlighted parts are in each game picture (assets/site/howto/index.json)
+      const web = () => /^https?:$/.test(location.protocol);
+      function loadShots() { if (SHOTS || !web()) return Promise.resolve(SHOTS); return fetch('/howto/index.json').then((r) => (r.ok ? r.json() : null)).then((j) => { SHOTS = j; return j; }).catch(() => null); }
       function slidesFor(id) {
+        const sc = window.HOWTO_SCRIPT && HOWTO_SCRIPT[id];
+        if (sc) {
+          const vi = typeof LANG !== 'undefined' && LANG.code === 'vi', c = CATALOG.find((x) => x.id === id) || {};
+          const name = (vi && window.VI_TABLE && VI_TABLE[c.name]) || c.name || (id === 'naval' ? (vi ? 'Hải chiến' : 'Sea Battle') : id === 'daily' ? (vi ? 'Từ mỗi ngày' : 'Daily Word') : 'Game');
+          const pics = (SHOTS && SHOTS[id]) || [];
+          const S = sc.lines.map(([pic, sel, en, vit], i) => {
+            const text = noEmoji(vi ? vit : en), shot = typeof pic === 'number' && pics[pic] ? pics[pic] : null;
+            return shot ? { k: 'shot', src: `/howto/${id}/${pic}.jpg`, box: (sel && shot.boxes[sel]) || null, w: shot.w, h: shot.h, text, say: text }
+              : { k: i === 0 ? 'title' : 'line', head: i === 0 ? name : '', text, say: text };
+          });
+          S.push({ k: 'end', head: vi ? 'Giờ tới lượt bạn!' : 'Now you try!', play: vi ? 'Chơi ngay' : 'Play now' });
+          return { id, name, icon: GICONS[c.icon] || GICONS[id] || '', slides: S, lang: vi ? 'vi' : 'en' };
+        }
         let h = HOWTO[id]; if (!h) return null;
         const vi = typeof LANG !== 'undefined' && LANG.code === 'vi';
         if (vi && window.HOWTO_VI && HOWTO_VI[id]) h = Object.assign({}, h, HOWTO_VI[id]);
@@ -42,10 +59,18 @@
         if (!s) return stop();
         el.querySelectorAll('.hv-prog i').forEach((b, k) => { b.className = k < i ? 'done' : k === i ? 'on' : ''; });
         const stage = el.querySelector('.hv-stage');
+        if (s.k === 'shot') {
+          const b = s.box, cx = b ? (b[0] + b[2] / 2) / s.w * 100 : 50, cy = b ? (b[1] + b[3] / 2) / s.h * 100 : 50;
+          const zoom = b ? Math.max(1.06, Math.min(1.7, 0.72 / Math.max(b[2] / s.w, b[3] / s.h))) : 1.08;
+          stage.innerHTML = `<div class="hv-slide hv-shotwrap"><div class="hv-shot" style="--cx:${cx}%;--cy:${cy}%;--z:${zoom.toFixed(2)}"><img src="${s.src}" alt="">
+              ${b ? `<i class="hv-focus" style="left:${b[0] / s.w * 100}%;top:${b[1] / s.h * 100}%;width:${b[2] / s.w * 100}%;height:${b[3] / s.h * 100}%"></i>` : ''}</div>
+            <div class="hv-text hv-cap"></div></div>`;
+        } else {
         const art = s.k === 'title' || s.k === 'end' ? `<div class="hv-icon big">${V.icon}</div>` : s.k === 'item' ? `<div class="hv-art">${s.art}</div>` : s.k === 'step' ? `<div class="hv-num">${s.n}</div>` : `<div class="hv-icon">${V.icon}</div>`;
         stage.innerHTML = `<div class="hv-slide hv-${s.k}">${art}${s.tag ? `<div class="hv-tag">${esc(s.tag)}</div>` : ''}${s.head ? `<div class="hv-head">${esc(s.head)}</div>` : ''}
           ${s.text ? `<div class="hv-text"></div>` : ''}${s.k === 'end' ? `<button class="btn-game btn-amber px-10 py-4 text-xl hv-play">▶ ${esc(s.play)}</button>` : ''}</div>`;
-        if (s.k === 'end') { stage.querySelector('.hv-play').onclick = () => { const id = V.id; stop(); const g = document.getElementById('guide-modal'); if (g) g.classList.add('hidden'); if (GAME_MODS[id]) openGame(id); else openSetup(id); }; }
+        }
+        if (s.k === 'end') { stage.querySelector('.hv-play').onclick = () => { const id = V.id, inGame = V.inGame; stop(); const g = document.getElementById('guide-modal'); if (g) g.classList.add('hidden'); if (inGame) return; if (id === 'daily') return openDailyWord(true); if (GAME_MODS[id]) openGame(id); else openSetup(id); }; if (V.inGame) stage.querySelector('.hv-play').textContent = V.lang === 'vi' ? '▶ Quay lại ván chơi' : '▶ Back to my game'; }
         // the caption types itself out while the voice reads it
         const tx = stage.querySelector('.hv-text'), words = (s.text || '').split(' ');
         if (tx) { let w = 0; tx.textContent = ''; V.tw = setInterval(() => { if (w >= words.length) return clearInterval(V.tw); tx.textContent += (w ? ' ' : '') + words[w++]; }, Math.max(60, Math.min(180, 2600 / Math.max(1, words.length)))); }
@@ -78,7 +103,10 @@
       }
       function playHowTo(id) {
         id = { navalnet: 'naval', wordduel: HOWTO.wordduel ? 'wordduel' : 'daily' }[id] || id;
-        stop(); const d = slidesFor(id); if (!d) return showToast('No guide for this game yet.', 'info');
+        stop();
+        if (web() && !SHOTS && !playHowTo._waiting) { playHowTo._waiting = true; return loadShots().then(() => { playHowTo._waiting = false; playHowTo(id); }); }
+        const d = slidesFor(id); if (!d) return showToast('No guide for this game yet.', 'info');
+        d.inGame = !!document.body.classList.contains('in-game');
         const el = document.createElement('div'); el.className = 'hv'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'How to play video');
         el.innerHTML = `<div class="hv-top"><span class="hv-brand pix">GAMEHUB · ${esc(d.name.toUpperCase())}</span><div class="hv-prog">${d.slides.map(() => '<i></i>').join('')}</div></div>
           <div class="hv-stage"></div>

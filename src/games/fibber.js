@@ -233,7 +233,7 @@
         const rv = G.reveal;
         $('fb-center').innerHTML = `<div class="text-center"><div id="fb-pile" class="fb-pile">${G.pile.length ? Array.from({ length: Math.min(G.pile.length, 16) }, (_, i) => `<div style="position:absolute;left:${(i * 7) % 9 - 4}px;top:${-i * 3}px;transform:rotate(${(i * 37) % 17 - 8}deg)">${playingCardHTML(null, { cls: 'sm' })}</div>`).join('') : '<div class="fb-empty">PILE</div>'}${G.pile.length ? `<div class="fb-count ${G.pile.length >= 12 ? 'big' : ''}">${G.pile.length}</div>` : ''}</div><div class="pix text-sm text-bone mt-2">PILE · ${G.pile.length} CARD${G.pile.length === 1 ? '' : 'S'}</div></div>
           ${rv ? `<div class="fb-reveal ${rv.lie ? 'lie' : 'true'}"><div class="flex gap-2">${rv.cards.map((c) => `<div class="${c.r === G.need ? 'ok' : 'bad'}">${pipCard(c)}</div>`).join('')}</div><div class="pix text-sm mt-2 ${rv.lie ? 'text-coral' : 'text-emerald'}">${rv.lie ? 'A LIE!' : 'ALL TRUE!'}</div></div>` : ''}`;
-        $('fb-claim').innerHTML = `NOW: <b>${WORD[G.need].toUpperCase()}S</b>${G.last && !rv ? ` <span class="text-muted">· ${esc(G.last.p.name)} said ${plural(G.last.need, G.last.cards.length)}</span>` : ''}`;
+        $('fb-claim').innerHTML = `NOW: <b>${WORD[G.need].toUpperCase()}${G.need === 6 ? "ES" : "S"}</b>${G.last && !rv ? ` <span class="text-muted">· ${esc(G.last.p.name)} said ${plural(G.last.need, G.last.cards.length)}</span>` : ''}`;
         $('fb-step').textContent = `${G.pile.length} IN PILE`;
         // my hand, sorted by rank; tap to pick
         const me = G.players[G.me], picking = !!G.choose;

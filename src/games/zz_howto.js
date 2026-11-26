@@ -226,6 +226,9 @@
     function guideHTML(id) {
       let h = HOWTO[id]; if (!h) return '';
       if (typeof LANG !== 'undefined' && LANG.code === 'vi' && window.HOWTO_VI && HOWTO_VI[id]) h = Object.assign({}, h, HOWTO_VI[id]);   // Vietnamese guide
+      // no emoji in the written guide (Inna, Nov 2026); the pictures under "what things mean" keep their art
+      const ne = (t) => String(t || '').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu, '').replace(/ {2,}/g, ' ').trim();
+      h = Object.assign({}, h, { goal: ne(h.goal), tip: ne(h.tip), online: ne(h.online), steps: (h.steps || []).map(([t, x]) => [ne(t), ne(x)]) });
       let items = ''; try { items = h.items ? h.items() : ''; } catch (e) { items = ''; }
       const c = CATALOG.find((x) => x.id === id) || {};
       const vi = typeof LANG !== 'undefined' && LANG.code === 'vi';

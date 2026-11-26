@@ -1883,6 +1883,18 @@
     .hv-ctl button:active { transform: translateY(3px); box-shadow: 0 1px 0 #050E18; }
     @media (prefers-reduced-motion: reduce) { .hv-slide, .hv-icon, .hv-num, .hv-art { animation: none; } }
     @media (max-width: 640px) { .hv-art { transform: scale(1.5); margin: 20px 0 10px; } .hv-icon.big { width: 120px; height: 120px; } .hv-brand { display: none; } }
+
+    /* game pictures in the how-to videos: the camera drifts towards the part being explained, which is outlined */
+    .hv-shotwrap { max-width: 1100px; gap: 12px; }
+    .hv-shot { position: relative; width: 100%; aspect-ratio: 16 / 9; max-height: calc(100vh - 230px); overflow: hidden; border: 4px solid #050E18; box-shadow: 0 6px 0 #050E18; background: #050E18; }
+    .hv-shot > img, .hv-shot > .hv-focus { transform-origin: var(--cx) var(--cy); animation: hvCam 5.5s ease-out forwards; }
+    .hv-shot > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+    .hv-focus { position: absolute; border: 4px solid #F5B041; box-shadow: 0 0 0 9999px rgba(5, 14, 24, .38); }
+    .hv-focus::after { content: ''; position: absolute; inset: -4px; border: 4px solid #F5B041; animation: hvPulse 1.1s steps(2) infinite; }
+    @keyframes hvCam { from { transform: scale(1); } to { transform: scale(var(--z)); } }
+    @keyframes hvPulse { 50% { inset: -10px; opacity: .4; } }
+    .hv-cap { font-size: clamp(1rem, 2.1vw, 1.35rem); min-height: 2.6em; }
+    @media (prefers-reduced-motion: reduce) { .hv-shot > img, .hv-shot > .hv-focus { animation: none; } }
     /* ===== tic-tac-toe ===== */
     .ttt-board { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 6px; background: var(--ink); border: 4px solid var(--ink); box-shadow: 0 5px 0 var(--ink); aspect-ratio: 1 / 1; width: 100%; max-width: 460px; margin: 0 auto; }
     .ttt-cell { position: relative; min-width: 0; min-height: 0; overflow: hidden; background: #12314F; box-shadow: inset 0 0 0 3px #1A3856, inset 0 -6px 0 #0F2A44; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 12%; }
@@ -6602,7 +6614,7 @@
             <span class="spr w-8 h-8">${GICONS[m.icon]}</span>
             <h2 class="text-lg font-extrabold text-bone">${m.name}</h2>
           </div>
-          <div class="flex items-center gap-2.5 flex-wrap" id="gs-tools">${toolsHTML}<button class="btn-game btn-graphite px-3 py-2 text-xs gs-moves" onclick="toggleMoves()" title="Open or close the game log">📜 <span class="gs-lbl">Log</span></button><button class="btn-game btn-graphite px-3 py-2 text-xs" onclick="openGuide('${m.id}')" title="How to play ${esc(m.name)}">? <span class="gs-lbl">Guide</span></button>${typeof TABLE_GAMES !== 'undefined' && TABLE_GAMES.includes(m.id) ? '<button class="btn-game btn-graphite px-3 py-2 text-xs gs-table" onclick="openTablePicker(this)" title="Change the table design">🎨 <span class="gs-lbl">Table</span></button>' : ''}<button class="btn-game btn-graphite px-3 py-2 text-xs gs-snd" onclick="openSoundPanel(this)" title="Sound and music" aria-label="Sound and music">♪</button></div>
+          <div class="flex items-center gap-2.5 flex-wrap" id="gs-tools">${toolsHTML}<button class="btn-game btn-graphite px-3 py-2 text-xs gs-moves" onclick="toggleMoves()" title="Open or close the game log">📜 <span class="gs-lbl">Log</span></button><button class="btn-game btn-graphite px-3 py-2 text-xs" onclick="openGuide('${m.id}')" title="How to play ${esc(m.name)}">? <span class="gs-lbl">Guide</span></button><button class="btn-game btn-teal px-3 py-2 text-xs gs-video" onclick="playHowTo('${m.id}')" title="Watch how to play ${esc(m.name)}">▶ <span class="gs-lbl">Video</span></button>${typeof TABLE_GAMES !== 'undefined' && TABLE_GAMES.includes(m.id) ? '<button class="btn-game btn-graphite px-3 py-2 text-xs gs-table" onclick="openTablePicker(this)" title="Change the table design">🎨 <span class="gs-lbl">Table</span></button>' : ''}<button class="btn-game btn-graphite px-3 py-2 text-xs gs-snd" onclick="openSoundPanel(this)" title="Sound and music" aria-label="Sound and music">♪</button></div>
         </div>
         <div id="gs-body"></div></div>`;
       return document.getElementById('gs-body');
@@ -11918,7 +11930,7 @@
         const rv = G.reveal;
         $('fb-center').innerHTML = `<div class="text-center"><div id="fb-pile" class="fb-pile">${G.pile.length ? Array.from({ length: Math.min(G.pile.length, 16) }, (_, i) => `<div style="position:absolute;left:${(i * 7) % 9 - 4}px;top:${-i * 3}px;transform:rotate(${(i * 37) % 17 - 8}deg)">${playingCardHTML(null, { cls: 'sm' })}</div>`).join('') : '<div class="fb-empty">PILE</div>'}${G.pile.length ? `<div class="fb-count ${G.pile.length >= 12 ? 'big' : ''}">${G.pile.length}</div>` : ''}</div><div class="pix text-sm text-bone mt-2">PILE · ${G.pile.length} CARD${G.pile.length === 1 ? '' : 'S'}</div></div>
           ${rv ? `<div class="fb-reveal ${rv.lie ? 'lie' : 'true'}"><div class="flex gap-2">${rv.cards.map((c) => `<div class="${c.r === G.need ? 'ok' : 'bad'}">${pipCard(c)}</div>`).join('')}</div><div class="pix text-sm mt-2 ${rv.lie ? 'text-coral' : 'text-emerald'}">${rv.lie ? 'A LIE!' : 'ALL TRUE!'}</div></div>` : ''}`;
-        $('fb-claim').innerHTML = `NOW: <b>${WORD[G.need].toUpperCase()}S</b>${G.last && !rv ? ` <span class="text-muted">· ${esc(G.last.p.name)} said ${plural(G.last.need, G.last.cards.length)}</span>` : ''}`;
+        $('fb-claim').innerHTML = `NOW: <b>${WORD[G.need].toUpperCase()}${G.need === 6 ? "ES" : "S"}</b>${G.last && !rv ? ` <span class="text-muted">· ${esc(G.last.p.name)} said ${plural(G.last.need, G.last.cards.length)}</span>` : ''}`;
         $('fb-step').textContent = `${G.pile.length} IN PILE`;
         // my hand, sorted by rank; tap to pick
         const me = G.players[G.me], picking = !!G.choose;
@@ -18810,6 +18822,9 @@
     function guideHTML(id) {
       let h = HOWTO[id]; if (!h) return '';
       if (typeof LANG !== 'undefined' && LANG.code === 'vi' && window.HOWTO_VI && HOWTO_VI[id]) h = Object.assign({}, h, HOWTO_VI[id]);   // Vietnamese guide
+      // no emoji in the written guide (Inna, Nov 2026); the pictures under "what things mean" keep their art
+      const ne = (t) => String(t || '').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu, '').replace(/ {2,}/g, ' ').trim();
+      h = Object.assign({}, h, { goal: ne(h.goal), tip: ne(h.tip), online: ne(h.online), steps: (h.steps || []).map(([t, x]) => [ne(t), ne(x)]) });
       let items = ''; try { items = h.items ? h.items() : ''; } catch (e) { items = ''; }
       const c = CATALOG.find((x) => x.id === id) || {};
       const vi = typeof LANG !== 'undefined' && LANG.code === 'vi';
@@ -18853,6 +18868,190 @@
       document.getElementById('ht-back').onclick = () => { renderHowTo(); };
       document.getElementById('ht-play').onclick = () => { const fn = c.open; if (GAME_MODS[c.id]) openGame(c.id); else openSetup(c.id); };
     }
+    /* =========================================================================
+       HOW-TO VIDEO SCRIPTS (Nov 2026, Inna: "shorter, more human, like someone telling someone how to play; natural in
+       both languages, not a direct translation; real game pictures"). One entry per game:
+         shots: how to reach each game picture (tools/make_howto_shots.py takes them from the real game)
+         lines: [picture, highlight, English, Vietnamese]   picture = shot number, or 'icon'
+       The highlight is a part of the screen (a CSS selector) the camera zooms towards and outlines. No emoji here:
+       every line is read aloud. Recordings: tools/voice_lines.py + tools/make_voices.py.
+       ========================================================================= */
+    window.HOWTO_SCRIPT = {
+      colorclash: { shots: [{}], lines: [
+        ['icon', null, "Let's play Uno! It's easy, I promise.", 'Mình cùng chơi Uno nhé! Dễ lắm, hứa luôn.'],
+        [0, '#cc-hand', "These are your cards. Your goal is to get rid of all of them before everyone else.", 'Đây là bài của bạn. Mục tiêu là đánh hết bài trước mọi người.'],
+        [0, '#cc-top', "On your turn, play a card that matches the one in the middle, either the same colour or the same number.", 'Đến lượt, bạn đánh một lá cùng màu hoặc cùng số với lá ở giữa bàn.'],
+        [0, '#cc-draw', "Nothing matches? Just draw a card from the pile. If it fits, you can play it straight away.", 'Không có lá nào hợp? Rút một lá ở chồng bài. Hợp thì đánh luôn.'],
+        [0, '#cc-hand', "Watch out for the special cards. Skip, Reverse and plus two can really mess with the next player.", 'Để ý mấy lá đặc biệt nhé. Mất lượt, Đổi chiều với Cộng hai sẽ làm khó người kế tiếp đó.'],
+        [0, '#cc-me', "And when you're down to your last card, hit Clash, fast! Forget, and you draw two.", 'Còn một lá cuối thì bấm Clash thật nhanh! Quên là phải rút thêm hai lá.'],
+      ] },
+      kittens: { shots: [{}], lines: [
+        ['icon', null, "Kaboom Cats is all about not drawing the Hot Potato.", 'Kaboom Cats chỉ có một luật sống còn: đừng bốc trúng Củ Khoai Nóng.'],
+        [0, '#kk-pile', "Somewhere in this pile is a Hot Potato. Every turn ends with you drawing a card.", 'Trong chồng bài này có giấu Củ Khoai Nóng. Mỗi lượt đều kết thúc bằng việc bốc một lá.'],
+        [0, '#kk-hand', "Before you draw, you can play cards from your hand to skip, peek at the pile, or make someone else take a turn.", 'Trước khi bốc, bạn có thể đánh bài để bỏ lượt, xem trộm chồng bài, hoặc bắt người khác chơi thay.'],
+        [0, '#kk-hand', "Draw the Hot Potato with an Oven Mitt in your hand? You're safe. Hide the potato back in the pile.", 'Lỡ bốc trúng mà có Găng Tay Lò Nướng thì không sao. Giấu củ khoai lại vào chồng bài.'],
+        [0, '#kk-opp', "No mitt, and you're out. The last cat standing wins.", 'Không có găng tay là bị loại. Chú mèo cuối cùng còn trụ lại sẽ thắng.'],
+      ] },
+      fibber: { shots: [{ wait: 4500 }], lines: [
+        ['icon', null, "Bullshit is a bluffing game. Lying is allowed, just don't get caught.", 'Bullshit là trò nói dối. Được phép xạo, miễn đừng để bị bắt.'],
+        [0, '#fb-claim', "Each turn there's a rank, like Sevens. You put one to four cards face down and say they're all Sevens.", 'Mỗi lượt có một con bài, ví dụ con Bảy. Bạn úp từ một đến bốn lá và nói tất cả đều là Bảy.'],
+        [0, '#fb-hand', "Don't have any Sevens? That's fine. Bluff!", 'Không có con Bảy nào? Không sao, cứ xạo!'],
+        [0, '#fb-pile', "If you think someone's lying, shout Bullshit! The cards get turned over.", 'Nghĩ ai đó nói dối thì hô Bullshit! Bài sẽ được lật lên.'],
+        [0, '#fb-pile', "Caught lying? You take the whole pile. But if they told the truth, the pile goes to you.", 'Ai nói dối bị bắt thì ôm hết chồng bài. Nhưng nếu họ nói thật, bạn phải ôm.'],
+        [0, '#fb-seat-0', "First one to empty their hand wins.", 'Ai hết bài trước là thắng.'],
+      ] },
+      poker: { shots: [{ wait: 4000 }], lines: [
+        ['icon', null, "Here's Texas Hold'em poker, the friendly version.", "Đây là Poker Texas Hold'em, phiên bản vui vẻ."],
+        [0, '#pk-seat-0', "You get two secret cards. Everyone shares the five cards that appear in the middle.", 'Bạn có hai lá bài riêng. Năm lá ở giữa bàn là bài chung của cả bàn.'],
+        [0, '#pk-table', "Make the best hand of five you can, using your two cards and the shared ones.", 'Ghép hai lá của bạn với bài chung thành bộ năm lá mạnh nhất.'],
+        [0, '#pk-pot', "In each round you can check, call, raise, or fold if your cards are bad. All the bets go into the pot.", 'Mỗi vòng bạn có thể theo, tố thêm, hoặc bỏ nếu bài xấu. Tiền cược đều vào hũ.'],
+        [0, '#pk-pot', "Best hand at the end takes the pot. Or bet so big that everyone else gives up.", 'Bài mạnh nhất cuối ván ăn hũ. Hoặc tố thật mạnh cho mọi người bỏ cuộc.'],
+        [0, '#pk-table', "Last player with chips wins the table. Not sure which hand is best? Tap Hand ranks.", 'Ai còn chip cuối cùng là thắng. Quên bộ nào mạnh hơn thì bấm Thứ hạng bài.'],
+      ] },
+      blackjack: { shots: [{ wait: 2000 }], lines: [
+        ['icon', null, "Blackjack: beat the dealer, and don't go over twenty one.", 'Xì dách: thắng nhà cái, và đừng quá hai mươi mốt.'],
+        [0, '#bj-betspot', "First, put down a bet with your chips.", 'Trước tiên, đặt cược bằng chip của bạn.'],
+        [0, '#bj-deal', "Then press Deal. You and the dealer get two cards each.", 'Rồi bấm Chia bài. Bạn và nhà cái mỗi người hai lá.'],
+        [0, '#bj-msg', "Add up your cards. Pictures count as ten, and an Ace counts as one or eleven.", 'Cộng điểm bài lại. Hình tính mười, con Át tính một hoặc mười một.'],
+        [0, '#bj-msg', "Hit to take another card, Stand to stop. Go over twenty one and you lose straight away.", 'Rút thêm thì bấm Rút, đủ rồi thì bấm Dừng. Quá hai mươi mốt là thua ngay.'],
+        [0, '#bj-bankbox', "Closer to twenty one than the dealer? You win your bet back, and more.", 'Gần hai mươi mốt hơn nhà cái thì bạn ăn tiền.'],
+      ] },
+      dominoes: { shots: [{ wait: 3500 }], lines: [
+        ['icon', null, "Let's play Dominoes.", 'Mình chơi Domino nhé.'],
+        [0, '#dm-hand', "These are your tiles. Try to play them all before anyone else.", 'Đây là quân của bạn. Cố đánh hết trước người khác.'],
+        [0, '#dm-line', "On your turn, put down a tile that matches one of the two open ends of the line.", 'Đến lượt, đặt một quân có số chấm khớp với một trong hai đầu dãy.'],
+        [0, '#dm-bonecount', "Can't play? Draw from the pile, or pass, depending on the rules.", 'Không đánh được thì bốc thêm, hoặc bỏ lượt, tùy luật đã chọn.'],
+        [0, '#dm-scores', "Go out first and you score the dots left in everyone else's hands.", 'Hết quân trước thì bạn ghi điểm bằng số chấm còn lại trên tay người khác.'],
+      ] },
+      chess: { shots: [{}], lines: [
+        ['icon', null, "Chess! Here's the quick version.", 'Cờ vua! Đây là bản tóm tắt nhanh.'],
+        [0, '#ch-board', "Tap one of your pieces, and the squares it can move to light up. Tap one to move there.", 'Chạm vào một quân của bạn, các ô nó đi được sẽ sáng lên. Chạm ô muốn đi.'],
+        [0, '#ch-board', "Land on an enemy piece to capture it.", 'Đi vào ô có quân đối thủ là ăn quân đó.'],
+        [0, '#ch-board', "The goal is to trap the enemy king so it can't escape. That's checkmate, and you win.", 'Mục tiêu là vây vua đối phương không còn đường thoát. Đó là chiếu hết, bạn thắng.'],
+        [0, '#ch-msg', "Not sure what to do? Watch the hints, and go easy on yourself. Everyone loses at first.", 'Chưa biết đi sao? Xem gợi ý, và đừng nản. Ai mới chơi cũng thua mà.'],
+      ] },
+      checkers: { shots: [{}], lines: [
+        ['icon', null, "Checkers is all about jumping.", 'Cờ đam chủ yếu là nhảy ăn quân.'],
+        [0, '#ck-board', "Your pieces move one step diagonally, forward only.", 'Quân của bạn đi chéo từng ô, chỉ được đi tới.'],
+        [0, '#ck-board', "Jump over an enemy piece to capture it. If you can jump, you have to, and you can chain jumps together.", 'Nhảy qua quân đối thủ là ăn. Ăn được thì bắt buộc phải ăn, và có thể nhảy liên tiếp.'],
+        [0, '#ck-board', "Reach the far side and your piece becomes a king. Kings can move backwards too.", 'Đi tới cuối bàn thì quân được phong vua. Vua đi lùi được.'],
+        [0, '#ck-status', "Take all their pieces, or leave them with no moves, and you win.", 'Ăn hết quân đối thủ, hoặc làm họ hết nước đi, là bạn thắng.'],
+      ] },
+      tictactoe: { shots: [{}], lines: [
+        ['icon', null, "Tic Tac Toe. You've probably played this on paper.", 'Cờ ca rô ba ô. Chắc bạn chơi trên giấy rồi.'],
+        [0, '#ttt-board', "Take turns putting your mark in an empty square.", 'Lần lượt đánh dấu vào một ô trống.'],
+        [0, '#ttt-board', "Get three in a row, across, down, or diagonally, and you win.", 'Ba ô liền nhau, ngang, dọc hoặc chéo, là thắng.'],
+        [0, '#ttt-status', "Block your opponent's lines, and try to set up two at once.", 'Chặn đường của đối thủ, và tìm cách tạo hai đường cùng lúc.'],
+      ] },
+      c4: { shots: [{}], lines: [
+        ['icon', null, "Four in a Row. Think of it as tic tac toe with gravity.", 'Bốn liên tiếp. Giống cờ ca rô, nhưng quân rơi xuống.'],
+        [0, '#c4n-board', "Tap a column and your disc drops to the lowest empty spot.", 'Chạm vào một cột, quân của bạn rơi xuống ô trống thấp nhất.'],
+        [0, '#c4n-board', "Line up four of your colour, across, down, or diagonally, to win.", 'Xếp được bốn quân cùng màu, ngang, dọc hoặc chéo, là thắng.'],
+        [0, '#c4n-board', "Keep an eye on your opponent, and block them before they get there.", 'Nhớ để ý đối thủ, chặn họ trước khi họ kịp xếp đủ.'],
+      ] },
+      hedge: { shots: [{}], lines: [
+        ['icon', null, "Wall Maze is a race across the garden.", 'Mê cung tường là cuộc đua băng qua khu vườn.'],
+        [0, '#hr-board', "Be the first to get your pawn to the other side.", 'Ai đưa quân mình sang bờ bên kia trước là thắng.'],
+        [0, '#hr-board', "On your turn, either step one square, or plant a hedge to block someone.", 'Mỗi lượt, bạn đi một ô, hoặc trồng một bụi rào để chặn đường người khác.'],
+        [0, '#hr-board', "To plant a hedge, tap a gap between the squares.", 'Muốn trồng rào thì chạm vào khe giữa các ô.'],
+        [0, '#hr-players', "You can make the path longer, but you can never shut someone in completely.", 'Bạn có thể làm đường dài thêm, nhưng không được nhốt kín ai hết.'],
+      ] },
+      pool: { shots: [{}], lines: [
+        ['icon', null, "Eight ball pool. Here's how to take a shot.", 'Bi da tám bi. Đây là cách đánh.'],
+        [0, '#pl-cv', "Press on the table and drag to aim. The line shows where the ball will go.", 'Nhấn giữ trên bàn và kéo để ngắm. Đường kẻ cho thấy bi sẽ đi đâu.'],
+        [0, '#pl-bar', "Then pull the power bar back and let go to shoot. Further back means harder.", 'Rồi kéo thanh lực về sau và thả ra để đánh. Kéo càng xa càng mạnh.'],
+        [0, '#pl-spin', "Tap the white ball picture to add spin, top to follow through, bottom to pull back.", 'Chạm vào hình bi trắng để thêm xoáy, phía trên cho bi chạy theo, phía dưới cho bi giật lại.'],
+        [0, '#pl-seat-0', "Pot all your balls, solids or stripes, then sink the black eight to win.", 'Đưa hết bi của bạn, bi trơn hoặc bi sọc, vào lỗ, rồi đánh bi tám đen để thắng.'],
+      ] },
+      bowling: { shots: [{}], lines: [
+        ['icon', null, "Bowling. Ten pins, one ball, let's go.", 'Bowling. Mười cây ky, một quả bóng, chơi thôi.'],
+        [0, '#bw-cv', "Press on the ball, slide left or right to choose your spot.", 'Nhấn vào quả bóng, trượt sang trái hoặc phải để chọn vị trí.'],
+        [0, '#bw-cv', "Then flick upwards and let go. A faster flick throws harder. Curve it at the end for spin.", 'Rồi vuốt lên và thả tay. Vuốt nhanh thì ném mạnh. Cong tay ở cuối để bóng xoáy.'],
+        [0, '#bw-card', "Knock all ten down with one ball for a strike. Two balls is a spare.", 'Một lần ném đổ hết mười cây là Strike. Hai lần mới đổ hết là Spare.'],
+        [0, '#bw-card', "Ten frames, highest score wins.", 'Chơi mười lượt, ai nhiều điểm nhất thắng.'],
+      ] },
+      tycoon: { shots: [{}], lines: [
+        ['icon', null, "Landlord: buy streets, collect rent, and get rich.", 'Địa chủ: mua đất, thu tiền thuê, và làm giàu.'],
+        [0, '#ty-dice', "Roll the dice and move around the board.", 'Gieo xúc xắc và đi quanh bàn cờ.'],
+        [0, '#ty-board', "Land on a street nobody owns? You can buy it. If someone else owns it, you pay them rent.", 'Đi vào ô đất chưa ai mua thì bạn mua được. Đất của người khác thì phải trả tiền thuê.'],
+        [0, '#ty-board', "Own a whole colour set and you can build houses. More houses, much higher rent.", 'Có đủ một nhóm màu thì được xây nhà. Càng nhiều nhà, tiền thuê càng cao.'],
+        [0, '#ty-players', "Run out of money and you're out. The richest player at the end wins.", 'Hết tiền là bị loại. Cuối ván ai giàu nhất thì thắng.'],
+      ] },
+      isles: { shots: [{}], lines: [
+        ['icon', null, "Island Settlers: build villages and grow your island.", 'Đảo khai hoang: xây làng và mở mang hòn đảo của bạn.'],
+        [0, '#fi-board', "Each land gives a resource, like wood, clay, wool, grain or stone, when its number is rolled.", 'Mỗi ô đất cho một loại tài nguyên, gỗ, đất sét, len, lúa hay đá, khi xúc xắc ra đúng số của nó.'],
+        [0, '#fi-board', "Start by placing a village and a road on a corner. Corners touching good numbers are best.", 'Bắt đầu bằng việc đặt một ngôi làng và một con đường ở góc đất. Góc chạm số đẹp thì tốt nhất.'],
+        [0, '#fi-roll', "Each turn, roll the dice and collect what your villages touch.", 'Mỗi lượt, gieo xúc xắc và nhận tài nguyên từ những ô làng bạn chạm vào.'],
+        [0, '#fi-build', "Spend your resources on roads, villages and towns. Trade if you're missing something.", 'Dùng tài nguyên để xây đường, làng và thị trấn. Thiếu gì thì đổi chác.'],
+        [0, '#fi-vp', "Villages and towns give you points. First to the target wins.", 'Làng và thị trấn cho bạn điểm. Ai đủ điểm trước là thắng.'],
+      ] },
+      manor: { shots: [{}], lines: [
+        ['icon', null, "Whodunit: solve the mystery before the other detectives.", 'Ai là thủ phạm: phá án trước các thám tử khác.'],
+        [0, '#mm-map', "Someone did it, with something, in one of these rooms. Your job is to work out who, what and where.", 'Có một kẻ đã gây án, bằng một món đồ, trong một căn phòng. Bạn phải tìm ra ai, bằng gì và ở đâu.'],
+        [0, '#mm-map', "Walk into a room and make a guess about it.", 'Đi vào một phòng và đưa ra phỏng đoán.'],
+        [0, '#mm-hand', "If another player holds one of the cards you named, they secretly show it to you. So it's not that one.", 'Ai đang giữ một lá bạn vừa nói thì sẽ lén cho bạn xem. Vậy là loại được lá đó.'],
+        [0, '#mm-note', "Cross things off in your notebook as you learn.", 'Biết được gì thì gạch đi trong sổ tay.'],
+        [0, '#mm-prompt', "When you're sure, make your accusation. Get it right and you win. Get it wrong and you're out.", 'Chắc chắn rồi thì buộc tội. Đúng là thắng. Sai là bị loại.'],
+      ] },
+      tunnel: { shots: [{ wait: 4000 }], lines: [
+        ['icon', null, "Mine Saboteurs. Someone at the table is secretly working against you.", 'Thợ mỏ phá hoại. Có người trong bàn đang ngầm chống lại bạn.'],
+        [0, '#tt-prompt', "At the start you find out your team. Diggers want to reach the gold. Rascals want to stop them.", 'Lúc đầu bạn sẽ biết mình thuộc phe nào. Thợ đào muốn tới chỗ vàng. Kẻ phá hoại muốn ngăn họ lại.'],
+        [0, '#tt-board', "On your turn, add a tunnel piece that connects to the tunnel.", 'Đến lượt, nối thêm một đoạn đường hầm vào hầm.'],
+        [0, '#tt-hand', "Or play an action, like breaking someone's pick, or peeking at where the gold is.", 'Hoặc đánh một lá hành động, như làm gãy cuốc của ai đó, hay xem trộm vàng ở đâu.'],
+        [0, '#tt-players', "Diggers win if the tunnel reaches the gold. Rascals win if it doesn't.", 'Đường hầm tới được vàng thì thợ đào thắng. Không tới thì kẻ phá hoại thắng.'],
+      ] },
+      guild: { shots: [{ wait: 3000 }], lines: [
+        ['icon', null, "Castles and Kings: build the best town.", 'Lâu đài và Vua: xây thị trấn đẹp nhất.'],
+        [0, '#gm-roles', "Each round, everyone secretly picks a character. Each one has a special power.", 'Mỗi vòng, mọi người lén chọn một nhân vật. Mỗi nhân vật có một năng lực riêng.'],
+        [0, '#gm-mine', "On your turn, take two gold or a new building card.", 'Đến lượt, lấy hai vàng hoặc một lá công trình mới.'],
+        [0, '#gm-hand', "Then pay gold to build one of your cards in your town.", 'Rồi trả vàng để xây một công trình vào thị trấn.'],
+        [0, '#gm-towns', "When someone finishes enough buildings, the game ends. The most valuable town wins.", 'Khi có người xây đủ số công trình, trò chơi kết thúc. Thị trấn giá trị nhất thắng.'],
+      ] },
+      wordconnect: { shots: [{}], lines: [
+        ['icon', null, "Word Connect. Find the words hiding in the letters.", 'Nối chữ. Tìm những từ ẩn trong các chữ cái.'],
+        [0, '#wc-wheel', "Tap letters to spell a word. When it's a real word, it goes in on its own.", 'Chạm vào các chữ cái để ghép từ. Đúng là từ có nghĩa thì tự động được tính.'],
+        [0, '#wc-grid', "Fill in all the words on the board before the time runs out.", 'Điền hết các từ trên bảng trước khi hết giờ.'],
+        [0, '#wc-shuf', "Stuck? Shuffle the letters, or use a hint.", 'Bí quá thì xáo chữ, hoặc dùng gợi ý.'],
+      ] },
+      impostor: { shots: [{ wait: 1500 }], lines: [
+        ['icon', null, "Find the Impostor. Everyone has the same secret word, except one player.", 'Tìm kẻ giả mạo. Ai cũng có chung một từ bí mật, trừ một người.'],
+        [0, '#im-flip', "Tap to see your word. You might be the impostor and not even know it.", 'Chạm để xem từ của bạn. Có khi bạn là kẻ giả mạo mà không hề biết.'],
+        [0, '#im-main', "Take turns giving a one word hint. Not too obvious, or the impostor will guess the word.", 'Lần lượt nói một từ gợi ý. Đừng quá lộ, kẻo kẻ giả mạo đoán ra.'],
+        [0, '#im-main', "Then everyone votes for who they think it is.", 'Rồi mọi người bỏ phiếu xem ai là kẻ giả mạo.'],
+        [0, '#im-main', "Vote out the wrong person and you play another round. Catch the impostor and you win.", 'Loại nhầm người thì chơi thêm vòng nữa. Bắt được kẻ giả mạo là thắng.'],
+      ] },
+      doodle: { shots: [], lines: [
+        ['icon', null, "Doodle Guess. One person draws, everyone else guesses.", 'Vẽ đoán chữ. Một người vẽ, cả nhóm đoán.'],
+        ['icon', null, "When it's your turn to draw, pick a word and draw it. No letters allowed!", 'Đến lượt bạn vẽ thì chọn một từ rồi vẽ ra. Không được viết chữ đâu nhé!'],
+        ['icon', null, "Everyone else types their guesses. The faster you guess right, the more points you get.", 'Mọi người gõ từ mình đoán. Đoán đúng càng nhanh càng nhiều điểm.'],
+        ['icon', null, "The drawer scores too, when people get it. Most points at the end wins.", 'Người vẽ cũng được điểm khi có người đoán trúng. Cuối cùng ai nhiều điểm nhất thắng.'],
+      ] },
+      random: { shots: [], lines: [
+        ['icon', null, "Random Game. You bring the friends, we pick the game.", 'Trò ngẫu nhiên. Bạn rủ bạn bè, tụi mình chọn trò.'],
+        ['icon', null, "Open a room and invite people. Computer players can fill empty seats.", 'Mở phòng và mời mọi người vào. Ghế trống có thể để máy chơi.'],
+        ['icon', null, "Choose how many games to play. Then the host presses Start, and a random game begins.", 'Chọn chơi bao nhiêu ván. Chủ phòng bấm Bắt đầu, và một trò ngẫu nhiên sẽ bắt đầu.'],
+        ['icon', null, "Every game gives points. Most points at the end is the champion.", 'Mỗi ván đều có điểm. Cuối cùng ai nhiều điểm nhất là nhà vô địch.'],
+      ] },
+      wordduel: { shots: [{}], lines: [
+        ['icon', null, "Word Duel. Same secret word, two players, who's faster?", 'Đấu chữ. Cùng một từ bí mật, hai người, ai nhanh hơn?'],
+        [0, '#wd-board', "Type a five letter word and press enter.", 'Gõ một từ năm chữ cái rồi bấm Enter.'],
+        [0, '#wd-board', "Green means right letter, right spot. Yellow means it's in the word, but somewhere else.", 'Màu xanh là đúng chữ, đúng chỗ. Màu vàng là có chữ đó, nhưng sai chỗ.'],
+        [0, '#wd-opp', "Guess the word before your opponent does.", 'Đoán ra từ trước đối thủ là thắng.'],
+      ] },
+      daily: { shots: [{ go: 'daily' }], lines: [
+        ['icon', null, "Daily Word. One new puzzle every day.", 'Từ mỗi ngày. Mỗi ngày một câu đố mới.'],
+        [0, '#dw-grid', "You get six tries to guess the five letter word.", 'Bạn có sáu lần để đoán từ năm chữ cái.'],
+        [0, '#dw-grid', "Green is the right letter in the right spot. Yellow is in the word, but in the wrong spot.", 'Màu xanh là đúng chữ, đúng chỗ. Màu vàng là có chữ đó nhưng sai chỗ.'],
+        [0, '#dw-keyboard', "Grey letters aren't in the word at all. Come back tomorrow to keep your streak going.", 'Chữ màu xám thì không có trong từ. Mai quay lại để giữ chuỗi ngày nhé.'],
+      ] },
+      naval: { shots: [{ go: 'naval' }], lines: [
+        ['icon', null, "Sea Battle. Find and sink the enemy fleet.", 'Hải chiến. Tìm và đánh chìm hạm đội địch.'],
+        [0, '#ng-setup-grid', "First, place your five ships on your grid. Drag them where you want.", 'Đầu tiên, đặt năm chiếc tàu lên lưới của bạn. Kéo thả tùy ý.'],
+        [0, '#ng-deploy-btn', "Press Deploy when you're ready.", 'Xong thì bấm Triển khai.'],
+        ['icon', null, "Then take turns firing at the enemy's grid. A hit lets you know you're close.", 'Rồi lần lượt bắn vào lưới của địch. Trúng là biết mình đang gần.'],
+        ['icon', null, "Sink all five of their ships first, and you win.", 'Đánh chìm cả năm tàu của địch trước là bạn thắng.'],
+      ] },
+    };
     /* =========================================================================
        HOW TO PLAY in Vietnamese (Nov 2026). When LANG.code is 'vi', guideHTML uses these instead of the English goal,
        steps, tip and online note (whole sentences, so bold words inside them don't break the translation). The
@@ -19048,7 +19247,24 @@
         const want = lang === 'vi' ? /^vi/i : /^en/i;
         return vs.find((v) => want.test(v.lang) && /female|samantha|google|natural/i.test(v.name)) || vs.find((v) => want.test(v.lang)) || null;
       }
+      const noEmoji = (t) => String(t || '').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu, '').replace(/\s{2,}/g, ' ').trim();
+      let SHOTS = null;   // where the highlighted parts are in each game picture (assets/site/howto/index.json)
+      const web = () => /^https?:$/.test(location.protocol);
+      function loadShots() { if (SHOTS || !web()) return Promise.resolve(SHOTS); return fetch('/howto/index.json').then((r) => (r.ok ? r.json() : null)).then((j) => { SHOTS = j; return j; }).catch(() => null); }
       function slidesFor(id) {
+        const sc = window.HOWTO_SCRIPT && HOWTO_SCRIPT[id];
+        if (sc) {
+          const vi = typeof LANG !== 'undefined' && LANG.code === 'vi', c = CATALOG.find((x) => x.id === id) || {};
+          const name = (vi && window.VI_TABLE && VI_TABLE[c.name]) || c.name || (id === 'naval' ? (vi ? 'Hải chiến' : 'Sea Battle') : id === 'daily' ? (vi ? 'Từ mỗi ngày' : 'Daily Word') : 'Game');
+          const pics = (SHOTS && SHOTS[id]) || [];
+          const S = sc.lines.map(([pic, sel, en, vit], i) => {
+            const text = noEmoji(vi ? vit : en), shot = typeof pic === 'number' && pics[pic] ? pics[pic] : null;
+            return shot ? { k: 'shot', src: `/howto/${id}/${pic}.jpg`, box: (sel && shot.boxes[sel]) || null, w: shot.w, h: shot.h, text, say: text }
+              : { k: i === 0 ? 'title' : 'line', head: i === 0 ? name : '', text, say: text };
+          });
+          S.push({ k: 'end', head: vi ? 'Giờ tới lượt bạn!' : 'Now you try!', play: vi ? 'Chơi ngay' : 'Play now' });
+          return { id, name, icon: GICONS[c.icon] || GICONS[id] || '', slides: S, lang: vi ? 'vi' : 'en' };
+        }
         let h = HOWTO[id]; if (!h) return null;
         const vi = typeof LANG !== 'undefined' && LANG.code === 'vi';
         if (vi && window.HOWTO_VI && HOWTO_VI[id]) h = Object.assign({}, h, HOWTO_VI[id]);
@@ -19073,10 +19289,18 @@
         if (!s) return stop();
         el.querySelectorAll('.hv-prog i').forEach((b, k) => { b.className = k < i ? 'done' : k === i ? 'on' : ''; });
         const stage = el.querySelector('.hv-stage');
+        if (s.k === 'shot') {
+          const b = s.box, cx = b ? (b[0] + b[2] / 2) / s.w * 100 : 50, cy = b ? (b[1] + b[3] / 2) / s.h * 100 : 50;
+          const zoom = b ? Math.max(1.06, Math.min(1.7, 0.72 / Math.max(b[2] / s.w, b[3] / s.h))) : 1.08;
+          stage.innerHTML = `<div class="hv-slide hv-shotwrap"><div class="hv-shot" style="--cx:${cx}%;--cy:${cy}%;--z:${zoom.toFixed(2)}"><img src="${s.src}" alt="">
+              ${b ? `<i class="hv-focus" style="left:${b[0] / s.w * 100}%;top:${b[1] / s.h * 100}%;width:${b[2] / s.w * 100}%;height:${b[3] / s.h * 100}%"></i>` : ''}</div>
+            <div class="hv-text hv-cap"></div></div>`;
+        } else {
         const art = s.k === 'title' || s.k === 'end' ? `<div class="hv-icon big">${V.icon}</div>` : s.k === 'item' ? `<div class="hv-art">${s.art}</div>` : s.k === 'step' ? `<div class="hv-num">${s.n}</div>` : `<div class="hv-icon">${V.icon}</div>`;
         stage.innerHTML = `<div class="hv-slide hv-${s.k}">${art}${s.tag ? `<div class="hv-tag">${esc(s.tag)}</div>` : ''}${s.head ? `<div class="hv-head">${esc(s.head)}</div>` : ''}
           ${s.text ? `<div class="hv-text"></div>` : ''}${s.k === 'end' ? `<button class="btn-game btn-amber px-10 py-4 text-xl hv-play">▶ ${esc(s.play)}</button>` : ''}</div>`;
-        if (s.k === 'end') { stage.querySelector('.hv-play').onclick = () => { const id = V.id; stop(); const g = document.getElementById('guide-modal'); if (g) g.classList.add('hidden'); if (GAME_MODS[id]) openGame(id); else openSetup(id); }; }
+        }
+        if (s.k === 'end') { stage.querySelector('.hv-play').onclick = () => { const id = V.id, inGame = V.inGame; stop(); const g = document.getElementById('guide-modal'); if (g) g.classList.add('hidden'); if (inGame) return; if (id === 'daily') return openDailyWord(true); if (GAME_MODS[id]) openGame(id); else openSetup(id); }; if (V.inGame) stage.querySelector('.hv-play').textContent = V.lang === 'vi' ? '▶ Quay lại ván chơi' : '▶ Back to my game'; }
         // the caption types itself out while the voice reads it
         const tx = stage.querySelector('.hv-text'), words = (s.text || '').split(' ');
         if (tx) { let w = 0; tx.textContent = ''; V.tw = setInterval(() => { if (w >= words.length) return clearInterval(V.tw); tx.textContent += (w ? ' ' : '') + words[w++]; }, Math.max(60, Math.min(180, 2600 / Math.max(1, words.length)))); }
@@ -19109,7 +19333,10 @@
       }
       function playHowTo(id) {
         id = { navalnet: 'naval', wordduel: HOWTO.wordduel ? 'wordduel' : 'daily' }[id] || id;
-        stop(); const d = slidesFor(id); if (!d) return showToast('No guide for this game yet.', 'info');
+        stop();
+        if (web() && !SHOTS && !playHowTo._waiting) { playHowTo._waiting = true; return loadShots().then(() => { playHowTo._waiting = false; playHowTo(id); }); }
+        const d = slidesFor(id); if (!d) return showToast('No guide for this game yet.', 'info');
+        d.inGame = !!document.body.classList.contains('in-game');
         const el = document.createElement('div'); el.className = 'hv'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'How to play video');
         el.innerHTML = `<div class="hv-top"><span class="hv-brand pix">GAMEHUB · ${esc(d.name.toUpperCase())}</span><div class="hv-prog">${d.slides.map(() => '<i></i>').join('')}</div></div>
           <div class="hv-stage"></div>
@@ -19597,6 +19824,7 @@
       'SHARPSHOOTER!': 'XẠ THỦ!', 'SHARPSHOOTER': 'XẠ THỦ', 'SPEED GUESSER!': 'ĐOÁN NHANH!', 'SPEEDY': 'NHANH', 'ARTIST!': 'HỌA SĨ!', 'ARTIST': 'HỌA SĨ', 'MASTER OF DISGUISE!': 'BẬC THẦY NGỤY TRANG!', 'DISGUISE': 'NGỤY TRANG',
       'Three hits in a row': 'Ba phát trúng liên tiếp',
       'Lobby': 'Sảnh', 'Guide': 'Hướng dẫn', 'Log': 'Nhật ký', 'Table': 'Bàn', 'Hand ranks': 'Thứ hạng bài',
+      'Video': 'Video', 'Giờ tới lượt bạn!': 'Giờ tới lượt bạn!',
       'Give a': 'Hãy đưa một', 'one-word hint.': 'gợi ý một từ.', 'new': 'mới',
     };
     window.VI_PAT4 = [

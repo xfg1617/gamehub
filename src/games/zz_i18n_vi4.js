@@ -50,6 +50,7 @@
       'SHARPSHOOTER!': 'XẠ THỦ!', 'SHARPSHOOTER': 'XẠ THỦ', 'SPEED GUESSER!': 'ĐOÁN NHANH!', 'SPEEDY': 'NHANH', 'ARTIST!': 'HỌA SĨ!', 'ARTIST': 'HỌA SĨ', 'MASTER OF DISGUISE!': 'BẬC THẦY NGỤY TRANG!', 'DISGUISE': 'NGỤY TRANG',
       'Three hits in a row': 'Ba phát trúng liên tiếp',
       'Lobby': 'Sảnh', 'Guide': 'Hướng dẫn', 'Log': 'Nhật ký', 'Table': 'Bàn', 'Hand ranks': 'Thứ hạng bài',
+      'Video': 'Video', 'Giờ tới lượt bạn!': 'Giờ tới lượt bạn!',
       'Give a': 'Hãy đưa một', 'one-word hint.': 'gợi ý một từ.', 'new': 'mới',
     };
     window.VI_PAT4 = [

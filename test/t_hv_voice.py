@@ -25,7 +25,18 @@ with sync_playwright() as p:
         ok = [g for g in got if g[0] == 200]
         print(f'   {lang}: {len(ok)} recordings loaded, e.g.', ok[0][1].split('/voice/')[1] if ok else '-')
         check(len(ok) >= 1 and all(s == 200 for s, _ in got), f'{lang}: the Uno video loads its recorded voice lines')
+        pg.wait_for_timeout(9000)
+        shot = pg.evaluate("(() => { const i = document.querySelector('.hv-shot img'); return i ? [i.naturalWidth, !!document.querySelector('.hv-focus'), document.querySelector('.hv-cap').textContent.length] : null; })()")
+        print(f'   {lang}: game picture', shot)
+        check(shot and shot[0] > 0 and shot[1], f'{lang}: the video shows a real game picture with the part being explained outlined')
+        pg.screenshot(path=f'test/shots/hv_{lang}.png')
         pg.keyboard.press('Escape'); pg.wait_for_timeout(300)
+    # inside a game: the ▶ Video button in the top bar
+    pg.evaluate("setLang('en'); openGame('poker')"); pg.wait_for_timeout(500)
+    if pg.query_selector('#su-go'): pg.click('#su-go')
+    pg.wait_for_timeout(2000)
+    b = pg.query_selector('#gs-tools .gs-video'); check(b is not None, 'every game has a Video button in its top bar')
+    if b: b.click(); pg.wait_for_timeout(1500); check(pg.query_selector('.hv') is not None, 'it opens the video over the game')
     check(not errs, 'no errors ' + str(errs[:2]))
     br.close()
 srv.shutdown()

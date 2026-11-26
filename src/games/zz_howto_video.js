@@ -6,6 +6,9 @@
        Controls: pause / next / voice on-off / close. playHowTo(id) opens it; the guide has a "▶ Watch" button.
        ========================================================================= */
     (function howtoVideo() {
+      // FNV-1a over the text: the name of its recorded voice file (tools/make_voices.py uses the same)
+      const hvHash = (t) => { let h = 0x811c9dc5; for (let i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return ('0000000' + h.toString(16)).slice(-8); };
+      window.hvHash = hvHash;
       const strip = (h) => { const d = document.createElement('div'); d.innerHTML = String(h || ''); return (d.textContent || '').replace(/\s+/g, ' ').trim(); };
       let V = null;   // the video that is playing
       const voiceOn = () => { try { return localStorage.getItem('ps_hv_voice') !== '0'; } catch (e) { return true; } };
@@ -29,11 +32,12 @@
         return { id, name, icon: GICONS[c.icon] || '', slides: S, lang: vi ? 'vi' : 'en' };
       }
       function stop() {
-        if (!V) return; try { speechSynthesis.cancel(); } catch (e) {} clearTimeout(V.t); clearInterval(V.tw);
+        if (!V) return; try { speechSynthesis.cancel(); } catch (e) {} try { if (V.audio) V.audio.pause(); } catch (e) {} clearTimeout(V.t); clearInterval(V.tw);
         V.el.remove(); document.removeEventListener('keydown', V.key, true); V = null;
       }
       function show(i) {
         if (!V) return; clearTimeout(V.t); clearInterval(V.tw); try { speechSynthesis.cancel(); } catch (e) {}
+        try { if (V.audio) { V.audio.onended = V.audio.onerror = null; V.audio.pause(); } } catch (e) {} V.audio = null;
         V.i = i; const s = V.slides[i], el = V.el;
         if (!s) return stop();
         el.querySelectorAll('.hv-prog i').forEach((b, k) => { b.className = k < i ? 'done' : k === i ? 'on' : ''; });
@@ -48,14 +52,29 @@
         if (V.paused) return;
         const next = () => { if (V && V.i === i && !V.paused) V.t = setTimeout(() => show(i + 1), s.k === 'end' ? 999999 : 700); };
         const fallback = () => { V.t = setTimeout(() => show(i + 1), s.k === 'end' ? 999999 : Math.max(3200, (s.say || '').length * 62)); };
-        if (V.voice && window.speechSynthesis && s.say) {
+        // the recorded voice (Google "Puck", made by tools/make_voices.py) when the site has it; else the device's own voice
+        const deviceVoice = () => {
+          if (!(V && V.i === i)) return;
+          if (!(V.voice && window.speechSynthesis && s.say)) return fallback();
           const u = new SpeechSynthesisUtterance(s.say); const v = pickVoice(V.lang);
           if (v) u.voice = v; u.lang = V.lang === 'vi' ? 'vi-VN' : 'en-US'; u.rate = 1; u.pitch = 1.05;
           if (V.lang === 'vi' && !v) return fallback();   // no Vietnamese voice on this device: captions only
           let started = false; u.onstart = () => { started = true; }; u.onend = next; u.onerror = () => { if (V && V.i === i) fallback(); };
           speechSynthesis.speak(u);
           setTimeout(() => { if (V && V.i === i && !started && !speechSynthesis.speaking) fallback(); }, 1500);   // some browsers stay silent
-        } else fallback();
+        };
+        if (V.voice && s.say && /^https?:$/.test(location.protocol)) {
+          const a = new Audio(`/voice/${V.lang}/${hvHash(s.say)}.mp3`); V.audio = a;
+          let ok = false;
+          a.onplaying = () => { ok = true; };
+          a.onended = next;
+          a.onerror = () => { if (V && V.i === i && !ok) deviceVoice(); };
+          const pl = a.play(); if (pl && pl.catch) pl.catch(() => { if (V && V.i === i && !ok) deviceVoice(); });
+          // get the next line ready so there is no gap
+          const n = V.slides[i + 1]; if (n && n.say) { const pre = new Audio(`/voice/${V.lang}/${hvHash(n.say)}.mp3`); pre.preload = 'auto'; }
+          return;
+        }
+        deviceVoice();
       }
       function playHowTo(id) {
         id = { navalnet: 'naval', wordduel: HOWTO.wordduel ? 'wordduel' : 'daily' }[id] || id;
@@ -70,7 +89,7 @@
         el.querySelector('[data-hv="x"]').onclick = stop;
         el.querySelector('[data-hv="next"]').onclick = () => show(Math.min(V.slides.length - 1, V.i + 1));
         el.querySelector('[data-hv="prev"]').onclick = () => show(Math.max(0, V.i - 1));
-        el.querySelector('[data-hv="pause"]').onclick = (e) => { V.paused = !V.paused; e.target.textContent = V.paused ? '▶' : '⏸'; if (V.paused) { clearTimeout(V.t); try { speechSynthesis.cancel(); } catch (x) {} } else show(V.i); };
+        el.querySelector('[data-hv="pause"]').onclick = (e) => { V.paused = !V.paused; e.target.textContent = V.paused ? '▶' : '⏸'; if (V.paused) { clearTimeout(V.t); try { speechSynthesis.cancel(); } catch (x) {} try { if (V.audio) V.audio.pause(); } catch (x) {} } else show(V.i); };
         vb.onclick = () => { V.voice = !V.voice; try { localStorage.setItem('ps_hv_voice', V.voice ? '1' : '0'); } catch (e) {} paintV(); show(V.i); };
         V.key = (e) => { if (e.key === 'Escape') { e.stopPropagation(); stop(); } else if (e.key === 'ArrowRight') show(Math.min(V.slides.length - 1, V.i + 1)); else if (e.key === 'ArrowLeft') show(Math.max(0, V.i - 1)); };
         document.addEventListener('keydown', V.key, true);

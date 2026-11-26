@@ -1,0 +1,3566 @@
+[
+{
+"id": "naval",
+"text": "How to play Sea Battle.",
+"hash": "cfdb9f2b",
+"lang": "en"
+},
+{
+"id": "naval",
+"text": "Sink all five of the enemy’s ships before they sink yours.",
+"hash": "6cd496dc",
+"lang": "en"
+},
+{
+"id": "naval",
+"text": "Hide your fleet. Drag each ship onto your grid. Tap a ship to turn it. Ships can’t overlap (and in some games they can’t touch either). Press Ready when you like your layout.",
+"hash": "90fa28f2",
+"lang": "en"
+},
+{
+"id": "naval",
+"text": "Take a shot. On your turn, tap a square on the enemy grid. A hit shows a fire, a miss shows a splash. You have a few seconds per shot, so don’t wait too long!",
+"hash": "023bc793",
+"lang": "en"
+},
+{
+"id": "naval",
+"text": "Hunt the ship down. After a hit, try the squares next to it: ships are straight lines, so the rest of it is up, down, left or right.",
+"hash": "2d2c3de8",
+"lang": "en"
+},
+{
+"id": "naval",
+"text": "Win. When every square of a ship is hit, it sinks. Sink all five to win.",
+"hash": "db9a65c6",
+"lang": "en"
+},
+{
+"id": "naval",
+"text": "Carrier: 5 squares long",
+"hash": "b1022aaa",
+"lang": "en"
+},
+{
+"id": "naval",
+"text": "Battleship: 4 squares",
+"hash": "5200738d",
+"lang": "en"
+},
+{
+"id": "naval",
+"text": "Cruiser: 3 squares",
+"hash": "d9c0c3e3",
+"lang": "en"
+},
+{
+"id": "naval",
+"text": "Submarine: 3 squares",
+"hash": "437ae682",
+"lang": "en"
+},
+{
+"id": "naval",
+"text": "Destroyer: 2 squares, the hardest to find",
+"hash": "b7fa13ae",
+"lang": "en"
+},
+{
+"id": "naval",
+"text": "Shoot in a checkerboard pattern at first: every ship is at least 2 squares long, so you will still find them all with half the shots.",
+"hash": "ffd9cd61",
+"lang": "en"
+},
+{
+"id": "naval",
+"text": "Now you try!",
+"hash": "3c8418a4",
+"lang": "en"
+},
+{
+"id": "daily",
+"text": "How to play Daily Word.",
+"hash": "20ea5a1b",
+"lang": "en"
+},
+{
+"id": "daily",
+"text": "Guess the secret five-letter word in six tries or fewer.",
+"hash": "de3be208",
+"lang": "en"
+},
+{
+"id": "daily",
+"text": "Type a word. Type any real five-letter word and press Enter.",
+"hash": "1a433663",
+"lang": "en"
+},
+{
+"id": "daily",
+"text": "Read the colours. Each letter turns a colour to tell you how close you are (see below).",
+"hash": "0b07ceb6",
+"lang": "en"
+},
+{
+"id": "daily",
+"text": "Use what you learned. Your next guess should use the green letters in the same spots and try the amber letters somewhere new.",
+"hash": "ceafaf59",
+"lang": "en"
+},
+{
+"id": "daily",
+"text": "Come back tomorrow. Everyone gets the same word each day. Solve it every day to grow your streak. \"Practice word\" gives unlimited extra puzzles.",
+"hash": "44d5e826",
+"lang": "en"
+},
+{
+"id": "daily",
+"text": "Green: Right letter, right spot",
+"hash": "50747ff6",
+"lang": "en"
+},
+{
+"id": "daily",
+"text": "Amber: In the word, but somewhere else",
+"hash": "7c376fd3",
+"lang": "en"
+},
+{
+"id": "daily",
+"text": "Grey: Not in the word at all",
+"hash": "73317905",
+"lang": "en"
+},
+{
+"id": "daily",
+"text": "Start with a word that has common letters, like CRANE or SLATE.",
+"hash": "659d5179",
+"lang": "en"
+},
+{
+"id": "wordduel",
+"text": "How to play Word Duel.",
+"hash": "f75054cc",
+"lang": "en"
+},
+{
+"id": "wordduel",
+"text": "Be the first to find the secret five-letter word.",
+"hash": "f8da50bb",
+"lang": "en"
+},
+{
+"id": "wordduel",
+"text": "Same word for everyone. Every player guesses the same secret word on their own board, all at the same time.",
+"hash": "349df0be",
+"lang": "en"
+},
+{
+"id": "wordduel",
+"text": "Read your colours. Just like Daily Word: green = right spot, amber = in the word somewhere else, grey = not in the word.",
+"hash": "c298d538",
+"lang": "en"
+},
+{
+"id": "wordduel",
+"text": "Watch your rivals. On the right you see everyone’s colours (but not their letters), so you know who is close.",
+"hash": "51f3d8c2",
+"lang": "en"
+},
+{
+"id": "wordduel",
+"text": "Win. The first player to get all five letters green wins. Everyone has six guesses.",
+"hash": "4bde0748",
+"lang": "en"
+},
+{
+"id": "wordduel",
+"text": "Amber: In the word, wrong spot",
+"hash": "986e9c09",
+"lang": "en"
+},
+{
+"id": "wordduel",
+"text": "Grey: Not in the word",
+"hash": "a3553d4d",
+"lang": "en"
+},
+{
+"id": "wordduel",
+"text": "Lots of green on a rival’s board? Take a risky guess instead of a safe one!",
+"hash": "d4132047",
+"lang": "en"
+},
+{
+"id": "c4",
+"text": "How to play Four-in-a-Row.",
+"hash": "90d5e46f",
+"lang": "en"
+},
+{
+"id": "c4",
+"text": "Get four of your discs in a line: across, up and down, or diagonally.",
+"hash": "5ba4bd75",
+"lang": "en"
+},
+{
+"id": "c4",
+"text": "Drop a disc. On your turn, tap a column. Your disc falls to the lowest empty space.",
+"hash": "f248241a",
+"lang": "en"
+},
+{
+"id": "c4",
+"text": "Take turns. Players take turns dropping one disc each. Watch the timer.",
+"hash": "cdab8127",
+"lang": "en"
+},
+{
+"id": "c4",
+"text": "Block!. If your opponent has three in a row with an empty space next to it, drop a disc there to stop them.",
+"hash": "f13a401f",
+"lang": "en"
+},
+{
+"id": "c4",
+"text": "Win. Four in a row wins. If the board fills up first, it is a draw.",
+"hash": "175bb955",
+"lang": "en"
+},
+{
+"id": "c4",
+"text": "Amber disc: The first player",
+"hash": "46720d71",
+"lang": "en"
+},
+{
+"id": "c4",
+"text": "Coral disc: The second player",
+"hash": "f18751b1",
+"lang": "en"
+},
+{
+"id": "c4",
+"text": "The middle column is the strongest. More lines of four go through it than any other column.",
+"hash": "de9f5019",
+"lang": "en"
+},
+{
+"id": "tictactoe",
+"text": "How to play Tic-Tac-Toe.",
+"hash": "be8478ce",
+"lang": "en"
+},
+{
+"id": "tictactoe",
+"text": "Get three of your marks in a row.",
+"hash": "5e179edb",
+"lang": "en"
+},
+{
+"id": "tictactoe",
+"text": "Place your mark. Tap an empty square. X goes first in the first game.",
+"hash": "45c10bf6",
+"lang": "en"
+},
+{
+"id": "tictactoe",
+"text": "Take turns. Players take turns, one mark each.",
+"hash": "1dc2bc91",
+"lang": "en"
+},
+{
+"id": "tictactoe",
+"text": "Win a game. Three in a row across, down or diagonally wins the game. A full board with no line is a draw.",
+"hash": "3bb96002",
+"lang": "en"
+},
+{
+"id": "tictactoe",
+"text": "Win the match. In a \"best of 3\" or \"best of 5\", the first to win most of the games wins the match. Players take turns starting.",
+"hash": "93895250",
+"lang": "en"
+},
+{
+"id": "tictactoe",
+"text": "X: Coral",
+"hash": "e783eeb2",
+"lang": "en"
+},
+{
+"id": "tictactoe",
+"text": "O: Teal",
+"hash": "87f96eb2",
+"lang": "en"
+},
+{
+"id": "tictactoe",
+"text": "Take the centre if you can. If your opponent takes it, take a corner.",
+"hash": "be5d2b01",
+"lang": "en"
+},
+{
+"id": "hedge",
+"text": "How to play Wall Maze.",
+"hash": "bf0bd5af",
+"lang": "en"
+},
+{
+"id": "hedge",
+"text": "Be the first to get your pawn to the other side of the garden.",
+"hash": "fb04e4f5",
+"lang": "en"
+},
+{
+"id": "hedge",
+"text": "Take a step. On your turn, tap one of the glowing squares to move there: up, down, left or right.",
+"hash": "84be1cef",
+"lang": "en"
+},
+{
+"id": "hedge",
+"text": "Or plant a hedge. Tap a gap between two squares. On a computer the hedge shows as you point at a gap, and one click plants it; on a phone, tap once to see it and again to plant. A gap along a row makes a flat hedge, a gap along a column a standing one.",
+"hash": "beb5e853",
+"lang": "en"
+},
+{
+"id": "hedge",
+"text": "Hedges block the way. Nobody can walk through a hedge, so it makes rivals walk around. But you can never shut someone in completely: there must always be a way through.",
+"hash": "a890073d",
+"lang": "en"
+},
+{
+"id": "hedge",
+"text": "Jumping. If another pawn is right next to you, you can jump over it. If there is a hedge behind it, step to the side of it instead.",
+"hash": "a99c99d9",
+"lang": "en"
+},
+{
+"id": "hedge",
+"text": "Hedge: 2 squares long. You have 10 (5 with 4 players)",
+"hash": "744c2acc",
+"lang": "en"
+},
+{
+"id": "hedge",
+"text": "Glowing square: Where you can move now",
+"hash": "af0eb3ca",
+"lang": "en"
+},
+{
+"id": "hedge",
+"text": "Coloured edge: The side each player is racing to",
+"hash": "58591552",
+"lang": "en"
+},
+{
+"id": "hedge",
+"text": "The panel shows how many steps everyone still needs. Save your hedges for when a rival is close to the finish.",
+"hash": "5bce320b",
+"lang": "en"
+},
+{
+"id": "random",
+"text": "How to play Random Game.",
+"hash": "fea91ca3",
+"lang": "en"
+},
+{
+"id": "random",
+"text": "Score the most points over a session of random games.",
+"hash": "ec16a468",
+"lang": "en"
+},
+{
+"id": "random",
+"text": "Meet up. Open a private room and send the link to your friends, or join an online match. The host can add computer players to fill seats.",
+"hash": "20fb1052",
+"lang": "en"
+},
+{
+"id": "random",
+"text": "Choose the session. Quickie is 1 game, or play 3 or 5 games in a row. You can keep it to card games, board games or party games.",
+"hash": "f6709e4a",
+"lang": "en"
+},
+{
+"id": "random",
+"text": "Surprise!. When the host presses Start, a random game is picked that fits everyone. A box shows how it is set up before it begins.",
+"hash": "5a554eed",
+"lang": "en"
+},
+{
+"id": "random",
+"text": "Points add up. Every game gives points: 1st 10, 2nd 6, 3rd 3, everyone else 1. After each game you see the standings, then the next game starts.",
+"hash": "001614fb",
+"lang": "en"
+},
+{
+"id": "random",
+"text": "The champion. After the last game, the player with the most points is the champion. Press New session to go again.",
+"hash": "292180cf",
+"lang": "en"
+},
+{
+"id": "random",
+"text": "Not sure how a game works? Every game has its own guide and video, one tap away in its top bar.",
+"hash": "a72c3e70",
+"lang": "en"
+},
+{
+"id": "fibber",
+"text": "How to play Bullshit.",
+"hash": "45dcee5b",
+"lang": "en"
+},
+{
+"id": "fibber",
+"text": "Be the first to get rid of all your cards. The others play on for 2nd, 3rd... until one player is left holding cards.",
+"hash": "dedbacf6",
+"lang": "en"
+},
+{
+"id": "fibber",
+"text": "A new rank every turn. Every turn has a rank, picked at random (never the same one twice in a row). The middle of the table shows which rank it is now.",
+"hash": "601a3373",
+"lang": "en"
+},
+{
+"id": "fibber",
+"text": "Put cards down. On your turn, tap 1 to 4 of your cards and press Put down. They go face down and you say they are that rank. Don’t have any? Bluff!",
+"hash": "7da4e133",
+"lang": "en"
+},
+{
+"id": "fibber",
+"text": "BULLSHIT!. After each play, everyone has a few seconds to press BULLSHIT! if they think it was a lie. The cards are turned over.",
+"hash": "b7929df5",
+"lang": "en"
+},
+{
+"id": "fibber",
+"text": "Who picks up. If any card was wrong, the player who lied picks up the whole pile. If they were all true, the person who shouted picks it up. Get rid of your last card (without being caught) to win.",
+"hash": "2d2f1eb1",
+"lang": "en"
+},
+{
+"id": "fibber",
+"text": "A true card: Matches the rank everyone is on",
+"hash": "c7397d38",
+"lang": "en"
+},
+{
+"id": "fibber",
+"text": "A lie: Any other card played as that rank",
+"hash": "6234983a",
+"lang": "en"
+},
+{
+"id": "fibber",
+"text": "Shout: Turn the last cards over",
+"hash": "ca16ea0b",
+"lang": "en"
+},
+{
+"id": "fibber",
+"text": "There are only four of each rank. If you hold three Sevens and someone says \"two Sevens\", they must be bluffing.",
+"hash": "b7c4b336",
+"lang": "en"
+},
+{
+"id": "tunnel",
+"text": "How to play Mine Saboteurs.",
+"hash": "81727a47",
+"lang": "en"
+},
+{
+"id": "tunnel",
+"text": "Diggers: dig a tunnel from the entrance to the gold. Rascals: secretly stop them.",
+"hash": "646828de",
+"lang": "en"
+},
+{
+"id": "tunnel",
+"text": "Find out your team. At the start, a banner tells you if you are a Digger or a Rascal. Nobody else can see it.",
+"hash": "e8b11363",
+"lang": "en"
+},
+{
+"id": "tunnel",
+"text": "Play a card. On your turn, tap a card in your hand. A tunnel piece goes on a glowing square (↻ turns it around). It must fit the pieces next to it and join the tunnel.",
+"hash": "df90b969",
+"lang": "en"
+},
+{
+"id": "tunnel",
+"text": "Action cards. Break a player’s pick or lamp (they can’t dig until it’s fixed), fix one, use a treasure map to secretly look under one of the three goal stones, or cause a cave-in to remove a tunnel piece.",
+"hash": "75f4103c",
+"lang": "en"
+},
+{
+"id": "tunnel",
+"text": "Broken pick or lamp?. You can’t dig with a broken tool. Play a Fix card (the same tool with a green ✓): tap it, then tap yourself. A friend can also fix it for you. Your Fix cards glow while you need one.",
+"hash": "935fe273",
+"lang": "en"
+},
+{
+"id": "tunnel",
+"text": "Can’t help? Throw one away. Press 🗑 Throw away. You always draw a new card after your turn while the deck lasts.",
+"hash": "2d8b3bc2",
+"lang": "en"
+},
+{
+"id": "tunnel",
+"text": "Who wins. When the tunnel reaches the gold, the Diggers win. If everyone runs out of cards first, the Rascals win.",
+"hash": "a887166d",
+"lang": "en"
+},
+{
+"id": "tunnel",
+"text": "Tunnel: Join it to the tunnel",
+"hash": "af036cee",
+"lang": "en"
+},
+{
+"id": "tunnel",
+"text": "Dead end: The tunnel stops here",
+"hash": "96f220ac",
+"lang": "en"
+},
+{
+"id": "tunnel",
+"text": "Break: Stops someone digging",
+"hash": "976e668c",
+"lang": "en"
+},
+{
+"id": "tunnel",
+"text": "Fix: Mends a broken tool",
+"hash": "42522601",
+"lang": "en"
+},
+{
+"id": "tunnel",
+"text": "Map: Peek under a stone",
+"hash": "e689c880",
+"lang": "en"
+},
+{
+"id": "tunnel",
+"text": "Watch who plays dead ends and who breaks tools. That is probably a Rascal!",
+"hash": "ce96adcf",
+"lang": "en"
+},
+{
+"id": "guild",
+"text": "How to play Castles & Kings.",
+"hash": "0ddc3f7f",
+"lang": "en"
+},
+{
+"id": "guild",
+"text": "Build the town worth the most points.",
+"hash": "e1f854d5",
+"lang": "en"
+},
+{
+"id": "guild",
+"text": "Pick a character. Each round, everyone secretly picks one character. The player with the crown 👑 picks first, so the best ones may be gone by your turn.",
+"hash": "657f2168",
+"lang": "en"
+},
+{
+"id": "guild",
+"text": "Turns go by number. Character 1 plays first, then 2, and so on. On your turn, take 2 gold or look at 2 building cards and keep 1.",
+"hash": "e617b786",
+"lang": "en"
+},
+{
+"id": "guild",
+"text": "Build. Tap a building card you can afford, then press Build. You can’t build two of the same. The Architect can build up to 3.",
+"hash": "a5d5db97",
+"lang": "en"
+},
+{
+"id": "guild",
+"text": "Use your power. Each character has a power (see below). The Shadow and the Pickpocket name a character by number, without knowing who has it!",
+"hash": "de558935",
+"lang": "en"
+},
+{
+"id": "guild",
+"text": "Why was my turn skipped?. If the Shadow named your character, you miss your whole turn. If the Pickpocket named it, all your gold goes to the Pickpocket when your turn starts. The Captain can knock down one of your buildings by paying its cost minus 1.",
+"hash": "c22fe29b",
+"lang": "en"
+},
+{
+"id": "guild",
+"text": "Gold from colours. The Monarch (gold), Abbot (blue), Merchant (green) and Captain (red) earn 1 gold for every building of their colour in their town.",
+"hash": "dd9e94f3",
+"lang": "en"
+},
+{
+"id": "guild",
+"text": "The end. When someone has the target number of buildings, the round is finished. Points: each building’s cost, +3 for all five colours, +4 for finishing first (+2 for the others who finish), +2 for each wonder.",
+"hash": "86a0b176",
+"lang": "en"
+},
+{
+"id": "guild",
+"text": "Shadow: Name a character: they miss their whole turn this round.",
+"hash": "54ead8d0",
+"lang": "en"
+},
+{
+"id": "guild",
+"text": "Pickpocket: Name a character: when their turn starts, you take all their gold.",
+"hash": "53ff7e18",
+"lang": "en"
+},
+{
+"id": "guild",
+"text": "Trader: Draw 2 extra building cards.",
+"hash": "dc55d1ca",
+"lang": "en"
+},
+{
+"id": "guild",
+"text": "Monarch: Take the crown (pick first next round). +1 gold for each royal building.",
+"hash": "62ac779a",
+"lang": "en"
+},
+{
+"id": "guild",
+"text": "Abbot: +1 gold for each faith building. The Captain can’t touch your town.",
+"hash": "76505587",
+"lang": "en"
+},
+{
+"id": "guild",
+"text": "Merchant: +1 gold, and +1 for each trade building.",
+"hash": "7cbe1968",
+"lang": "en"
+},
+{
+"id": "guild",
+"text": "Architect: Draw 2 extra cards and build up to 3 buildings.",
+"hash": "7e9d5bbe",
+"lang": "en"
+},
+{
+"id": "guild",
+"text": "Captain: +1 gold for each guard building. Pay 1 less than its cost to knock down a building.",
+"hash": "0495e0e6",
+"lang": "en"
+},
+{
+"id": "guild",
+"text": "Try to collect buildings in your character’s colour: the Monarch, Abbot, Merchant and Captain earn a gold for each one.",
+"hash": "3932a7b8",
+"lang": "en"
+},
+{
+"id": "chess",
+"text": "How to play Chess.",
+"hash": "046024b2",
+"lang": "en"
+},
+{
+"id": "chess",
+"text": "Trap the other king so it cannot escape. That is checkmate.",
+"hash": "2b40a501",
+"lang": "en"
+},
+{
+"id": "chess",
+"text": "Move a piece. Tap one of your pieces, then a highlighted square. White moves first.",
+"hash": "4131394e",
+"lang": "en"
+},
+{
+"id": "chess",
+"text": "Capture. Move onto an enemy piece to take it off the board.",
+"hash": "f757dc40",
+"lang": "en"
+},
+{
+"id": "chess",
+"text": "Check. If your king is attacked, you must get it out of danger on your next move.",
+"hash": "46adaab6",
+"lang": "en"
+},
+{
+"id": "chess",
+"text": "Special moves. Castling: king and rook swap sides in one move. Promotion: a pawn that reaches the far side becomes a queen (or another piece). En passant: a special pawn capture.",
+"hash": "b810823b",
+"lang": "en"
+},
+{
+"id": "chess",
+"text": "Win or draw. Checkmate wins. If a player has no legal move but is not in check, it is a draw (stalemate).",
+"hash": "9eaf807a",
+"lang": "en"
+},
+{
+"id": "chess",
+"text": "King: One square any way. Protect it!",
+"hash": "2ceed523",
+"lang": "en"
+},
+{
+"id": "chess",
+"text": "Queen: Any distance, any direction",
+"hash": "33931f6d",
+"lang": "en"
+},
+{
+"id": "chess",
+"text": "Rook: Straight lines",
+"hash": "ee13506f",
+"lang": "en"
+},
+{
+"id": "chess",
+"text": "Bishop: Diagonals",
+"hash": "cfc2353a",
+"lang": "en"
+},
+{
+"id": "chess",
+"text": "Knight: An L shape. Can jump over pieces",
+"hash": "0dc88861",
+"lang": "en"
+},
+{
+"id": "chess",
+"text": "Pawn: Forward one (two on its first move), takes diagonally",
+"hash": "bd261079",
+"lang": "en"
+},
+{
+"id": "chess",
+"text": "Get your knights and bishops out early, and castle to keep your king safe.",
+"hash": "fa3a0a8e",
+"lang": "en"
+},
+{
+"id": "checkers",
+"text": "How to play Checkers.",
+"hash": "82b616f6",
+"lang": "en"
+},
+{
+"id": "checkers",
+"text": "Capture all your opponent’s pieces, or leave them with no moves.",
+"hash": "1f79a0ac",
+"lang": "en"
+},
+{
+"id": "checkers",
+"text": "Move. Pieces move one square diagonally forward, onto dark squares. Tap a piece, then a highlighted square.",
+"hash": "b2c73ff2",
+"lang": "en"
+},
+{
+"id": "checkers",
+"text": "Jump. Hop over an enemy piece into the empty square behind it to capture it. If you can capture, you must.",
+"hash": "7b9ab079",
+"lang": "en"
+},
+{
+"id": "checkers",
+"text": "Keep jumping. If another jump is possible after landing, keep going in the same turn.",
+"hash": "2c7e5356",
+"lang": "en"
+},
+{
+"id": "checkers",
+"text": "King me. Reach the far row and your piece becomes a king, which can move backwards too.",
+"hash": "9a1872d9",
+"lang": "en"
+},
+{
+"id": "checkers",
+"text": "Your piece: Moves diagonally forward",
+"hash": "046e1dd1",
+"lang": "en"
+},
+{
+"id": "checkers",
+"text": "King: Moves forward and backward",
+"hash": "a50780ef",
+"lang": "en"
+},
+{
+"id": "checkers",
+"text": "Opponent: Jump over these to capture",
+"hash": "e6d71c2e",
+"lang": "en"
+},
+{
+"id": "checkers",
+"text": "Keep your back row filled as long as you can. It stops the other side from getting kings.",
+"hash": "36c01167",
+"lang": "en"
+},
+{
+"id": "pool",
+"text": "How to play Pool.",
+"hash": "6a1a6c08",
+"lang": "en"
+},
+{
+"id": "pool",
+"text": "Sink all your balls (solids or stripes), then sink the 8-ball.",
+"hash": "78c83069",
+"lang": "en"
+},
+{
+"id": "pool",
+"text": "Aim. Hold the table and drag to swing your aim. The dotted circle shows where your cue ball will hit, and the short arrows show where the balls will head.",
+"hash": "1e573a11",
+"lang": "en"
+},
+{
+"id": "pool",
+"text": "Power. Pull the power bar back to the left and let go to shoot. A longer pull hits harder.",
+"hash": "9979acdd",
+"lang": "en"
+},
+{
+"id": "pool",
+"text": "Spin (optional). Tap the small cue-ball picture to hit it high (follows through), low (comes back) or on the side (curves off cushions).",
+"hash": "e7efff9c",
+"lang": "en"
+},
+{
+"id": "pool",
+"text": "Solids or stripes. The first ball you sink after the break decides your group. Sink one of yours and you shoot again.",
+"hash": "5465c1dc",
+"lang": "en"
+},
+{
+"id": "pool",
+"text": "Fouls. Sinking the white ball, hitting the wrong ball first, or no ball touching a cushion is a foul. Your opponent then gets \"ball in hand\" and can place the white anywhere.",
+"hash": "0794d0eb",
+"lang": "en"
+},
+{
+"id": "pool",
+"text": "Win. Once your group is gone, sink the 8-ball. Sinking it too early loses the game!",
+"hash": "00986570",
+"lang": "en"
+},
+{
+"id": "pool",
+"text": "Cue ball: The white one you hit",
+"hash": "e730324d",
+"lang": "en"
+},
+{
+"id": "pool",
+"text": "Solids 1-7: One full colour",
+"hash": "50223f1f",
+"lang": "en"
+},
+{
+"id": "pool",
+"text": "Stripes 9-15: A coloured band",
+"hash": "507e56f8",
+"lang": "en"
+},
+{
+"id": "pool",
+"text": "8-ball: Last!",
+"hash": "c5869d40",
+"lang": "en"
+},
+{
+"id": "pool",
+"text": "Don’t hit every shot hard. A softer shot keeps the white ball under control for your next turn.",
+"hash": "2a53e23a",
+"lang": "en"
+},
+{
+"id": "bowling",
+"text": "How to play Bowling.",
+"hash": "032d6642",
+"lang": "en"
+},
+{
+"id": "bowling",
+"text": "Knock down as many pins as you can in 10 frames.",
+"hash": "bc7e696b",
+"lang": "en"
+},
+{
+"id": "bowling",
+"text": "Grab the ball. Press on the ball and hold it. Slide left or right low on the screen to choose where you stand.",
+"hash": "a294f6af",
+"lang": "en"
+},
+{
+"id": "bowling",
+"text": "Throw. Flick upward and let go. A faster flick throws faster but is harder to aim.",
+"hash": "7da975bf",
+"lang": "en"
+},
+{
+"id": "bowling",
+"text": "Add spin. Curve the end of your flick and the ball will hook as it reaches the pins.",
+"hash": "6b22ccf3",
+"lang": "en"
+},
+{
+"id": "bowling",
+"text": "Frames. You get two throws per frame to knock down all ten pins.",
+"hash": "b38902bc",
+"lang": "en"
+},
+{
+"id": "bowling",
+"text": "Scoring. Strike (X): all ten on the first throw, worth 10 plus your next two throws. Spare (/): all ten in two throws, worth 10 plus your next throw.",
+"hash": "d15b55e1",
+"lang": "en"
+},
+{
+"id": "bowling",
+"text": "Strike: All 10 pins, first throw",
+"hash": "1b0a7ecf",
+"lang": "en"
+},
+{
+"id": "bowling",
+"text": "Spare: All 10 pins, two throws",
+"hash": "a12446b5",
+"lang": "en"
+},
+{
+"id": "bowling",
+"text": "Miss: No pins",
+"hash": "1fae3534",
+"lang": "en"
+},
+{
+"id": "bowling",
+"text": "Aim just to the side of the front pin (the \"pocket\") with a little hook for the best chance of a strike.",
+"hash": "3cd68121",
+"lang": "en"
+},
+{
+"id": "poker",
+"text": "How to play Poker.",
+"hash": "c7a9c869",
+"lang": "en"
+},
+{
+"id": "poker",
+"text": "Win everyone’s chips. The last player with chips wins.",
+"hash": "c625fbd5",
+"lang": "en"
+},
+{
+"id": "poker",
+"text": "Your cards. You get two private cards. Five shared cards come out in the middle: three (the flop), then one (the turn), then one (the river).",
+"hash": "3cd34ed3",
+"lang": "en"
+},
+{
+"id": "poker",
+"text": "Betting. On your turn: Fold (give up the hand), Check/Call (stay in by matching the bet) or Raise (bet more).",
+"hash": "50cc71db",
+"lang": "en"
+},
+{
+"id": "poker",
+"text": "Showdown. If more than one player is left at the end, the best five-card hand made from your two cards and the five shared ones wins the pot.",
+"hash": "ea7646ef",
+"lang": "en"
+},
+{
+"id": "poker",
+"text": "Blinds. Two players must put in a small bet each hand (the blinds). They grow over time so the game always ends.",
+"hash": "4671729b",
+"lang": "en"
+},
+{
+"id": "poker",
+"text": "Your two cards: Only you can see them",
+"hash": "00e9cf59",
+"lang": "en"
+},
+{
+"id": "poker",
+"text": "Chips: What you bet with",
+"hash": "1853b3d4",
+"lang": "en"
+},
+{
+"id": "poker",
+"text": "You don’t have to play every hand. Folding weak cards early saves chips for the good ones.",
+"hash": "75b3466b",
+"lang": "en"
+},
+{
+"id": "blackjack",
+"text": "How to play Blackjack.",
+"hash": "477405a6",
+"lang": "en"
+},
+{
+"id": "blackjack",
+"text": "Beat the dealer by getting closer to 21 without going over.",
+"hash": "59f8cb62",
+"lang": "en"
+},
+{
+"id": "blackjack",
+"text": "Bet. Tap chips to make your bet, then deal.",
+"hash": "b73346a0",
+"lang": "en"
+},
+{
+"id": "blackjack",
+"text": "Card values. Number cards count as their number, J Q K count as 10, and an Ace is 1 or 11 (whichever helps).",
+"hash": "41cece46",
+"lang": "en"
+},
+{
+"id": "blackjack",
+"text": "Your turn. Hit to take another card, Stand to stop, Double to double your bet for exactly one more card. Two cards that match can be Split into two hands (not online).",
+"hash": "1f3597c4",
+"lang": "en"
+},
+{
+"id": "blackjack",
+"text": "Dealer’s turn. The dealer keeps drawing until reaching 17 or more.",
+"hash": "40be4b0e",
+"lang": "en"
+},
+{
+"id": "blackjack",
+"text": "Results. Closer to 21 than the dealer wins your bet back doubled. Over 21 is a bust and loses. An Ace + a 10 card on the first two cards is a blackjack and pays 3 to 2.",
+"hash": "70862fc3",
+"lang": "en"
+},
+{
+"id": "blackjack",
+"text": "Blackjack!: Ace + a 10-value card",
+"hash": "181b9430",
+"lang": "en"
+},
+{
+"id": "blackjack",
+"text": "16: A tough hand: hit or stand?",
+"hash": "5a7fd1fa",
+"lang": "en"
+},
+{
+"id": "blackjack",
+"text": "Chips: Your bet",
+"hash": "f6b8d7ea",
+"lang": "en"
+},
+{
+"id": "blackjack",
+"text": "Always stand on 17 or more. Double on 11 when the dealer shows a small card.",
+"hash": "25ee9859",
+"lang": "en"
+},
+{
+"id": "kittens",
+"text": "How to play Kaboom Cats.",
+"hash": "f59eef0a",
+"lang": "en"
+},
+{
+"id": "kittens",
+"text": "Don’t get stuck with the Hot Potato. The last cat standing wins!",
+"hash": "ac9153c3",
+"lang": "en"
+},
+{
+"id": "kittens",
+"text": "Your turn. Play as many cards from your hand as you like (or none), then draw one card from the pile to end your turn.",
+"hash": "c0e0d067",
+"lang": "en"
+},
+{
+"id": "kittens",
+"text": "The Hot Potato. Hot Potatoes are hidden in the pile. Draw one and you are out, unless you have an Oven Mitt.",
+"hash": "7421be52",
+"lang": "en"
+},
+{
+"id": "kittens",
+"text": "Saved!. With an Oven Mitt you survive, and you secretly slide the Hot Potato back into the pile anywhere you like: right on top for the next player, or deep down.",
+"hash": "fa2e2a64",
+"lang": "en"
+},
+{
+"id": "kittens",
+"text": "Skip & Attack. Skip ends your turn without drawing. Attack does too, and the next player has to take 2 turns in a row.",
+"hash": "ae299732",
+"lang": "en"
+},
+{
+"id": "kittens",
+"text": "Peek, Shuffle, Favor. Peek shows the top 3 cards. Shuffle mixes the pile. Favor makes a player give you a card of their choice.",
+"hash": "c472baca",
+"lang": "en"
+},
+{
+"id": "kittens",
+"text": "No Way!. Anyone can play No Way at any time to stop a card. You can even No Way a No Way!",
+"hash": "cd82bd2d",
+"lang": "en"
+},
+{
+"id": "kittens",
+"text": "Cat combos. Cat cards do nothing alone. A pair: pick one of a player’s face-down cards. Three of a kind: name a card, and if they have it they must hand it over. Five different cats: take any card from the discard pile.",
+"hash": "a7a1dfac",
+"lang": "en"
+},
+{
+"id": "kittens",
+"text": "Hot Potato: Draw it and you are out",
+"hash": "56f8eb10",
+"lang": "en"
+},
+{
+"id": "kittens",
+"text": "Oven Mitt: Saves you once",
+"hash": "6f00b963",
+"lang": "en"
+},
+{
+"id": "kittens",
+"text": "No Way: Stop any card",
+"hash": "d5286179",
+"lang": "en"
+},
+{
+"id": "kittens",
+"text": "Peek: See the top 3 cards",
+"hash": "77847edd",
+"lang": "en"
+},
+{
+"id": "kittens",
+"text": "Skip: End your turn without drawing",
+"hash": "897709a5",
+"lang": "en"
+},
+{
+"id": "kittens",
+"text": "Attack: Next player takes 2 turns",
+"hash": "84bea3d9",
+"lang": "en"
+},
+{
+"id": "kittens",
+"text": "Favor: They give you a card",
+"hash": "c40af8c2",
+"lang": "en"
+},
+{
+"id": "kittens",
+"text": "Cat cards: Pairs, threes, five different",
+"hash": "01138b73",
+"lang": "en"
+},
+{
+"id": "kittens",
+"text": "Peek before you draw. If the Hot Potato is next, play Skip or Attack so you don’t have to draw it. Save your Oven Mitt: when someone asks with three cats, they usually name it!",
+"hash": "7d933d11",
+"lang": "en"
+},
+{
+"id": "colorclash",
+"text": "How to play Uno.",
+"hash": "80b12da6",
+"lang": "en"
+},
+{
+"id": "colorclash",
+"text": "Be the first to play all of your cards. The others play on for 2nd, 3rd and 4th place until one player is left holding cards.",
+"hash": "bb2ecff3",
+"lang": "en"
+},
+{
+"id": "colorclash",
+"text": "Match. Play a card that matches the top card by colour or by number/symbol.",
+"hash": "01498202",
+"lang": "en"
+},
+{
+"id": "colorclash",
+"text": "Can’t play?. Draw a card from the pile. If it fits, you can play it right away.",
+"hash": "0cacb377",
+"lang": "en"
+},
+{
+"id": "colorclash",
+"text": "Special cards. Some cards skip a player, reverse the direction, or make the next player draw (see below).",
+"hash": "b6840b8c",
+"lang": "en"
+},
+{
+"id": "colorclash",
+"text": "Say CLASH!. When you are down to one card, press the CLASH! button quickly. Forget and you draw 2. Catch someone else who forgot and they draw 2!",
+"hash": "8c77f7e2",
+"lang": "en"
+},
+{
+"id": "colorclash",
+"text": "Number: Match colour or number",
+"hash": "525824ab",
+"lang": "en"
+},
+{
+"id": "colorclash",
+"text": "Skip: Next player misses a turn",
+"hash": "3abc89f0",
+"lang": "en"
+},
+{
+"id": "colorclash",
+"text": "Reverse: Turn order flips",
+"hash": "41ee243c",
+"lang": "en"
+},
+{
+"id": "colorclash",
+"text": "+2: Next player draws 2",
+"hash": "7ccacb19",
+"lang": "en"
+},
+{
+"id": "colorclash",
+"text": "Wild: Pick any colour",
+"hash": "351f94d4",
+"lang": "en"
+},
+{
+"id": "colorclash",
+"text": "Wild +4: Pick a colour, next draws 4",
+"hash": "b5ccd702",
+"lang": "en"
+},
+{
+"id": "colorclash",
+"text": "Each colour also has a symbol (★ ◆ ♥ ♣), so you can tell them apart without colours.",
+"hash": "b2fd5ae9",
+"lang": "en"
+},
+{
+"id": "dominoes",
+"text": "How to play Dominoes.",
+"hash": "80a52612",
+"lang": "en"
+},
+{
+"id": "dominoes",
+"text": "Get rid of all your tiles first and score the dots left in your rivals’ hands.",
+"hash": "4d4c044b",
+"lang": "en"
+},
+{
+"id": "dominoes",
+"text": "Match an end. On your turn, play a tile whose number matches one of the two open ends of the line.",
+"hash": "34e9694c",
+"lang": "en"
+},
+{
+"id": "dominoes",
+"text": "Doubles. Tiles with the same number on both halves are laid crosswise.",
+"hash": "3092877b",
+"lang": "en"
+},
+{
+"id": "dominoes",
+"text": "Stuck?. In a Draw game you take tiles from the boneyard until one fits. In a Block game you just pass.",
+"hash": "02758179",
+"lang": "en"
+},
+{
+"id": "dominoes",
+"text": "Scoring. Go out first and score all the dots left in the other hands. If nobody can play, the lowest hand wins the difference.",
+"hash": "70db3485",
+"lang": "en"
+},
+{
+"id": "dominoes",
+"text": "3 | 5: Fits next to a 3 or a 5",
+"hash": "127b889c",
+"lang": "en"
+},
+{
+"id": "dominoes",
+"text": "Double six: The highest double starts the first round",
+"hash": "42563f72",
+"lang": "en"
+},
+{
+"id": "dominoes",
+"text": "Blank | 4: Blank is zero",
+"hash": "f715b5c1",
+"lang": "en"
+},
+{
+"id": "dominoes",
+"text": "Play your big tiles early so you are not caught holding them.",
+"hash": "13feaf93",
+"lang": "en"
+},
+{
+"id": "tycoon",
+"text": "How to play Landlord.",
+"hash": "06412724",
+"lang": "en"
+},
+{
+"id": "tycoon",
+"text": "Be the richest player when the rounds run out (Short, Medium or Long game) or the last one not bankrupt (Classic).",
+"hash": "7da1bd4d",
+"lang": "en"
+},
+{
+"id": "tycoon",
+"text": "Roll. Hold the roll button to shake the dice and let go to throw. Move that many squares.",
+"hash": "014ffa66",
+"lang": "en"
+},
+{
+"id": "tycoon",
+"text": "Buy. Land on a property nobody owns and you can buy it. Skip it and it goes to auction for everyone.",
+"hash": "2991a8c4",
+"lang": "en"
+},
+{
+"id": "tycoon",
+"text": "Rent. Land on someone else’s property and you pay them rent. Own a whole colour set to double the rent.",
+"hash": "df75b471",
+"lang": "en"
+},
+{
+"id": "tycoon",
+"text": "Build. With a full colour set, build houses (and then a hotel) to charge much more rent. (Room setting: or build one house each time you land on your own plot.)",
+"hash": "b7dd5e16",
+"lang": "en"
+},
+{
+"id": "tycoon",
+"text": "Buy out (setting). If the room turns it on: after paying rent you may make the owner an offer for that plot (at least what it is worth: land + houses). The owner can sell, refuse, or ask for more; then you pay that price or walk away. Not a plot with a hotel, and not one from a full colour set.",
+"hash": "5f1d44a8",
+"lang": "en"
+},
+{
+"id": "tycoon",
+"text": "START. Every time you pass or land on START you collect $200.",
+"hash": "00499ba7",
+"lang": "en"
+},
+{
+"id": "tycoon",
+"text": "Doubles. Roll the same number on both dice and you move, then roll again. Roll doubles three times in a row and you go straight to Jail (no $200).",
+"hash": "26c8982e",
+"lang": "en"
+},
+{
+"id": "tycoon",
+"text": "Jail. You go to Jail by landing on Go to Jail, by a card, or by 3 doubles. In Jail you can pay $50, use a Get Out of Jail Free card, or try to roll doubles (up to 3 turns; after the third miss you pay $50 and move). Just landing on the Jail square is only “visiting”.",
+"hash": "5719df5d",
+"lang": "en"
+},
+{
+"id": "tycoon",
+"text": "Surprise and Mystery cards. Land on these squares to draw a card: it may pay you, make you pay, move you, or send you to Jail.",
+"hash": "0e679e7b",
+"lang": "en"
+},
+{
+"id": "tycoon",
+"text": "Railroads and utilities. Rent for railroads goes up with every railroad the owner has. Utilities charge a multiple of your dice roll.",
+"hash": "473a3431",
+"lang": "en"
+},
+{
+"id": "tycoon",
+"text": "Taxes and Free Parking. Tax squares make you pay the bank. With the Free Parking jackpot turned on, taxes and fines pile up in the middle and whoever lands on Free Parking takes them all.",
+"hash": "8688a45a",
+"lang": "en"
+},
+{
+"id": "tycoon",
+"text": "Short on cash?. Houses are sold back for half their price and properties are mortgaged for you automatically (a mortgaged property charges no rent). If you still can’t pay, you are bankrupt and out.",
+"hash": "87fca450",
+"lang": "en"
+},
+{
+"id": "tycoon",
+"text": "Tap to look. Tap any property on the board to see its card: rent with houses, house cost and mortgage value. Tap a pawn to see where that player is standing.",
+"hash": "0861e632",
+"lang": "en"
+},
+{
+"id": "tycoon",
+"text": "Colour set: Own all of one colour",
+"hash": "f1717931",
+"lang": "en"
+},
+{
+"id": "tycoon",
+"text": "House: More rent",
+"hash": "2119f88f",
+"lang": "en"
+},
+{
+"id": "tycoon",
+"text": "Hotel: The most rent",
+"hash": "53fffea4",
+"lang": "en"
+},
+{
+"id": "tycoon",
+"text": "Doubles: Roll again",
+"hash": "d943f9d8",
+"lang": "en"
+},
+{
+"id": "tycoon",
+"text": "Railroads and the orange and red sets are great value. Build evenly across a set.",
+"hash": "05106554",
+"lang": "en"
+},
+{
+"id": "isles",
+"text": "How to play Island Settlers.",
+"hash": "4b53648b",
+"lang": "en"
+},
+{
+"id": "isles",
+"text": "Be the first to reach the target points by building villages, towns and roads.",
+"hash": "dd704c85",
+"lang": "en"
+},
+{
+"id": "isles",
+"text": "Start. Everyone places two villages and two roads. Corners touching numbers that come up often (6 and 8) are best.",
+"hash": "d4484898",
+"lang": "en"
+},
+{
+"id": "isles",
+"text": "Roll. Each turn, roll the dice. Every land tile with that number gives its resource to anyone with a village (1 card) or town (2 cards) on its corners.",
+"hash": "37d14ee5",
+"lang": "en"
+},
+{
+"id": "isles",
+"text": "Build. Spend resources: Road (Timber + Clay), Village (Timber + Clay + Wool + Grain), Town (2 Grain + 3 Stone, upgrades a village).",
+"hash": "d7675e75",
+"lang": "en"
+},
+{
+"id": "isles",
+"text": "Where you can build. Roads join your own roads or buildings. A village goes on a free corner at the end of your road, and no other village may be on a neighbouring corner (one empty corner between villages). A grey button tells you why you can’t build yet.",
+"hash": "07171a9e",
+"lang": "en"
+},
+{
+"id": "isles",
+"text": "Trade. Trade 4 of the same card for any 1 with the bank, or offer a deal to the other players.",
+"hash": "24632174",
+"lang": "en"
+},
+{
+"id": "isles",
+"text": "The Bandit. A roll of 7 pays nobody. Anyone holding more than 7 cards loses half of them. Then the Bandit moves to a land: that land pays nothing until the Bandit moves again, and its owner loses one random card.",
+"hash": "c7c17028",
+"lang": "en"
+},
+{
+"id": "isles",
+"text": "Longest Road. The first player with an unbroken road of 5 or more pieces gets Longest Road (2 points). Someone with a longer road takes it from them.",
+"hash": "a9a6a019",
+"lang": "en"
+},
+{
+"id": "isles",
+"text": "Points. Village = 1 point, Town = 2 points, Longest Road = 2 points. First to the target wins.",
+"hash": "c6239cba",
+"lang": "en"
+},
+{
+"id": "isles",
+"text": "Timber: From forests",
+"hash": "20a213be",
+"lang": "en"
+},
+{
+"id": "isles",
+"text": "Clay: From clay pits",
+"hash": "b4e39503",
+"lang": "en"
+},
+{
+"id": "isles",
+"text": "Wool: From pastures",
+"hash": "e06a0b31",
+"lang": "en"
+},
+{
+"id": "isles",
+"text": "Grain: From fields",
+"hash": "ec40e803",
+"lang": "en"
+},
+{
+"id": "isles",
+"text": "Stone: From mountains",
+"hash": "46bd51c8",
+"lang": "en"
+},
+{
+"id": "isles",
+"text": "Settle next to different resources so you can always build something.",
+"hash": "347c58d6",
+"lang": "en"
+},
+{
+"id": "manor",
+"text": "How to play Whodunit.",
+"hash": "e1280824",
+"lang": "en"
+},
+{
+"id": "manor",
+"text": "Be the first to work out who did it, with what, and in which room.",
+"hash": "ea434a65",
+"lang": "en"
+},
+{
+"id": "manor",
+"text": "The secret. One suspect, one tool and one room are hidden in an envelope. The other cards are dealt out, so any card in your hand can’t be the answer.",
+"hash": "635421f7",
+"lang": "en"
+},
+{
+"id": "manor",
+"text": "Walk. On your turn, walk to a room next to yours (corner rooms have secret passages to the opposite corner).",
+"hash": "0cc7e000",
+"lang": "en"
+},
+{
+"id": "manor",
+"text": "Suggest. Name a suspect and a tool \"in this room\". The next player who holds one of those cards must secretly show you one.",
+"hash": "ad6fed52",
+"lang": "en"
+},
+{
+"id": "manor",
+"text": "Take notes. Your notebook ticks cards you have seen. Cross off everything that can’t be the answer.",
+"hash": "bef425f0",
+"lang": "en"
+},
+{
+"id": "manor",
+"text": "Who shows a card?. Players are asked one by one, going round the table. The first one who holds the suspect, the tool or the room shows you one of them (only you see it). If nobody can show anything, those cards are either in the envelope or in your own hand.",
+"hash": "beb65166",
+"lang": "en"
+},
+{
+"id": "manor",
+"text": "Accuse. When you are sure, accuse! Right and you win. Wrong and you are out: you can’t move or win any more, but you still show cards when asked.",
+"hash": "71c21e5c",
+"lang": "en"
+},
+{
+"id": "manor",
+"text": "6 suspects: Who did it",
+"hash": "82f769c9",
+"lang": "en"
+},
+{
+"id": "manor",
+"text": "6 tools: With what",
+"hash": "d14b6382",
+"lang": "en"
+},
+{
+"id": "manor",
+"text": "9 rooms: Where",
+"hash": "11ab842d",
+"lang": "en"
+},
+{
+"id": "manor",
+"text": "Suggest cards you already hold to test the others. If nobody can show anything, the rest may be the answer!",
+"hash": "6efd6a25",
+"lang": "en"
+},
+{
+"id": "wordconnect",
+"text": "How to play Word Connect.",
+"hash": "24ccc000",
+"lang": "en"
+},
+{
+"id": "wordconnect",
+"text": "Find as many words as you can from the letter wheel.",
+"hash": "34989b9b",
+"lang": "en"
+},
+{
+"id": "wordconnect",
+"text": "Make a word. Tap letters on the wheel in order. As soon as they spell a word you haven’t found yet, it goes in by itself.",
+"hash": "75699616",
+"lang": "en"
+},
+{
+"id": "wordconnect",
+"text": "Fix a mistake. Tap the last letter again (or ⌫ Back) to remove it. Clear starts over.",
+"hash": "a5d1bfb9",
+"lang": "en"
+},
+{
+"id": "wordconnect",
+"text": "The big word. At least one word uses every letter. Finding it scores the most.",
+"hash": "e31d5c94",
+"lang": "en"
+},
+{
+"id": "wordconnect",
+"text": "Stars. Find more of the hidden words to earn up to three stars. Hints show the first letters but cost points.",
+"hash": "61bafe8b",
+"lang": "en"
+},
+{
+"id": "wordconnect",
+"text": "Shuffle: Mix up the wheel to see new words",
+"hash": "30f539d4",
+"lang": "en"
+},
+{
+"id": "wordconnect",
+"text": "Hint: Shows the start of a word",
+"hash": "78623939",
+"lang": "en"
+},
+{
+"id": "wordconnect",
+"text": "Look for little words first (3 letters), then add an -S or -ED.",
+"hash": "3349d7b9",
+"lang": "en"
+},
+{
+"id": "impostor",
+"text": "How to play Find the Impostor.",
+"hash": "6a2aa92d",
+"lang": "en"
+},
+{
+"id": "impostor",
+"text": "Civilians: find the impostor. Impostor: blend in and don’t get caught.",
+"hash": "0bf652f0",
+"lang": "en"
+},
+{
+"id": "impostor",
+"text": "Secret words. Everyone gets the same secret word except one player, the impostor, who gets a similar but different word. Nobody knows who it is, not even the impostor!",
+"hash": "9305c792",
+"lang": "en"
+},
+{
+"id": "impostor",
+"text": "Hints. Taking turns, each player types one word as a hint about their word. Clear enough for your team, vague enough to fool the impostor.",
+"hash": "dc9bdd02",
+"lang": "en"
+},
+{
+"id": "impostor",
+"text": "Vote. Everyone votes for who they think the impostor is. If the group votes out someone who is NOT the impostor, that player is out and a new round of hints begins.",
+"hash": "2e0791f6",
+"lang": "en"
+},
+{
+"id": "impostor",
+"text": "Until 2 are left. Keep going round after round. If only 2 players are left, the impostor wins. Two tied votes in a row also let the impostor escape.",
+"hash": "e42232da",
+"lang": "en"
+},
+{
+"id": "impostor",
+"text": "Last chance. A caught impostor gets one guess at the group’s word. Guess right and they still win!",
+"hash": "58e4c1e5",
+"lang": "en"
+},
+{
+"id": "impostor",
+"text": "Impostor: Has a different word",
+"hash": "fc66b84c",
+"lang": "en"
+},
+{
+"id": "impostor",
+"text": "Vote: Point at the odd one out",
+"hash": "9ca1df06",
+"lang": "en"
+},
+{
+"id": "impostor",
+"text": "If you think you might be the impostor, copy the style of the other hints.",
+"hash": "4aaafbc5",
+"lang": "en"
+},
+{
+"id": "doodle",
+"text": "How to play Doodle Guess.",
+"hash": "7dae8e6e",
+"lang": "en"
+},
+{
+"id": "doodle",
+"text": "Guess other players’ drawings fast, and draw well so they can guess yours.",
+"hash": "cda5bbf8",
+"lang": "en"
+},
+{
+"id": "doodle",
+"text": "Pick a word. When it’s your turn to draw, choose an easy, medium or hard word. Harder words are worth more points (×1, ×1.5, ×2). Only you can see it.",
+"hash": "d3cb9319",
+"lang": "en"
+},
+{
+"id": "doodle",
+"text": "Draw it. Draw on the white board. Pick a colour and a pen size; Undo and Clear help. No letters or numbers!",
+"hash": "b770ef3d",
+"lang": "en"
+},
+{
+"id": "doodle",
+"text": "Everyone guesses. The others type guesses in the box on the right. A right guess gets points: the faster, the more. Wrong guesses show in the list for everyone.",
+"hash": "dd4fe71a",
+"lang": "en"
+},
+{
+"id": "doodle",
+"text": "Hints. Guessers see the level and a dash for every letter. When time runs low, some letters appear. Accents don’t matter: “meo” counts for “mèo”.",
+"hash": "35ad4779",
+"lang": "en"
+},
+{
+"id": "doodle",
+"text": "Winning. Everyone draws once per round. After the last round, the most points wins.",
+"hash": "1fb9c7f4",
+"lang": "en"
+},
+{
+"id": "doodle",
+"text": "Drawer: Gets points when people guess",
+"hash": "753fd624",
+"lang": "en"
+},
+{
+"id": "doodle",
+"text": "Guessers: Faster guesses score more",
+"hash": "f0909cf3",
+"lang": "en"
+},
+{
+"id": "doodle",
+"text": "Hint: Letters appear as time runs out",
+"hash": "c1380115",
+"lang": "en"
+},
+{
+"id": "doodle",
+"text": "Draw the most important shape first, big and simple. Details can wait.",
+"hash": "5c8e3b94",
+"lang": "en"
+},
+{
+"id": "naval",
+"text": "Cách chơi Hải Chiến.",
+"hash": "9773057a",
+"lang": "vi"
+},
+{
+"id": "naval",
+"text": "Đánh chìm cả năm con tàu của đối phương trước khi họ đánh chìm tàu của bạn.",
+"hash": "bccf5abd",
+"lang": "vi"
+},
+{
+"id": "naval",
+"text": "Giấu hạm đội. Kéo từng con tàu vào bảng của bạn. Chạm vào tàu để xoay. Các tàu không được chồng lên nhau (và ở một số ván còn không được chạm nhau). Bấm Sẵn sàng khi đã ưng ý.",
+"hash": "7a244e79",
+"lang": "vi"
+},
+{
+"id": "naval",
+"text": "Bắn. Đến lượt, chạm vào một ô trên bảng của đối phương. Trúng thì hiện lửa, trượt thì hiện bọt nước. Mỗi phát bắn chỉ có vài giây, đừng chần chừ!",
+"hash": "5d548f6e",
+"lang": "vi"
+},
+{
+"id": "naval",
+"text": "Truy đuổi. Sau khi bắn trúng, hãy thử các ô bên cạnh: tàu là đường thẳng, nên phần còn lại nằm ở trên, dưới, trái hoặc phải.",
+"hash": "7619ec14",
+"lang": "vi"
+},
+{
+"id": "naval",
+"text": "Chiến thắng. Khi mọi ô của một con tàu bị bắn trúng, tàu sẽ chìm. Đánh chìm cả năm tàu để thắng.",
+"hash": "1a515c39",
+"lang": "vi"
+},
+{
+"id": "naval",
+"text": "Carrier: 5 squares long",
+"hash": "b1022aaa",
+"lang": "vi"
+},
+{
+"id": "naval",
+"text": "Battleship: 4 squares",
+"hash": "5200738d",
+"lang": "vi"
+},
+{
+"id": "naval",
+"text": "Cruiser: 3 squares",
+"hash": "d9c0c3e3",
+"lang": "vi"
+},
+{
+"id": "naval",
+"text": "Submarine: 3 squares",
+"hash": "437ae682",
+"lang": "vi"
+},
+{
+"id": "naval",
+"text": "Destroyer: 2 squares, the hardest to find",
+"hash": "b7fa13ae",
+"lang": "vi"
+},
+{
+"id": "naval",
+"text": "Lúc đầu hãy bắn theo kiểu bàn cờ (cách một ô): tàu nào cũng dài ít nhất 2 ô, nên chỉ cần nửa số phát bắn vẫn tìm ra hết.",
+"hash": "21e5d9ae",
+"lang": "vi"
+},
+{
+"id": "naval",
+"text": "Đến lượt bạn!",
+"hash": "a55a816f",
+"lang": "vi"
+},
+{
+"id": "daily",
+"text": "Cách chơi Chữ Mỗi Ngày.",
+"hash": "5517665e",
+"lang": "vi"
+},
+{
+"id": "daily",
+"text": "Đoán từ bí mật 5 chữ cái trong tối đa 6 lần.",
+"hash": "a5776a08",
+"lang": "vi"
+},
+{
+"id": "daily",
+"text": "Gõ một từ. Gõ một từ tiếng Anh có thật gồm 5 chữ cái rồi bấm Enter.",
+"hash": "76c47001",
+"lang": "vi"
+},
+{
+"id": "daily",
+"text": "Xem màu. Mỗi chữ sẽ đổi màu cho biết bạn đoán gần đúng đến đâu (xem bên dưới).",
+"hash": "42deb3b4",
+"lang": "vi"
+},
+{
+"id": "daily",
+"text": "Dùng điều đã biết. Lần đoán sau nên giữ các chữ xanh ở đúng chỗ và thử các chữ vàng ở vị trí khác.",
+"hash": "1423d4d3",
+"lang": "vi"
+},
+{
+"id": "daily",
+"text": "Ngày mai quay lại. Mỗi ngày ai cũng có cùng một từ. Giải mỗi ngày để kéo dài chuỗi ngày. \"Từ luyện tập\" cho bạn chơi thêm không giới hạn.",
+"hash": "123a3c0a",
+"lang": "vi"
+},
+{
+"id": "daily",
+"text": "Green: Right letter, right spot",
+"hash": "50747ff6",
+"lang": "vi"
+},
+{
+"id": "daily",
+"text": "Amber: In the word, but somewhere else",
+"hash": "7c376fd3",
+"lang": "vi"
+},
+{
+"id": "daily",
+"text": "Grey: Not in the word at all",
+"hash": "73317905",
+"lang": "vi"
+},
+{
+"id": "daily",
+"text": "Hãy bắt đầu bằng một từ có nhiều chữ cái phổ biến, như CRANE hoặc SLATE.",
+"hash": "c5933d2e",
+"lang": "vi"
+},
+{
+"id": "wordduel",
+"text": "Cách chơi Đấu Chữ.",
+"hash": "505ee1e9",
+"lang": "vi"
+},
+{
+"id": "wordduel",
+"text": "Là người đầu tiên tìm ra từ bí mật 5 chữ cái.",
+"hash": "316fe33a",
+"lang": "vi"
+},
+{
+"id": "wordduel",
+"text": "Cùng một từ. Mọi người cùng đoán một từ bí mật trên bảng của riêng mình, cùng một lúc.",
+"hash": "a56a1713",
+"lang": "vi"
+},
+{
+"id": "wordduel",
+"text": "Xem màu. Giống Chữ Mỗi Ngày: xanh = đúng chỗ, vàng = có trong từ nhưng sai chỗ, xám = không có trong từ.",
+"hash": "c068c8ef",
+"lang": "vi"
+},
+{
+"id": "wordduel",
+"text": "Theo dõi đối thủ. Bên phải bạn thấy màu của mọi người (nhưng không thấy chữ), nên biết ai đang gần đích.",
+"hash": "74e6b02d",
+"lang": "vi"
+},
+{
+"id": "wordduel",
+"text": "Chiến thắng. Ai có cả năm chữ xanh đầu tiên sẽ thắng. Mỗi người có sáu lần đoán.",
+"hash": "672cf7ec",
+"lang": "vi"
+},
+{
+"id": "wordduel",
+"text": "Amber: In the word, wrong spot",
+"hash": "986e9c09",
+"lang": "vi"
+},
+{
+"id": "wordduel",
+"text": "Grey: Not in the word",
+"hash": "a3553d4d",
+"lang": "vi"
+},
+{
+"id": "wordduel",
+"text": "Lots of green on a rival’s board? Take a risky guess instead of a safe one!",
+"hash": "d4132047",
+"lang": "vi"
+},
+{
+"id": "c4",
+"text": "Cách chơi Bốn Quân Liền.",
+"hash": "9d94df12",
+"lang": "vi"
+},
+{
+"id": "c4",
+"text": "Xếp bốn quân của bạn thành một hàng: ngang, dọc hoặc chéo.",
+"hash": "0d16c333",
+"lang": "vi"
+},
+{
+"id": "c4",
+"text": "Thả quân. Đến lượt, chạm vào một cột. Quân sẽ rơi xuống ô trống thấp nhất.",
+"hash": "268c8045",
+"lang": "vi"
+},
+{
+"id": "c4",
+"text": "Lần lượt. Hai người lần lượt thả mỗi người một quân. Để ý đồng hồ.",
+"hash": "ad007183",
+"lang": "vi"
+},
+{
+"id": "c4",
+"text": "Chặn lại!. Nếu đối thủ có ba quân liền nhau và bên cạnh còn trống, hãy thả quân vào đó để chặn.",
+"hash": "68394898",
+"lang": "vi"
+},
+{
+"id": "c4",
+"text": "Chiến thắng. Bốn quân liền nhau là thắng. Nếu bàn đầy trước thì hòa.",
+"hash": "dbd82d0d",
+"lang": "vi"
+},
+{
+"id": "c4",
+"text": "Amber disc: The first player",
+"hash": "46720d71",
+"lang": "vi"
+},
+{
+"id": "c4",
+"text": "Coral disc: The second player",
+"hash": "f18751b1",
+"lang": "vi"
+},
+{
+"id": "c4",
+"text": "The middle column is the strongest. More lines of four go through it than any other column.",
+"hash": "de9f5019",
+"lang": "vi"
+},
+{
+"id": "tictactoe",
+"text": "Cách chơi Cờ Ca-rô.",
+"hash": "6bf735c2",
+"lang": "vi"
+},
+{
+"id": "tictactoe",
+"text": "Xếp ba quân của bạn thẳng hàng.",
+"hash": "5aeef82c",
+"lang": "vi"
+},
+{
+"id": "tictactoe",
+"text": "Đánh quân. Chạm vào một ô trống. X đi trước ở ván đầu.",
+"hash": "f1736759",
+"lang": "vi"
+},
+{
+"id": "tictactoe",
+"text": "Lần lượt. Hai người lần lượt mỗi người đánh một quân.",
+"hash": "a8879a82",
+"lang": "vi"
+},
+{
+"id": "tictactoe",
+"text": "Thắng ván. Ba quân thẳng hàng ngang, dọc hoặc chéo là thắng ván. Bàn đầy mà không ai thẳng hàng thì hòa.",
+"hash": "e16b85ac",
+"lang": "vi"
+},
+{
+"id": "tictactoe",
+"text": "Thắng trận. Trong trận \"thắng 2/3\" hoặc \"thắng 3/5\", ai thắng nhiều ván hơn sẽ thắng trận. Hai người thay phiên đi trước.",
+"hash": "f3d05045",
+"lang": "vi"
+},
+{
+"id": "tictactoe",
+"text": "X: Coral",
+"hash": "e783eeb2",
+"lang": "vi"
+},
+{
+"id": "tictactoe",
+"text": "O: Teal",
+"hash": "87f96eb2",
+"lang": "vi"
+},
+{
+"id": "tictactoe",
+"text": "Take the centre if you can. If your opponent takes it, take a corner.",
+"hash": "be5d2b01",
+"lang": "vi"
+},
+{
+"id": "hedge",
+"text": "Cách chơi Mê Cung Tường.",
+"hash": "30fe22c9",
+"lang": "vi"
+},
+{
+"id": "hedge",
+"text": "Là người đầu tiên đưa quân sang bờ bên kia của khu vườn.",
+"hash": "16b9baad",
+"lang": "vi"
+},
+{
+"id": "hedge",
+"text": "Đi một bước. Đến lượt, chạm vào một ô đang sáng để đi tới đó: lên, xuống, trái hoặc phải.",
+"hash": "d3c50f58",
+"lang": "vi"
+},
+{
+"id": "hedge",
+"text": "Hoặc trồng hàng rào. Chạm vào khe giữa hai ô. Trên máy tính, hàng rào hiện ra khi bạn trỏ vào khe và bấm một lần là trồng; trên điện thoại, chạm một lần để xem rồi chạm lần nữa để trồng. Khe theo hàng ngang cho hàng rào nằm ngang, khe theo cột cho hàng rào đứng.",
+"hash": "3fa62ff2",
+"lang": "vi"
+},
+{
+"id": "hedge",
+"text": "Hàng rào chặn đường. Không ai đi xuyên qua hàng rào được, nên đối thủ phải đi vòng. Nhưng không được nhốt kín ai: luôn phải còn một lối đi.",
+"hash": "abc41a0c",
+"lang": "vi"
+},
+{
+"id": "hedge",
+"text": "Nhảy qua. Nếu có quân khác ngay cạnh bạn, bạn có thể nhảy qua nó. Nếu phía sau có hàng rào, hãy bước chéo sang bên cạnh nó.",
+"hash": "0386a3a5",
+"lang": "vi"
+},
+{
+"id": "hedge",
+"text": "Hedge: 2 squares long. You have 10 (5 with 4 players)",
+"hash": "744c2acc",
+"lang": "vi"
+},
+{
+"id": "hedge",
+"text": "Glowing square: Where you can move now",
+"hash": "af0eb3ca",
+"lang": "vi"
+},
+{
+"id": "hedge",
+"text": "Coloured edge: The side each player is racing to",
+"hash": "58591552",
+"lang": "vi"
+},
+{
+"id": "hedge",
+"text": "The panel shows how many steps everyone still needs. Save your hedges for when a rival is close to the finish.",
+"hash": "5bce320b",
+"lang": "vi"
+},
+{
+"id": "random",
+"text": "Cách chơi Trò ngẫu nhiên.",
+"hash": "b2a38fa7",
+"lang": "vi"
+},
+{
+"id": "random",
+"text": "Ghi nhiều điểm nhất qua một loạt trò ngẫu nhiên.",
+"hash": "d8dd232c",
+"lang": "vi"
+},
+{
+"id": "random",
+"text": "Tập hợp. Mở phòng riêng và gửi link cho bạn bè, hoặc vào trận trực tuyến. Chủ phòng có thể thêm người chơi máy.",
+"hash": "8987d208",
+"lang": "vi"
+},
+{
+"id": "random",
+"text": "Chọn loạt chơi. Nhanh là 1 ván, hoặc chơi liền 3 hay 5 ván. Có thể chỉ chọn trò bài, trò bàn cờ hoặc trò nhóm.",
+"hash": "95c262a7",
+"lang": "vi"
+},
+{
+"id": "random",
+"text": "Bất ngờ!. Khi chủ phòng bấm Bắt đầu, một trò hợp với mọi người được chọn ngẫu nhiên. Một hộp hiện cách cài đặt trước khi chơi.",
+"hash": "a992ffbf",
+"lang": "vi"
+},
+{
+"id": "random",
+"text": "Cộng điểm. Mỗi ván cho điểm: hạng nhất 10, nhì 6, ba 3, còn lại 1. Sau mỗi ván bạn xem bảng điểm, rồi ván tiếp bắt đầu.",
+"hash": "ce3dcb95",
+"lang": "vi"
+},
+{
+"id": "random",
+"text": "Nhà vô địch. Sau ván cuối, người nhiều điểm nhất là nhà vô địch. Bấm Loạt mới để chơi tiếp.",
+"hash": "31fa81a0",
+"lang": "vi"
+},
+{
+"id": "random",
+"text": "Chưa biết chơi trò nào? Mỗi trò đều có hướng dẫn và video ngay trên thanh trên cùng.",
+"hash": "88513d43",
+"lang": "vi"
+},
+{
+"id": "fibber",
+"text": "Cách chơi Nói Xạo.",
+"hash": "5fc06815",
+"lang": "vi"
+},
+{
+"id": "fibber",
+"text": "Là người đầu tiên đánh hết bài trên tay. Những người còn lại chơi tiếp để giành hạng 2, 3... cho đến khi chỉ còn một người cầm bài.",
+"hash": "664627c6",
+"lang": "vi"
+},
+{
+"id": "fibber",
+"text": "Mỗi lượt một loại bài mới. Mỗi lượt có một loại bài được chọn ngẫu nhiên (không bao giờ trùng hai lượt liền nhau). Giữa bàn cho biết đang đến loại nào.",
+"hash": "00802483",
+"lang": "vi"
+},
+{
+"id": "fibber",
+"text": "Úp bài. Đến lượt, chạm vào 1 đến 4 lá bài rồi bấm Đánh. Bài được úp xuống và bạn nói đó là loại đang đến. Không có? Thì xạo!",
+"hash": "95d8ce78",
+"lang": "vi"
+},
+{
+"id": "fibber",
+"text": "NÓI XẠO!. Sau mỗi lượt đánh, mọi người có vài giây để bấm NÓI XẠO! nếu nghĩ đó là nói dối. Các lá bài sẽ được lật lên.",
+"hash": "77a48499",
+"lang": "vi"
+},
+{
+"id": "fibber",
+"text": "Ai phải ôm bài. Nếu có lá sai, người nói dối phải ôm cả chồng bài. Nếu tất cả đều đúng, người hô phải ôm. Đánh hết lá cuối cùng (mà không bị bắt) là thắng.",
+"hash": "2a809837",
+"lang": "vi"
+},
+{
+"id": "fibber",
+"text": "A true card: Matches the rank everyone is on",
+"hash": "c7397d38",
+"lang": "vi"
+},
+{
+"id": "fibber",
+"text": "A lie: Any other card played as that rank",
+"hash": "6234983a",
+"lang": "vi"
+},
+{
+"id": "fibber",
+"text": "Shout: Turn the last cards over",
+"hash": "ca16ea0b",
+"lang": "vi"
+},
+{
+"id": "fibber",
+"text": "There are only four of each rank. If you hold three Sevens and someone says \"two Sevens\", they must be bluffing.",
+"hash": "b7c4b336",
+"lang": "vi"
+},
+{
+"id": "tunnel",
+"text": "Cách chơi Phá Hoại Hầm Mỏ.",
+"hash": "243b6965",
+"lang": "vi"
+},
+{
+"id": "tunnel",
+"text": "Thợ đào: đào đường hầm từ lối vào đến kho vàng. Kẻ phá hoại: bí mật ngăn họ lại.",
+"hash": "4ec5914e",
+"lang": "vi"
+},
+{
+"id": "tunnel",
+"text": "Biết phe của mình. Lúc bắt đầu, một dòng thông báo cho bạn biết mình là Thợ đào hay Kẻ phá hoại. Không ai khác thấy được.",
+"hash": "2daba7f4",
+"lang": "vi"
+},
+{
+"id": "tunnel",
+"text": "Đánh một lá. Đến lượt, chạm vào một lá trên tay. Mảnh đường hầm được đặt vào ô đang sáng (↻ để xoay). Nó phải khớp với các mảnh bên cạnh và nối vào đường hầm.",
+"hash": "21bd1d6a",
+"lang": "vi"
+},
+{
+"id": "tunnel",
+"text": "Lá hành động. Làm hỏng cuốc hoặc đèn của một người (họ không đào được cho đến khi sửa), sửa dụng cụ, dùng bản đồ kho báu để lén xem dưới một trong ba hòn đá đích, hoặc gây sập hầm để bỏ một mảnh đường hầm.",
+"hash": "0c47e500",
+"lang": "vi"
+},
+{
+"id": "tunnel",
+"text": "Cuốc hoặc đèn bị hỏng?. Dụng cụ hỏng thì không đào được. Đánh một lá Sửa (cùng dụng cụ có dấu ✓ xanh): chạm vào lá, rồi chạm vào chính bạn. Người khác cũng có thể sửa giúp bạn. Lá Sửa của bạn sẽ sáng lên khi bạn cần.",
+"hash": "9ee9199f",
+"lang": "vi"
+},
+{
+"id": "tunnel",
+"text": "Không giúp được? Bỏ một lá. Bấm 🗑 Bỏ bài. Sau mỗi lượt bạn luôn rút một lá mới khi bộ bài còn.",
+"hash": "7823c8a7",
+"lang": "vi"
+},
+{
+"id": "tunnel",
+"text": "Ai thắng. Khi đường hầm đến được kho vàng, Thợ đào thắng. Nếu mọi người hết bài trước, Kẻ phá hoại thắng.",
+"hash": "4bf5189d",
+"lang": "vi"
+},
+{
+"id": "tunnel",
+"text": "Tunnel: Join it to the tunnel",
+"hash": "af036cee",
+"lang": "vi"
+},
+{
+"id": "tunnel",
+"text": "Dead end: The tunnel stops here",
+"hash": "96f220ac",
+"lang": "vi"
+},
+{
+"id": "tunnel",
+"text": "Break: Stops someone digging",
+"hash": "976e668c",
+"lang": "vi"
+},
+{
+"id": "tunnel",
+"text": "Fix: Mends a broken tool",
+"hash": "42522601",
+"lang": "vi"
+},
+{
+"id": "tunnel",
+"text": "Map: Peek under a stone",
+"hash": "e689c880",
+"lang": "vi"
+},
+{
+"id": "tunnel",
+"text": "Watch who plays dead ends and who breaks tools. That is probably a Rascal!",
+"hash": "ce96adcf",
+"lang": "vi"
+},
+{
+"id": "guild",
+"text": "Cách chơi Lâu Đài & Vua.",
+"hash": "e173a3af",
+"lang": "vi"
+},
+{
+"id": "guild",
+"text": "Xây thị trấn có nhiều điểm nhất.",
+"hash": "2afb53ce",
+"lang": "vi"
+},
+{
+"id": "guild",
+"text": "Chọn nhân vật. Mỗi vòng, mọi người bí mật chọn một nhân vật. Người cầm vương miện 👑 chọn trước, nên nhân vật tốt có thể đã bị chọn mất khi đến lượt bạn.",
+"hash": "60ed8ee3",
+"lang": "vi"
+},
+{
+"id": "guild",
+"text": "Đi theo số thứ tự. Nhân vật số 1 đi trước, rồi số 2, cứ thế tiếp. Đến lượt, lấy 2 vàng hoặc xem 2 lá công trình và giữ 1.",
+"hash": "6ceff44c",
+"lang": "vi"
+},
+{
+"id": "guild",
+"text": "Xây dựng. Chạm vào lá công trình bạn đủ tiền xây, rồi bấm Xây. Không được xây hai công trình giống nhau. Kiến Trúc Sư được xây tối đa 3.",
+"hash": "e2c9f68c",
+"lang": "vi"
+},
+{
+"id": "guild",
+"text": "Dùng năng lực. Mỗi nhân vật có một năng lực (xem bên dưới). Bóng Đêm và Kẻ Móc Túi gọi tên nhân vật theo số, mà không biết ai đang giữ nó!",
+"hash": "1b54cd54",
+"lang": "vi"
+},
+{
+"id": "guild",
+"text": "Vì sao tôi bị mất lượt?. Nếu Bóng Đêm gọi đúng nhân vật của bạn, bạn mất cả lượt. Nếu Kẻ Móc Túi gọi đúng, toàn bộ vàng của bạn sang tay Kẻ Móc Túi khi lượt bạn bắt đầu. Thuyền Trưởng có thể phá một công trình của bạn bằng cách trả giá của nó trừ 1.",
+"hash": "9636c3e6",
+"lang": "vi"
+},
+{
+"id": "guild",
+"text": "Vàng theo màu. Nhà Vua (vàng), Tu Viện Trưởng (xanh dương), Thương Nhân (xanh lá) và Thuyền Trưởng (đỏ) được 1 vàng cho mỗi công trình cùng màu trong thị trấn.",
+"hash": "e14372ff",
+"lang": "vi"
+},
+{
+"id": "guild",
+"text": "Kết thúc. Khi có người xây đủ số công trình mục tiêu, vòng đó sẽ chơi cho xong. Điểm: giá của từng công trình, +3 nếu có đủ năm màu, +4 cho người xong đầu tiên (+2 cho những người cũng xong), +2 cho mỗi kỳ quan.",
+"hash": "7929c717",
+"lang": "vi"
+},
+{
+"id": "guild",
+"text": "Shadow: Name a character: they miss their whole turn this round.",
+"hash": "54ead8d0",
+"lang": "vi"
+},
+{
+"id": "guild",
+"text": "Pickpocket: Name a character: when their turn starts, you take all their gold.",
+"hash": "53ff7e18",
+"lang": "vi"
+},
+{
+"id": "guild",
+"text": "Trader: Draw 2 extra building cards.",
+"hash": "dc55d1ca",
+"lang": "vi"
+},
+{
+"id": "guild",
+"text": "Monarch: Take the crown (pick first next round). +1 gold for each royal building.",
+"hash": "62ac779a",
+"lang": "vi"
+},
+{
+"id": "guild",
+"text": "Abbot: +1 gold for each faith building. The Captain can’t touch your town.",
+"hash": "76505587",
+"lang": "vi"
+},
+{
+"id": "guild",
+"text": "Merchant: +1 gold, and +1 for each trade building.",
+"hash": "7cbe1968",
+"lang": "vi"
+},
+{
+"id": "guild",
+"text": "Architect: Draw 2 extra cards and build up to 3 buildings.",
+"hash": "7e9d5bbe",
+"lang": "vi"
+},
+{
+"id": "guild",
+"text": "Captain: +1 gold for each guard building. Pay 1 less than its cost to knock down a building.",
+"hash": "0495e0e6",
+"lang": "vi"
+},
+{
+"id": "guild",
+"text": "Try to collect buildings in your character’s colour: the Monarch, Abbot, Merchant and Captain earn a gold for each one.",
+"hash": "3932a7b8",
+"lang": "vi"
+},
+{
+"id": "chess",
+"text": "Cách chơi Cờ Vua.",
+"hash": "5c19e37d",
+"lang": "vi"
+},
+{
+"id": "chess",
+"text": "Vây vua đối phương để vua không còn đường thoát. Đó là chiếu hết.",
+"hash": "fd04c93f",
+"lang": "vi"
+},
+{
+"id": "chess",
+"text": "Đi quân. Chạm vào một quân của bạn, rồi chạm vào ô được tô sáng. Bên Trắng đi trước.",
+"hash": "bf3b772c",
+"lang": "vi"
+},
+{
+"id": "chess",
+"text": "Ăn quân. Đi vào ô có quân đối phương để bắt quân đó ra khỏi bàn.",
+"hash": "80ab9fad",
+"lang": "vi"
+},
+{
+"id": "chess",
+"text": "Chiếu tướng. Nếu vua của bạn bị tấn công, nước tiếp theo bạn phải đưa vua ra khỏi nguy hiểm.",
+"hash": "5e844cf6",
+"lang": "vi"
+},
+{
+"id": "chess",
+"text": "Nước đặc biệt. Nhập thành: vua và xe đổi chỗ trong một nước. Phong cấp: tốt đi đến hàng cuối sẽ thành hậu (hoặc quân khác). Bắt tốt qua đường: một cách ăn tốt đặc biệt.",
+"hash": "91406708",
+"lang": "vi"
+},
+{
+"id": "chess",
+"text": "Thắng hoặc hòa. Chiếu hết là thắng. Nếu một bên không còn nước đi hợp lệ nhưng không bị chiếu, ván cờ hòa (hết nước).",
+"hash": "3a47246b",
+"lang": "vi"
+},
+{
+"id": "chess",
+"text": "King: One square any way. Protect it!",
+"hash": "2ceed523",
+"lang": "vi"
+},
+{
+"id": "chess",
+"text": "Queen: Any distance, any direction",
+"hash": "33931f6d",
+"lang": "vi"
+},
+{
+"id": "chess",
+"text": "Rook: Straight lines",
+"hash": "ee13506f",
+"lang": "vi"
+},
+{
+"id": "chess",
+"text": "Bishop: Diagonals",
+"hash": "cfc2353a",
+"lang": "vi"
+},
+{
+"id": "chess",
+"text": "Knight: An L shape. Can jump over pieces",
+"hash": "0dc88861",
+"lang": "vi"
+},
+{
+"id": "chess",
+"text": "Pawn: Forward one (two on its first move), takes diagonally",
+"hash": "bd261079",
+"lang": "vi"
+},
+{
+"id": "chess",
+"text": "Get your knights and bishops out early, and castle to keep your king safe.",
+"hash": "fa3a0a8e",
+"lang": "vi"
+},
+{
+"id": "checkers",
+"text": "Cách chơi Cờ Đam.",
+"hash": "54c928af",
+"lang": "vi"
+},
+{
+"id": "checkers",
+"text": "Bắt hết quân của đối thủ, hoặc khiến họ không còn nước đi.",
+"hash": "1a7baaf4",
+"lang": "vi"
+},
+{
+"id": "checkers",
+"text": "Đi quân. Quân đi chéo một ô về phía trước, trên các ô tối. Chạm vào quân, rồi chạm vào ô được tô sáng.",
+"hash": "467a7575",
+"lang": "vi"
+},
+{
+"id": "checkers",
+"text": "Nhảy ăn. Nhảy qua quân đối phương vào ô trống phía sau để ăn nó. Nếu ăn được thì bắt buộc phải ăn.",
+"hash": "c1a7ec39",
+"lang": "vi"
+},
+{
+"id": "checkers",
+"text": "Nhảy tiếp. Nếu sau khi đáp xuống còn nhảy ăn được nữa, tiếp tục trong cùng lượt.",
+"hash": "bb9b659c",
+"lang": "vi"
+},
+{
+"id": "checkers",
+"text": "Phong vua. Đi đến hàng cuối bên kia, quân của bạn thành vua và đi lùi được.",
+"hash": "ea7e4005",
+"lang": "vi"
+},
+{
+"id": "checkers",
+"text": "Your piece: Moves diagonally forward",
+"hash": "046e1dd1",
+"lang": "vi"
+},
+{
+"id": "checkers",
+"text": "King: Moves forward and backward",
+"hash": "a50780ef",
+"lang": "vi"
+},
+{
+"id": "checkers",
+"text": "Opponent: Jump over these to capture",
+"hash": "e6d71c2e",
+"lang": "vi"
+},
+{
+"id": "checkers",
+"text": "Keep your back row filled as long as you can. It stops the other side from getting kings.",
+"hash": "36c01167",
+"lang": "vi"
+},
+{
+"id": "pool",
+"text": "Cách chơi Bi-a.",
+"hash": "6c0d8588",
+"lang": "vi"
+},
+{
+"id": "pool",
+"text": "Đưa hết bóng của bạn (bóng đặc hoặc bóng sọc) vào lỗ, rồi đến bóng số 8.",
+"hash": "a48317db",
+"lang": "vi"
+},
+{
+"id": "pool",
+"text": "Ngắm. Giữ trên bàn và kéo để xoay hướng ngắm. Vòng tròn chấm cho biết bi cái sẽ chạm vào đâu, mũi tên ngắn cho biết các bóng sẽ đi về đâu.",
+"hash": "11c5ca6f",
+"lang": "vi"
+},
+{
+"id": "pool",
+"text": "Lực đánh. Kéo thanh lực về bên trái rồi thả ra để đánh. Kéo càng xa đánh càng mạnh.",
+"hash": "e474057a",
+"lang": "vi"
+},
+{
+"id": "pool",
+"text": "Xoáy (tùy chọn). Chạm vào hình bi cái nhỏ để đánh phía trên (bi đi theo), phía dưới (bi lùi lại) hoặc bên cạnh (bi bật băng lệch đi).",
+"hash": "54f544fa",
+"lang": "vi"
+},
+{
+"id": "pool",
+"text": "Bóng đặc hay bóng sọc. Quả đầu tiên bạn đưa vào lỗ sau cú phá bóng sẽ quyết định nhóm của bạn. Đưa được bóng của mình vào lỗ thì được đánh tiếp.",
+"hash": "f5674495",
+"lang": "vi"
+},
+{
+"id": "pool",
+"text": "Phạm lỗi. Bi trắng rơi vào lỗ, chạm sai bóng trước, hoặc không bóng nào chạm băng là phạm lỗi. Khi đó đối thủ được đặt bi trắng ở bất cứ đâu.",
+"hash": "973b70e9",
+"lang": "vi"
+},
+{
+"id": "pool",
+"text": "Chiến thắng. Khi hết bóng của nhóm mình, hãy đưa bóng số 8 vào lỗ. Đưa nó vào quá sớm là thua!",
+"hash": "24aceb81",
+"lang": "vi"
+},
+{
+"id": "pool",
+"text": "Cue ball: The white one you hit",
+"hash": "e730324d",
+"lang": "vi"
+},
+{
+"id": "pool",
+"text": "Solids 1-7: One full colour",
+"hash": "50223f1f",
+"lang": "vi"
+},
+{
+"id": "pool",
+"text": "Stripes 9-15: A coloured band",
+"hash": "507e56f8",
+"lang": "vi"
+},
+{
+"id": "pool",
+"text": "8-ball: Last!",
+"hash": "c5869d40",
+"lang": "vi"
+},
+{
+"id": "pool",
+"text": "Don’t hit every shot hard. A softer shot keeps the white ball under control for your next turn.",
+"hash": "2a53e23a",
+"lang": "vi"
+},
+{
+"id": "bowling",
+"text": "Cách chơi Bowling.",
+"hash": "0000a017",
+"lang": "vi"
+},
+{
+"id": "bowling",
+"text": "Đánh đổ càng nhiều ki càng tốt trong 10 frame.",
+"hash": "b3a0b34a",
+"lang": "vi"
+},
+{
+"id": "bowling",
+"text": "Cầm bóng. Nhấn giữ vào quả bóng. Trượt sang trái hoặc phải ở phía dưới màn hình để chọn chỗ đứng.",
+"hash": "8600849c",
+"lang": "vi"
+},
+{
+"id": "bowling",
+"text": "Ném. Vuốt lên rồi thả ra. Vuốt càng nhanh bóng càng nhanh nhưng khó ngắm hơn.",
+"hash": "be5cea58",
+"lang": "vi"
+},
+{
+"id": "bowling",
+"text": "Thêm xoáy. Uốn cong cuối đường vuốt, bóng sẽ móc vào khi gần đến các con ki.",
+"hash": "08088edc",
+"lang": "vi"
+},
+{
+"id": "bowling",
+"text": "Frame. Mỗi frame bạn có hai lần ném để đánh đổ cả mười con ki.",
+"hash": "99a12fe5",
+"lang": "vi"
+},
+{
+"id": "bowling",
+"text": "Tính điểm. Strike (X): đổ cả mười ki ở lần ném đầu, được 10 cộng điểm hai lần ném tiếp theo. Spare (/): đổ cả mười ki trong hai lần ném, được 10 cộng điểm lần ném tiếp theo.",
+"hash": "2a046316",
+"lang": "vi"
+},
+{
+"id": "bowling",
+"text": "Strike: All 10 pins, first throw",
+"hash": "1b0a7ecf",
+"lang": "vi"
+},
+{
+"id": "bowling",
+"text": "Spare: All 10 pins, two throws",
+"hash": "a12446b5",
+"lang": "vi"
+},
+{
+"id": "bowling",
+"text": "Miss: No pins",
+"hash": "1fae3534",
+"lang": "vi"
+},
+{
+"id": "bowling",
+"text": "Aim just to the side of the front pin (the \"pocket\") with a little hook for the best chance of a strike.",
+"hash": "3cd68121",
+"lang": "vi"
+},
+{
+"id": "poker",
+"text": "Cách chơi Poker.",
+"hash": "e30fbb14",
+"lang": "vi"
+},
+{
+"id": "poker",
+"text": "Thắng hết chip của mọi người. Người cuối cùng còn chip sẽ thắng.",
+"hash": "b925983a",
+"lang": "vi"
+},
+{
+"id": "poker",
+"text": "Bài của bạn. Bạn nhận hai lá bài riêng. Năm lá bài chung lật ra ở giữa: ba lá (flop), rồi một lá (turn), rồi một lá (river).",
+"hash": "2180eed1",
+"lang": "vi"
+},
+{
+"id": "poker",
+"text": "Đặt cược. Đến lượt: Bỏ bài (bỏ ván này), Xem/Theo (theo mức cược để chơi tiếp) hoặc Tố (cược thêm).",
+"hash": "c9238dc1",
+"lang": "vi"
+},
+{
+"id": "poker",
+"text": "Lật bài. Nếu cuối ván còn hơn một người, ai có bộ năm lá mạnh nhất (ghép từ hai lá riêng và năm lá chung) sẽ ăn cả pot.",
+"hash": "4913b5b7",
+"lang": "vi"
+},
+{
+"id": "poker",
+"text": "Cược mù. Mỗi ván có hai người phải đặt một khoản cược nhỏ (cược mù). Mức này tăng dần để ván chơi luôn kết thúc.",
+"hash": "16f1cb11",
+"lang": "vi"
+},
+{
+"id": "poker",
+"text": "Your two cards: Only you can see them",
+"hash": "00e9cf59",
+"lang": "vi"
+},
+{
+"id": "poker",
+"text": "Chips: What you bet with",
+"hash": "1853b3d4",
+"lang": "vi"
+},
+{
+"id": "poker",
+"text": "You don’t have to play every hand. Folding weak cards early saves chips for the good ones.",
+"hash": "75b3466b",
+"lang": "vi"
+},
+{
+"id": "blackjack",
+"text": "Cách chơi Xì Dách.",
+"hash": "e2a0baab",
+"lang": "vi"
+},
+{
+"id": "blackjack",
+"text": "Thắng nhà cái bằng cách gần 21 điểm hơn mà không bị quá.",
+"hash": "cb2d0e7e",
+"lang": "vi"
+},
+{
+"id": "blackjack",
+"text": "Đặt cược. Chạm vào các chip để đặt cược, rồi chia bài.",
+"hash": "067f8621",
+"lang": "vi"
+},
+{
+"id": "blackjack",
+"text": "Giá trị lá bài. Lá số tính đúng số đó, J Q K tính 10, lá Át tính 1 hoặc 11 (tùy cái nào có lợi).",
+"hash": "86b2e1df",
+"lang": "vi"
+},
+{
+"id": "blackjack",
+"text": "Lượt của bạn. Rút để lấy thêm lá, Dừng để thôi, Gấp đôi để nhân đôi tiền cược và rút đúng một lá nữa. Hai lá giống nhau có thể Tách thành hai tay (không có khi chơi online).",
+"hash": "0b84dc62",
+"lang": "vi"
+},
+{
+"id": "blackjack",
+"text": "Lượt nhà cái. Nhà cái rút tiếp cho đến khi được 17 điểm trở lên.",
+"hash": "db33e9ae",
+"lang": "vi"
+},
+{
+"id": "blackjack",
+"text": "Kết quả. Gần 21 hơn nhà cái thì được nhận lại gấp đôi tiền cược. Quá 21 là quắc và thua. Át + một lá 10 điểm ở hai lá đầu là blackjack và được trả 3 ăn 2.",
+"hash": "181cab1d",
+"lang": "vi"
+},
+{
+"id": "blackjack",
+"text": "Blackjack!: Ace + a 10-value card",
+"hash": "181b9430",
+"lang": "vi"
+},
+{
+"id": "blackjack",
+"text": "16: A tough hand: hit or stand?",
+"hash": "5a7fd1fa",
+"lang": "vi"
+},
+{
+"id": "blackjack",
+"text": "Chips: Your bet",
+"hash": "f6b8d7ea",
+"lang": "vi"
+},
+{
+"id": "blackjack",
+"text": "Always stand on 17 or more. Double on 11 when the dealer shows a small card.",
+"hash": "25ee9859",
+"lang": "vi"
+},
+{
+"id": "kittens",
+"text": "Cách chơi Mèo Nổ.",
+"hash": "1851dd64",
+"lang": "vi"
+},
+{
+"id": "kittens",
+"text": "Đừng để bị dính Khoai Nóng. Chú mèo cuối cùng còn trụ lại sẽ thắng!",
+"hash": "d799e28e",
+"lang": "vi"
+},
+{
+"id": "kittens",
+"text": "Lượt của bạn. Đánh bao nhiêu lá tùy thích (hoặc không đánh), rồi rút một lá từ chồng bài để kết thúc lượt.",
+"hash": "46f2da6e",
+"lang": "vi"
+},
+{
+"id": "kittens",
+"text": "Khoai Nóng. Khoai Nóng được giấu trong chồng bài. Rút phải là bạn bị loại, trừ khi có Găng lò nướng.",
+"hash": "c370208f",
+"lang": "vi"
+},
+{
+"id": "kittens",
+"text": "Thoát nạn!. Có Găng lò nướng thì bạn sống sót, và được lén nhét Khoai Nóng trở lại chồng bài ở bất cứ đâu: ngay trên cùng cho người kế tiếp, hoặc giấu thật sâu.",
+"hash": "b65e470f",
+"lang": "vi"
+},
+{
+"id": "kittens",
+"text": "Bỏ lượt và Tấn công. Bỏ lượt kết thúc lượt mà không phải rút. Tấn công cũng vậy, và người kế tiếp phải chơi 2 lượt liền.",
+"hash": "36326724",
+"lang": "vi"
+},
+{
+"id": "kittens",
+"text": "Xem trước, Xáo bài, Xin bài. Xem trước cho xem 3 lá trên cùng. Xáo bài trộn lại chồng bài. Xin bài bắt một người phải đưa bạn một lá họ chọn.",
+"hash": "60889b9c",
+"lang": "vi"
+},
+{
+"id": "kittens",
+"text": "Không Đời Nào!. Ai cũng có thể đánh Không Đời Nào bất cứ lúc nào để chặn một lá bài. Có thể Không Đời Nào cả một lá Không Đời Nào!",
+"hash": "cb173dda",
+"lang": "vi"
+},
+{
+"id": "kittens",
+"text": "Bộ mèo. Lá mèo đánh lẻ không làm gì. Một đôi: chọn một lá úp của một người. Bộ ba: gọi tên một lá, nếu họ có thì phải đưa. Năm con mèo khác nhau: lấy bất kỳ lá nào trong chồng bài đã đánh.",
+"hash": "17ca47bc",
+"lang": "vi"
+},
+{
+"id": "kittens",
+"text": "Hot Potato: Draw it and you are out",
+"hash": "56f8eb10",
+"lang": "vi"
+},
+{
+"id": "kittens",
+"text": "Oven Mitt: Saves you once",
+"hash": "6f00b963",
+"lang": "vi"
+},
+{
+"id": "kittens",
+"text": "No Way: Stop any card",
+"hash": "d5286179",
+"lang": "vi"
+},
+{
+"id": "kittens",
+"text": "Peek: See the top 3 cards",
+"hash": "77847edd",
+"lang": "vi"
+},
+{
+"id": "kittens",
+"text": "Skip: End your turn without drawing",
+"hash": "897709a5",
+"lang": "vi"
+},
+{
+"id": "kittens",
+"text": "Attack: Next player takes 2 turns",
+"hash": "84bea3d9",
+"lang": "vi"
+},
+{
+"id": "kittens",
+"text": "Favor: They give you a card",
+"hash": "c40af8c2",
+"lang": "vi"
+},
+{
+"id": "kittens",
+"text": "Cat cards: Pairs, threes, five different",
+"hash": "01138b73",
+"lang": "vi"
+},
+{
+"id": "kittens",
+"text": "Peek before you draw. If the Hot Potato is next, play Skip or Attack so you don’t have to draw it. Save your Oven Mitt: when someone asks with three cats, they usually name it!",
+"hash": "7d933d11",
+"lang": "vi"
+},
+{
+"id": "colorclash",
+"text": "Cách chơi Uno.",
+"hash": "896d007b",
+"lang": "vi"
+},
+{
+"id": "colorclash",
+"text": "Là người đầu tiên đánh hết bài. Những người còn lại chơi tiếp để giành hạng 2, 3, 4 cho đến khi chỉ còn một người giữ bài.",
+"hash": "423bbb58",
+"lang": "vi"
+},
+{
+"id": "colorclash",
+"text": "Đánh trùng. Đánh một lá trùng với lá trên cùng về màu hoặc số/ký hiệu.",
+"hash": "ff33dfd2",
+"lang": "vi"
+},
+{
+"id": "colorclash",
+"text": "Không đánh được?. Rút một lá từ chồng bài. Nếu hợp, bạn có thể đánh luôn.",
+"hash": "d253961b",
+"lang": "vi"
+},
+{
+"id": "colorclash",
+"text": "Lá đặc biệt. Một số lá cho người kế bị mất lượt, đổi chiều chơi, hoặc bắt người kế phải rút bài (xem bên dưới).",
+"hash": "e207905a",
+"lang": "vi"
+},
+{
+"id": "colorclash",
+"text": "Hô CLASH!. Khi còn một lá, hãy bấm nút CLASH! thật nhanh. Quên thì phải rút 2 lá. Bắt được người khác quên thì họ phải rút 2 lá!",
+"hash": "e3ed13bf",
+"lang": "vi"
+},
+{
+"id": "colorclash",
+"text": "Number: Match colour or number",
+"hash": "525824ab",
+"lang": "vi"
+},
+{
+"id": "colorclash",
+"text": "Skip: Next player misses a turn",
+"hash": "3abc89f0",
+"lang": "vi"
+},
+{
+"id": "colorclash",
+"text": "Reverse: Turn order flips",
+"hash": "41ee243c",
+"lang": "vi"
+},
+{
+"id": "colorclash",
+"text": "+2: Next player draws 2",
+"hash": "7ccacb19",
+"lang": "vi"
+},
+{
+"id": "colorclash",
+"text": "Wild: Pick any colour",
+"hash": "351f94d4",
+"lang": "vi"
+},
+{
+"id": "colorclash",
+"text": "Wild +4: Pick a colour, next draws 4",
+"hash": "b5ccd702",
+"lang": "vi"
+},
+{
+"id": "colorclash",
+"text": "Each colour also has a symbol (★ ◆ ♥ ♣), so you can tell them apart without colours.",
+"hash": "b2fd5ae9",
+"lang": "vi"
+},
+{
+"id": "dominoes",
+"text": "Cách chơi Domino.",
+"hash": "9b991f99",
+"lang": "vi"
+},
+{
+"id": "dominoes",
+"text": "Đánh hết quân trước và được cộng số nút còn trên tay đối thủ.",
+"hash": "d5f53f98",
+"lang": "vi"
+},
+{
+"id": "dominoes",
+"text": "Nối đầu. Đến lượt, đánh một quân có số trùng với một trong hai đầu đang mở của hàng.",
+"hash": "3255535a",
+"lang": "vi"
+},
+{
+"id": "dominoes",
+"text": "Quân đôi. Quân có hai nửa cùng số được đặt nằm ngang.",
+"hash": "47f09668",
+"lang": "vi"
+},
+{
+"id": "dominoes",
+"text": "Bị kẹt?. Trong kiểu bốc, bạn bốc quân cho đến khi có quân hợp. Trong kiểu chặn, bạn chỉ việc bỏ lượt.",
+"hash": "a401cb3d",
+"lang": "vi"
+},
+{
+"id": "dominoes",
+"text": "Tính điểm. Ai đánh hết trước được cộng tất cả số nút còn trên tay người khác. Nếu không ai đánh được nữa, người có ít nút nhất thắng phần chênh lệch.",
+"hash": "a218f209",
+"lang": "vi"
+},
+{
+"id": "dominoes",
+"text": "3 | 5: Fits next to a 3 or a 5",
+"hash": "127b889c",
+"lang": "vi"
+},
+{
+"id": "dominoes",
+"text": "Double six: The highest double starts the first round",
+"hash": "42563f72",
+"lang": "vi"
+},
+{
+"id": "dominoes",
+"text": "Blank | 4: Blank is zero",
+"hash": "f715b5c1",
+"lang": "vi"
+},
+{
+"id": "dominoes",
+"text": "Play your big tiles early so you are not caught holding them.",
+"hash": "13feaf93",
+"lang": "vi"
+},
+{
+"id": "tycoon",
+"text": "Cách chơi Cờ Tỷ Phú.",
+"hash": "9c531f76",
+"lang": "vi"
+},
+{
+"id": "tycoon",
+"text": "Là người giàu nhất khi hết số vòng (ván Ngắn, Vừa hoặc Dài), hoặc người cuối cùng chưa phá sản (Cổ điển).",
+"hash": "87d3e60c",
+"lang": "vi"
+},
+{
+"id": "tycoon",
+"text": "Tung xúc xắc. Giữ nút tung để lắc xúc xắc rồi thả ra để tung. Đi số ô tương ứng.",
+"hash": "805bd87f",
+"lang": "vi"
+},
+{
+"id": "tycoon",
+"text": "Mua đất. Dừng ở ô chưa ai sở hữu thì bạn có thể mua. Không mua thì ô đó được đem ra đấu giá cho mọi người.",
+"hash": "b8236242",
+"lang": "vi"
+},
+{
+"id": "tycoon",
+"text": "Tiền thuê. Dừng ở đất của người khác thì phải trả tiền thuê cho họ. Có đủ cả bộ màu thì tiền thuê gấp đôi.",
+"hash": "6a8b9539",
+"lang": "vi"
+},
+{
+"id": "tycoon",
+"text": "Xây nhà. Có đủ bộ màu thì xây nhà (rồi khách sạn) để thu tiền thuê cao hơn nhiều. (Cài đặt phòng: hoặc xây một nhà mỗi lần dừng ở đất của mình.)",
+"hash": "45633a72",
+"lang": "vi"
+},
+{
+"id": "tycoon",
+"text": "Mua lại đất (cài đặt). Nếu phòng bật: sau khi trả tiền thuê, bạn có thể trả giá để mua ô đó (ít nhất bằng giá trị của nó: giá đất + nhà). Chủ đất có thể bán, từ chối, hoặc đòi giá cao hơn; rồi bạn trả giá đó hoặc thôi. Không áp dụng cho ô có khách sạn hoặc thuộc bộ màu đã đủ.",
+"hash": "31a719af",
+"lang": "vi"
+},
+{
+"id": "tycoon",
+"text": "Ô START. Mỗi lần đi qua hoặc dừng ở ô START bạn nhận $200.",
+"hash": "7f02efe4",
+"lang": "vi"
+},
+{
+"id": "tycoon",
+"text": "Đổ đôi. Hai xúc xắc ra cùng số thì bạn đi rồi được tung tiếp. Đổ đôi ba lần liền thì vào thẳng Nhà tù (không nhận $200).",
+"hash": "ebdb7510",
+"lang": "vi"
+},
+{
+"id": "tycoon",
+"text": "Nhà tù. Bạn vào tù khi dừng ở ô Vào Tù, do một lá thẻ, hoặc do đổ đôi 3 lần. Trong tù bạn có thể trả $50, dùng thẻ Ra Tù Miễn Phí, hoặc thử đổ đôi (tối đa 3 lượt; trượt lần thứ ba thì trả $50 rồi đi). Chỉ dừng ở ô Nhà tù thì chỉ là “thăm”.",
+"hash": "b2949e10",
+"lang": "vi"
+},
+{
+"id": "tycoon",
+"text": "Thẻ Bất Ngờ và Bí Ẩn. Dừng ở các ô này để rút một lá: có thể được tiền, mất tiền, bị dời chỗ, hoặc vào tù.",
+"hash": "2bc954be",
+"lang": "vi"
+},
+{
+"id": "tycoon",
+"text": "Đường sắt và tiện ích. Tiền thuê đường sắt tăng theo số đường sắt chủ sở hữu có. Tiện ích tính theo bội số điểm xúc xắc của bạn.",
+"hash": "950930b4",
+"lang": "vi"
+},
+{
+"id": "tycoon",
+"text": "Thuế và Bãi Đỗ Xe. Ô thuế bắt bạn trả cho ngân hàng. Nếu bật hũ Bãi Đỗ Xe, thuế và tiền phạt dồn vào giữa bàn, ai dừng ở Bãi Đỗ Xe sẽ lấy hết.",
+"hash": "1869cfb7",
+"lang": "vi"
+},
+{
+"id": "tycoon",
+"text": "Thiếu tiền?. Nhà sẽ được bán và đất được cầm cố tự động. Nếu vẫn không đủ trả, bạn phá sản.",
+"hash": "ecfab359",
+"lang": "vi"
+},
+{
+"id": "tycoon",
+"text": "Chạm để xem. Chạm vào một ô đất trên bàn để xem thẻ: tiền thuê theo số nhà, giá nhà, giá cầm cố. Chạm vào quân cờ để xem người đó đang đứng ở đâu.",
+"hash": "7da3ed4d",
+"lang": "vi"
+},
+{
+"id": "tycoon",
+"text": "Colour set: Own all of one colour",
+"hash": "f1717931",
+"lang": "vi"
+},
+{
+"id": "tycoon",
+"text": "House: More rent",
+"hash": "2119f88f",
+"lang": "vi"
+},
+{
+"id": "tycoon",
+"text": "Hotel: The most rent",
+"hash": "53fffea4",
+"lang": "vi"
+},
+{
+"id": "tycoon",
+"text": "Doubles: Roll again",
+"hash": "d943f9d8",
+"lang": "vi"
+},
+{
+"id": "tycoon",
+"text": "Railroads and the orange and red sets are great value. Build evenly across a set.",
+"hash": "05106554",
+"lang": "vi"
+},
+{
+"id": "isles",
+"text": "Cách chơi Khai Hoang Đảo.",
+"hash": "8a75848d",
+"lang": "vi"
+},
+{
+"id": "isles",
+"text": "Là người đầu tiên đạt số điểm mục tiêu bằng cách xây làng, thị trấn và đường.",
+"hash": "a70c49cd",
+"lang": "vi"
+},
+{
+"id": "isles",
+"text": "Bắt đầu. Mỗi người đặt hai làng và hai con đường. Góc chạm vào những số hay ra (6 và 8) là tốt nhất.",
+"hash": "c4d5cce8",
+"lang": "vi"
+},
+{
+"id": "isles",
+"text": "Tung xúc xắc. Mỗi lượt tung xúc xắc. Mỗi ô đất có số đó sẽ cho tài nguyên cho ai có làng (1 lá) hoặc thị trấn (2 lá) ở góc của nó.",
+"hash": "9e820fcf",
+"lang": "vi"
+},
+{
+"id": "isles",
+"text": "Xây dựng. Dùng tài nguyên: Đường (Gỗ + Đất sét), Làng (Gỗ + Đất sét + Len + Lúa), Thị trấn (2 Lúa + 3 Đá, nâng cấp từ một làng).",
+"hash": "cf84356d",
+"lang": "vi"
+},
+{
+"id": "isles",
+"text": "Xây ở đâu. Đường phải nối với đường hoặc công trình của bạn. Làng đặt ở góc trống cuối đường của bạn, và góc kề bên không được có làng khác (giữa hai làng phải có một góc trống). Nút màu xám cho bạn biết vì sao chưa xây được.",
+"hash": "7e819eb6",
+"lang": "vi"
+},
+{
+"id": "isles",
+"text": "Trao đổi. Đổi 4 lá cùng loại lấy 1 lá bất kỳ với ngân hàng, hoặc đề nghị trao đổi với người chơi khác.",
+"hash": "67250377",
+"lang": "vi"
+},
+{
+"id": "isles",
+"text": "Tên Cướp. Tung ra 7 thì không ai nhận tài nguyên. Ai cầm hơn 7 lá phải bỏ một nửa. Rồi Tên Cướp chuyển đến một ô đất: ô đó không cho gì cho đến khi Tên Cướp đi chỗ khác, và chủ của nó mất một lá ngẫu nhiên.",
+"hash": "6bca353a",
+"lang": "vi"
+},
+{
+"id": "isles",
+"text": "Đường dài nhất. Người đầu tiên có một con đường liền mạch từ 5 đoạn trở lên được Đường dài nhất (2 điểm). Ai có đường dài hơn sẽ lấy lại.",
+"hash": "b7f76e67",
+"lang": "vi"
+},
+{
+"id": "isles",
+"text": "Điểm. Làng = 1 điểm, Thị trấn = 2 điểm, Đường dài nhất = 2 điểm. Ai đạt mục tiêu trước sẽ thắng.",
+"hash": "905a2cc2",
+"lang": "vi"
+},
+{
+"id": "isles",
+"text": "Timber: From forests",
+"hash": "20a213be",
+"lang": "vi"
+},
+{
+"id": "isles",
+"text": "Clay: From clay pits",
+"hash": "b4e39503",
+"lang": "vi"
+},
+{
+"id": "isles",
+"text": "Wool: From pastures",
+"hash": "e06a0b31",
+"lang": "vi"
+},
+{
+"id": "isles",
+"text": "Grain: From fields",
+"hash": "ec40e803",
+"lang": "vi"
+},
+{
+"id": "isles",
+"text": "Stone: From mountains",
+"hash": "46bd51c8",
+"lang": "vi"
+},
+{
+"id": "isles",
+"text": "Settle next to different resources so you can always build something.",
+"hash": "347c58d6",
+"lang": "vi"
+},
+{
+"id": "manor",
+"text": "Cách chơi Ai Là Thủ Phạm?.",
+"hash": "03ac8a5b",
+"lang": "vi"
+},
+{
+"id": "manor",
+"text": "Là người đầu tiên tìm ra ai đã làm, bằng gì, và ở phòng nào.",
+"hash": "38107f5b",
+"lang": "vi"
+},
+{
+"id": "manor",
+"text": "Bí mật. Một nghi phạm, một công cụ và một căn phòng được giấu trong phong bì. Các lá khác được chia ra, nên lá nào trên tay bạn thì không thể là đáp án.",
+"hash": "0fe29e4f",
+"lang": "vi"
+},
+{
+"id": "manor",
+"text": "Đi lại. Đến lượt, đi sang một phòng bên cạnh (các phòng ở góc có lối đi bí mật sang góc đối diện).",
+"hash": "b8461929",
+"lang": "vi"
+},
+{
+"id": "manor",
+"text": "Phỏng đoán. Gọi tên một nghi phạm và một công cụ \"ở phòng này\". Người kế tiếp có một trong các lá đó phải bí mật cho bạn xem một lá.",
+"hash": "15d93314",
+"lang": "vi"
+},
+{
+"id": "manor",
+"text": "Ghi chép. Sổ tay đánh dấu những lá bạn đã thấy. Gạch bỏ mọi thứ không thể là đáp án.",
+"hash": "60c64e8d",
+"lang": "vi"
+},
+{
+"id": "manor",
+"text": "Ai đưa lá?. Lần lượt từng người quanh bàn được hỏi. Người đầu tiên có nghi phạm, công cụ hoặc căn phòng đó sẽ cho bạn xem một lá (chỉ bạn thấy). Nếu không ai đưa được, những lá đó hoặc nằm trong phong bì, hoặc trên tay bạn.",
+"hash": "6cd12ac4",
+"lang": "vi"
+},
+{
+"id": "manor",
+"text": "Buộc tội. Khi đã chắc chắn, hãy buộc tội! Đúng thì thắng. Sai thì bị loại (nhưng vẫn phải cho người khác xem bài).",
+"hash": "159faee7",
+"lang": "vi"
+},
+{
+"id": "manor",
+"text": "6 suspects: Who did it",
+"hash": "82f769c9",
+"lang": "vi"
+},
+{
+"id": "manor",
+"text": "6 tools: With what",
+"hash": "d14b6382",
+"lang": "vi"
+},
+{
+"id": "manor",
+"text": "9 rooms: Where",
+"hash": "11ab842d",
+"lang": "vi"
+},
+{
+"id": "manor",
+"text": "Suggest cards you already hold to test the others. If nobody can show anything, the rest may be the answer!",
+"hash": "6efd6a25",
+"lang": "vi"
+},
+{
+"id": "wordconnect",
+"text": "Cách chơi Nối Chữ.",
+"hash": "d47f49db",
+"lang": "vi"
+},
+{
+"id": "wordconnect",
+"text": "Tìm càng nhiều từ càng tốt từ vòng chữ cái.",
+"hash": "8a31e63c",
+"lang": "vi"
+},
+{
+"id": "wordconnect",
+"text": "Ghép từ. Chạm vào các chữ trên vòng theo thứ tự. Ngay khi chúng thành một từ bạn chưa tìm, từ đó tự được nhận.",
+"hash": "9efa1e44",
+"lang": "vi"
+},
+{
+"id": "wordconnect",
+"text": "Sửa lỗi. Chạm lại chữ cuối (hoặc ⌫ Xóa) để bỏ nó. Xóa hết để làm lại.",
+"hash": "34dbe4fc",
+"lang": "vi"
+},
+{
+"id": "wordconnect",
+"text": "Từ dài nhất. Có ít nhất một từ dùng hết mọi chữ. Tìm được nó sẽ có nhiều điểm nhất.",
+"hash": "c1382d9e",
+"lang": "vi"
+},
+{
+"id": "wordconnect",
+"text": "Ngôi sao. Tìm thêm các từ ẩn để được tối đa ba ngôi sao. Gợi ý cho xem chữ đầu nhưng bị trừ điểm.",
+"hash": "d513f0ca",
+"lang": "vi"
+},
+{
+"id": "wordconnect",
+"text": "Shuffle: Mix up the wheel to see new words",
+"hash": "30f539d4",
+"lang": "vi"
+},
+{
+"id": "wordconnect",
+"text": "Hint: Shows the start of a word",
+"hash": "78623939",
+"lang": "vi"
+},
+{
+"id": "wordconnect",
+"text": "Look for little words first (3 letters), then add an -S or -ED.",
+"hash": "3349d7b9",
+"lang": "vi"
+},
+{
+"id": "impostor",
+"text": "Cách chơi Tìm Kẻ Giả Mạo.",
+"hash": "8ecc2f02",
+"lang": "vi"
+},
+{
+"id": "impostor",
+"text": "Dân thường: tìm ra kẻ giả mạo. Kẻ giả mạo: trà trộn và đừng để bị bắt.",
+"hash": "21df34a9",
+"lang": "vi"
+},
+{
+"id": "impostor",
+"text": "Từ bí mật. Mọi người nhận cùng một từ bí mật, trừ một người là kẻ giả mạo, nhận một từ gần giống nhưng khác. Không ai biết ai là kẻ giả mạo, kể cả chính họ!",
+"hash": "f5dc65d5",
+"lang": "vi"
+},
+{
+"id": "impostor",
+"text": "Gợi ý. Lần lượt, mỗi người gõ một từ để gợi ý về từ của mình. Đủ rõ để đồng đội hiểu, đủ mơ hồ để kẻ giả mạo không đoán được.",
+"hash": "0c8f0996",
+"lang": "vi"
+},
+{
+"id": "impostor",
+"text": "Bỏ phiếu. Mọi người bỏ phiếu cho người mình nghĩ là kẻ giả mạo. Nếu cả nhóm loại nhầm một người KHÔNG phải kẻ giả mạo, người đó bị loại và một vòng gợi ý mới bắt đầu.",
+"hash": "a49b1b08",
+"lang": "vi"
+},
+{
+"id": "impostor",
+"text": "Đến khi còn 2 người. Chơi tiếp từng vòng. Nếu chỉ còn 2 người, kẻ giả mạo thắng. Hai lần phiếu hòa liên tiếp cũng giúp kẻ giả mạo thoát.",
+"hash": "2314445f",
+"lang": "vi"
+},
+{
+"id": "impostor",
+"text": "Cơ hội cuối. Kẻ giả mạo bị bắt được đoán một lần từ của cả nhóm. Đoán đúng thì vẫn thắng!",
+"hash": "a1ebde38",
+"lang": "vi"
+},
+{
+"id": "impostor",
+"text": "Impostor: Has a different word",
+"hash": "fc66b84c",
+"lang": "vi"
+},
+{
+"id": "impostor",
+"text": "Vote: Point at the odd one out",
+"hash": "9ca1df06",
+"lang": "vi"
+},
+{
+"id": "impostor",
+"text": "If you think you might be the impostor, copy the style of the other hints.",
+"hash": "4aaafbc5",
+"lang": "vi"
+},
+{
+"id": "doodle",
+"text": "Cách chơi Vẽ & Đoán.",
+"hash": "79dc2cc2",
+"lang": "vi"
+},
+{
+"id": "doodle",
+"text": "Đoán thật nhanh hình người khác vẽ, và vẽ thật dễ hiểu để họ đoán được hình của bạn.",
+"hash": "d6747b9f",
+"lang": "vi"
+},
+{
+"id": "doodle",
+"text": "Chọn từ. Đến lượt vẽ, chọn một từ dễ, vừa hoặc khó. Từ càng khó càng nhiều điểm (×1, ×1,5, ×2). Chỉ bạn thấy từ đó.",
+"hash": "5a9b439b",
+"lang": "vi"
+},
+{
+"id": "doodle",
+"text": "Vẽ. Vẽ lên bảng trắng. Chọn màu và cỡ bút; có nút Hoàn tác và Xóa hết. Không được viết chữ hay số!",
+"hash": "e580dd1e",
+"lang": "vi"
+},
+{
+"id": "doodle",
+"text": "Mọi người đoán. Những người khác gõ từ đoán vào ô bên phải. Đoán đúng được điểm: càng nhanh càng nhiều. Đoán sai sẽ hiện trong danh sách cho mọi người thấy.",
+"hash": "c10071e9",
+"lang": "vi"
+},
+{
+"id": "doodle",
+"text": "Gợi ý. Người đoán thấy độ khó và một gạch cho mỗi chữ cái. Khi sắp hết giờ, một vài chữ sẽ hiện ra. Không cần gõ dấu: \"meo\" vẫn tính là \"mèo\".",
+"hash": "c537fe51",
+"lang": "vi"
+},
+{
+"id": "doodle",
+"text": "Chiến thắng. Mỗi vòng ai cũng được vẽ một lần. Sau vòng cuối, ai nhiều điểm nhất sẽ thắng.",
+"hash": "06d34cae",
+"lang": "vi"
+},
+{
+"id": "doodle",
+"text": "Drawer: Gets points when people guess",
+"hash": "753fd624",
+"lang": "vi"
+},
+{
+"id": "doodle",
+"text": "Guessers: Faster guesses score more",
+"hash": "f0909cf3",
+"lang": "vi"
+},
+{
+"id": "doodle",
+"text": "Hint: Letters appear as time runs out",
+"hash": "c1380115",
+"lang": "vi"
+},
+{
+"id": "doodle",
+"text": "Draw the most important shape first, big and simple. Details can wait.",
+"hash": "5c8e3b94",
+"lang": "vi"
+}
+]

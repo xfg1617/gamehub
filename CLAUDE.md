@@ -1034,3 +1034,10 @@ folder that was handed over, so they do not exist here.)
   (wood piece), bowling pins/crash/strike (layered wooden knocks + plank clatter), Pool `poolSnd` (ball = clay-chip
   clack pitched down, rail = soft thud, pocket = wood knock, cue = light tap; volume follows how hard). Sample:
   `prototypes/round5/real-sounds-sample.mp3`. `test/t_real_sounds.py`.
+
+* **Recorded guide voice** (Nov 26 2026, Inna chose Google "Puck", Chirp 3 HD, for English and Vietnamese): every narration
+  line of the how-to videos is an MP3 in `assets/site/voice/<lang>/<hash>.mp3` (594 lines, ~14 MB, copied to the live
+  site; downloaded only when a video plays). `hvHash` (FNV-1a over the text) names the file, so editing a guide line just
+  needs a new recording: `python3 build.py && python3 tools/voice_lines.py && python3 tools/make_voices.py` (records only
+  missing lines; needs the Google key, saved by Inna as a network secret for texttospeech.googleapis.com, header
+  X-Goog-Api-Key, in the `gamehub` environment). A missing file or file:// = the device voice as before. `t_hv_voice.py`.

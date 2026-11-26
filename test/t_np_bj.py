@@ -25,6 +25,8 @@ with sync_playwright() as p:
     check(seen and all(a == b for a, b in seen[-3:]), 'chip counts match after hands: ' + (seen[-1][0] if seen else '-'))
     ra, rb = modal_text(A, 30000), modal_text(B, 30000)
     print('   A sees:', ra[:130]); print('   B sees:', rb[:130])
-    check(ra and ra.split('Most chips')[1] == rb.split('Most chips')[1], 'same final ranking on both screens')
+    import re
+    rk = lambda t: re.sub(r'POINTS \+\d+', '', t.split('Most chips')[1]).split('Back to')[0].strip()
+    check(ra and rk(ra) == rk(rb) and len(re.findall(r'\d+', rk(ra))) >= 4, 'same final ranking on both screens, every player listed')
     A.screenshot(path='test/shots/np_bj.png')
     done(A, B)

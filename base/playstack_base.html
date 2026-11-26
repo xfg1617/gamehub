@@ -1518,6 +1518,8 @@
         setOn(v) { on = !!v; },
         isOn() { return on; },
         _ctx() { return ctx; },
+        _master() { ensure(); return master; },
+        _get(n) { return SOUNDS[n]; },
         tone, noise, def(n, f) { SOUNDS[n] = f; },
       };
     })();

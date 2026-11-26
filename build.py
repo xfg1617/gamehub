@@ -26,6 +26,17 @@ def read(p):
         return f.read()
 
 
+def sfx_js():
+    """Real recorded sounds (src/sfx/*.mp3, Kenney CC0 packs): window.SFX_FILES = {name: [base64 mp3, ...]}.
+    File names are <sound>_<variant>.mp3; the game picks a variant at random each time."""
+    import base64, glob, re
+    files = {}
+    for f in sorted(glob.glob(os.path.join(SRC, 'sfx', '*.mp3'))):
+        name = re.sub(r'_[^_]*$', '', os.path.splitext(os.path.basename(f))[0])
+        files.setdefault(name, []).append(base64.b64encode(open(f, 'rb').read()).decode('ascii'))
+    return f"    window.SFX_FILES = {json.dumps(files)};\n" if files else ''
+
+
 def dict_js():
     d = json.load(open(os.path.join(SRC, 'dict.json'), encoding='utf-8'))
     words = {}
@@ -57,7 +68,7 @@ def build(game_order=None):
     online = {}
     if os.path.exists(os.path.join(SRC, 'online.json')):
         online = {k: v for k, v in json.load(open(os.path.join(SRC, 'online.json'), encoding='utf-8')).items() if k in ('url', 'key', 'turnstile') and v}
-    js = (f"    window.PS_ONLINE = {json.dumps(online)};\n" + read(os.path.join(SRC, 'core.js')) +
+    js = (f"    window.PS_ONLINE = {json.dumps(online)};\n" + sfx_js() + read(os.path.join(SRC, 'core.js')) +
           ''.join(read(os.path.join(SRC, f)) for f in ('net.js', 'netplay.js') if os.path.exists(os.path.join(SRC, f))) +
           read(os.path.join(SRC, 'icons.js')) + dict_js() + '\n' + ''.join(read(f) for f in games))
     page = page.replace(CSS_MARK, css + CSS_MARK).replace(JS_MARK, js + JS_MARK)

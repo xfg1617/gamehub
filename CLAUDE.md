@@ -1027,5 +1027,10 @@ folder that was handed over, so they do not exist here.)
   put the prompt / choices / your buttons first (CSS `order` with `display: contents`); Kaboom Cats / Uno hands are one
   swipeable row; Pool stands upright (`G.up`: canvas H×W with `setTransform(0,1,-1,0,H,0)`, taps turned back in `pt`).
   Turn timer chip sits bottom-right on phones.
-* **Real sounds: not done.** kenney.nl (CC0 Casino Audio / Impact Sounds) is allowed in the `gamehub` environment, but
-  the download is behind a script and the automated download was refused; Inna can download the packs and send them.
+* **Real sounds** (Nov 26 2026, Inna sent Kenney's CC0 Casino Audio + Impact Sounds; licences in `src/sfx/`): 53 short mono
+  MP3s in `src/sfx/<sound>_<n>.mp3` (~284 KB), built into the page as `window.SFX_FILES` by `sfx_js()` in build.py.
+  `realSnd(name, vol, pitch)` in core plays a random recording (pitch nudged ±5 %); decoded on the first tap; the old
+  synth plays until then or if decoding fails. Mapped: card/deal/draw/shuffle/fan (cards), chip, dice, move/capture
+  (wood piece), bowling pins/crash/strike (layered wooden knocks + plank clatter), Pool `poolSnd` (ball = clay-chip
+  clack pitched down, rail = soft thud, pocket = wood knock, cue = light tap; volume follows how hard). Sample:
+  `prototypes/round5/real-sounds-sample.mp3`. `test/t_real_sounds.py`.

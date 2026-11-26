@@ -1040,7 +1040,8 @@
       const btnCls = { amber: 'btn-amber', teal: 'btn-teal', coral: 'btn-coral', emerald: 'btn-emerald' }[tone] || 'btn-amber';
       // Elo is gone (Inna, Nov 2026): rating rows are dropped and the points this game earned are shown instead
       o.rows = (o.rows || []).filter((r) => r && !/elo|rating/i.test(String(r[0])));
-      { const pr = pointsRow(); if (pr && !o.rows.some((r) => /points/i.test(r[0]))) o.rows.splice(Math.min(1, o.rows.length), 0, pr); if (o.rows.length > 3) o.rows.length = 3; }
+      // (never cut rows off: some results are a ranking of every player; there the points go at the end)
+      { const pr = pointsRow(); if (pr && !o.rows.some((r) => /points/i.test(r[0]))) { if (o.rows.length >= 3) o.rows.push(pr); else o.rows.splice(Math.min(1, o.rows.length), 0, pr); } }
       const rows = (o.rows || []).map((r) => `<div class="stat"><div class="lab">${r[0]}</div><div class="val ${r[2] || 'text-bone'}">${r[1]}</div></div>`).join('');
       el.innerHTML = `<div class="panel w-full max-w-sm p-6 pt-9 text-center space-y-5 relative">
         <div class="icon-tile absolute -top-9 left-1/2 -translate-x-1/2 w-[72px] h-[72px] ${toneCls}"><span class="spr w-11 h-11">${SPRITES[o.sprite || 'trophy']}</span></div>
@@ -1080,6 +1081,55 @@
       SFX.def('word', () => { [660, 880].forEach((f, i) => t({ type: 'triangle', f1: f, t: i * 0.07, d: 0.11, v: 0.25 })); });
       SFX.def('wrong', () => { t({ type: 'square', f1: 200, f2: 130, d: 0.14, v: 0.14 }); });
     })();
+    /* ---------- REAL recorded sounds (Nov 2026, Inna: "real pool, bowling and card sounds") ----------
+       Kenney's free CC0 Casino Audio + Impact Sounds (src/sfx, built into the page as window.SFX_FILES). Each sound has a
+       few recordings; one is picked at random and its pitch nudged a little, so a hundred cards never sound the same.
+       They are decoded the first time sound is unlocked (first tap); until then, or if decoding fails, the old synth
+       sound plays. realSnd(name, volume, pitch) returns true when a recording played. */
+    const REALSND = { bufs: {}, busy: false, failed: false };
+    function realLoad() {
+      const ctx = SFX._ctx && SFX._ctx(); if (!ctx || REALSND.busy || REALSND.failed || !window.SFX_FILES) return;
+      REALSND.busy = true;
+      Object.entries(window.SFX_FILES).forEach(([name, list]) => {
+        list.forEach((b64) => {
+          try {
+            const bin = atob(b64), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+            const done = (buf) => { (REALSND.bufs[name] = REALSND.bufs[name] || []).push(buf); };
+            const p = ctx.decodeAudioData(u8.buffer, done, () => {});
+            if (p && p.then) p.then(() => {}, () => {});
+          } catch (e) {}
+        });
+      });
+    }
+    function realSnd(name, vol = 1, rate = 1) {
+      if (!SFX.isOn()) return true;
+      const ctx = SFX._ctx && SFX._ctx(), list = REALSND.bufs[name];
+      if (!ctx || !list || !list.length) { realLoad(); return false; }
+      try {
+        const src = ctx.createBufferSource(); src.buffer = list[Math.floor(Math.random() * list.length)];
+        src.playbackRate.value = rate * (0.95 + Math.random() * 0.1);
+        const g = ctx.createGain(); g.gain.value = Math.max(0, Math.min(1.6, vol));
+        src.connect(g); g.connect(SFX._master()); src.start();
+        return true;
+      } catch (e) { return false; }
+    }
+    window.realSnd = realSnd;
+    document.addEventListener('pointerdown', () => setTimeout(realLoad, 60), { once: true, capture: true });
+    // the card, chip and dice sounds every game already uses now play the recordings (the synth stays as a backup)
+    (function useRealSounds() {
+      const REAL = { card: ['card', 0.9], deal: ['deal', 0.9], draw: ['draw', 0.75], chip: ['chip', 0.9], dice: ['dice', 1], shuffle: ['shuffle', 0.9], fan: ['fan', 0.8], move: ['piece', 0.9], capture: ['piece', 1.1] };
+      Object.entries(REAL).forEach(([n, [file, vol]]) => {
+        const synth = SFX._get && SFX._get(n);
+        SFX.def(n, () => { if (!realSnd(file, vol) && synth) synth(); });
+      });
+      // bowling: pins are layered wooden knocks; a strike is a big crash of them
+      const pins0 = SFX._get && SFX._get('pins'), crash0 = SFX._get && SFX._get('crash'), strike0 = SFX._get && SFX._get('strike');
+      const clatter = (n, spread, vol) => { let ok = false; for (let i = 0; i < n; i++) setTimeout(() => { ok = realSnd(i % 3 ? 'pin' : 'plank', vol * (0.6 + Math.random() * 0.5), 0.9 + Math.random() * 0.3) || ok; }, Math.random() * spread); return realSnd('pin', vol, 1); };
+      SFX.def('pins', () => { if (!clatter(4, 260, 0.8) && pins0) pins0(); });
+      SFX.def('crash', () => { if (!clatter(9, 520, 1) && crash0) crash0(); });
+      SFX.def('strike', () => { if (clatter(12, 600, 1.1)) { [523, 659, 784, 1047, 1319].forEach((f, i) => SFX.tone({ type: 'square', f1: f, t: 0.45 + i * 0.07, d: 0.1, v: 0.08 })); } else if (strike0) strike0(); });
+    })();
+
 
     /* ---------- the lobby catalogue (feeds the home shelves, My Profile and the rules page) ---------- */
     const CATALOG = [

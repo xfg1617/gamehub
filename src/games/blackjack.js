@@ -314,7 +314,7 @@
         if (!O || O.over) return; O.over = true; O.S.over = true; if (O.clock) O.clock.stop();
         const rank = O.seats.slice().sort((a, b) => b.chips - a.chips), me = O.seats[O.me], won = rank[0] === me;
         const s = gstat('blackjack'); s.online = (s.online || 0) + 1;
-        reportGame('blackjack', won ? 'win' : 'loss', { elo: 0, xp: won ? 20 : 8, label: `Online table · ${me.chips} chips` });
+        reportGame('blackjack', won ? 'win' : 'loss', { place: rank.indexOf(me) + 1, elo: 0, xp: won ? 20 : 8, label: `Online table · ${me.chips} chips` });
         SFX.play(won ? 'win' : 'lose');
         gameResult({ title: won ? 'You beat the table!' : `${rank[0].name} wins`, sub: `Most chips after ${O.hands} hands.`, tone: won ? 'amber' : 'coral', sprite: won ? 'trophy' : 'anchor',
           rows: rank.map((x) => [x.name, x.chips, x.i === O.me ? 'text-amber' : 'text-bone']), againLabel: 'Back to setup', again: () => open(document.getElementById('game-root')) });

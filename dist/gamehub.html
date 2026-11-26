@@ -1886,13 +1886,14 @@
 
     /* game pictures in the how-to videos: the camera drifts towards the part being explained, which is outlined */
     .hv-shotwrap { max-width: 1100px; gap: 12px; }
-    .hv-shot { position: relative; width: 100%; aspect-ratio: 16 / 9; max-height: calc(100vh - 230px); overflow: hidden; border: 4px solid #050E18; box-shadow: 0 6px 0 #050E18; background: #050E18; }
+    .hv-shot { position: relative; box-sizing: content-box; width: min(calc(100% - 8px), calc((100vh - 230px) * 16 / 9)); aspect-ratio: 16 / 9; margin: 0 auto; overflow: hidden; border: 4px solid #050E18; box-shadow: 0 6px 0 #050E18; background: #050E18; }
     .hv-shot > img, .hv-shot > .hv-focus { transform-origin: var(--cx) var(--cy); animation: hvCam 5.5s ease-out forwards; }
-    .hv-shot > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-    .hv-focus { position: absolute; border: 4px solid #F5B041; box-shadow: 0 0 0 9999px rgba(5, 14, 24, .38); }
-    .hv-focus::after { content: ''; position: absolute; inset: -4px; border: 4px solid #F5B041; animation: hvPulse 1.1s steps(2) infinite; }
+    .hv-shot > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; display: block; }
+    /* the outline is drawn around the part (outline, not border), so even a tiny part keeps its exact size and place */
+    .hv-focus { position: absolute; outline: 4px solid #F5B041; outline-offset: 2px; box-shadow: 0 0 0 9999px rgba(5, 14, 24, .38); }
+    .hv-focus::after { content: ''; position: absolute; inset: -6px; outline: 3px solid #F5B041; animation: hvPulse 1.1s steps(2) infinite; }
     @keyframes hvCam { from { transform: scale(1); } to { transform: scale(var(--z)); } }
-    @keyframes hvPulse { 50% { inset: -10px; opacity: .4; } }
+    @keyframes hvPulse { 50% { inset: -12px; opacity: .4; } }
     .hv-cap { font-size: clamp(1rem, 2.1vw, 1.35rem); min-height: 2.6em; }
     @media (prefers-reduced-motion: reduce) { .hv-shot > img, .hv-shot > .hv-focus { animation: none; } }
     /* ===== tic-tac-toe ===== */
@@ -19044,10 +19045,10 @@
         [0, '#dw-grid', "Green is the right letter in the right spot. Yellow is in the word, but in the wrong spot.", 'Màu xanh là đúng chữ, đúng chỗ. Màu vàng là có chữ đó nhưng sai chỗ.'],
         [0, '#dw-keyboard', "Grey letters aren't in the word at all. Come back tomorrow to keep your streak going.", 'Chữ màu xám thì không có trong từ. Mai quay lại để giữ chuỗi ngày nhé.'],
       ] },
-      naval: { shots: [{ go: 'naval' }], lines: [
+      naval: { shots: [{ go: 'naval', show: '#ng-deploy-btn' }], lines: [
         ['icon', null, "Sea Battle. Find and sink the enemy fleet.", 'Hải chiến. Tìm và đánh chìm hạm đội địch.'],
         [0, '#ng-setup-grid', "First, place your five ships on your grid. Drag them where you want.", 'Đầu tiên, đặt năm chiếc tàu lên lưới của bạn. Kéo thả tùy ý.'],
-        [0, '#ng-deploy-btn', "Press Deploy when you're ready.", 'Xong thì bấm Triển khai.'],
+        [0, '#ng-deploy-btn', "Happy with your fleet? Press Ready!", 'Xếp xong rồi thì bấm Sẵn sàng!'],
         ['icon', null, "Then take turns firing at the enemy's grid. A hit lets you know you're close.", 'Rồi lần lượt bắn vào lưới của địch. Trúng là biết mình đang gần.'],
         ['icon', null, "Sink all five of their ships first, and you win.", 'Đánh chìm cả năm tàu của địch trước là bạn thắng.'],
       ] },
@@ -19777,7 +19778,7 @@
        Uno places, Find the Impostor rounds, the movable log. VI_MORE4 = exact lines, VI_PAT4 = lines with numbers.
        ========================================================================= */
     window.VI_MORE4 = {
-      'Random Game': 'Trò ngẫu nhiên', 'RANDOM GAME': 'TRÒ NGẪU NHIÊN',
+      'Ready!': 'Sẵn sàng!', 'Random Game': 'Trò ngẫu nhiên', 'RANDOM GAME': 'TRÒ NGẪU NHIÊN',
       'We pick the game and the settings. Play one game or a whole session: points from every game add up, and the most points wins.': 'Chúng tôi chọn trò chơi và cài đặt. Chơi một ván hoặc cả loạt: điểm của mọi ván được cộng dồn, ai nhiều điểm nhất thắng.',
       'SESSION': 'LOẠT CHƠI', 'Quickie · 1 game': 'Nhanh · 1 ván', '3 games': '3 ván', 'Long · 5 games': 'Dài · 5 ván',
       'Points from every game add up. Most points at the end is the champion.': 'Điểm của mọi ván được cộng dồn. Nhiều điểm nhất cuối cùng là nhà vô địch.',

@@ -174,10 +174,10 @@
         [0, '#dw-grid', "Green is the right letter in the right spot. Yellow is in the word, but in the wrong spot.", 'Màu xanh là đúng chữ, đúng chỗ. Màu vàng là có chữ đó nhưng sai chỗ.'],
         [0, '#dw-keyboard', "Grey letters aren't in the word at all. Come back tomorrow to keep your streak going.", 'Chữ màu xám thì không có trong từ. Mai quay lại để giữ chuỗi ngày nhé.'],
       ] },
-      naval: { shots: [{ go: 'naval' }], lines: [
+      naval: { shots: [{ go: 'naval', show: '#ng-deploy-btn' }], lines: [
         ['icon', null, "Sea Battle. Find and sink the enemy fleet.", 'Hải chiến. Tìm và đánh chìm hạm đội địch.'],
         [0, '#ng-setup-grid', "First, place your five ships on your grid. Drag them where you want.", 'Đầu tiên, đặt năm chiếc tàu lên lưới của bạn. Kéo thả tùy ý.'],
-        [0, '#ng-deploy-btn', "Press Deploy when you're ready.", 'Xong thì bấm Triển khai.'],
+        [0, '#ng-deploy-btn', "Happy with your fleet? Press Ready!", 'Xếp xong rồi thì bấm Sẵn sàng!'],
         ['icon', null, "Then take turns firing at the enemy's grid. A hit lets you know you're close.", 'Rồi lần lượt bắn vào lưới của địch. Trúng là biết mình đang gần.'],
         ['icon', null, "Sink all five of their ships first, and you win.", 'Đánh chìm cả năm tàu của địch trước là bạn thắng.'],
       ] },

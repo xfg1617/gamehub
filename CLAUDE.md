@@ -1048,5 +1048,6 @@ folder that was handed over, so they do not exist here.)
   `assets/site/howto/<id>/<n>.jpg` (2x, ~3.6 MB) + `index.json` with where each highlighted part is; the player zooms
   towards it and outlines it (`.hv-shot`, `.hv-focus`). "▶ Video" in every game's top bar (`gs-video`, opens over the
   game; its end button goes back to the game). Written guides lose their emoji (`guideHTML`). Voice: 248 lines,
-  re-recorded with Puck. After changing a script line: build → voice_lines.py → make_voices.py (and make_howto_shots.py
+  re-recorded with Puck. `test/t_hv_align.py` checks every yellow outline sits exactly on its part (laptop + phone); a shot can
+  say `show: '<selector>'` to scroll that part fully into the picture; `make_howto_shots.py naval` redoes one game. After changing a script line: build → voice_lines.py → make_voices.py (and make_howto_shots.py
   if a picture or highlight changed). Samples: `prototypes/voices/howto-video-*.mp4`.

@@ -13,8 +13,8 @@
 },
 {
 "id": "naval",
-"text": "Press Deploy when you're ready.",
-"hash": "a00bbf75",
+"text": "Happy with your fleet? Press Ready!",
+"hash": "f2c65e0a",
 "lang": "en"
 },
 {
@@ -757,8 +757,8 @@
 },
 {
 "id": "naval",
-"text": "Xong thì bấm Triển khai.",
-"hash": "97a99ce2",
+"text": "Xếp xong rồi thì bấm Sẵn sàng!",
+"hash": "6edcc0fd",
 "lang": "vi"
 },
 {

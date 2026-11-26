@@ -107,7 +107,7 @@ def cut_pool(r):
 
 # ------------------------------------------------------------------------------------------------ bullshit: a lie caught
 @scene('fibber', 'POV: your friend swears<br>they\'re <em>telling the truth</em> 🤨',
-       'they were NOT 4 aces 😭 the bluffing card game, free in your browser #cardgames #bluff #gamenight #gameswithfriends #fyp')
+       'the face of a liar 😭 the bluffing card game, free in your browser #cardgames #bluff #gamenight #gameswithfriends #fyp')
 def fibber(p):
     t = Take(p, 'fibber', WORK); pg = t.page; pg.evaluate(AUTOPLAY)
     open_game(t, 'fibber', {'n': 4, 'secs': 5, 'turn': 0})

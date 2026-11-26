@@ -473,7 +473,8 @@
       function poolSnd(kind, s) {
         s = Math.max(0.08, Math.min(1, s)); const t = SFX.tone, n = SFX.noise;
         // the real recordings first (louder for harder hits), the synth if they are not ready yet
-        if (window.realSnd && realSnd({ ball: 'ball', rail: 'rail', pocket: 'pocket', cue: 'cue' }[kind], kind === 'ball' ? 0.2 + 1.0 * s : kind === 'pocket' ? 0.45 + 0.6 * s : 0.3 + 0.9 * s, 1)) return;
+        // real recordings (freesound CC0): louder AND brighter the harder the hit
+        if (window.realSnd && realSnd(kind, kind === 'ball' ? 0.15 + 1.05 * s : kind === 'pocket' ? 0.5 + 0.6 * s : kind === 'rail' ? 0.35 + 0.95 * s : 0.3 + 0.9 * s, 1, kind === 'pocket' ? 0 : 1800 + 16000 * s * s)) return;
         if (!t || !n) return SFX.play(kind === 'cue' ? 'ball' : kind);
         if (kind === 'ball') { t({ f1: 1500 + 900 * s, f2: 700, d: 0.03 + 0.03 * s, v: 0.08 + 0.5 * s }); n({ type: 'highpass', f1: 3200, d: 0.015 + 0.02 * s, v: 0.05 + 0.35 * s }); }
         else if (kind === 'rail') { t({ type: 'triangle', f1: 170 + 80 * s, f2: 110, d: 0.06 + 0.04 * s, v: 0.08 + 0.4 * s }); n({ type: 'lowpass', f1: 600, d: 0.05, v: 0.05 + 0.2 * s }); }

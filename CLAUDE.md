@@ -1039,6 +1039,11 @@ folder that was handed over, so they do not exist here.)
   drop + return-track roll, leather tip; paper snap, swish, felt pat, riffle of ~50 ticks + bridge + tap; small room echo).
   Our own sounds, no licence. Re-run it to change them; demo `prototypes/round5/new-card-pool-sounds.mp3`. Chips, dice,
   pieces, pins stay Kenney.
+  **Pool = real recordings** (Nov 26 2026, Inna: "i want realistic pool sounds"): `tools/make_pool_sfx.py` downloads CC0
+  recordings from freesound.org (environment allows freesound.org + cdn.freesound.org) and cuts single hits at hand-picked
+  times (`PICK`): 8 ball clacks, 5 cue strikes, 1 cushion, 3 pocket drops; credits in `src/sfx/LICENSE-freesound-pool.txt`;
+  demo `prototypes/round5/real-pool-sounds.mp3`. `realSnd(name, vol, rate, lowpass)`: Pool passes a lowpass so soft hits
+  are duller as well as quieter. make_sfx.py no longer writes pool files.
 
 * **Recorded guide voice** (Nov 26 2026, Inna chose Google "Puck", Chirp 3 HD, for English and Vietnamese): every narration
   line of the how-to videos is an MP3 in `assets/site/voice/<lang>/<hash>.mp3` (594 lines, ~14 MB, copied to the live

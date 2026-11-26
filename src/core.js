@@ -1101,7 +1101,7 @@
         });
       });
     }
-    function realSnd(name, vol = 1, rate = 1) {
+    function realSnd(name, vol = 1, rate = 1, lowpass = 0) {
       if (!SFX.isOn()) return true;
       const ctx = SFX._ctx && SFX._ctx(), list = REALSND.bufs[name];
       if (!ctx || !list || !list.length) { realLoad(); return false; }
@@ -1109,7 +1109,9 @@
         const src = ctx.createBufferSource(); src.buffer = list[Math.floor(Math.random() * list.length)];
         src.playbackRate.value = rate * (0.95 + Math.random() * 0.1);
         const g = ctx.createGain(); g.gain.value = Math.max(0, Math.min(1.6, vol));
-        src.connect(g); g.connect(SFX._master()); src.start();
+        // lowpass: a gentle hit sounds duller as well as quieter (pool), like on a real table
+        if (lowpass) { const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = lowpass; f.Q.value = 0.5; src.connect(f); f.connect(g); } else src.connect(g);
+        g.connect(SFX._master()); src.start();
         return true;
       } catch (e) { return false; }
     }

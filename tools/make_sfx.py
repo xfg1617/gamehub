@@ -11,7 +11,8 @@ Built here from how the sounds really happen (no recordings needed, no licence q
          shuffle = a riffle (dozens of tiny card ticks speeding up and slowing down), the bridge, a tap
          fan   = a hand of cards spread out
 A small room (early reflections + soft tail) is added so they don't sound like they come from inside the speaker.
-Writes src/sfx/<name>_<n>.mp3 (replaces those names only) and prototypes/round5/new-card-pool-sounds.mp3 (a demo).
+Writes src/sfx/<name>_<n>.mp3 for the card sounds (replaces those names only) and prototypes/round5/new-card-pool-sounds.mp3
+(a demo; the file name is old: it now holds the cards only). Pool sounds: tools/make_pool_sfx.py (real recordings).
 Needs numpy, scipy, ffmpeg.  python3 tools/make_sfx.py"""
 import os, glob, subprocess, tempfile, wave
 import numpy as np
@@ -227,8 +228,8 @@ def fan_out(v):
     return finish(room(lp(hp(x, 120), 8500, 4), 0.12, 0.8))
 
 
-SOUNDS = {'ball': (ball_clack, 6), 'rail': (cushion, 4), 'pocket': (pocket, 3), 'cue': (cue_tip, 3),
-          'card': (card_place, 4), 'deal': (card_deal, 6), 'draw': (card_draw, 3), 'shuffle': (riffle, 2), 'fan': (fan_out, 2)}
+# pool sounds are real recordings now (tools/make_pool_sfx.py); the pool synths above stay only for reference
+SOUNDS = {'card': (card_place, 4), 'deal': (card_deal, 6), 'draw': (card_draw, 3), 'shuffle': (riffle, 2), 'fan': (fan_out, 2)}
 
 
 def to_mp3(x, path, br='64k'):
@@ -256,14 +257,6 @@ if __name__ == '__main__':
     for i in range(8): seq.append((t, c['deal'][i % 6], 0.85)); t += 0.24
     t += 0.4; seq += [(t, c['fan'][0], 0.7), (t + 0.9, c['draw'][0], 0.75), (t + 1.5, c['card'][0], 0.9), (t + 2.0, c['card'][1], 0.9), (t + 2.5, c['draw'][1], 0.75)]
     t += 3.6
-    # pool: cue, break-like clacks of different strength, cushions, a pot
-    seq += [(t, c['cue'][0], 0.9), (t + 0.18, c['ball'][0], 1.0), (t + 0.2, c['ball'][1], 0.7), (t + 0.23, c['ball'][2], 0.5), (t + 0.27, c['ball'][3], 0.4),
-            (t + 0.34, c['ball'][4], 0.35), (t + 0.5, c['rail'][0], 0.8), (t + 0.62, c['rail'][1], 0.6), (t + 0.8, c['ball'][5], 0.4), (t + 1.0, c['pocket'][0], 0.9),
-            (t + 1.4, c['rail'][2], 0.4)]
-    t += 3.0
-    seq += [(t, c['cue'][1], 0.6), (t + 0.5, c['ball'][2], 0.6), (t + 1.1, c['pocket'][1], 0.9)]
-    t += 2.4
-    seq += [(t, c['cue'][2], 0.4), (t + 0.7, c['ball'][3], 0.25), (t + 1.6, c['rail'][3], 0.35)]
     demo = at(seq); demo *= 0.95 / np.max(np.abs(demo))
     to_mp3(demo, os.path.join(ROOT, 'prototypes', 'round5', 'new-card-pool-sounds.mp3'), '128k')
     print('made', {k: len(v) for k, v in made.items()})

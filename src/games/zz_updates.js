@@ -12,14 +12,16 @@
           'Chips, dice, chess pieces and bowling pins use real recorded sounds.',
           'How-to videos rewritten: shorter, friendlier, with real game pictures and a highlight on the part being explained.',
           'Videos have a natural recorded voice in English and Vietnamese.',
-          'A ▶ Video button in every game, so you can watch how to play without leaving your game.'],
+          'A ▶ Video button in every game, so you can watch how to play without leaving your game.',
+          "What's new: the update log at the bottom of the page, and a short note like this one whenever we launch an update."],
         vi: ['Âm thanh thật và video hướng dẫn tốt hơn',
           'Bi-a giờ dùng âm thanh thu thật: bi chạm bi, cơ đánh bi, bi dội băng và bi rơi xuống lỗ. Đánh nhẹ nghe nhẹ, phá bi nghe mạnh.',
           'Âm thanh bài mới: chia bài giòn, lá bài đáp xuống bàn nỉ, và tiếng xào bài thật.',
           'Chip, xúc xắc, quân cờ và ki bowling dùng âm thanh thu thật.',
           'Video hướng dẫn viết lại: ngắn hơn, thân thiện hơn, có hình chơi thật và khung sáng chỉ đúng chỗ đang nói.',
           'Video có giọng đọc tự nhiên bằng tiếng Anh và tiếng Việt.',
-          'Nút ▶ Video trong mọi trò chơi, xem cách chơi mà không phải rời ván.'] },
+          'Nút ▶ Video trong mọi trò chơi, xem cách chơi mà không phải rời ván.',
+          'Có gì mới: nhật ký cập nhật ở cuối trang, và một thông báo ngắn như thế này mỗi khi có bản cập nhật mới.'] },
       { date: '2026-11-25',
         en: ['Random Game, points and rejoining',
           'New: Random Game. Play one game or a whole session of 3 or 5; points add up and a champion is crowned.',
@@ -96,21 +98,25 @@
           'Vật lý bi-a và bowling như thật, trao đổi trong Khai Hoang Đảo, phá án trong Ai Là Thủ Phạm? và bàn Cờ Tỷ Phú có nhà và khách sạn.'] },
     ];
 
+    // what a player has 'seen': the newest entry's id (give a second update on the same day an id like '2026-11-26b')
+    function updKey() { return UPDATES[0].id || UPDATES[0].date; }
     function updDate(d, vi) {
       if (!/^\d{4}-\d\d-\d\d$/.test(d)) return vi ? 'đầu tháng 11/2026' : 'Early November 2026';
       const [y, m, day] = d.split('-').map(Number);
       if (vi) return `${day}/${m}/${y}`;
       return new Date(y, m - 1, day).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     }
-    function updatesHTML() {
+    function updatesHTML(latest) {
       const vi = window.LANG && LANG.code === 'vi';
-      return UPDATES.map((u, i) => {
+      return UPDATES.slice(0, latest ? 1 : UPDATES.length).map((u, i) => {
         const [title, ...items] = (vi && u.vi) || u.en;
         return `<section class="upd${i === 0 ? ' upd-new' : ''}"><div class="upd-head"><span class="upd-date pix">${esc(updDate(u.date, vi))}</span>${i === 0 ? `<span class="upd-tag pix">${vi ? 'MỚI NHẤT' : 'LATEST'}</span>` : ''}</div>
           <h3 class="upd-title">${esc(title)}</h3><ul class="upd-list">${items.map((t) => `<li>${esc(t)}</li>`).join('')}</ul></section>`;
       }).join('');
     }
-    function openUpdates() {
+    let updLatest = false;
+    function openUpdates(opt) {
+      updLatest = !!(opt && opt.latest);
       let el = document.getElementById('upd-modal');
       if (!el) {
         el = document.createElement('div'); el.id = 'upd-modal'; el.className = 'hidden fixed inset-0 z-[66] bg-black/80 overflow-y-auto p-4';
@@ -119,20 +125,47 @@
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape') el.classList.add('hidden'); });
       }
       const vi = window.LANG && LANG.code === 'vi';
-      el.innerHTML = `<div class="win max-w-2xl mx-auto my-4 sm:my-10 overflow-hidden"><div class="winbar amber"><span>${vi ? 'CÓ GÌ MỚI · NHẬT KÝ CẬP NHẬT' : "WHAT'S NEW · UPDATE LOG"}</span><button class="pix text-sm" id="upd-x" aria-label="Close">✕</button></div>
-        <div class="p-5 space-y-4">${updatesHTML()}<button class="btn-game btn-graphite w-full py-2.5" id="upd-ok">${vi ? 'Đóng' : 'Close'}</button></div></div>`;
+      const head = updLatest ? (vi ? 'CÓ GÌ MỚI TRÊN GAMEHUB' : "WHAT'S NEW ON GAMEHUB") : (vi ? 'CÓ GÌ MỚI · NHẬT KÝ CẬP NHẬT' : "WHAT'S NEW · UPDATE LOG");
+      const btns = updLatest
+        ? `<div class="grid grid-cols-2 gap-3"><button class="btn-game btn-graphite py-2.5" id="upd-all">${vi ? 'Xem mọi cập nhật' : 'See all updates'}</button><button class="btn-game btn-amber py-2.5" id="upd-ok">${vi ? 'Chơi thôi!' : "Let's play!"}</button></div>`
+        : `<button class="btn-game btn-graphite w-full py-2.5" id="upd-ok">${vi ? 'Đóng' : 'Close'}</button>`;
+      el.innerHTML = `<div class="win ${updLatest ? 'max-w-xl' : 'max-w-2xl'} mx-auto my-4 sm:my-10 overflow-hidden"><div class="winbar amber"><span>${head}</span><button class="pix text-sm" id="upd-x" aria-label="Close">✕</button></div>
+        <div class="p-5 space-y-4">${updatesHTML(updLatest)}${btns}</div></div>`;
       el.classList.remove('hidden');
       el.querySelector('#upd-x').onclick = el.querySelector('#upd-ok').onclick = () => el.classList.add('hidden');
-      try { localStorage.setItem('ps_upd_seen', UPDATES[0].date); } catch (e) {}
+      const all = el.querySelector('#upd-all'); if (all) all.onclick = () => openUpdates();
+      try { localStorage.setItem('ps_upd_seen', updKey()); } catch (e) {}
       document.querySelectorAll('.upd-dot').forEach((d) => d.remove());
     }
     window.openUpdates = openUpdates;
     // re-draw in the other language if it is switched while the log is open
-    document.addEventListener('ps-lang', () => { const el = document.getElementById('upd-modal'); if (el && !el.classList.contains('hidden')) openUpdates(); });
+    document.addEventListener('ps-lang', () => { const el = document.getElementById('upd-modal'); if (el && !el.classList.contains('hidden')) openUpdates({ latest: updLatest }); });
     // a small dot on the link until this player has seen the newest update
     (function markNew() {
       let seen = ''; try { seen = localStorage.getItem('ps_upd_seen') || ''; } catch (e) {}
-      if (seen === UPDATES[0].date) return;
+      if (seen === updKey()) return;
+      // a brand-new player gets the welcome pop-up instead; the updates so far are nothing new to them
+      if (!window.PS_RETURNING) { try { localStorage.setItem('ps_upd_seen', updKey()); } catch (e) {} return; }
+      autoShow();
       const add = () => document.querySelectorAll('.upd-link').forEach((a) => { if (!a.querySelector('.upd-dot')) a.insertAdjacentHTML('beforeend', '<i class="upd-dot"></i>'); });
       if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', add); else add();
     })();
+
+    /* When we launch an update, a returning player sees it once when they open the site: only the newest update, on the
+       home screen, never during a game, never when they arrive by an invite link (they came to play; they see it on their
+       next visit), and never on top of another pop-up (the new-player welcome waits for this one, see zz_rewards.js). */
+    function autoShow() {
+      if (navigator.webdriver && !window.__showUpdPop) return;
+      if (/\/r\/|join=/i.test(location.pathname + location.hash)) return;
+      let tries = 0;
+      const busy = () => document.getElementById('wl-pop') || document.querySelector('#auth-modal:not(.hidden), #guide-modal:not(.hidden), #room-modal:not(.hidden), #np-rj, .hv');
+      const t = setInterval(() => {
+        if (++tries > 400) return clearInterval(t);   // ~10 minutes, then wait for the next visit
+        if (typeof activeView !== 'undefined' && activeView !== 'play') return;
+        if (busy() || document.body.classList.contains('in-game')) return;
+        clearInterval(t);
+        let seen = ''; try { seen = localStorage.getItem('ps_upd_seen') || ''; } catch (e) {}
+        if (seen !== updKey()) openUpdates({ latest: true });
+      }, 1500);
+    }
+    window.autoShowForTest = autoShow;

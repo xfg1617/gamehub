@@ -1553,6 +1553,8 @@
        1. PERSISTENT GUEST PROFILE, XP, & HELPERS
        ========================================================================= */
     const STORAGE_KEY = 'playstack_friendly_v3';
+    // was this player here before? (read before a first visit saves a new profile; the update pop-up only shows to returning players)
+    window.PS_RETURNING = (() => { try { return !!localStorage.getItem(STORAGE_KEY); } catch (e) { return false; } })();
     const AVATARS = ['🦊', '🐙', '🐻', '🦉', '🦈', '🐼', '🦁', '🐸', '🦖', '🚀', '⚡', '🎯'];
 
     // A new visitor starts from zero: a random guest name, level 1, no wins, no streak, the standard 1200 Elo.

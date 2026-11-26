@@ -1070,3 +1070,12 @@ folder that was handed over, so they do not exist here.)
   **After each update for players, add an entry at the TOP of `UPDATES`** (player words, no technical terms, both
   languages; use the site's Vietnamese game names). Before Nov 23 there is no dated history: "Early November 2026".
   `test/t_updates.py`.
+* **"What's new" pop-up** (Nov 26 2026, Inna: "every time we launch an update, show a pop-up when a player enters the site;
+  don't overlap with the new-player pop-up"): `autoShow()` in zz_updates.js. A **returning** player (`window.PS_RETURNING`
+  = their profile `playstack_friendly_v3` existed when the page opened, read in the base page before a first visit saves
+  one) whose `ps_upd_seen` isn't the newest entry's key (`updKey()` = `id` or `date`) gets `openUpdates({latest: true})`
+  once: only the newest update + "See all updates" / "Let's play!". Only on the home screen (`activeView === 'play'`, not
+  `in-game`), never when arriving by invite link (`/r/`, `join=`; shown next visit), never while another pop-up is open
+  (welcome, sign-up, guide, room picker, rejoin box, video). New players are marked up to date silently (they get the
+  welcome instead). The welcome (`zz_rewards.js`) waits while the update pop-up is open. Two updates on one day: give
+  the second entry an `id` ('2026-11-26b'). Tests: `window.__showUpdPop` / `window.__showWelcome` lift the webdriver skip.

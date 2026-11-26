@@ -61,7 +61,9 @@
       const seen = () => { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { return {}; } };
       const mark = (k) => { const s = seen(); s[k] = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} };
       function welcome(kind) {
-        if (navigator.webdriver || document.getElementById('wl-pop')) return;
+        if ((navigator.webdriver && !window.__showWelcome) || document.getElementById('wl-pop')) return;
+        // never on top of the "what's new" pop-up: wait until it is closed
+        if (document.querySelector('#upd-modal:not(.hidden)')) return setTimeout(() => welcome(kind), 1000);
         const win = kind === 'win';
         const d = document.createElement('div'); d.id = 'wl-pop'; d.className = 'wl-back';
         d.innerHTML = `<div class="win wl"><div class="winbar amber"><span>${win ? 'NICE WIN!' : 'WELCOME!'}</span><button class="pix text-sm" data-x aria-label="Close">✕</button></div>

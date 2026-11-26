@@ -1034,6 +1034,11 @@ folder that was handed over, so they do not exist here.)
   (wood piece), bowling pins/crash/strike (layered wooden knocks + plank clatter), Pool `poolSnd` (ball = clay-chip
   clack pitched down, rail = soft thud, pocket = wood knock, cue = light tap; volume follows how hard). Sample:
   `prototypes/round5/real-sounds-sample.mp3`. `test/t_real_sounds.py`.
+  **Card + pool sounds remade (Nov 26 2026, Inna: "better quality")**: `tools/make_sfx.py` builds ball / rail / pocket / cue /
+  card / deal / draw / shuffle / fan from how they really happen (resin clack + short ring, rubber cushion + wood, pocket
+  drop + return-track roll, leather tip; paper snap, swish, felt pat, riffle of ~50 ticks + bridge + tap; small room echo).
+  Our own sounds, no licence. Re-run it to change them; demo `prototypes/round5/new-card-pool-sounds.mp3`. Chips, dice,
+  pieces, pins stay Kenney.
 
 * **Recorded guide voice** (Nov 26 2026, Inna chose Google "Puck", Chirp 3 HD, for English and Vietnamese): every narration
   line of the how-to videos is an MP3 in `assets/site/voice/<lang>/<hash>.mp3` (594 lines, ~14 MB, copied to the live

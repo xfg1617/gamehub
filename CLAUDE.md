@@ -1097,3 +1097,15 @@ folder that was handed over, so they do not exist here.)
   insert by email typed in the SQL Editor (never put her email in a file). Tested on PostgreSQL 16 (runs twice, guest
   refused, anon refused, owner gets correct counts, Test Pilots excluded). Stand-in: the tab with
   `sessionStorage.ps_owner_test = '1'` is the owner. `test/t_ownerstats.py`.
+
+## 5ah. TikTok clips (Nov 26 2026, Inna: "post videos on TikTok to attract people", first batch English)
+
+* `tools/tiktok/` (needs a built `dist/gamehub.html`): `rec.py` plays the site in a 540x960 phone layout and grabs every
+  screen update with its time (Chrome screencast, JPEG) plus the game's own sound (SFX master -> MediaRecorder; both
+  on one clock). `make.py` scenes play games with computers (`AUTOPLAY` wraps `npLocal` so seat 0 is a computer too;
+  Landlord uses `__tycoonSim`), `watch()` marks game-log lines ("It was a lie", "got burned", "Wild +4", "wins ... with",
+  "pays ... rent"), `CUTS` pick the moment; `cut.py` frames the game area on the navy grid (1080x1920, 30 fps), hook
+  line on top (site fonts), levelled sound, 2.6 s end card (logo, FREE / NO DOWNLOAD / 25 GAMES, gamehub.us.com, link
+  in bio). Recordings are saved in /tmp/gh_tiktok/<name>.json: `make.py --recut <names>` re-cuts with a new hook.
+* Clips in `prototypes/tiktok/` + `captions.txt`: bowling, pool, fibber, kittens, colorclash, poker, tycoon, tour.
+  Hooks must match what happens in the clip; keep "Bullshit" / brand names out of captions; music is added in TikTok.

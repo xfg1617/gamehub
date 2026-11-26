@@ -138,7 +138,7 @@ def cut_kittens(r):
 
 
 # ------------------------------------------------------------------------------------------------ uno: +4 on the last card
-@scene('colorclash', 'Me with <em>one card left</em><br>watching the +4 chaos 😭',
+@scene('colorclash', 'That <em>+4</em> was<br>personal 😭',
        'friendship over 😭 free card games with friends, one link #cardgames #gamenight #gameswithfriends #fyp #browsergames')
 def colorclash(p):
     t = Take(p, 'colorclash', WORK); pg = t.page; pg.evaluate(AUTOPLAY)
@@ -200,13 +200,13 @@ def tour(p):
         pg.evaluate(f"openGame('{gid}')"); t.wait(400)
         if pg.query_selector('[data-mode="solo"]'): pg.click('[data-mode="solo"]'); t.wait(200)
         if pg.query_selector('#su-go'): pg.click('#su-go')
-        t.wait(2200); t.mark('g_' + gid); t.wait(1700); t.mark('e_' + gid)
+        t.wait(400); pg.evaluate('window.scrollTo(0, 0)'); t.wait(1800); t.mark('g_' + gid); t.wait(1700); t.mark('e_' + gid)
     return t.stop()
 
 
 def cut_tour(r):
     m = r['marks']; rs = [(m['home'] + 0.2, m['home_end'])] + [(m['g_' + g] - 0.2, m['e_' + g]) for g, _ in TOUR]
-    r['ranges'] = rs; return None, None
+    r['ranges'] = rs; r['crop'] = (0, 0, 540, 960); return None, None
 
 
 CUTS = {'tour': cut_tour, 'bowling': cut_bowling, 'pool': cut_pool, 'fibber': cut_fibber, 'kittens': cut_kittens, 'colorclash': cut_colorclash,
@@ -226,7 +226,7 @@ if __name__ == '__main__':
             if r.get('errs'): print('   page errors:', r['errs'][:2])
             t0, t1 = CUTS[n](r)
             out = os.path.join(OUT, f'{n}.mp4'); os.makedirs(os.path.join(WORK, n), exist_ok=True)
-            if r.get('ranges'): r, total = join_ranges(r, r['ranges'], os.path.join(WORK, n)); t0, t1 = 0.0, total
+            if r.get('ranges'): crop = r.get('crop'); r, total = join_ranges(r, r['ranges'], os.path.join(WORK, n)); r['crop'] = crop; t0, t1 = 0.0, total
             os.makedirs(os.path.join(WORK, n), exist_ok=True); make_clip(r, t0, t1, hook, out, tmp=os.path.join(WORK, n), p=p, crop=r.get('crop'))
             print('made', out, f'{t1 - t0 + 2.6:.1f}s')
             caps.append(f'{n}.mp4\n{cap}\n')

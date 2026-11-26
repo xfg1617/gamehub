@@ -92,7 +92,9 @@ def make_clip(res, t0, t1, hook, out, hook_until=None, endcard=None, tmp=None, p
     body = os.path.join(tmp, 'body.mp4')
     if crop:
         # crop = (x, y, w, h) in the 540x960 page: that part is enlarged into the middle of the navy frame, under the hook
-        x, y, w, h = [int(round(v)) for v in crop]; w -= w % 2; h -= h % 2
+        x, y, w, h = [int(round(v)) for v in crop]
+        x, y = max(0, x), max(0, y); w, h = min(w, 540 - x), min(h, 960 - y)   # stay inside the recorded screen
+        w -= w % 2; h -= h % 2
         k = min(1080 / w, 1240 / h); sw, sh = int(w * k) // 2 * 2, int(h * k) // 2 * 2
         oy = 560 + (1240 - sh) // 2; ox = (1080 - sw) // 2
         bgp = os.path.join(tmp, 'bg.png'); bg_png(bgp)

@@ -3,7 +3,7 @@
        Uno places, Find the Impostor rounds, the movable log. VI_MORE4 = exact lines, VI_PAT4 = lines with numbers.
        ========================================================================= */
     window.VI_MORE4 = {
-      'Ready!': 'Sẵn sàng!', 'Random Game': 'Trò ngẫu nhiên', 'RANDOM GAME': 'TRÒ NGẪU NHIÊN',
+      'Ready!': 'Sẵn sàng!', "What's new": 'Có gì mới', 'Random Game': 'Trò ngẫu nhiên', 'RANDOM GAME': 'TRÒ NGẪU NHIÊN',
       'We pick the game and the settings. Play one game or a whole session: points from every game add up, and the most points wins.': 'Chúng tôi chọn trò chơi và cài đặt. Chơi một ván hoặc cả loạt: điểm của mọi ván được cộng dồn, ai nhiều điểm nhất thắng.',
       'SESSION': 'LOẠT CHƠI', 'Quickie · 1 game': 'Nhanh · 1 ván', '3 games': '3 ván', 'Long · 5 games': 'Dài · 5 ván',
       'Points from every game add up. Most points at the end is the champion.': 'Điểm của mọi ván được cộng dồn. Nhiều điểm nhất cuối cùng là nhà vô địch.',

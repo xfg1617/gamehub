@@ -1061,3 +1061,12 @@ folder that was handed over, so they do not exist here.)
   re-recorded with Puck. `test/t_hv_align.py` checks every yellow outline sits exactly on its part (laptop + phone); a shot can
   say `show: '<selector>'` to scroll that part fully into the picture; `make_howto_shots.py naval` redoes one game. After changing a script line: build → voice_lines.py → make_voices.py (and make_howto_shots.py
   if a picture or highlight changed). Samples: `prototypes/voices/howto-video-*.mp4`.
+
+## 5af. Update log (Nov 26 2026, Inna)
+
+* **"What's new"** link in the footer (`#upd-link`) opens the update log pop-up (`openUpdates`, `src/games/zz_updates.js`,
+  CSS `src/css/30-updates.css`): every update by date, newest first (LATEST tag), English + Vietnamese (`UPDATES[i].en/vi`,
+  redrawn on `ps-lang`). A small amber dot marks the link until the newest update has been seen (`ps_upd_seen`).
+  **After each update for players, add an entry at the TOP of `UPDATES`** (player words, no technical terms, both
+  languages; use the site's Vietnamese game names). Before Nov 23 there is no dated history: "Early November 2026".
+  `test/t_updates.py`.

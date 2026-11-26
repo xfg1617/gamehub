@@ -1,0 +1,12 @@
+    /* ===== update log ("What's new" in the footer) ===== */
+    .upd-link { position: relative; }
+    .upd-dot { position: absolute; top: -3px; right: -9px; width: 7px; height: 7px; background: #F5B041; border: 1px solid #050E18; }
+    .upd { background: #0B1B2B; border: 3px solid #050E18; box-shadow: 0 4px 0 #050E18; padding: 12px 16px 14px; }
+    .upd-new { border-color: #F5B041; }
+    .upd-head { display: flex; align-items: center; gap: 8px; }
+    .upd-date { color: #2DD4BF; font-size: 1.05rem; letter-spacing: .04em; }
+    .upd-tag { background: #F5B041; color: #231505; border: 2px solid #050E18; padding: 0 6px; font-size: .85rem; }
+    .upd-title { font-family: Outfit, sans-serif; font-weight: 800; font-size: 1.15rem; color: #F7F4EC; margin: 4px 0 6px; }
+    .upd-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
+    .upd-list li { position: relative; padding-left: 16px; font-size: .9rem; line-height: 1.45; color: #C9D6E3; }
+    .upd-list li::before { content: ''; position: absolute; left: 2px; top: .55em; width: 6px; height: 6px; background: #F5B041; }

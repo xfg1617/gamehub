@@ -38,12 +38,12 @@
         [0, '#pk-pot', "Best hand at the end takes the pot. Or bet so big that everyone else gives up.", 'Bài mạnh nhất cuối ván ăn hũ. Hoặc tố thật mạnh cho mọi người bỏ cuộc.'],
         [0, '#pk-table', "Last player with chips wins the table. Not sure which hand is best? Tap Hand ranks.", 'Ai còn chip cuối cùng là thắng. Quên bộ nào mạnh hơn thì bấm Thứ hạng bài.'],
       ] },
-      blackjack: { shots: [{ wait: 2000 }], lines: [
+      blackjack: { shots: [{ wait: 2000 }, { wait: 2000, js: "document.querySelectorAll('[data-ch]')[1].click(); setTimeout(() => document.getElementById('bj-deal').click(), 900)", after: 5000 }], lines: [
         ['icon', null, "Blackjack: beat the dealer, and don't go over twenty one.", 'Xì dách: thắng nhà cái, và đừng quá hai mươi mốt.'],
         [0, '#bj-betspot', "First, put down a bet with your chips.", 'Trước tiên, đặt cược bằng chip của bạn.'],
         [0, '#bj-deal', "Then press Deal. You and the dealer get two cards each.", 'Rồi bấm Chia bài. Bạn và nhà cái mỗi người hai lá.'],
-        [0, '#bj-msg', "Add up your cards. Pictures count as ten, and an Ace counts as one or eleven.", 'Cộng điểm bài lại. Hình tính mười, con Át tính một hoặc mười một.'],
-        [0, '#bj-msg', "Hit to take another card, Stand to stop. Go over twenty one and you lose straight away.", 'Rút thêm thì bấm Rút, đủ rồi thì bấm Dừng. Quá hai mươi mốt là thua ngay.'],
+        [1, '.seat:has(#bj-spot-0)', "Add up your cards. Pictures count as ten, and an Ace counts as one or eleven.", 'Cộng điểm bài lại. Hình tính mười, con Át tính một hoặc mười một.'],
+        [1, '#bj-hit', "Hit to take another card, Stand to stop. Go over twenty one and you lose straight away.", 'Rút thêm thì bấm Rút, đủ rồi thì bấm Dừng. Quá hai mươi mốt là thua ngay.'],
         [0, '#bj-bankbox', "Closer to twenty one than the dealer? You win your bet back, and more.", 'Gần hai mươi mốt hơn nhà cái thì bạn ăn tiền.'],
       ] },
       dominoes: { shots: [{ wait: 3500 }], lines: [
@@ -58,7 +58,7 @@
         [0, '#ch-board', "Tap one of your pieces, and the squares it can move to light up. Tap one to move there.", 'Chạm vào một quân của bạn, các ô nó đi được sẽ sáng lên. Chạm ô muốn đi.'],
         [0, '#ch-board', "Land on an enemy piece to capture it.", 'Đi vào ô có quân đối thủ là ăn quân đó.'],
         [0, '#ch-board', "The goal is to trap the enemy king so it can't escape. That's checkmate, and you win.", 'Mục tiêu là vây vua đối phương không còn đường thoát. Đó là chiếu hết, bạn thắng.'],
-        [0, '#ch-msg', "Not sure what to do? Watch the hints, and go easy on yourself. Everyone loses at first.", 'Chưa biết đi sao? Xem gợi ý, và đừng nản. Ai mới chơi cũng thua mà.'],
+        ['icon', null, "Not sure what to do? Watch the hints, and go easy on yourself. Everyone loses at first.", 'Chưa biết đi sao? Xem gợi ý, và đừng nản. Ai mới chơi cũng thua mà.'],
       ] },
       checkers: { shots: [{}], lines: [
         ['icon', null, "Checkers is all about jumping.", 'Cờ đam chủ yếu là nhảy ăn quân.'],
@@ -123,11 +123,11 @@
         [0, '#mm-note', "Cross things off in your notebook as you learn.", 'Biết được gì thì gạch đi trong sổ tay.'],
         [0, '#mm-prompt', "When you're sure, make your accusation. Get it right and you win. Get it wrong and you're out.", 'Chắc chắn rồi thì buộc tội. Đúng là thắng. Sai là bị loại.'],
       ] },
-      tunnel: { shots: [{ wait: 4000 }], lines: [
+      tunnel: { shots: [{ wait: 4000 }, { wait: 4000, show: '#tt-hand' }], lines: [
         ['icon', null, "Mine Saboteurs. Someone at the table is secretly working against you.", 'Thợ mỏ phá hoại. Có người trong bàn đang ngầm chống lại bạn.'],
         [0, '#tt-prompt', "At the start you find out your team. Diggers want to reach the gold. Rascals want to stop them.", 'Lúc đầu bạn sẽ biết mình thuộc phe nào. Thợ đào muốn tới chỗ vàng. Kẻ phá hoại muốn ngăn họ lại.'],
         [0, '#tt-board', "On your turn, add a tunnel piece that connects to the tunnel.", 'Đến lượt, nối thêm một đoạn đường hầm vào hầm.'],
-        [0, '#tt-hand', "Or play an action, like breaking someone's pick, or peeking at where the gold is.", 'Hoặc đánh một lá hành động, như làm gãy cuốc của ai đó, hay xem trộm vàng ở đâu.'],
+        [1, '#tt-hand', "Or play an action, like breaking someone's pick, or peeking at where the gold is.", 'Hoặc đánh một lá hành động, như làm gãy cuốc của ai đó, hay xem trộm vàng ở đâu.'],
         [0, '#tt-players', "Diggers win if the tunnel reaches the gold. Rascals win if it doesn't.", 'Đường hầm tới được vàng thì thợ đào thắng. Không tới thì kẻ phá hoại thắng.'],
       ] },
       guild: { shots: [{ wait: 3000 }], lines: [
@@ -168,11 +168,11 @@
         [0, '#wd-board', "Green means right letter, right spot. Yellow means it's in the word, but somewhere else.", 'Màu xanh là đúng chữ, đúng chỗ. Màu vàng là có chữ đó, nhưng sai chỗ.'],
         [0, '#wd-opp', "Guess the word before your opponent does.", 'Đoán ra từ trước đối thủ là thắng.'],
       ] },
-      daily: { shots: [{ go: 'daily' }], lines: [
+      daily: { shots: [{ go: 'daily' }, { go: 'daily', show: '#dw-keyboard' }], lines: [
         ['icon', null, "Daily Word. One new puzzle every day.", 'Từ mỗi ngày. Mỗi ngày một câu đố mới.'],
         [0, '#dw-grid', "You get six tries to guess the five letter word.", 'Bạn có sáu lần để đoán từ năm chữ cái.'],
         [0, '#dw-grid', "Green is the right letter in the right spot. Yellow is in the word, but in the wrong spot.", 'Màu xanh là đúng chữ, đúng chỗ. Màu vàng là có chữ đó nhưng sai chỗ.'],
-        [0, '#dw-keyboard', "Grey letters aren't in the word at all. Come back tomorrow to keep your streak going.", 'Chữ màu xám thì không có trong từ. Mai quay lại để giữ chuỗi ngày nhé.'],
+        [1, '#dw-keyboard', "Grey letters aren't in the word at all. Come back tomorrow to keep your streak going.", 'Chữ màu xám thì không có trong từ. Mai quay lại để giữ chuỗi ngày nhé.'],
       ] },
       naval: { shots: [{ go: 'naval', show: '#ng-deploy-btn' }], lines: [
         ['icon', null, "Sea Battle. Find and sink the enemy fleet.", 'Hải chiến. Tìm và đánh chìm hạm đội địch.'],

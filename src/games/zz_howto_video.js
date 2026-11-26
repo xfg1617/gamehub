@@ -62,8 +62,8 @@
         if (s.k === 'shot') {
           const b = s.box, cx = b ? (b[0] + b[2] / 2) / s.w * 100 : 50, cy = b ? (b[1] + b[3] / 2) / s.h * 100 : 50;
           const zoom = b ? Math.max(1.06, Math.min(1.7, 0.72 / Math.max(b[2] / s.w, b[3] / s.h))) : 1.08;
-          stage.innerHTML = `<div class="hv-slide hv-shotwrap"><div class="hv-shot" style="--cx:${cx}%;--cy:${cy}%;--z:${zoom.toFixed(2)}"><img src="${s.src}" alt="">
-              ${b ? `<i class="hv-focus" style="left:${b[0] / s.w * 100}%;top:${b[1] / s.h * 100}%;width:${b[2] / s.w * 100}%;height:${b[3] / s.h * 100}%"></i>` : ''}</div>
+          stage.innerHTML = `<div class="hv-slide hv-shotwrap"><div class="hv-shot" style="--cx:${cx}%;--cy:${cy}%;--z:${zoom.toFixed(2)}"><div class="hv-cam"><img src="${s.src}" alt="">
+              ${b ? `<i class="hv-focus" style="left:${b[0] / s.w * 100}%;top:${b[1] / s.h * 100}%;width:${b[2] / s.w * 100}%;height:${b[3] / s.h * 100}%"></i>` : ''}</div></div>
             <div class="hv-text hv-cap"></div></div>`;
         } else {
         const art = s.k === 'title' || s.k === 'end' ? `<div class="hv-icon big">${V.icon}</div>` : s.k === 'item' ? `<div class="hv-art">${s.art}</div>` : s.k === 'step' ? `<div class="hv-num">${s.n}</div>` : `<div class="hv-icon">${V.icon}</div>`;

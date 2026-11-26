@@ -8,7 +8,7 @@ import sys, os, json; sys.path.insert(0, os.path.join(os.path.dirname(__file__),
 from tlib import *
 from PIL import Image
 OUT = os.path.join(ROOT, 'assets', 'site', 'howto'); os.makedirs(OUT, exist_ok=True)
-HIDE = "#chat-fab,#em-fab,#gm-note,#tt-host,.gm-loading,#np-rj,.fx-burst{display:none!important}"
+HIDE = "#chat-fab,#em-fab,#gm-note,#tt-host,.gm-loading,#np-rj,.fx-burst,#toast-container{display:none!important}"
 ONLY = sys.argv[1:]
 IDX = os.path.join(OUT, 'index.json')
 index = json.load(open(IDX)) if ONLY and os.path.exists(IDX) else {}
@@ -36,9 +36,14 @@ with sync_playwright() as p:
             if sh.get('js'): pg.evaluate(sh['js']); pg.wait_for_timeout(sh.get('after', 1500))
             pg.evaluate("window.scrollTo(0, 0)")
             if sh.get('show'): pg.evaluate("(s) => { const e = document.querySelector(s); if (e) e.scrollIntoView({block: 'end'}); window.scrollBy(0, 16); }", sh['show']); pg.wait_for_timeout(300)
-            boxes = pg.evaluate("(sels) => { const o = {}; sels.forEach((s) => { const e = document.querySelector(s); if (!e) return; const r = e.getBoundingClientRect(); if (r.width < 4 || r.height < 4) return; o[s] = [Math.max(0, r.left), Math.max(0, r.top), Math.min(innerWidth, r.right) - Math.max(0, r.left), Math.min(innerHeight, r.bottom) - Math.max(0, r.top)].map(Math.round); }); return o; }", sels)
-            os.makedirs(os.path.join(OUT, gid), exist_ok=True)
-            png = os.path.join(OUT, gid, f'{n}.png'); pg.screenshot(path=png)
+            MEAS = "(sels) => { const o = {}; sels.forEach((s) => { const e = document.querySelector(s); if (!e) return; const r = e.getBoundingClientRect(); if (r.width < 4 || r.height < 4) return; o[s] = [Math.max(0, r.left), Math.max(0, r.top), Math.min(innerWidth, r.right) - Math.max(0, r.left), Math.min(innerHeight, r.bottom) - Math.max(0, r.top)].map(Math.round); }); return o; }"
+            png = os.path.join(OUT, gid, f'{n}.png'); os.makedirs(os.path.join(OUT, gid), exist_ok=True)
+            # measure, take the picture, measure again: if anything moved meanwhile, wait and take it again
+            for tries in range(6):
+                boxes = pg.evaluate(MEAS, sels); pg.screenshot(path=png); again = pg.evaluate(MEAS, sels)
+                if all(k in again and max(abs(a - b) for a, b in zip(v, again[k])) <= 1 for k, v in boxes.items()) and len(again) == len(boxes): break
+                pg.wait_for_timeout(700)
+            else: print('   ', gid, n, 'still moving')
             Image.open(png).convert('RGB').save(os.path.join(OUT, gid, f'{n}.jpg'), quality=68, optimize=True); os.remove(png)
             shots.append({'w': 1280, 'h': 720, 'boxes': boxes})
             missing = [s for s in sels if s not in boxes]

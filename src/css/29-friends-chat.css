@@ -58,12 +58,13 @@
     /* game pictures in the how-to videos: the camera drifts towards the part being explained, which is outlined */
     .hv-shotwrap { max-width: 1100px; gap: 12px; }
     .hv-shot { position: relative; box-sizing: content-box; width: min(calc(100% - 8px), calc((100vh - 230px) * 16 / 9)); aspect-ratio: 16 / 9; margin: 0 auto; overflow: hidden; border: 4px solid #050E18; box-shadow: 0 6px 0 #050E18; background: #050E18; }
-    .hv-shot > img, .hv-shot > .hv-focus { transform-origin: var(--cx) var(--cy); animation: hvCam 5.5s ease-out forwards; }
-    .hv-shot > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; display: block; }
+    /* the picture and its outline sit in one layer that zooms as a whole, so the outline stays glued to its part */
+    .hv-cam { position: absolute; inset: 0; transform-origin: var(--cx) var(--cy); animation: hvCam 5.5s ease-out forwards; }
+    .hv-cam > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; display: block; }
     /* the outline is drawn around the part (outline, not border), so even a tiny part keeps its exact size and place */
     .hv-focus { position: absolute; outline: 4px solid #F5B041; outline-offset: 2px; box-shadow: 0 0 0 9999px rgba(5, 14, 24, .38); }
     .hv-focus::after { content: ''; position: absolute; inset: -6px; outline: 3px solid #F5B041; animation: hvPulse 1.1s steps(2) infinite; }
     @keyframes hvCam { from { transform: scale(1); } to { transform: scale(var(--z)); } }
     @keyframes hvPulse { 50% { inset: -12px; opacity: .4; } }
     .hv-cap { font-size: clamp(1rem, 2.1vw, 1.35rem); min-height: 2.6em; }
-    @media (prefers-reduced-motion: reduce) { .hv-shot > img, .hv-shot > .hv-focus { animation: none; } }
+    @media (prefers-reduced-motion: reduce) { .hv-cam { animation: none; } }

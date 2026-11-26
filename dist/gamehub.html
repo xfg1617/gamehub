@@ -1887,15 +1887,16 @@
     /* game pictures in the how-to videos: the camera drifts towards the part being explained, which is outlined */
     .hv-shotwrap { max-width: 1100px; gap: 12px; }
     .hv-shot { position: relative; box-sizing: content-box; width: min(calc(100% - 8px), calc((100vh - 230px) * 16 / 9)); aspect-ratio: 16 / 9; margin: 0 auto; overflow: hidden; border: 4px solid #050E18; box-shadow: 0 6px 0 #050E18; background: #050E18; }
-    .hv-shot > img, .hv-shot > .hv-focus { transform-origin: var(--cx) var(--cy); animation: hvCam 5.5s ease-out forwards; }
-    .hv-shot > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; display: block; }
+    /* the picture and its outline sit in one layer that zooms as a whole, so the outline stays glued to its part */
+    .hv-cam { position: absolute; inset: 0; transform-origin: var(--cx) var(--cy); animation: hvCam 5.5s ease-out forwards; }
+    .hv-cam > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; display: block; }
     /* the outline is drawn around the part (outline, not border), so even a tiny part keeps its exact size and place */
     .hv-focus { position: absolute; outline: 4px solid #F5B041; outline-offset: 2px; box-shadow: 0 0 0 9999px rgba(5, 14, 24, .38); }
     .hv-focus::after { content: ''; position: absolute; inset: -6px; outline: 3px solid #F5B041; animation: hvPulse 1.1s steps(2) infinite; }
     @keyframes hvCam { from { transform: scale(1); } to { transform: scale(var(--z)); } }
     @keyframes hvPulse { 50% { inset: -12px; opacity: .4; } }
     .hv-cap { font-size: clamp(1rem, 2.1vw, 1.35rem); min-height: 2.6em; }
-    @media (prefers-reduced-motion: reduce) { .hv-shot > img, .hv-shot > .hv-focus { animation: none; } }
+    @media (prefers-reduced-motion: reduce) { .hv-cam { animation: none; } }
     /* ===== tic-tac-toe ===== */
     .ttt-board { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 6px; background: var(--ink); border: 4px solid var(--ink); box-shadow: 0 5px 0 var(--ink); aspect-ratio: 1 / 1; width: 100%; max-width: 460px; margin: 0 auto; }
     .ttt-cell { position: relative; min-width: 0; min-height: 0; overflow: hidden; background: #12314F; box-shadow: inset 0 0 0 3px #1A3856, inset 0 -6px 0 #0F2A44; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 12%; }
@@ -18909,12 +18910,12 @@
         [0, '#pk-pot', "Best hand at the end takes the pot. Or bet so big that everyone else gives up.", 'Bài mạnh nhất cuối ván ăn hũ. Hoặc tố thật mạnh cho mọi người bỏ cuộc.'],
         [0, '#pk-table', "Last player with chips wins the table. Not sure which hand is best? Tap Hand ranks.", 'Ai còn chip cuối cùng là thắng. Quên bộ nào mạnh hơn thì bấm Thứ hạng bài.'],
       ] },
-      blackjack: { shots: [{ wait: 2000 }], lines: [
+      blackjack: { shots: [{ wait: 2000 }, { wait: 2000, js: "document.querySelectorAll('[data-ch]')[1].click(); setTimeout(() => document.getElementById('bj-deal').click(), 900)", after: 5000 }], lines: [
         ['icon', null, "Blackjack: beat the dealer, and don't go over twenty one.", 'Xì dách: thắng nhà cái, và đừng quá hai mươi mốt.'],
         [0, '#bj-betspot', "First, put down a bet with your chips.", 'Trước tiên, đặt cược bằng chip của bạn.'],
         [0, '#bj-deal', "Then press Deal. You and the dealer get two cards each.", 'Rồi bấm Chia bài. Bạn và nhà cái mỗi người hai lá.'],
-        [0, '#bj-msg', "Add up your cards. Pictures count as ten, and an Ace counts as one or eleven.", 'Cộng điểm bài lại. Hình tính mười, con Át tính một hoặc mười một.'],
-        [0, '#bj-msg', "Hit to take another card, Stand to stop. Go over twenty one and you lose straight away.", 'Rút thêm thì bấm Rút, đủ rồi thì bấm Dừng. Quá hai mươi mốt là thua ngay.'],
+        [1, '.seat:has(#bj-spot-0)', "Add up your cards. Pictures count as ten, and an Ace counts as one or eleven.", 'Cộng điểm bài lại. Hình tính mười, con Át tính một hoặc mười một.'],
+        [1, '#bj-hit', "Hit to take another card, Stand to stop. Go over twenty one and you lose straight away.", 'Rút thêm thì bấm Rút, đủ rồi thì bấm Dừng. Quá hai mươi mốt là thua ngay.'],
         [0, '#bj-bankbox', "Closer to twenty one than the dealer? You win your bet back, and more.", 'Gần hai mươi mốt hơn nhà cái thì bạn ăn tiền.'],
       ] },
       dominoes: { shots: [{ wait: 3500 }], lines: [
@@ -18929,7 +18930,7 @@
         [0, '#ch-board', "Tap one of your pieces, and the squares it can move to light up. Tap one to move there.", 'Chạm vào một quân của bạn, các ô nó đi được sẽ sáng lên. Chạm ô muốn đi.'],
         [0, '#ch-board', "Land on an enemy piece to capture it.", 'Đi vào ô có quân đối thủ là ăn quân đó.'],
         [0, '#ch-board', "The goal is to trap the enemy king so it can't escape. That's checkmate, and you win.", 'Mục tiêu là vây vua đối phương không còn đường thoát. Đó là chiếu hết, bạn thắng.'],
-        [0, '#ch-msg', "Not sure what to do? Watch the hints, and go easy on yourself. Everyone loses at first.", 'Chưa biết đi sao? Xem gợi ý, và đừng nản. Ai mới chơi cũng thua mà.'],
+        ['icon', null, "Not sure what to do? Watch the hints, and go easy on yourself. Everyone loses at first.", 'Chưa biết đi sao? Xem gợi ý, và đừng nản. Ai mới chơi cũng thua mà.'],
       ] },
       checkers: { shots: [{}], lines: [
         ['icon', null, "Checkers is all about jumping.", 'Cờ đam chủ yếu là nhảy ăn quân.'],
@@ -18994,11 +18995,11 @@
         [0, '#mm-note', "Cross things off in your notebook as you learn.", 'Biết được gì thì gạch đi trong sổ tay.'],
         [0, '#mm-prompt', "When you're sure, make your accusation. Get it right and you win. Get it wrong and you're out.", 'Chắc chắn rồi thì buộc tội. Đúng là thắng. Sai là bị loại.'],
       ] },
-      tunnel: { shots: [{ wait: 4000 }], lines: [
+      tunnel: { shots: [{ wait: 4000 }, { wait: 4000, show: '#tt-hand' }], lines: [
         ['icon', null, "Mine Saboteurs. Someone at the table is secretly working against you.", 'Thợ mỏ phá hoại. Có người trong bàn đang ngầm chống lại bạn.'],
         [0, '#tt-prompt', "At the start you find out your team. Diggers want to reach the gold. Rascals want to stop them.", 'Lúc đầu bạn sẽ biết mình thuộc phe nào. Thợ đào muốn tới chỗ vàng. Kẻ phá hoại muốn ngăn họ lại.'],
         [0, '#tt-board', "On your turn, add a tunnel piece that connects to the tunnel.", 'Đến lượt, nối thêm một đoạn đường hầm vào hầm.'],
-        [0, '#tt-hand', "Or play an action, like breaking someone's pick, or peeking at where the gold is.", 'Hoặc đánh một lá hành động, như làm gãy cuốc của ai đó, hay xem trộm vàng ở đâu.'],
+        [1, '#tt-hand', "Or play an action, like breaking someone's pick, or peeking at where the gold is.", 'Hoặc đánh một lá hành động, như làm gãy cuốc của ai đó, hay xem trộm vàng ở đâu.'],
         [0, '#tt-players', "Diggers win if the tunnel reaches the gold. Rascals win if it doesn't.", 'Đường hầm tới được vàng thì thợ đào thắng. Không tới thì kẻ phá hoại thắng.'],
       ] },
       guild: { shots: [{ wait: 3000 }], lines: [
@@ -19039,11 +19040,11 @@
         [0, '#wd-board', "Green means right letter, right spot. Yellow means it's in the word, but somewhere else.", 'Màu xanh là đúng chữ, đúng chỗ. Màu vàng là có chữ đó, nhưng sai chỗ.'],
         [0, '#wd-opp', "Guess the word before your opponent does.", 'Đoán ra từ trước đối thủ là thắng.'],
       ] },
-      daily: { shots: [{ go: 'daily' }], lines: [
+      daily: { shots: [{ go: 'daily' }, { go: 'daily', show: '#dw-keyboard' }], lines: [
         ['icon', null, "Daily Word. One new puzzle every day.", 'Từ mỗi ngày. Mỗi ngày một câu đố mới.'],
         [0, '#dw-grid', "You get six tries to guess the five letter word.", 'Bạn có sáu lần để đoán từ năm chữ cái.'],
         [0, '#dw-grid', "Green is the right letter in the right spot. Yellow is in the word, but in the wrong spot.", 'Màu xanh là đúng chữ, đúng chỗ. Màu vàng là có chữ đó nhưng sai chỗ.'],
-        [0, '#dw-keyboard', "Grey letters aren't in the word at all. Come back tomorrow to keep your streak going.", 'Chữ màu xám thì không có trong từ. Mai quay lại để giữ chuỗi ngày nhé.'],
+        [1, '#dw-keyboard', "Grey letters aren't in the word at all. Come back tomorrow to keep your streak going.", 'Chữ màu xám thì không có trong từ. Mai quay lại để giữ chuỗi ngày nhé.'],
       ] },
       naval: { shots: [{ go: 'naval', show: '#ng-deploy-btn' }], lines: [
         ['icon', null, "Sea Battle. Find and sink the enemy fleet.", 'Hải chiến. Tìm và đánh chìm hạm đội địch.'],
@@ -19293,8 +19294,8 @@
         if (s.k === 'shot') {
           const b = s.box, cx = b ? (b[0] + b[2] / 2) / s.w * 100 : 50, cy = b ? (b[1] + b[3] / 2) / s.h * 100 : 50;
           const zoom = b ? Math.max(1.06, Math.min(1.7, 0.72 / Math.max(b[2] / s.w, b[3] / s.h))) : 1.08;
-          stage.innerHTML = `<div class="hv-slide hv-shotwrap"><div class="hv-shot" style="--cx:${cx}%;--cy:${cy}%;--z:${zoom.toFixed(2)}"><img src="${s.src}" alt="">
-              ${b ? `<i class="hv-focus" style="left:${b[0] / s.w * 100}%;top:${b[1] / s.h * 100}%;width:${b[2] / s.w * 100}%;height:${b[3] / s.h * 100}%"></i>` : ''}</div>
+          stage.innerHTML = `<div class="hv-slide hv-shotwrap"><div class="hv-shot" style="--cx:${cx}%;--cy:${cy}%;--z:${zoom.toFixed(2)}"><div class="hv-cam"><img src="${s.src}" alt="">
+              ${b ? `<i class="hv-focus" style="left:${b[0] / s.w * 100}%;top:${b[1] / s.h * 100}%;width:${b[2] / s.w * 100}%;height:${b[3] / s.h * 100}%"></i>` : ''}</div></div>
             <div class="hv-text hv-cap"></div></div>`;
         } else {
         const art = s.k === 'title' || s.k === 'end' ? `<div class="hv-icon big">${V.icon}</div>` : s.k === 'item' ? `<div class="hv-art">${s.art}</div>` : s.k === 'step' ? `<div class="hv-num">${s.n}</div>` : `<div class="hv-icon">${V.icon}</div>`;

@@ -3,6 +3,7 @@ players, marks the moment worth showing, and cut.make_clip turns it into a finis
 
     python3 build.py && python3 tools/tiktok/make.py            # all scenes
     python3 tools/tiktok/make.py bowling pool                   # some
+    python3 tools/tiktok/make.py --recut fibber              # cut again from the saved recording (new hook / timing)
 Clips go to prototypes/tiktok/, with captions.txt (caption + hashtags to paste when posting).
 """
 import os, sys, json, time, shutil, tempfile
@@ -105,7 +106,7 @@ def cut_pool(r):
 
 
 # ------------------------------------------------------------------------------------------------ bullshit: a lie caught
-@scene('fibber', 'POV: your friend swears<br>those are <em>4 Aces</em> 🤨',
+@scene('fibber', 'POV: your friend swears<br>they\'re <em>telling the truth</em> 🤨',
        'they were NOT 4 aces 😭 the bluffing card game, free in your browser #cardgames #bluff #gamenight #gameswithfriends #fyp')
 def fibber(p):
     t = Take(p, 'fibber', WORK); pg = t.page; pg.evaluate(AUTOPLAY)
@@ -121,8 +122,8 @@ def cut_fibber(r):
 
 
 # ------------------------------------------------------------------------------------------------ kaboom cats: someone gets burned
-@scene('kittens', 'Passing the hot potato<br>to my <em>best friend</em> 💀',
-       'sorry bestie 💀🔥 free party card game, no download #cardgame #gamenight #gameswithfriends #partygames #fyp')
+@scene('kittens', 'When the hot potato<br>finds <em>you</em> 💀',
+       'it was always going to be me 💀🔥 free party card game, no download #cardgame #gamenight #gameswithfriends #partygames #fyp')
 def kittens(p):
     t = Take(p, 'kittens', WORK); pg = t.page; pg.evaluate(AUTOPLAY)
     open_game(t, 'kittens', {'n': 4, 'clock': 0, 'nope': 1})
@@ -137,7 +138,7 @@ def cut_kittens(r):
 
 
 # ------------------------------------------------------------------------------------------------ uno: +4 on the last card
-@scene('colorclash', 'When they hit you with<br>a <em>+4</em> on your last card 😭',
+@scene('colorclash', 'Me with <em>one card left</em><br>watching the +4 chaos 😭',
        'friendship over 😭 free card games with friends, one link #cardgames #gamenight #gameswithfriends #fyp #browsergames')
 def colorclash(p):
     t = Take(p, 'colorclash', WORK); pg = t.page; pg.evaluate(AUTOPLAY)
@@ -151,22 +152,17 @@ def cut_colorclash(r):
 
 
 # ------------------------------------------------------------------------------------------------ poker: all in
-@scene('poker', 'Going <em>all in</em> with<br>absolutely nothing 😎',
-       'trust the process 😎 free poker with friends, no real money, just bragging rights #poker #texasholdem #gamenight #fyp')
+@scene('poker', 'Poker night with friends,<br><em>no real money</em> 😎',
+       'just bragging rights 😎 free poker with friends, no real money #poker #texasholdem #gamenight #fyp')
 def poker(p):
     t = Take(p, 'poker', WORK); pg = t.page; pg.evaluate(AUTOPLAY)
     open_game(t, 'poker', {'clock': 0})
-    t.start(); watch(t, [('allin', r'all in'), ('win', r'wins ')])
-    t0 = time.time()
-    while time.time() - t0 < 240:
-        if wait_mark(t, 'allin', 5) and wait_mark(t, 'win', 25): break
-    t.wait(5000); c = box(t, '#gs-body'); r = t.stop(); r['crop'] = c; return r
+    t.start(); watch(t, [('show', r'wins .* with ')])
+    wait_mark(t, 'show', 240); t.wait(5000); c = box(t, '#gs-body'); r = t.stop(); r['crop'] = c; return r
 
 
 def cut_poker(r):
-    a = first(r, 'allin'); wins = [v for k, v in r['marks'].items() if k.startswith('win') and v > a]
-    w = min(wins) if wins else a + 8
-    return a - 1.5, min(w + 4.5, a + 16)
+    w = first(r, 'show'); return w - 7.5, w + 4.5
 
 
 # ------------------------------------------------------------------------------------------------ landlord: paying rent
@@ -218,12 +214,15 @@ CUTS = {'tour': cut_tour, 'bowling': cut_bowling, 'pool': cut_pool, 'fibber': cu
 
 
 if __name__ == '__main__':
-    names = sys.argv[1:] or list(SCENES)
+    RECUT = '--recut' in sys.argv
+    names = [a for a in sys.argv[1:] if not a.startswith('--')] or list(SCENES)
     caps = []
     with sync_playwright() as p:
         for n in names:
             fn, hook, cap = SCENES[n]
-            r = fn(p)
+            saved = os.path.join(WORK, n + '.json')
+            if RECUT and os.path.exists(saved): r = json.load(open(saved))
+            else: r = fn(p); json.dump(r, open(saved, 'w'))
             if r.get('errs'): print('   page errors:', r['errs'][:2])
             t0, t1 = CUTS[n](r)
             out = os.path.join(OUT, f'{n}.mp4'); os.makedirs(os.path.join(WORK, n), exist_ok=True)
@@ -231,4 +230,8 @@ if __name__ == '__main__':
             os.makedirs(os.path.join(WORK, n), exist_ok=True); make_clip(r, t0, t1, hook, out, tmp=os.path.join(WORK, n), p=p, crop=r.get('crop'))
             print('made', out, f'{t1 - t0 + 2.6:.1f}s')
             caps.append(f'{n}.mp4\n{cap}\n')
-    open(os.path.join(OUT, 'captions.txt'), 'a').write('\n'.join(caps))
+    # captions for every finished clip, ready to paste when posting
+    with open(os.path.join(OUT, 'captions.txt'), 'w') as fh:
+        fh.write('Captions to paste when posting each clip (add a sound from TikTok\'s own library in the app).\n\n')
+        for n, (fn, hook, cap) in SCENES.items():
+            if os.path.exists(os.path.join(OUT, n + '.mp4')): fh.write(f'{n}.mp4\n{cap}\n\n')

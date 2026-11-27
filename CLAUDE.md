@@ -1215,4 +1215,10 @@ folder that was handed over, so they do not exist here.)
   recordings (/tmp/gh_tiktok/*.json from make.py) so the clip STARTS on the payoff (pins flying / the break) with the hook
   text from frame 0, then replays the whole shot, then the end card. `prototypes/tiktok/hook_bowling.mp4`, `hook_pool.mp4`
   (+ captions in captions.txt). Check the first frames with ffmpeg before sending.
+* **Edited promo** (Nov 27 2026, Inna: "an actual edit of the website with an instant hook"): `tools/tiktok/edit.py` →
+  `prototypes/tiktok/edit_promo.mp4` (13.5 s): pins flying + "POV: you found a website with 25 free games" from frame 0,
+  then cuts on a 120 bpm drum loop made in the script (ours) through Pool / Kaboom Cats / Uno / Bullshit / Poker / Chess /
+  Isles (punch-in zoom, white flash on each cut except the first, big amber labels), a pan down today's home page (fresh
+  phone screenshot, built frame by frame with Pillow) with "NO DOWNLOAD" / "SEND A LINK", end card. Segments are
+  re-encoded when joined (a straight copy froze the pan). Uses the make.py recordings in /tmp/gh_tiktok.
 

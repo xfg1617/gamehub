@@ -19,8 +19,13 @@
       }
       const noEmoji = (t) => String(t || '').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu, '').replace(/\s{2,}/g, ' ').trim();
       let SHOTS = null;   // where the highlighted parts are in each game picture (assets/site/howto/index.json)
+      let CLIPS = {};     // real gameplay clips per script line (assets/site/howto/clips.json, tools/make_howto_clips.py)
       const web = () => /^https?:$/.test(location.protocol);
-      function loadShots() { if (SHOTS || !web()) return Promise.resolve(SHOTS); return fetch('/howto/index.json').then((r) => (r.ok ? r.json() : null)).then((j) => { SHOTS = j; return j; }).catch(() => null); }
+      function loadShots() {
+        if (SHOTS || !web()) return Promise.resolve(SHOTS);
+        const get = (u) => fetch(u).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+        return Promise.all([get('/howto/index.json'), get('/howto/clips.json')]).then(([j, c]) => { SHOTS = j; CLIPS = c || {}; return j; });
+      }
       function slidesFor(id) {
         const sc = window.HOWTO_SCRIPT && HOWTO_SCRIPT[id];
         if (sc) {
@@ -29,6 +34,10 @@
           const pics = (SHOTS && SHOTS[id]) || [];
           const S = sc.lines.map(([pic, sel, en, vit], i) => {
             const text = noEmoji(vi ? vit : en), shot = typeof pic === 'number' && pics[pic] ? pics[pic] : null;
+            // a real gameplay clip for this line (the still picture stays as its poster / backup)
+            const clip = i > 0 && CLIPS[id] && CLIPS[id][i];
+            const still = shot ? { src: `/howto/${id}/${pic}.jpg`, box: (sel && shot.boxes[sel]) || null, w: shot.w, h: shot.h } : null;
+            if (clip) return { k: 'shot', video: clip.src, src: still ? still.src : '', still, box: clip.box || null, w: clip.w, h: clip.h, text, say: text };
             return shot ? { k: 'shot', src: `/howto/${id}/${pic}.jpg`, box: (sel && shot.boxes[sel]) || null, w: shot.w, h: shot.h, text, say: text }
               : { k: i === 0 ? 'title' : 'line', head: i === 0 ? name : '', text, say: text };
           });
@@ -62,9 +71,15 @@
         if (s.k === 'shot') {
           const b = s.box, cx = b ? (b[0] + b[2] / 2) / s.w * 100 : 50, cy = b ? (b[1] + b[3] / 2) / s.h * 100 : 50;
           const zoom = b ? Math.max(1.06, Math.min(1.7, 0.72 / Math.max(b[2] / s.w, b[3] / s.h))) : 1.08;
-          stage.innerHTML = `<div class="hv-slide hv-shotwrap"><div class="hv-shot" style="--cx:${cx}%;--cy:${cy}%;--z:${zoom.toFixed(2)}"><div class="hv-cam"><img src="${s.src}" alt="">
+          stage.innerHTML = `<div class="hv-slide hv-shotwrap"><div class="hv-shot" style="--cx:${cx}%;--cy:${cy}%;--z:${zoom.toFixed(2)}"><div class="hv-cam">${s.video ? `<video src="${s.video}" ${s.src ? `poster="${s.src}"` : ''} muted playsinline autoplay loop preload="auto"></video>` : `<img src="${s.src}" alt="">`}
               ${b ? `<i class="hv-focus" style="left:${b[0] / s.w * 100}%;top:${b[1] / s.h * 100}%;width:${b[2] / s.w * 100}%;height:${b[3] / s.h * 100}%"></i>` : ''}</div></div>
             <div class="hv-text hv-cap"></div></div>`;
+          const vid = stage.querySelector('video');
+          if (vid) {
+            // the clip can't play here: show the still picture, with the outline where it is in that picture
+            vid.onerror = () => { if (!V || V.slides[V.i] !== s) return; s.video = null; if (s.still) Object.assign(s, s.still); else { s.k = 'line'; } show(V.i); };
+            const p = vid.play && vid.play(); if (p && p.catch) p.catch(() => {});
+          }
         } else {
         const art = s.k === 'title' || s.k === 'end' ? `<div class="hv-icon big">${V.icon}</div>` : s.k === 'item' ? `<div class="hv-art">${s.art}</div>` : s.k === 'step' ? `<div class="hv-num">${s.n}</div>` : `<div class="hv-icon">${V.icon}</div>`;
         stage.innerHTML = `<div class="hv-slide hv-${s.k}">${art}${s.tag ? `<div class="hv-tag">${esc(s.tag)}</div>` : ''}${s.head ? `<div class="hv-head">${esc(s.head)}</div>` : ''}

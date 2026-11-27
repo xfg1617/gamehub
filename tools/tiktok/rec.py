@@ -34,13 +34,14 @@ new Promise((res) => { const r = window.__rec; r.onstop = async () => {
 
 class Take:
     """one recording: t = Take(p, name, out); t.page ...; t.start(); ... t.mark('x') ...; r = t.stop()"""
-    def __init__(self, p, name, out, setup=None):
+    def __init__(self, p, name, out, setup=None, size=None, mobile=True, audio=True, quality=92, nth=1):
         self.name, self.out = name, out
         self.fdir = os.path.join(out, '_f_' + name); shutil.rmtree(self.fdir, ignore_errors=True); os.makedirs(self.fdir)
         kw = {'args': ['--no-sandbox', '--autoplay-policy=no-user-gesture-required']}
         if EXE: kw['executable_path'] = EXE
         self.br = p.chromium.launch(**kw)
-        self.ctx = self.br.new_context(viewport={'width': W, 'height': H}, device_scale_factor=1, is_mobile=True, has_touch=True)
+        self.w, self.h = size or (W, H); self.audio, self.quality, self.nth = audio, quality, nth
+        self.ctx = self.br.new_context(viewport={'width': self.w, 'height': self.h}, device_scale_factor=1, is_mobile=mobile, has_touch=mobile)
         self.ctx.route('https://*.supabase.co/**', lambda r: r.abort())
         if setup: self.ctx.add_init_script(setup)
         self.page = self.ctx.new_page(); self.errs = []; self.page.on('pageerror', lambda e: self.errs.append(str(e)))
@@ -52,7 +53,8 @@ class Take:
 
     def start(self):
         """start sound + picture recording"""
-        self.a0 = self.page.evaluate(AUDIO_JS)
+        self.a0 = self.page.evaluate(AUDIO_JS) if self.audio else self.page.evaluate(
+            "(() => { window.__marks = []; window.__mark = (n) => window.__marks.push([n, Date.now() / 1000]); window.__a0 = Date.now() / 1000; return window.__a0; })()")
         self.cdp = self.ctx.new_cdp_session(self.page)
         def on(f):
             i = len(self.frames); fn = os.path.join(self.fdir, f'{i:06d}.jpg')
@@ -60,7 +62,7 @@ class Take:
             try: self.cdp.send('Page.screencastFrameAck', {'sessionId': f['sessionId']})
             except Exception: pass
         self.cdp.on('Page.screencastFrame', on)
-        self.cdp.send('Page.startScreencast', {'format': 'jpeg', 'quality': 92, 'maxWidth': W, 'maxHeight': H, 'everyNthFrame': 1})
+        self.cdp.send('Page.startScreencast', {'format': 'jpeg', 'quality': self.quality, 'maxWidth': self.w, 'maxHeight': self.h, 'everyNthFrame': self.nth})
 
     def mark(self, n):
         self.page.evaluate(f"window.__mark({n!r})")
@@ -71,10 +73,12 @@ class Take:
     def stop(self):
         self.page.wait_for_timeout(300)
         self.cdp.send('Page.stopScreencast')
-        r = self.page.evaluate(STOP_JS)
+        if self.audio: r = self.page.evaluate(STOP_JS)
+        else: r = self.page.evaluate("({ marks: window.__marks, a0: window.__a0 })")
         errs = self.errs
         self.ctx.close(); self.br.close()
-        a = os.path.join(self.out, f'_a_{self.name}.webm'); open(a, 'wb').write(base64.b64decode(r['a']))
+        a = None
+        if self.audio: a = os.path.join(self.out, f'_a_{self.name}.webm'); open(a, 'wb').write(base64.b64decode(r['a']))
         marks = {k: t - r['a0'] for k, t in r['marks']}           # seconds from the start of the sound
         frames = [(t - r['a0'], fn) for t, fn in self.frames]     # same clock
         return {'audio': a, 'frames': frames, 'marks': marks, 'errs': errs}

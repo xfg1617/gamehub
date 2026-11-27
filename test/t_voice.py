@@ -12,6 +12,7 @@ with sync_playwright() as p:
     join(B, code); A.wait_for_timeout(2500)
     check(A.query_selector('#ttt-board') and B.query_selector('#ttt-board'), 'game started for both')
     check(A.query_selector('#vc-fab') and B.query_selector('#vc-fab'), 'voice button stays at the table')
+    for pg in (A, B): pg.evaluate('window.__vcIceDelay = 400')   # like the live site: getting relay details takes a moment
     for pg in (A, B):
         pg.click('#vc-fab'); pg.wait_for_timeout(300)
         check(pg.query_selector('#vc-join') is not None and 'Nothing is recorded' in pg.inner_text('#vc-pop'), 'panel explains voice and offers Join')

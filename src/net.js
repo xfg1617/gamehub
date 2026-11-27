@@ -218,6 +218,11 @@
       /* ================= Supabase (the real service) ================= */
       function supaBackend() {
         let sb, uid;
+        // Coming back from Google: the sign-in details are in the address (#access_token=... or #error=...). Keep a copy
+        // straight away: the page tidies its address (router, invite links) before the online service has loaded,
+        // and losing them left people still showing as a guest after signing in with Google (Nov 2026).
+        const AUTH_BACK = (() => { const h = location.hash || '', q = location.search || '';
+          return /access_token=|error_description=|error_code=|[?&]code=/.test(h + q) ? { h, q, path: location.pathname } : null; })();
         const err = (e) => { const m = (e && (e.message || e.error_description)) || String(e); return new Error(/full/.test(m) ? 'That room is already full.' : /no such room/.test(m) ? 'No room with that code.' : /over/.test(m) ? 'That game is already over.' : /slow/i.test(m) ? 'Slow down a little!'
           : NETERR.test(m) ? 'Connection problem. Check your internet and try again.' : AUTHERR.test(m) ? 'Your connection to GameHub timed out. Please try again.' : m); };
         const ok = ({ data, error }) => { if (error) throw err(error); return data; };
@@ -274,8 +279,33 @@
               const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js';
               s.onload = res; s.onerror = () => rej(new Error('Could not load the online service.')); document.head.appendChild(s);
             });
-            sb = window.supabase.createClient(cfg.url, cfg.key, { auth: { persistSession: true, autoRefreshToken: true } });
+            // put the Google answer back in the address for a moment so the service can read it
+            if (AUTH_BACK && !/access_token=|error_description=|error_code=|[?&]code=/.test(location.hash + location.search)) { try { history.replaceState(history.state, '', location.pathname + AUTH_BACK.q + AUTH_BACK.h); } catch (e) {} }
+            sb = window.supabase.createClient(cfg.url, cfg.key, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
             let { data } = await sb.auth.getSession();
+            if (AUTH_BACK) {
+              const keep = (history.state && history.state.p) || AUTH_BACK.path || '/';
+              try { history.replaceState(history.state, '', keep); } catch (e) {}
+              const prm = new URLSearchParams((AUTH_BACK.h || '').replace(/^#/, '') + '&' + (AUTH_BACK.q || '').replace(/^\?/, ''));
+              const code = prm.get('error_code') || '', desc = prm.get('error_description') || '';
+              if (/identity_already_exists/i.test(code + desc) && !sessionStorage.getItem('ps_g_retry')) {
+                // "Sign up with Google" for a Google account that already has GameHub: just log in with it
+                sessionStorage.setItem('ps_g_retry', '1');
+                setTimeout(() => { try { showToast('That Google account already has a GameHub account. Logging you in...', 'info'); } catch (e) {} }, 500);
+                await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname } });
+                await new Promise(() => {});                                     // the page is leaving for Google
+              }
+              if (code || desc) setTimeout(() => { try { showToast('Google sign-in did not finish: ' + (desc.replace(/\+/g, ' ') || code), 'error'); } catch (e) {} }, 800);
+              else sessionStorage.removeItem('ps_g_retry');
+            }
+            // the saved sign-in may be older than the account (a guest who just linked Google): ask the server who this is
+            if (data.session && data.session.user && (data.session.user.is_anonymous || !data.session.user.email)) {
+              try {
+                const u = await sb.auth.getUser();
+                const su = u && u.data && u.data.user;
+                if (su && !su.is_anonymous && su.email) { const r = await sb.auth.refreshSession(); if (r && r.data && r.data.session) data = r.data; }
+              } catch (e) {}
+            }
             if (!data.session) { const r = await sb.auth.signInAnonymously({ options: await withCaptcha() }); if (r.error) throw err(r.error); data = r.data; }
             const user = (data.session || data).user;
             uid = user.id;

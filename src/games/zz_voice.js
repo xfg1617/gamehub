@@ -9,7 +9,7 @@
        Mute anyone just for yourself (the 🔇 next to their name). A mesh like this suits up to ~8 people.
        ========================================================================= */
     (function voiceChat() {
-      const V = { code: null, ch: null, peers: {}, stream: null, mode: 'ptt', live: false, talk: {}, muted: {}, names: {}, joining: false, ice: null, iceAt: 0, open: false };
+      const V = { tries: {}, fail: {}, code: null, ch: null, peers: {}, stream: null, mode: 'ptt', live: false, talk: {}, muted: {}, names: {}, joining: false, ice: null, iceAt: 0, open: false };
       const MAX = 8;
       try { const s = JSON.parse(localStorage.getItem('ps_voice_v1') || '{}'); if (s.mode === 'open') V.mode = 'open'; V.muted = s.muted || {}; V.vol = typeof s.vol === 'number' ? s.vol : 1; } catch (e) { V.vol = 1; }
       const save = () => { try { localStorage.setItem('ps_voice_v1', JSON.stringify({ mode: V.mode, muted: V.muted, vol: V.vol })); } catch (e) {} };
@@ -24,7 +24,8 @@
 
       // ---------- relay servers ----------
       async function iceServers() {
-        const base = [{ urls: 'stun:stun.cloudflare.com:3478' }];
+        const base = [{ urls: 'stun:stun.cloudflare.com:3478' }, { urls: 'stun:stun.l.google.com:19302' }];
+        if (window.__vcIceDelay) await new Promise((r) => setTimeout(r, window.__vcIceDelay));   // tests: act like a slow network
         if (!/^https?:$/.test(location.protocol) || location.hostname === 'gamehub.test') return base;
         if (V.ice && Date.now() - V.iceAt < 3000e3) return base.concat(V.ice);
         try {
@@ -48,6 +49,8 @@
           return showToast(e && e.name === 'NotAllowedError' ? 'Microphone blocked. Allow the microphone for this site (the 🔒 next to the address), then try again.' : 'No microphone found.', 'error');
         }
         if (roomCode() !== code) { stopMic(); V.joining = false; return paint(); }
+        V.iceList = await iceServers();                                  // ready before anyone calls, so no message waits on it
+        if (roomCode() !== code) { stopMic(); V.joining = false; return paint(); }
         V.code = code; V.live = false; gate();
         V.ch = NET.channel('vc:' + code, { name: NET.me.name, avatar: NET.me.avatar, at: Date.now() });
         V.ch.on('sig', onSig);
@@ -61,7 +64,7 @@
       function leave() {
         Object.keys(V.peers).forEach(drop);
         if (V.ch) { try { V.ch.close(); } catch (e) {} } V.ch = null;
-        stopMic(); V.code = null; V.talk = {}; V.live = false; V.joining = false;
+        stopMic(); V.code = null; V.talk = {}; V.tries = {}; V.fail = {}; V.live = false; V.joining = false;
         if (V.meterT) clearInterval(V.meterT); V.meterT = null; if (V.ac) { try { V.ac.close(); } catch (e) {} V.ac = null; }
         marks(); paint();
       }
@@ -75,44 +78,61 @@
         ids.slice(0, MAX - 1).forEach((u) => { if (!V.peers[u] && me() < u) connect(u, true); });   // the smaller id calls
         paint();
       }
-      async function connect(u, caller) {
-        const pc = new RTCPeerConnection({ iceServers: await iceServers() });
-        const P = { pc, u, audio: null, q: [], caller };
+      // Each side sends ONE message with everything the other needs (its whole address list, gathered first),
+      // so nothing can arrive before the other screen is ready for it (that left people stuck on "connecting").
+      const settle = (pc) => new Promise((res) => {
+        if (pc.iceGatheringState === 'complete') return res();
+        const t = setTimeout(res, 3500);
+        pc.addEventListener('icegatheringstatechange', () => { if (pc.iceGatheringState === 'complete') { clearTimeout(t); res(); } });
+      });
+      const sdpOf = (pc) => { const d = pc.localDescription; return d && d.toJSON ? d.toJSON() : { type: d.type, sdp: d.sdp }; };
+      function connect(u, caller) {
+        const pc = new RTCPeerConnection({ iceServers: V.iceList || [{ urls: 'stun:stun.cloudflare.com:3478' }] });
+        const P = { pc, u, audio: null, q: [], caller, at: Date.now(), tries: (V.tries[u] || 0) };
         V.peers[u] = P;
         if (V.stream) V.stream.getTracks().forEach((t) => pc.addTrack(t, V.stream));
-        pc.onicecandidate = (e) => { if (e.candidate && V.ch) V.ch.send('sig', { to: u, ice: e.candidate.toJSON ? e.candidate.toJSON() : e.candidate }); };
         pc.ontrack = (e) => {
           let a = P.audio; if (!a) { a = P.audio = document.createElement('audio'); a.autoplay = true; a.setAttribute('playsinline', ''); a.dataset.vc = u; box().appendChild(a); }
           a.srcObject = e.streams[0] || new MediaStream([e.track]); a.muted = !!V.muted[u]; a.volume = V.vol; a.play().catch(() => {});
         };
         pc.onconnectionstatechange = () => {
-          const st = pc.connectionState; paint();
-          if (st === 'failed' && V.peers[u] === P) { drop(u); if (V.ch && caller) setTimeout(() => { if (V.ch && !V.peers[u] && (V.ch.members() || []).some((x) => x.uid === u)) connect(u, true); }, 1500); }
+          const st = pc.connectionState; if (st === 'connected') { V.tries[u] = 0; V.fail[u] = false; } paint();
+          if (st === 'failed' && V.peers[u] === P) retry(u, P);
         };
-        if (caller) { const o = await pc.createOffer(); await pc.setLocalDescription(o); V.ch.send('sig', { to: u, sdp: pc.localDescription.toJSON ? pc.localDescription.toJSON() : pc.localDescription }); }
+        if (caller) (async () => {
+          try { await pc.setLocalDescription(await pc.createOffer()); await settle(pc); if (V.peers[u] === P && V.ch) V.ch.send('sig', { to: u, sdp: sdpOf(pc) }); } catch (e) { retry(u, P); }
+        })();
         return P;
       }
+      // not connected after a while: the caller starts again (3 tries), then the row says there's no connection
+      function retry(u, P) {
+        if (V.peers[u] !== P) return;
+        drop(u);
+        const n = (V.tries[u] || 0) + 1; V.tries[u] = n;
+        if (n >= 3) { V.fail[u] = true; paint(); }
+        if (V.ch && me() < u) setTimeout(() => { if (V.ch && !V.peers[u] && (V.ch.members() || []).some((x) => x.uid === u)) connect(u, true); }, n >= 3 ? 10000 : 1200);
+        else if (V.ch) V.ch.send('sig', { to: u, again: 1 });       // ask the caller to start again
+      }
+      setInterval(() => { Object.values(V.peers).forEach((P) => { const st = P.pc.connectionState; if (st !== 'connected' && Date.now() - P.at > 15000) retry(P.u, P); }); }, 2000);
       function drop(u) { const P = V.peers[u]; if (!P) return; delete V.peers[u]; try { P.pc.close(); } catch (e) {} if (P.audio) { P.audio.srcObject = null; P.audio.remove(); } delete V.talk[u]; }
       async function onSig(d, from) {
         if (!V.ch || !d || d.to !== me() || !from || from === me()) return;
         let P = V.peers[from];
         try {
-          if (d.sdp) {
-            if (d.sdp.type === 'offer') {
-              if (P && P.caller) return;                                   // both called at once: the smaller id wins (never happens normally)
-              if (P) drop(from);                                           // a fresh call from them (they reconnected)
-              if (Object.keys(V.peers).length >= MAX - 1) return;
-              P = await connect(from, false);
-              await P.pc.setRemoteDescription(d.sdp);
-              const a = await P.pc.createAnswer(); await P.pc.setLocalDescription(a);
-              V.ch.send('sig', { to: from, sdp: P.pc.localDescription.toJSON ? P.pc.localDescription.toJSON() : P.pc.localDescription });
-            } else if (P && d.sdp.type === 'answer' && P.pc.signalingState === 'have-local-offer') await P.pc.setRemoteDescription(d.sdp);
-            if (P) { for (const c of P.q) await P.pc.addIceCandidate(c).catch(() => {}); P.q = []; }
-          } else if (d.ice) {
-            if (!P) return;
-            if (!P.pc.remoteDescription) P.q.push(d.ice); else await P.pc.addIceCandidate(d.ice).catch(() => {});
-          }
-        } catch (e) { /* a broken handshake: the caller tries again when the connection fails */ }
+          if (d.again) { if (me() < from) { if (P) drop(from); connect(from, true); } return; }
+          if (d.sdp && d.sdp.type === 'offer') {
+            if (P && P.caller) return;                                     // both called at once: the smaller id wins
+            if (P) drop(from);                                             // a fresh call from them (they reconnected)
+            if (Object.keys(V.peers).length >= MAX - 1) return;
+            P = connect(from, false);
+            await P.pc.setRemoteDescription(d.sdp);
+            await P.pc.setLocalDescription(await P.pc.createAnswer());
+            await settle(P.pc);
+            if (V.peers[from] === P && V.ch) V.ch.send('sig', { to: from, sdp: sdpOf(P.pc) });
+          } else if (d.sdp && d.sdp.type === 'answer') {
+            if (P && P.pc.signalingState === 'have-local-offer') await P.pc.setRemoteDescription(d.sdp);
+          } else if (d.ice && P && P.pc.remoteDescription) await P.pc.addIceCandidate(d.ice).catch(() => {});
+        } catch (e) { if (P) retry(from, P); }
       }
 
       // ---------- talking ----------
@@ -193,7 +213,7 @@
       function closePop() { V.open = false; const p = document.getElementById('vc-pop'); if (p) p.remove(); }
       function person(u, nm, isMe) {
         const P = V.peers[u], st = isMe ? 'you' : !P ? 'connecting' : P.pc.connectionState;
-        const word = isMe ? 'YOU' : st === 'connected' ? '' : st === 'failed' ? 'NO CONNECTION' : 'CONNECTING...';
+        const word = isMe ? 'YOU' : st === 'connected' ? '' : V.fail[u] ? 'NO CONNECTION' : 'CONNECTING...';
         return `<div class="vc-row ${V.talk[u] ? 'talk' : ''}"><span class="vc-av">${esc(nm.av)}</span><span class="vc-nm">${esc(nm.name)}</span>
           ${word ? `<span class="pix vc-st">${word}</span>` : ''}<span class="vc-bars"><i></i><i></i><i></i></span>
           ${isMe ? '' : `<button class="vc-mute ${V.muted[u] ? 'on' : ''}" data-vm="${esc(u)}" title="${V.muted[u] ? 'Unmute' : 'Mute for me'}" aria-label="${V.muted[u] ? 'Unmute' : 'Mute for me'}">${V.muted[u] ? '🔇' : '🔊'}</button>`}</div>`;
@@ -212,6 +232,7 @@
           const ids = Object.keys(V.peers), mine = { name: NET.me.name, av: NET.me.avatar };
           const talking = V.mode === 'open' ? !V.selfMute : V.live;
           body = `<div class="vc-list">${person(me(), mine, true)}${ids.map((u) => person(u, V.names[u] || { name: 'Player', av: '🙂' }, false)).join('')}${ids.length ? '' : '<p class="text-xs text-muted">Nobody else has joined voice yet. Ask your friends to press 🎤.</p>'}</div>
+            ${Object.keys(V.fail).some((u) => V.fail[u]) ? '<p class="text-xs text-coral">Can\'t reach someone: their internet (or yours) blocks direct voice. Still trying every few seconds. Trying another Wi-Fi or mobile data can help.</p>' : ''}
             <div class="seg w-full"><button data-vmode="ptt" class="seg-btn flex-1 ${V.mode === 'ptt' ? 'on' : ''}">Hold to talk</button><button data-vmode="open" class="seg-btn flex-1 ${V.mode === 'open' ? 'on' : ''}">Open mic</button></div>
             ${V.mode === 'ptt' ? `<button id="vc-ptt" class="btn-game ${talking ? 'btn-emerald' : 'btn-teal'} w-full py-3 text-sm">${talking ? '🎙 TALKING...' : '🎙 HOLD TO TALK'}</button><p class="text-xs text-muted text-center">Or hold the <b class="text-bone">V</b> key, or hold the 🎤 button.</p>`
               : `<button id="vc-self" class="btn-game ${V.selfMute ? 'btn-coral' : 'btn-emerald'} w-full py-2.5 text-sm">${V.selfMute ? '🔇 Your mic is off · tap to turn on' : '🎙 Your mic is on · tap to mute'}</button>`}

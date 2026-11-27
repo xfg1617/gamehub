@@ -1263,3 +1263,13 @@ folder that was handed over, so they do not exist here.)
   treats http://gamehub.test as secure). No Supabase change.
 * **Sound & Music panel = three sliders** (Inna): Sound effects (`ps_sfx_vol`, sets `SFX._master()` gain 0.6 × vol), Music (`st.vol`),
   Voice chat (`VOICE.setVol`, in `ps_voice_v1`). Sliding to 0 turns that sound off (OFF label); sliding up turns it on again.
+* **Google sign-in fix (Nov 28 2026, Inna: "after signing in with Google the site still shows Sign up · Log in")**: the page
+  tidied its address (router pushState) before supabase-js loaded, so `#access_token=...` was gone and the old guest session
+  stayed. `supaBackend()` now copies the Google answer from the address at page load (`AUTH_BACK`), puts it back for
+  `createClient` (detectSessionInUrl) and then cleans the address. "Sign up with Google" on a Google account that already
+  has GameHub (`identity_already_exists`) logs in with it instead; other Google errors show a toast. A guest whose saved
+  sign-in is older than the account asks the server (`getUser` → `refreshSession`). `test/t_google_return.py`.
+* **Voice "connecting" fix**: on the live site the answering screen was still fetching relay details when the caller's
+  connection details arrived, and they were thrown away. Now relay details are fetched on Join, and each side sends ONE
+  message with its whole gathered address list (no trickle ICE); not connected in 15 s → the caller starts again (3 tries,
+  then "NO CONNECTION" + a tip, still retrying every 10 s). `t_voice.py` runs with `window.__vcIceDelay` (slow network).

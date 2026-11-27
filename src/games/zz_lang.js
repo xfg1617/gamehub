@@ -36,7 +36,7 @@
         'Anyone up for a game?': 'Có ai chơi một ván không?', 'GG': 'GG', 'Send': 'Gửi', 'Say something nice…': 'Nói gì đó dễ thương…',
         'No open rooms right now. Create one!': 'Chưa có phòng nào. Tạo một phòng nhé!',
         // game names
-        'Chess': 'Cờ Vua', 'Checkers': 'Cờ Đam', 'Landlord': 'Cờ Tỷ Phú', 'Four-in-a-Row': 'Bốn Quân Liền', 'Tic-Tac-Toe': 'Cờ Ca-rô', 'Blackjack': 'Xì Dách',
+        'Chess': 'Cờ Vua', 'Checkers': 'Cờ Đam', 'Landlord': 'Cờ Tỷ Phú', 'Four-in-a-Row': 'Bốn Quân Liền', 'Tic-Tac-Toe': 'Cờ Ca-rô 3×3', 'Caro': 'Cờ Caro', 'CARO': 'CỜ CARO', 'Thirteen': 'Tiến Lên', 'THIRTEEN': 'TIẾN LÊN', 'Werewolf': 'Ma Sói', 'WEREWOLF': 'MA SÓI', 'Funny Answers': 'Trả Lời Bá Đạo', 'FUNNY ANSWERS': 'TRẢ LỜI BÁ ĐẠO', 'TRIVIA RUSH': 'ĐỐ VUI NHANH', 'Blackjack': 'Xì Dách',
         'Kaboom Cats': 'Mèo Nổ', 'Word Duel': 'Đấu Chữ', 'Word Connect': 'Nối Chữ', 'Find the Impostor': 'Tìm Kẻ Giả Mạo', 'Doodle Guess': 'Vẽ & Đoán',
         'Pool': 'Bi-a', 'Dominoes': 'Domino', 'Whodunit': 'Ai Là Thủ Phạm?', 'Island Settlers': 'Khai Hoang Đảo', 'Castles & Kings': 'Lâu Đài & Vua',
         'Mine Saboteurs': 'Phá Hoại Hầm Mỏ', 'Wall Maze': 'Mê Cung Tường', 'Bullshit': 'Nói Xạo', 'Trivia Rush': 'Đố Vui Nhanh', 'Sea Battle': 'Hải Chiến',
@@ -100,7 +100,8 @@
       Object.keys(window.VI_MORE || {}).forEach((k) => { if (!(k in VI)) VI[k] = window.VI_MORE[k]; });   // part 1: zz_i18n_vi.js
       Object.keys(window.VI_MORE2 || {}).forEach((k) => { if (!(k in VI)) VI[k] = window.VI_MORE2[k]; });   // part 2: zz_i18n_vi2.js
       Object.keys(window.VI_MORE3 || {}).forEach((k) => { if (!(k in VI)) VI[k] = window.VI_MORE3[k]; });   // part 3: zz_i18n_vi3.js (audit)
-      Object.keys(window.VI_MORE4 || {}).forEach((k) => { if (!(k in VI)) VI[k] = window.VI_MORE4[k]; });   // part 4: zz_i18n_vi4.js (round 5)
+      Object.keys(window.VI_MORE4 || {}).forEach((k) => { if (!(k in VI)) VI[k] = window.VI_MORE4[k]; });
+      Object.keys(window.VI_MORE5 || {}).forEach((k) => { if (!(k in VI)) VI[k] = window.VI_MORE5[k]; });   // part 5: zz_i18n_vi5.js (new games, round 6)   // part 4: zz_i18n_vi4.js (round 5)
       const PAT = [
         [/^(\d+)[–-](\d+) PLAYERS/, (m, a, b) => `${a}-${b} NGƯỜI`], [/(\d+) PLAYERS\b/g, '$1 NGƯỜI'], [/~(\d+) MIN\b/g, '~$1 PHÚT'], [/(\d+) MIN\b/g, '$1 PHÚT'],
         [/\bSOLO\b/g, 'CHƠI ĐƠN'], [/\bCHIPS\b/g, 'CHIP'], [/^(\d+) GAMES$/, '$1 TRÒ'], [/^● (\d+) online$/, '● $1 online'], [/^(\d+) chatting$/, '$1 đang trò chuyện'],
@@ -125,6 +126,7 @@
       ];
       PAT.push(...(window.VI_PAT_MORE || []));
       PAT.push(...(window.VI_PAT4 || []));
+      PAT.push(...(window.VI_PAT5 || []));
       // a line in CAPITALS whose normal spelling is known ("CASTLES & KINGS", "GO TO JAIL") gets the Vietnamese in capitals
       let UP = null;
       const upper = (s) => { if (!UP) { UP = {}; Object.keys(VI).forEach((k) => { if (/[a-z]/.test(k)) { const u = k.toUpperCase(); if (!(u in VI) && !(u in UP)) UP[u] = VI[k].toUpperCase(); } }); } return UP[s]; };

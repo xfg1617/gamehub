@@ -67,6 +67,13 @@
         [0, '#ck-board', "Reach the far side and your piece becomes a king. Kings can move backwards too.", 'Đi tới cuối bàn thì quân được phong vua. Vua đi lùi được.'],
         [0, '#ck-status', "Take all their pieces, or leave them with no moves, and you win.", 'Ăn hết quân đối thủ, hoặc làm họ hết nước đi, là bạn thắng.'],
       ] },
+      caro: { shots: [{}], lines: [
+        ['icon', null, "Caro! Five in a row, on a big board.", 'Cờ Caro! Năm quân liền nhau, trên bàn cờ lớn.'],
+        [0, '#cr-board', "Take turns putting your mark on any empty square.", 'Hai bên lần lượt đánh quân vào ô trống bất kỳ.'],
+        [0, '#cr-board', "Line up five, across, down, or diagonally, and you win.", 'Năm quân thẳng hàng, ngang, dọc hay chéo, là bạn thắng.'],
+        [0, '#cr-board', "See three or four in a row from your opponent? Block an end, fast!", 'Thấy đối thủ có ba hay bốn quân liền? Chặn một đầu ngay!'],
+        [0, '#cr-status', "Tip: make two threats at once. They can only block one.", 'Mẹo: tạo hai đường cùng lúc. Họ chỉ chặn được một thôi.'],
+      ] },
       tictactoe: { shots: [{}], lines: [
         ['icon', null, "Tic Tac Toe. You've probably played this on paper.", 'Cờ ca rô ba ô. Chắc bạn chơi trên giấy rồi.'],
         [0, '#ttt-board', "Take turns putting your mark in an empty square.", 'Lần lượt đánh dấu vào một ô trống.'],

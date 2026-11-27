@@ -119,7 +119,7 @@
     const npLevelName = (m, v) => { const o = npLevelOption(m), c = o && o.choices.find((x) => String(x[0]) === String(v)); return c ? c[1] : null; };
     // can "just you + nb computer players" run as the game's own on-this-device version?
     function npCanLocal(m, nb) {
-      if (['navalnet', 'tictactoe', 'c4', 'checkers', 'chess', 'pool', 'wordduel', 'bowling'].includes(m.id)) return nb === 1;
+      if (['navalnet', 'tictactoe', 'caro', 'c4', 'checkers', 'chess', 'pool', 'wordduel', 'bowling'].includes(m.id)) return nb === 1;
       if (m.id === 'poker') return nb === 3;
       const sk = tableSizeKey(m.id), so = sk && (m._opts || []).find((o) => o.key === sk);
       return !!(so && so.choices.some((c) => +c[0] === nb + 1));

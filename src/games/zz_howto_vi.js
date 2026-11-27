@@ -29,6 +29,13 @@
           ['Lần lượt', 'Hai người lần lượt thả mỗi người một quân. Để ý đồng hồ.'],
           ['Chặn lại!', 'Nếu đối thủ có ba quân liền nhau và bên cạnh còn trống, hãy thả quân vào đó để chặn.'],
           ['Chiến thắng', 'Bốn quân liền nhau là thắng. Nếu bàn đầy trước thì hòa.']], online: ON2 },
+        caro: { goal: 'Là người đầu tiên có năm quân liền nhau.', steps: [
+          ['Đánh quân', 'Chạm vào một ô trống. X và O lần lượt mỗi bên một quân. Nước vừa đi được tô vàng.'],
+          ['Năm quân là thắng', 'Năm quân (hoặc hơn) thẳng hàng ngang, dọc hoặc chéo là thắng ván.'],
+          ['Chặn lại', 'Khi đối thủ có ba quân thoáng hai đầu, hoặc bốn quân, hãy chặn một đầu. Bốn quân thoáng hai đầu thì không chặn được nữa!'],
+          ['Luật chặn hai đầu (tùy chọn)', 'Khi bật, năm quân bị đối thủ chặn cả hai đầu thì không tính thắng.'],
+          ['Thắng trận', 'Trong trận "thắng 2/3" hoặc "thắng 3/5", ai thắng nhiều ván hơn sẽ thắng. Hai người thay phiên đi trước.']], online: ON2,
+          tip: 'Tạo hai đường đe dọa cùng lúc (ví dụ bốn quân và ba quân thoáng): đối thủ chỉ chặn được một.' },
         tictactoe: { goal: 'Xếp ba quân của bạn thẳng hàng.', steps: [
           ['Đánh quân', 'Chạm vào một ô trống. X đi trước ở ván đầu.'],
           ['Lần lượt', 'Hai người lần lượt mỗi người đánh một quân.'],

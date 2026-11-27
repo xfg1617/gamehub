@@ -42,6 +42,14 @@
           ['Win', 'Four in a row wins. If the board fills up first, it is a draw.']],
           items: () => row([[disc('disc-amber'), 'Amber disc', 'The first player'], [disc('disc-coral'), 'Coral disc', 'The second player']]),
           tip: 'The middle column is the strongest. More lines of four go through it than any other column.', online: NET_2P },
+        caro: { tag: '1v1 · 15×15 · FIVE IN A ROW', goal: 'Be the first to get five of your marks in a row.', steps: [
+          ['Place your mark', 'Tap an empty square. <b class="text-teal">X</b> and <b class="text-coral">O</b> take turns, one mark each. Your last move is lit up in yellow.'],
+          ['Five in a row wins', 'Five (or more) of your marks in a straight line, across, down or diagonally, wins the game.'],
+          ['Block them', 'When the other player has three in a row with both ends open, or four in a row, put your mark at an end. An open four can no longer be stopped!'],
+          ['Vietnamese rule (optional)', 'With this setting on, five in a row with the other player\'s marks at <b>both</b> ends doesn\'t count.'],
+          ['Win the match', 'In a "best of 3" or "best of 5", the first to win most of the games wins. Players take turns starting.']],
+          items: () => row([[`<span class="ht-mark" style="color:#2DD4BF">✕</span>`, 'X', 'Teal, moves first'], [`<span class="ht-mark" style="color:#FB7185">◯</span>`, 'O', 'Coral']]),
+          tip: 'Attack with two threats at once (for example a four and an open three): your opponent can only block one of them.', online: NET_2P },
         tictactoe: { tag: '1v1 · 3×3', goal: 'Get three of your marks in a row.', steps: [
           ['Place your mark', 'Tap an empty square. X goes first in the first game.'],
           ['Take turns', 'Players take turns, one mark each.'],

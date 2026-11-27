@@ -63,12 +63,12 @@
       body.in-game[data-game="isles"] #gs-body > .grid > div:last-child, body.in-game[data-game="manor"] #gs-body > .grid > div:last-child, body.in-game[data-game="tycoon"] #gs-body > .grid > div:last-child { max-height: var(--av); overflow-y: auto; }
       /* card tables: a table about 1.7 times as wide as it is tall, with a slim panel for the timer and status */
       body.in-game[data-game="poker"] #gs-body > .grid { grid-template-columns: min(calc(var(--av) * 1.6), calc(100vw - 360px)) 300px !important; }
-      body.in-game[data-game="kittens"] #gs-body > .grid, body.in-game[data-game="colorclash"] #gs-body > .grid, body.in-game[data-game="fibber"] #gs-body > .grid { grid-template-columns: min(calc(var(--av) * 1.4), calc(100vw - 300px)) 240px !important; }
+      body.in-game[data-game="kittens"] #gs-body > .grid, body.in-game[data-game="colorclash"] #gs-body > .grid, body.in-game[data-game="fibber"] #gs-body > .grid, body.in-game[data-game="thirteen"] #gs-body > .grid { grid-template-columns: min(calc(var(--av) * 1.4), calc(100vw - 300px)) 240px !important; }
       body.in-game[data-game="dominoes"] #gs-body > .grid { grid-template-columns: min(calc(var(--av) * 1.55), calc(100vw - 300px)) 240px !important; }
       body.in-game[data-game="poker"] #pk-table { min-height: calc(var(--av) - 4px); display: flex; flex-direction: column; justify-content: space-between; }
       body.in-game[data-game="poker"] #pk-table .ring4 { flex: 1; }
       body.in-game[data-game="poker"] #pk-table { padding-top: 12px !important; padding-bottom: 12px !important; }
-      body.in-game[data-game="kittens"] #kk-opp > .r-mid, body.in-game[data-game="colorclash"] #cc-opp > .r-mid, body.in-game[data-game="fibber"] #fb-opp > .r-mid { min-height: calc(var(--av) * .55) !important; }
+      body.in-game[data-game="kittens"] #kk-opp > .r-mid, body.in-game[data-game="colorclash"] #cc-opp > .r-mid, body.in-game[data-game="fibber"] #fb-opp > .r-mid, body.in-game[data-game="thirteen"] #th-opp > .r-mid { min-height: calc(var(--av) * .55) !important; }
       body.in-game[data-game="dominoes"] #gs-body .felt { min-height: calc(var(--av) - 300px); }
       body.in-game .ring4 .seat .cc-back + .cc-back { margin-left: -11px; }
       body.in-game[data-game="blackjack"] #gs-body { max-width: calc(var(--av) * 1.7); margin: 0 auto; }
@@ -153,19 +153,19 @@
       body.in-game #gs-wrap > .panel:first-child .btn-game, body.in-game #view-naval > .panel:first-child .btn-game, body.in-game #view-daily > .panel:first-child .btn-game, body.in-game #view-connect4 > .panel:first-child .btn-game { padding: 6px 10px !important; white-space: nowrap; }
       body.in-game #gs-wrap > *:nth-child(2) { margin-top: 0 !important; }
       /* card games: the whole screen is the table */
-      body.in-game[data-game="poker"], body.in-game[data-game="kittens"], body.in-game[data-game="colorclash"], body.in-game[data-game="dominoes"], body.in-game[data-game="blackjack"], body.in-game[data-game="fibber"] {
+      body.in-game[data-game="poker"], body.in-game[data-game="kittens"], body.in-game[data-game="colorclash"], body.in-game[data-game="dominoes"], body.in-game[data-game="blackjack"], body.in-game[data-game="fibber"], body.in-game[data-game="thirteen"] {
         background-color: #1E7A57; background-image: radial-gradient(ellipse at 50% 45%, rgba(255, 255, 255, .06), rgba(0, 0, 0, .28) 75%), var(--felt-tile); background-size: 100% 100%, 240px 240px; background-attachment: fixed;
       }
-      body.in-game[data-game="poker"] #gs-body .felt, body.in-game[data-game="kittens"] #gs-body .felt, body.in-game[data-game="colorclash"] #gs-body .felt, body.in-game[data-game="dominoes"] #gs-body .felt, body.in-game[data-game="blackjack"] #gs-body .felt, body.in-game[data-game="fibber"] #gs-body .felt {
+      body.in-game[data-game="poker"] #gs-body .felt, body.in-game[data-game="kittens"] #gs-body .felt, body.in-game[data-game="colorclash"] #gs-body .felt, body.in-game[data-game="dominoes"] #gs-body .felt, body.in-game[data-game="blackjack"] #gs-body .felt, body.in-game[data-game="fibber"] #gs-body .felt, body.in-game[data-game="thirteen"] #gs-body .felt {
         background: none !important; border-color: transparent !important; box-shadow: none !important; position: relative;
       }
       /* the faint oval of the table */
-      body.in-game[data-game="poker"] #pk-table .r-mid::before, body.in-game[data-game="kittens"] #kk-opp > .r-mid::before, body.in-game[data-game="colorclash"] #cc-opp > .r-mid::before, body.in-game[data-game="dominoes"] #gs-body .felt::before, body.in-game[data-game="fibber"] #fb-opp > .r-mid::before {
+      body.in-game[data-game="poker"] #pk-table .r-mid::before, body.in-game[data-game="kittens"] #kk-opp > .r-mid::before, body.in-game[data-game="colorclash"] #cc-opp > .r-mid::before, body.in-game[data-game="dominoes"] #gs-body .felt::before, body.in-game[data-game="fibber"] #fb-opp > .r-mid::before, body.in-game[data-game="thirteen"] #th-opp > .r-mid::before {
         content: ''; position: absolute; inset: 4% 3%; border: 2px dashed rgba(247, 244, 236, .16); border-radius: 50% !important; pointer-events: none;
       }
       body.in-game[data-game="poker"] #pk-table .r-mid { position: relative; align-self: stretch; display: flex; flex-direction: column; justify-content: center; }
       /* side panels and prompts float on the felt as dark, slightly see-through panels */
-      body.in-game[data-game="poker"] #gs-body .win, body.in-game[data-game="kittens"] #gs-body .win, body.in-game[data-game="colorclash"] #gs-body .win, body.in-game[data-game="dominoes"] #gs-body .win, body.in-game[data-game="fibber"] #gs-body .win { background: rgba(9, 24, 40, .82); }
+      body.in-game[data-game="poker"] #gs-body .win, body.in-game[data-game="kittens"] #gs-body .win, body.in-game[data-game="colorclash"] #gs-body .win, body.in-game[data-game="dominoes"] #gs-body .win, body.in-game[data-game="fibber"] #gs-body .win, body.in-game[data-game="thirteen"] #gs-body .win { background: rgba(9, 24, 40, .82); }
     }
 
     /* ---------- loading screen when a game opens (core gameLoading) ---------- */
@@ -244,11 +244,11 @@
         left: 14px !important; top: 10px !important; bottom: auto !important; transform: none !important; max-width: calc(100vw - 28px) !important;
       }
       /* card tables: the table gets the whole width; the side panel floats top-left under the controls */
-      body.in-game[data-game="poker"] #gs-body > .grid, body.in-game[data-game="kittens"] #gs-body > .grid, body.in-game[data-game="colorclash"] #gs-body > .grid, body.in-game[data-game="dominoes"] #gs-body > .grid, body.in-game[data-game="fibber"] #gs-body > .grid { grid-template-columns: minmax(0, 1fr) !important; }
-      body.in-game[data-game="poker"] #gs-body > .grid > div:last-child, body.in-game[data-game="kittens"] #gs-body > .grid > div:last-child, body.in-game[data-game="colorclash"] #gs-body > .grid > div:last-child, body.in-game[data-game="dominoes"] #gs-body > .grid > div:last-child, body.in-game[data-game="fibber"] #gs-body > .grid > div:last-child {
+      body.in-game[data-game="poker"] #gs-body > .grid, body.in-game[data-game="kittens"] #gs-body > .grid, body.in-game[data-game="colorclash"] #gs-body > .grid, body.in-game[data-game="dominoes"] #gs-body > .grid, body.in-game[data-game="fibber"] #gs-body > .grid, body.in-game[data-game="thirteen"] #gs-body > .grid { grid-template-columns: minmax(0, 1fr) !important; }
+      body.in-game[data-game="poker"] #gs-body > .grid > div:last-child, body.in-game[data-game="kittens"] #gs-body > .grid > div:last-child, body.in-game[data-game="colorclash"] #gs-body > .grid > div:last-child, body.in-game[data-game="dominoes"] #gs-body > .grid > div:last-child, body.in-game[data-game="fibber"] #gs-body > .grid > div:last-child, body.in-game[data-game="thirteen"] #gs-body > .grid > div:last-child {
         position: fixed; left: 14px; top: 66px; width: 240px; z-index: 40;
       }
-      body.in-game[data-game="kittens"] #gs-body > .grid > div:first-child, body.in-game[data-game="colorclash"] #gs-body > .grid > div:first-child, body.in-game[data-game="dominoes"] #gs-body > .grid > div:first-child, body.in-game[data-game="fibber"] #gs-body > .grid > div:first-child { max-width: min(1300px, calc(100vw - 560px)); width: 100%; margin: 0 auto; }
+      body.in-game[data-game="kittens"] #gs-body > .grid > div:first-child, body.in-game[data-game="colorclash"] #gs-body > .grid > div:first-child, body.in-game[data-game="dominoes"] #gs-body > .grid > div:first-child, body.in-game[data-game="fibber"] #gs-body > .grid > div:first-child, body.in-game[data-game="thirteen"] #gs-body > .grid > div:first-child { max-width: min(1300px, calc(100vw - 560px)); width: 100%; margin: 0 auto; }
       body.in-game .ring4 { column-gap: 120px !important; }
       /* Poker: the table fills the screen, your Fold / Call / Raise bar sits at the bottom centre */
       body.in-game[data-game="poker"] #pk-table { min-height: calc(100vh - 82px) !important; padding: 0 260px 80px !important; }

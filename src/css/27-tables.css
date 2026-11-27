@@ -7,12 +7,12 @@
     .pcard.back { background: var(--tb-backc, #1A3856); }
     .pcard.back .pc-back { background: var(--tb-back) 0 0 / var(--tb-back-s), var(--tb-backc) !important; }
     /* the whole screen behind the table */
-    body.in-game:is([data-game="poker"], [data-game="kittens"], [data-game="colorclash"], [data-game="dominoes"], [data-game="blackjack"], [data-game="fibber"]) {
+    body.in-game:is([data-game="poker"], [data-game="kittens"], [data-game="colorclash"], [data-game="dominoes"], [data-game="blackjack"], [data-game="fibber"], [data-game="thirteen"]) {
       background: var(--tb-bg) 0 0 / var(--tb-bg-s), var(--tb-bgc) !important; background-attachment: fixed !important;
     }
     /* phones and tablets: the game's own table box gets the cloth, with a rim of the table's colour */
     @media (max-width: 1023px) {
-      body.in-game:is([data-game="poker"], [data-game="kittens"], [data-game="colorclash"], [data-game="dominoes"], [data-game="blackjack"], [data-game="fibber"]) #gs-body .felt {
+      body.in-game:is([data-game="poker"], [data-game="kittens"], [data-game="colorclash"], [data-game="dominoes"], [data-game="blackjack"], [data-game="fibber"], [data-game="thirteen"]) #gs-body .felt {
         background: var(--tb-emb) center / min(46%, 180px) no-repeat, var(--tb-felt) 0 0 / var(--tb-felt-s), var(--tb-feltc) !important;
         box-shadow: inset 0 0 0 6px var(--tb-rimc), 0 5px 0 var(--ink) !important;
       }
@@ -20,14 +20,14 @@
     /* computers: a real table in the middle of the screen (replaces the old faint dashed oval) */
     @media (min-width: 1024px) {
       body.in-game[data-game="poker"] #pk-table > .ring4, body.in-game[data-game="kittens"] #kk-opp, body.in-game[data-game="colorclash"] #cc-opp,
-      body.in-game[data-game="fibber"] #fb-opp, body.in-game[data-game="dominoes"] #gs-body .felt, body.in-game[data-game="blackjack"] #gs-body .felt { position: relative; isolation: isolate; }
+      body.in-game[data-game="fibber"] #fb-opp, body.in-game[data-game="thirteen"] #th-opp, body.in-game[data-game="dominoes"] #gs-body .felt, body.in-game[data-game="blackjack"] #gs-body .felt { position: relative; isolation: isolate; }
       body.in-game[data-game="poker"] #pk-table > .ring4::before, body.in-game[data-game="kittens"] #kk-opp::before, body.in-game[data-game="colorclash"] #cc-opp::before,
-      body.in-game[data-game="fibber"] #fb-opp::before, body.in-game[data-game="dominoes"] #gs-body .felt::before, body.in-game[data-game="blackjack"] #gs-body .felt::before {
+      body.in-game[data-game="fibber"] #fb-opp::before, body.in-game[data-game="thirteen"] #th-opp::before, body.in-game[data-game="dominoes"] #gs-body .felt::before, body.in-game[data-game="blackjack"] #gs-body .felt::before {
         content: ''; position: absolute; inset: 2% 1%; z-index: -1; border: 0 !important; border-radius: 0 !important; pointer-events: none;
         clip-path: polygon(var(--tb-poly)); background: var(--tb-rim) 0 0 / var(--tb-rim-s), var(--tb-rimc);
       }
       body.in-game[data-game="poker"] #pk-table > .ring4::after, body.in-game[data-game="kittens"] #kk-opp::after, body.in-game[data-game="colorclash"] #cc-opp::after,
-      body.in-game[data-game="fibber"] #fb-opp::after, body.in-game[data-game="dominoes"] #gs-body .felt::after, body.in-game[data-game="blackjack"] #gs-body .felt::after {
+      body.in-game[data-game="fibber"] #fb-opp::after, body.in-game[data-game="thirteen"] #th-opp::after, body.in-game[data-game="dominoes"] #gs-body .felt::after, body.in-game[data-game="blackjack"] #gs-body .felt::after {
         content: ''; position: absolute; inset: calc(2% + 14px) calc(1% + 14px); z-index: -1; pointer-events: none; clip-path: polygon(var(--tb-poly));
         background: var(--tb-emb) center / min(34%, 240px) no-repeat, var(--tb-felt) 0 0 / var(--tb-felt-s), var(--tb-feltc);
       }
@@ -36,9 +36,9 @@
       body.in-game[data-game="poker"] #pk-table > .ring4::after { inset: calc(19% + 14px) calc(9% + 14px) calc(21% + 14px); }
       body.in-game[data-game="poker"] #pk-table .r-mid::before { content: none !important; }
       /* Uno, Kaboom Cats, Bullshit: the table also sits under the whole ring of seats (it was a thin strip on 1280 px) */
-      body.in-game:is([data-game="kittens"], [data-game="colorclash"], [data-game="fibber"]) :is(#kk-opp, #cc-opp, #fb-opp)::before { inset: 14% 4% 0; }
-      body.in-game:is([data-game="kittens"], [data-game="colorclash"], [data-game="fibber"]) :is(#kk-opp, #cc-opp, #fb-opp)::after { inset: calc(14% + 14px) calc(4% + 14px) 14px; }
-      body.in-game:is([data-game="kittens"], [data-game="colorclash"], [data-game="fibber"]) :is(#kk-opp, #cc-opp, #fb-opp) > .r-mid::before { content: none !important; }
+      body.in-game:is([data-game="kittens"], [data-game="colorclash"], [data-game="fibber"], [data-game="thirteen"]) :is(#kk-opp, #cc-opp, #fb-opp, #th-opp)::before { inset: 14% 4% 0; }
+      body.in-game:is([data-game="kittens"], [data-game="colorclash"], [data-game="fibber"], [data-game="thirteen"]) :is(#kk-opp, #cc-opp, #fb-opp, #th-opp)::after { inset: calc(14% + 14px) calc(4% + 14px) 14px; }
+      body.in-game:is([data-game="kittens"], [data-game="colorclash"], [data-game="fibber"], [data-game="thirteen"]) :is(#kk-opp, #cc-opp, #fb-opp, #th-opp) > .r-mid::before { content: none !important; }
     }
     /* the picker */
     .tbp { position: fixed; z-index: 95; left: 50%; top: 80px; transform: none; width: min(470px, calc(100vw - 16px)); background: #12304C; border: 3px solid var(--ink); box-shadow: 0 6px 0 var(--ink); padding: 10px 12px 12px; }

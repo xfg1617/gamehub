@@ -36,6 +36,15 @@
           ['Luật chặn hai đầu (tùy chọn)', 'Khi bật, năm quân bị đối thủ chặn cả hai đầu thì không tính thắng.'],
           ['Thắng trận', 'Trong trận "thắng 2/3" hoặc "thắng 3/5", ai thắng nhiều ván hơn sẽ thắng. Hai người thay phiên đi trước.']], online: ON2,
           tip: 'Tạo hai đường đe dọa cùng lúc (ví dụ bốn quân và ba quân thoáng): đối thủ chỉ chặn được một.' },
+        thirteen: { goal: 'Là người đầu tiên đánh hết 13 lá bài.', steps: [
+          ['Thứ tự lá bài', '3 nhỏ nhất và <b>2 lớn nhất</b>: 3 4 5 6 7 8 9 10 J Q K A 2. Cùng số thì xét chất: bích nhỏ nhất, rồi chuồn, rô, và cơ lớn nhất.'],
+          ['Được đánh gì', 'Một lá (rác), đôi, sám (ba lá), tứ quý, <b>sảnh</b> (3 lá liên tiếp trở lên, như 7 8 9; không có 2) hoặc <b>đôi thông</b> (3 đôi liên tiếp trở lên, như 5 5 6 6 7 7).'],
+          ['Ai đi trước', 'Ván đầu, ai có 3 bích (hoặc lá nhỏ nhất) đi trước và phải đánh lá đó. Các ván sau, người thắng ván trước đi trước, đánh gì cũng được.'],
+          ['Chặn hoặc bỏ lượt', 'Đánh cùng kiểu, cùng số lá nhưng lớn hơn (đôi lớn hơn chặn đôi, sảnh 4 lá lớn hơn chặn sảnh 4 lá). Hoặc bỏ lượt: bạn ngồi chờ đến hết vòng.'],
+          ['Thắng vòng', 'Khi mọi người khác đã bỏ lượt, người đánh cuối cùng dọn bàn và đi tiếp, đánh gì cũng được.'],
+          ['Chặt heo', 'Ba đôi thông hoặc tứ quý chặt được <b>một con 2</b>. Bốn đôi thông (hoặc tứ quý) chặt được <b>đôi 2</b>. Chặt được 2 thì lấy một điểm của người đánh 2!'],
+          ['Hạng và điểm', 'Ai hết bài trước được hạng nhất, những người còn lại đánh tiếp tranh hạng nhì, ba. Mỗi ván, hạng nhất nhiều điểm nhất. Hết các ván, ai nhiều điểm nhất thắng.']], online: ONT,
+          tip: 'Giữ heo và bom đến cuối, đánh rác nhỏ sớm khi còn dễ.' },
         tictactoe: { goal: 'Xếp ba quân của bạn thẳng hàng.', steps: [
           ['Đánh quân', 'Chạm vào một ô trống. X đi trước ở ván đầu.'],
           ['Lần lượt', 'Hai người lần lượt mỗi người đánh một quân.'],

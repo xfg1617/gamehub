@@ -8,7 +8,7 @@
        ========================================================================= */
     (function () {
       const KEY = 'ps_table_v1';
-      window.TABLE_GAMES = ['poker', 'blackjack', 'colorclash', 'kittens', 'fibber', 'dominoes'];
+      window.TABLE_GAMES = ['poker', 'blackjack', 'colorclash', 'kittens', 'fibber', 'dominoes', 'thirteen'];
       // a small pixel tile (rows of letters → colours) as an SVG background
       function svgOf(rows, pal, op) {
         const h = rows.length, w = rows[0].length; let r = '';

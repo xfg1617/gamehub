@@ -74,6 +74,14 @@
         [0, '#cr-board', "See three or four in a row from your opponent? Block an end, fast!", 'Thấy đối thủ có ba hay bốn quân liền? Chặn một đầu ngay!'],
         [0, '#cr-status', "Tip: make two threats at once. They can only block one.", 'Mẹo: tạo hai đường cùng lúc. Họ chỉ chặn được một thôi.'],
       ] },
+      thirteen: { shots: [{}], lines: [
+        ['icon', null, "Thirteen! Vietnam calls it Tien Len, and everyone plays it at New Year.", 'Tiến Lên! Tết nào cũng phải có vài ván.'],
+        [0, '#th-hand', "You get thirteen cards. Three is the lowest, and two is the highest.", 'Mỗi người mười ba lá. Ba nhỏ nhất, hai là lớn nhất.'],
+        [0, '#th-center', "Beat what's on the table with the same kind of play, but higher. One card, a pair, a straight...", 'Chặn bài trên bàn bằng cùng kiểu nhưng lớn hơn. Rác, đôi, sảnh...'],
+        [0, '#th-prompt', "Can't beat it, or don't want to? Pass, and wait for the next round.", 'Không chặn được, hoặc không muốn? Bỏ lượt, chờ vòng sau.'],
+        [0, '#th-opp', "Someone played a two? Four of a kind or three pairs in a row will bomb it!", 'Ai đánh heo? Tứ quý hay ba đôi thông là chặt được ngay!'],
+        [0, '#th-hand', "Get rid of all your cards first, and you win.", 'Ai hết bài trước là thắng.'],
+      ] },
       tictactoe: { shots: [{}], lines: [
         ['icon', null, "Tic Tac Toe. You've probably played this on paper.", 'Cờ ca rô ba ô. Chắc bạn chơi trên giấy rồi.'],
         [0, '#ttt-board', "Take turns putting your mark in an empty square.", 'Lần lượt đánh dấu vào một ô trống.'],

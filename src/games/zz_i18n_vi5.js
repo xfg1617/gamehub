@@ -12,8 +12,22 @@
       " five with the other player's marks at both ends doesn't win.": ' năm quân bị đối thủ chặn cả hai đầu thì không thắng.',
       'The board is full: a draw.': 'Bàn cờ đã đầy: hòa.', 'Easy CPU': 'Máy Dễ', 'Medium CPU': 'Máy Vừa', 'Hard CPU': 'Máy Khó', 'BEAT HARD CPU': 'THẮNG MÁY KHÓ',
       'QUICK WIN': 'THẮNG NHANH', 'wins this game: five in a row!': 'thắng ván này: năm quân liền nhau!',
+      // Thirteen
+      "Vietnam's favourite card game (Tiến Lên). Beat the cards on the table with higher ones and be the first to get rid of all 13.": 'Trò bài được yêu thích nhất Việt Nam. Chặn bài trên bàn bằng bài lớn hơn và là người đầu tiên đánh hết 13 lá.',
+      'HANDS': 'SỐ VÁN', '1 hand': '1 ván', '3 hands': '3 ván', '5 hands': '5 ván', 'Smart': 'Giỏi',
+      'Each hand: 1st place gets the most points. After the last hand, most points wins.': 'Mỗi ván: hạng nhất được nhiều điểm nhất. Hết ván cuối, ai nhiều điểm nhất thắng.',
+      'Time for each turn. When it runs out you pass (or play your lowest card when you lead).': 'Thời gian mỗi lượt. Hết giờ thì bạn bỏ lượt (hoặc đánh lá nhỏ nhất nếu bạn đi trước).',
+      '▶ Play': '▶ Đánh', 'Pass': 'Bỏ lượt', 'Pass (nothing beats it)': 'Bỏ lượt (không chặn được)', 'Clear': 'Bỏ chọn', '💣 BOMB!': '💣 CHẶT!',
+      'You lead: play anything.': 'Bạn đi trước: đánh gì cũng được.', "Those cards don't make a play.": 'Mấy lá này không thành bộ.',
+      'Include your lowest card to start.': 'Phải đánh kèm lá nhỏ nhất để mở ván.', 'PASSED': 'BỎ LƯỢT', 'OUT FIRST': 'VỀ NHẤT', 'BOMBS': 'CHẶT HEO',
+      'Time is up! Your lowest card was played.': 'Hết giờ! Đã đánh lá nhỏ nhất của bạn.', 'Time is up! You passed.': 'Hết giờ! Bạn đã bỏ lượt.',
+      'You went out first! 🏆': 'Bạn về nhất! 🏆', 'Your points': 'Điểm của bạn', 'Bombs': 'Chặt heo', 'Your place': 'Hạng của bạn', 'BOMB': 'CHẶT',
+      'A TWO': 'HEO', 'with a higher one, or pass.': 'bằng bộ lớn hơn, hoặc bỏ lượt.', 'Beat': 'Chặn',
     };
     window.VI_PAT5 = [
+      [/^PAIR OF (.+)S$/, 'ĐÔI $1'], [/^THREE (.+)S$/, 'SÁM $1'], [/^FOUR (.+)S$/, 'TỨ QUÝ $1'], [/^STRAIGHT (\S+) → (\S+)$/, 'SẢNH $1 → $2'], [/^(\d) PAIRS IN A ROW$/, '$1 ĐÔI THÔNG'],
+      [/^HAND (\d+) OF (\d+)$/, 'VÁN $1 / $2'], [/^HAND (\d+) OVER$/, 'HẾT VÁN $1'], [/^(\d+) cards? · (-?\d+) pts$/, '$1 lá · $2 điểm'], [/^(\d+) cards?$/, '$1 lá'],
+      [/^(.+) leads?: any play$/, '$1 đi trước: đánh gì cũng được'], [/^(.+) · (\d+) passed$/, '$1 · $2 bỏ lượt'],
       [/^five in a row in (\d+) moves$/, 'năm quân liền nhau sau $1 nước'], [/^([XO]) · (\d+) wins?$/, '$1 · thắng $2'],
       [/^X · (.+)$/, 'X · $1'], [/^O · (.+)$/, 'O · $1'],
     ];

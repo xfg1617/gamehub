@@ -50,6 +50,16 @@
           ['Win the match', 'In a "best of 3" or "best of 5", the first to win most of the games wins. Players take turns starting.']],
           items: () => row([[`<span class="ht-mark" style="color:#2DD4BF">✕</span>`, 'X', 'Teal, moves first'], [`<span class="ht-mark" style="color:#FB7185">◯</span>`, 'O', 'Coral']]),
           tip: 'Attack with two threats at once (for example a four and an open three): your opponent can only block one of them.', online: NET_2P },
+        thirteen: { tag: '2-4 PLAYERS · SHEDDING', goal: 'Be the first to play all 13 of your cards.', steps: [
+          ['Card order', '3 is the lowest card and <b>2 is the highest</b>: 3 4 5 6 7 8 9 10 J Q K A 2. When two cards have the same number, the suit decides: ♠ is lowest, then ♣, ♦, and ♥ is highest.'],
+          ['What you can play', 'One card, a pair, three or four of a kind, a <b>straight</b> (3 or more in a row, like 7 8 9; no 2s) or <b>pairs in a row</b> (3 or more pairs, like 5 5 6 6 7 7).'],
+          ['Starting', 'In the first hand, whoever has the 3♠ (or the lowest card) starts and must play it. Later hands, the winner of the last hand starts with anything.'],
+          ['Beat it or pass', 'Play the same kind with the same number of cards, but higher (a higher pair on a pair, a higher 4-card straight on a 4-card straight). Or pass: then you sit out until the trick is over.'],
+          ['Win the trick', 'When everyone else has passed, the last player to play clears the table and starts again with any play.'],
+          ['Bombs', 'Three pairs in a row or four of a kind beat a <b>single 2</b>. Four pairs in a row (or four of a kind) beat a <b>pair of 2s</b>. Bombing a 2 takes a point from that player!'],
+          ['Places and points', 'The first player out of cards is 1st, the others play on for 2nd and 3rd. Each hand, 1st gets the most points. After the last hand, most points wins.']],
+          items: () => row([[card(3, 's'), 'Lowest card', '3 of spades'], [card(2, 'h'), 'Highest card', '2 of hearts'], [card(7, 'c') + card(8, 'd') + card(9, 'h'), 'Straight', 'three or more in a row']]),
+          tip: 'Keep your 2s and bombs for the end, and get rid of low single cards early while it is still easy.', online: NET_TABLE },
         tictactoe: { tag: '1v1 · 3×3', goal: 'Get three of your marks in a row.', steps: [
           ['Place your mark', 'Tap an empty square. X goes first in the first game.'],
           ['Take turns', 'Players take turns, one mark each.'],

@@ -1,0 +1,42 @@
+    /* ===== Thirteen / Tiến Lên (thirteen.js) ===== */
+    .th-center { display: flex; flex-direction: column; align-items: center; gap: 10px; min-height: 120px; justify-content: center; }
+    .th-played { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+    .th-combo { font-family: 'Arcade Pixel', monospace; font-size: 20px; color: #F5B041; background: rgba(5, 14, 24, .8); border: 2px solid #F5B041; padding: 1px 12px; }
+    .th-by { font-size: 12px; color: #C9D6E3; background: rgba(5, 14, 24, .55); padding: 2px 8px; }
+    .th-empty { font-family: 'Arcade Pixel', monospace; font-size: 16px; color: rgba(247, 244, 236, .7); border: 3px dashed rgba(247, 244, 236, .3); padding: 18px 22px; }
+    .th-out { font-family: 'Arcade Pixel', monospace; font-size: 14px; background: #27496B; color: #C9D6E3; border: 2px solid var(--ink); padding: 0 8px; margin-top: 4px; }
+    .th-prompt { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; min-height: 48px; width: fit-content; max-width: 100%; margin: 0 auto; padding: 6px 12px 10px; border: 3px solid transparent; }
+    .th-prompt.on { background: rgba(9, 24, 40, .88); border-color: var(--ink); box-shadow: 0 4px 0 var(--ink); }
+    .th-why { font-size: 14px; color: #F7F4EC; }
+    .th-hand { padding-top: 6px; text-align: center; }
+    .th-cards { display: flex; justify-content: center; flex-wrap: wrap; gap: 4px; padding-top: 18px; }
+    .th-card { padding: 0; background: none; border: 0; transition: transform .12s; }
+    .th-card:not([disabled]) { cursor: pointer; }
+    .th-card:not([disabled]):hover { transform: translateY(-5px); }
+    .th-card.sel { transform: translateY(-18px); }
+    .th-card.sel .pcard { outline: 3px solid #F5B041; }
+    .th-card .pcard { position: relative; }
+    #th-opp .tg-fan .pcard { width: 40px; height: 56px; margin-left: -30px; box-shadow: -2px 0 3px rgba(0, 0, 0, .3); }
+    #th-opp .tg-fan .pcard:first-child { margin-left: 0; }
+    #th-opp > .r-top { flex-wrap: nowrap; }
+    #th-opp .tg-seat { display: flex; flex-direction: column; align-items: center; }
+    @media (max-width: 640px) {
+      #th-opp .tg-fan .pcard { width: 26px; height: 36px; margin-left: -20px; }
+      .th-cards { flex-wrap: nowrap; gap: 0; }
+      .th-cards .th-card { margin-left: calc(-1 * max(0px, (var(--cw2, 50px) * var(--n, 13) - (100vw - 24px)) / (var(--n, 13) - 1))); }
+      .th-cards .th-card:first-child { margin-left: 0; }
+      .th-hand .pcard.sm, .th-played .pcard.sm { width: 50px; height: 72px; }
+      .th-combo { font-size: 16px; }
+    }
+    @media (min-width: 1024px) {
+      body.in-game[data-game="thirteen"] #gs-body > .grid > div:first-child { max-width: none !important; padding: 0 40px; }
+      body.in-game[data-game="thirteen"] #th-opp { column-gap: 220px !important; row-gap: 30px !important; margin-top: 16px; }
+      body.in-game[data-game="thirteen"] #th-opp > .r-top { gap: 160px; }
+      body.in-game[data-game="thirteen"] #th-opp > .r-mid { min-height: calc(100vh - 600px) !important; }
+      #th-opp .tg-fan .pcard { width: 54px !important; height: 76px !important; margin-left: -40px !important; }
+      #th-opp .tg-fan .pcard:first-child { margin-left: 0 !important; }
+      .th-hand .pcard.sm { width: clamp(56px, min(calc((100vh - 470px) / 2.6), calc((100vw - 140px) / 13 - 6px)), 96px) !important; height: calc(clamp(56px, min(calc((100vh - 470px) / 2.6), calc((100vw - 140px) / 13 - 6px)), 96px) * 1.42) !important; }
+      .th-played .pcard.sm { width: clamp(56px, calc((100vh - 470px) / 2.8), 88px) !important; height: calc(clamp(56px, calc((100vh - 470px) / 2.8), 88px) * 1.42) !important; }
+      .th-combo { font-size: 24px; }
+    }
+    @media (max-width: 640px) { #th-opp .tg-txt small { display: none; } #th-opp .tg-tag { padding: 3px 6px; } }

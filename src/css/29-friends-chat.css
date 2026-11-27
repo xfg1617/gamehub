@@ -68,3 +68,7 @@
     @keyframes hvPulse { 50% { inset: -12px; opacity: .4; } }
     .hv-cap { font-size: clamp(1rem, 2.1vw, 1.35rem); min-height: 2.6em; }
     @media (prefers-reduced-motion: reduce) { .hv-cam { animation: none; } }
+
+    /* a friend conversation inside the game's chat window: the same bubbles as the Friends page */
+    .chat-list.cf-dm { display: flex; flex-direction: column; gap: 6px; padding: 10px; background: #0F2338; }
+    .cf-dm .dm-b, .cf-dm .dm-inv { font-size: .86rem; }

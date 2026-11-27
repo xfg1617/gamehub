@@ -5,6 +5,21 @@
        Written for players: what changed for them, no technical words.
        ========================================================================= */
     window.UPDATES = [
+      { date: '2026-11-27',
+        en: ['Gameplay in the how-to videos, and smoother rooms',
+          'How-to videos now show real gameplay for each step, not just a picture.',
+          'New ⚙ Settings button in every game: check how the game is set up while you play.',
+          'Messages with a friend inside the game chat look tidy: bubbles, times and room invites with a Join button.',
+          'Random Game: after each game you see the results, then the next game starts in 3 seconds.',
+          'After a game, the "next game" choice appears straight away, and no more false "players have left" messages.',
+          'The Bowling room is no longer squeezed.'],
+        vi: ['Video hướng dẫn có cảnh chơi thật, phòng chơi mượt hơn',
+          'Video hướng dẫn giờ có cảnh chơi thật cho từng bước, không chỉ một tấm hình.',
+          'Nút ⚙ Cài đặt mới trong mọi trò: xem lại ván đang chơi với cài đặt gì.',
+          'Tin nhắn với bạn bè trong khung chat của trò chơi gọn gàng hơn: bong bóng, giờ gửi và lời mời vào phòng có nút Vào.',
+          'Trò ngẫu nhiên: hết mỗi ván bạn xem kết quả, rồi 3 giây sau ván tiếp theo bắt đầu.',
+          'Hết ván, phần chọn trò tiếp theo hiện ra ngay, và không còn báo nhầm "người chơi đã rời bàn".',
+          'Phòng chơi Bowling không còn bị chật chội.'] },
       { date: '2026-11-26',
         en: ['Real sounds and better how-to videos',
           'Pool now uses real recordings: ball clacks, cue strikes, cushion bounces and balls dropping into pockets. Soft shots sound soft, breaks sound loud.',

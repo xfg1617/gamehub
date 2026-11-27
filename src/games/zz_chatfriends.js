@@ -50,15 +50,28 @@
         if (!f) return;
         CF.sel = f; const host = body(); if (!host) return;
         host.innerHTML = `<div class="cf-head"><button class="cf-back">← Friends</button><span class="text-lg">${esc(f.avatar || '🙂')}</span><b>${esc(f.name)}</b></div>
-          <div class="chatbox"><div class="chat-list" id="cf-msgs"></div><form class="chat-form" id="cf-form" autocomplete="off"><input maxlength="300" placeholder="Message ${esc(f.name)}..." aria-label="Message"><button type="submit">Send</button></form></div>`;
+          <div class="chatbox"><div class="chat-list dm-list cf-dm" id="cf-msgs"></div><form class="chat-form" id="cf-form" autocomplete="off"><input maxlength="300" placeholder="Message ${esc(f.name)}..." aria-label="Message"><button type="submit">Send</button></form></div>`;
         host.querySelector('.cf-back').onclick = () => openList();
         const paint = async () => {
           if (!CF.on || CF.sel !== f) return;
           let ms = []; try { ms = await NET.dmHistory(f.id); } catch (e) {}
           const el = document.getElementById('cf-msgs'); if (!el) return;
           const me = NET.me && NET.me.id;
-          el.innerHTML = ms.length ? ms.map((m) => `<div class="chat-msg ${(m.from || m.from_id) === me ? 'me' : ''}"><div class="min-w-0 flex-1"><div>${esc(m.text)}</div></div></div>`).join('') : '<div class="text-xs text-muted p-3">Say hi!</div>';
-          el.scrollTop = el.scrollHeight;
+          // the same tidy conversation as the Friends page (Inna, Nov 2026: "fix this in game chat"): bubbles with
+          // yours on the right, a line for each day, the time in each bubble, room invites as a card with Join
+          const day = (t) => { const d = new Date(t), now = new Date(), y = new Date(Date.now() - 864e5); return d.toDateString() === now.toDateString() ? 'TODAY' : d.toDateString() === y.toDateString() ? 'YESTERDAY' : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase(); };
+          const codeOf = (t) => (typeof frRoomCode === 'function' ? frRoomCode(t) : null);
+          let lastDay = '';
+          const near = el.scrollHeight - el.scrollTop - el.clientHeight < 40;
+          el.innerHTML = ms.length ? ms.map((m) => {
+            const mine = (m.from || m.from_id) === me, at = m.at || m.created_at || Date.now(), d = day(at), code = codeOf(m.text);
+            const tm = new Date(at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+            const sep = d !== lastDay ? `<div class="dm-day">${d}</div>` : ''; lastDay = d;
+            if (code) return sep + `<div class="dm-inv ${mine ? 'me' : ''}">🎲 ${mine ? `You invited ${esc(f.name)} to room <b>${esc(code)}</b>` : `${esc(f.name)} invited you to room <b>${esc(code)}</b>`}${mine ? '' : ` <button class="btn-game btn-teal py-1 px-3 text-xs" data-join="${esc(code)}">Join</button>`}<time>${tm}</time></div>`;
+            return sep + `<div class="dm-b ${mine ? 'me' : ''}">${esc(m.text)}<time>${tm}</time></div>`;
+          }).join('') : '<div class="dm-day">SAY HI! ONLY THE TWO OF YOU CAN READ THIS.</div>';
+          el.querySelectorAll('[data-join]').forEach((b) => { b.onclick = () => { if (typeof joinRoomCode === 'function') joinRoomCode(b.dataset.join); }; });
+          if (near || !el.dataset.done) el.scrollTop = el.scrollHeight; el.dataset.done = 1;
         };
         paint(); clearInterval(CF.timer); CF.timer = setInterval(paint, 4000);
         document.getElementById('cf-form').onsubmit = async (e) => {

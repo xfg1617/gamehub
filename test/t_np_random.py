@@ -31,9 +31,11 @@ with sync_playwright() as p:
     ta, tb = A.evaluate("document.getElementById('g-modal').innerText"), B.evaluate("document.getElementById('g-modal').innerText")
     print('   A box:', ta.replace('\n', ' ')[-200:]); print('   B box:', tb.replace('\n', ' ')[-160:])
     check('AFTER GAME 1 OF 3' in ta.upper() and 'AFTER GAME 1 OF 3' in tb.upper(), 'both see the session standings')
-    check(A.query_selector('#np-next') is not None and B.query_selector('#np-next') is None, 'the host has "Next game", the other waits')
+    check(A.query_selector('#np-next') is not None and B.query_selector('#np-next') is None, 'the host has "Next game", the other sees the countdown')
+    check(' in ' in tb and 'NEXT GAME' in tb.upper(), 'the other player sees "Next game in 3..."')
+    check('The other players have left' not in ta + tb, 'no false "players have left" message')
     first = ga[0]
-    A.click('#np-next')
+    # Inna: "count down 3 to next game and go to next game immediately": nobody presses anything
     ga2, gb2 = wait_game(A, first), wait_game(B, first)
     print('   game 2: A', ga2, ' B', gb2)
     check(ga2[0] == gb2[0] and ga2[0] != first and ga2[2] == gb2[2], 'both move on to game 2 together: ' + str(ga2[0]))

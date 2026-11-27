@@ -1074,11 +1074,12 @@
     /* Bigger rooms on computers (Nov 2026, Inna: "lobby needs to expand bigger"): a wide room in two columns
        (left: code, link, players; right: computer players, game settings, Start), with a taller chat beside it */
     @media (min-width: 1280px) {
-      .np-room { max-width: 1560px; }
+      .np-room { max-width: 1560px; width: 100%; }   /* use the width it is given (a joiner's room had shrunk to ~410 px) */
       body.in-game .np-room { margin-top: 18px; }
       .np-room:has(#np-chatwin:not(.hidden)) { grid-template-columns: minmax(0, 1fr) 400px; }
       .np-room:has(.np-bots, .np-sets) .np-room-main { max-width: none; }
-      .np-room:has(.np-bots, .np-sets) #np-lob { column-count: 2; column-gap: 2.25rem; padding: 1.75rem 2rem; }
+      /* two columns only when each has room (at least 340 px); a narrow room stays one tidy column */
+      .np-room:has(.np-bots, .np-sets) #np-lob { column-count: 2; column-width: 340px; column-gap: 2.25rem; padding: 1.75rem 2rem; }
       #np-lob:has(.np-bots, .np-sets) > * { break-inside: avoid; }
       #np-lob:not(:has(.np-bots)) > .np-sets { break-before: column; margin-top: 0 !important; }
       #np-lob > .np-bots { break-before: column; margin-top: 0 !important; }
@@ -1095,6 +1096,9 @@
     .np-set-hero .np-set-v { font-size: 1.25rem; color: #F5B041; }
     /* "You were in a game: Rejoin?" (rejoining after a reload / lost connection) */
     .np-rj { position: fixed; z-index: 90; left: 50%; top: 18px; transform: translateX(-50%); width: min(440px, calc(100vw - 24px)); padding: 12px 14px; background: #12304C; border: 3px solid var(--ink); box-shadow: 0 6px 0 var(--ink), inset 0 0 0 2px #F5B041; }
+    /* a room uses the full width even in games whose play area is capped (Bowling's lane is 830 px wide, so its room
+       was squeezed into two cramped columns, Nov 2026) */
+    #gs-body:has(.np-room) { max-width: none !important; width: 100% !important; }
     /* ===== HOW TO PLAY: title grid + step-by-step guides ===== */
     .ht-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
     .ht-tile { display: flex; align-items: center; gap: 10px; padding: 12px; background: #0F2A44; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); text-align: left; color: #F7F4EC; transition: transform .08s; }
@@ -1897,6 +1901,10 @@
     @keyframes hvPulse { 50% { inset: -12px; opacity: .4; } }
     .hv-cap { font-size: clamp(1rem, 2.1vw, 1.35rem); min-height: 2.6em; }
     @media (prefers-reduced-motion: reduce) { .hv-cam { animation: none; } }
+
+    /* a friend conversation inside the game's chat window: the same bubbles as the Friends page */
+    .chat-list.cf-dm { display: flex; flex-direction: column; gap: 6px; padding: 10px; background: #0F2338; }
+    .cf-dm .dm-b, .cf-dm .dm-inv { font-size: .86rem; }
     /* ===== tic-tac-toe ===== */
     .ttt-board { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 6px; background: var(--ink); border: 4px solid var(--ink); box-shadow: 0 5px 0 var(--ink); aspect-ratio: 1 / 1; width: 100%; max-width: 460px; margin: 0 auto; }
     .ttt-cell { position: relative; min-width: 0; min-height: 0; overflow: hidden; background: #12314F; box-shadow: inset 0 0 0 3px #1A3856, inset 0 -6px 0 #0F2A44; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 12%; }
@@ -6676,7 +6684,7 @@
             <span class="spr w-8 h-8">${GICONS[m.icon]}</span>
             <h2 class="text-lg font-extrabold text-bone">${m.name}</h2>
           </div>
-          <div class="flex items-center gap-2.5 flex-wrap" id="gs-tools">${toolsHTML}<button class="btn-game btn-graphite px-3 py-2 text-xs gs-moves" onclick="toggleMoves()" title="Open or close the game log">📜 <span class="gs-lbl">Log</span></button><button class="btn-game btn-graphite px-3 py-2 text-xs" onclick="openGuide('${m.id}')" title="How to play ${esc(m.name)}">? <span class="gs-lbl">Guide</span></button><button class="btn-game btn-teal px-3 py-2 text-xs gs-video" onclick="playHowTo('${m.id}')" title="Watch how to play ${esc(m.name)}">▶ <span class="gs-lbl">Video</span></button>${typeof TABLE_GAMES !== 'undefined' && TABLE_GAMES.includes(m.id) ? '<button class="btn-game btn-graphite px-3 py-2 text-xs gs-table" onclick="openTablePicker(this)" title="Change the table design">🎨 <span class="gs-lbl">Table</span></button>' : ''}<button class="btn-game btn-graphite px-3 py-2 text-xs gs-snd" onclick="openSoundPanel(this)" title="Sound and music" aria-label="Sound and music">♪</button></div>
+          <div class="flex items-center gap-2.5 flex-wrap" id="gs-tools">${toolsHTML}<button class="btn-game btn-graphite px-3 py-2 text-xs gs-sets" onclick="showGameSettings()" title="See this game's settings">⚙ <span class="gs-lbl">Settings</span></button><button class="btn-game btn-graphite px-3 py-2 text-xs gs-moves" onclick="toggleMoves()" title="Open or close the game log">📜 <span class="gs-lbl">Log</span></button><button class="btn-game btn-graphite px-3 py-2 text-xs" onclick="openGuide('${m.id}')" title="How to play ${esc(m.name)}">? <span class="gs-lbl">Guide</span></button><button class="btn-game btn-teal px-3 py-2 text-xs gs-video" onclick="playHowTo('${m.id}')" title="Watch how to play ${esc(m.name)}">▶ <span class="gs-lbl">Video</span></button>${typeof TABLE_GAMES !== 'undefined' && TABLE_GAMES.includes(m.id) ? '<button class="btn-game btn-graphite px-3 py-2 text-xs gs-table" onclick="openTablePicker(this)" title="Change the table design">🎨 <span class="gs-lbl">Table</span></button>' : ''}<button class="btn-game btn-graphite px-3 py-2 text-xs gs-snd" onclick="openSoundPanel(this)" title="Sound and music" aria-label="Sound and music">♪</button></div>
         </div>
         <div id="gs-body"></div></div>`;
       return document.getElementById('gs-body');
@@ -7150,6 +7158,7 @@
       return rows.concat(extra || []);
     }
     function settingsPop(m, sel, done, o = {}) {
+      GT.setView = { id: m.id, m, sel, extra: o.extra };                         // kept, so ⚙ Settings can show it during the game
       if (navigator.webdriver && !window.__showSettingsPop) { done(); return; }    // automated tests skip it
       const rows = settingsList(m, sel, o.extra);
       if (!rows.length && !o.head) { done(); return; }
@@ -7170,6 +7179,26 @@
       el.querySelector('[data-ok]').onclick = () => { SFX.play('click'); if (o.online) el.classList.add('closed'); else fin(); };
     }
     window.settingsPop = settingsPop; window.settingsList = settingsList;
+    // ⚙ Settings in the game's top bar (Inna, Nov 2026: "see the game settings while playing, in case you forgot"):
+    // the same list as the box before the game, with no countdown
+    function showGameSettings() {
+      const v = GT.setView, m = v && (v.id === activeGame || (v.m && v.m.id === activeGame)) ? v.m : null;
+      const rows = m ? settingsList(m, v.sel, v.extra) : [];
+      if (!m || !rows.length) { showToast('This game has no settings to show.', 'info'); return; }
+      document.querySelectorAll('.set-pop').forEach((e) => e.remove());
+      const el = document.createElement('div'); el.className = 'set-pop set-pop-view';
+      el.innerHTML = `<div class="win set-pop-win"><div class="winbar amber"><span>GAME SETTINGS</span><button class="pix text-sm" data-x aria-label="Close">✕</button></div>
+        <div class="p-4 sm:p-5"><div class="flex items-center gap-4"><span class="gart" style="--c:${m.color || '#F5B041'}">${GICONS[m.icon] || ''}</span>
+          <div class="min-w-0"><div class="text-2xl font-extrabold text-bone">${esc(m.name)}</div><div class="text-sm text-muted">This game is being played with these settings:</div></div></div>
+          <div class="set-rows">${rows.map(([i, l, val]) => `<div class="set-row"><span class="i">${i}</span><span class="l">${esc(l)}</span><span class="v">${esc(val)}</span></div>`).join('')}</div>
+          <div class="grid grid-cols-2 gap-3 mt-4"><button class="btn-game btn-graphite py-3 text-sm" data-guide>? How to play</button><button class="btn-game btn-amber py-3 text-sm" data-x>Back to the game</button></div></div></div>`;
+      document.body.appendChild(el);
+      const close = () => el.remove();
+      el.querySelectorAll('[data-x]').forEach((b) => { b.onclick = close; });
+      el.addEventListener('click', (e) => { if (e.target === el) close(); });
+      el.querySelector('[data-guide]').onclick = () => { close(); if (typeof openGuide === 'function') openGuide(m.id === 'navalnet' ? 'naval' : m.id); };
+    }
+    window.showGameSettings = showGameSettings;
 
     function gameResult(o) {
       GT.over = true;
@@ -7605,7 +7634,7 @@
               const h = hs[m.e]; if (h) h(m.d, m.from); };
             const beat = setInterval(() => { if (dead) return; bch.postMessage({ e: '_here', d: meta, from: uid }); const before = Object.keys(here).length; Object.keys(here).forEach((k) => { if (k !== uid && now() - here[k].last > 5000) delete here[k]; }); if (Object.keys(here).length !== before) upd(); }, 1500);
             bch.postMessage({ e: '_here', d: meta, from: uid }); setTimeout(upd, 0);
-            return { ready: Promise.resolve(), send: async (e, d) => { if (!dead) bch.postMessage({ e, d, from: uid }); }, on: (e, f) => { hs[e] = f; }, presence: (f) => { pres = f; upd(); },
+            return { ready: Promise.resolve(), send: async (e, d) => { if (!dead) bch.postMessage({ e, d, from: uid }); }, on: (e, f) => { hs[e] = f; }, presence: (f) => { pres = f; upd(); }, members: () => list(),
               close: () => { if (dead) return; bch.postMessage({ e: '_bye', from: uid }); dead = true; clearInterval(beat); bch.close(); } };
           },
           watch(code, fn) { let last = ''; const f = () => { const r = db().rooms[code]; if (!r) return; const s = JSON.stringify(r); if (s !== last) { last = s; fn(r); } }; subs.add(f); f(); return () => subs.delete(f); },
@@ -7826,7 +7855,7 @@
             ch.on('broadcast', { event: 'm' }, ({ payload }) => { if (dead || !payload) return; const h = hs[payload.e]; if (h) h(payload.d, payload.from); });
             ch.on('presence', { event: 'sync' }, () => { if (!dead) pres(list()); });
             const ready = new Promise((res) => ch.subscribe((st) => { if (st === 'SUBSCRIBED') { ch.track(meta); res(); } }));
-            return { ready, send: (e, d) => ready.then(() => ch.send({ type: 'broadcast', event: 'm', payload: { e, d, from: uid } })), on: (e, f) => { hs[e] = f; }, presence: (f) => { pres = f; },
+            return { ready, send: (e, d) => ready.then(() => ch.send({ type: 'broadcast', event: 'm', payload: { e, d, from: uid } })), on: (e, f) => { hs[e] = f; }, presence: (f) => { pres = f; }, members: () => { try { return list(); } catch (e) { return []; } },
               close: () => { if (dead) return; dead = true; try { ch.untrack(); } catch (e) {} setTimeout(() => sb.removeChannel(ch), 300); } };
           },
           watch(code, fn) {
@@ -8332,7 +8361,7 @@
         const go = () => { if (S.left || NP.S !== S && NP.S) return; O.start(body, Object.assign({}, d.sel, { net: sel.net, room: code }), S); };
         const ss = d.sel && d.sel.session;
         if (m.id === 'random' || (quick && max === 2 && !ss)) go();
-        else settingsPop(m, d.sel, go, { online: true, extra, secs: ss ? 7 : 5, head: ss ? `GAME ${ss.k} OF ${ss.n} · UP NEXT` : 'GAME SETTINGS', tag: ss || d.sel.rnd ? '🎲 RANDOM' : '', sub: ss || d.sel.rnd ? 'Picked at random. Here is how this game is set up:' : quick ? 'Here is how this table is set up:' : 'Here is how the host set up this game:' });
+        else settingsPop(m, d.sel, go, { online: true, extra, secs: ss ? 4 : 5, head: ss ? `GAME ${ss.k} OF ${ss.n} · UP NEXT` : 'GAME SETTINGS', tag: ss || d.sel.rnd ? '🎲 RANDOM' : '', sub: ss || d.sel.rnd ? 'Picked at random. Here is how this game is set up:' : quick ? 'Here is how this table is set up:' : 'Here is how the host set up this game:' });
       }
       await ch.ready;
       if (gone) return;
@@ -8549,7 +8578,12 @@
       const ch = NET.channel('rm:' + L.code, { name: NET.me.name, avatar: NET.me.avatar, at: Date.now() });
       NP.rm = ch;
       const ses = L.sel && L.sel.session ? JSON.parse(JSON.stringify(L.sel.session)) : null;
-      let present = [me], gone = false, picking = false, autoT = null, autoLeft = 15;
+      // everyone who just played is assumed to be here (the "who's here" list arrives a moment later): the choices
+      // show at once, and a player only counts as gone after 10 s missing (Inna, Nov 2026: "player left" showed after
+      // every game even when nobody left, and the next-game choice came late)
+      const seen = {}; L.uids.forEach((u) => { seen[u] = Date.now(); });
+      let present = L.uids.slice(), gone = false, picking = false, autoT = null, autoLeft = 3;
+      const missingT = setInterval(() => { if (gone || !document.body.contains(slot)) return clearInterval(missingT); const was = present.length; present = L.uids.filter((u) => u === me || Date.now() - (seen[u] || 0) < 10000); if (present.length !== was) paint(); }, 2000);
       const pts = {}; const myP = (typeof POINTS !== 'undefined' && POINTS.last && Date.now() - POINTS.last.at < 60000) ? POINTS.last.p : 0; pts[me] = myP;
       const others = () => L.uids.filter((u) => u !== me && present.includes(u));
       const group = () => L.uids.filter((u) => u === me || present.includes(u));
@@ -8567,7 +8601,7 @@
         if (ses) {
           const last = ses.k >= ses.n, ag = document.getElementById('g-modal-again'); if (ag) ag.style.display = 'none';
           slot.innerHTML = `<div class="pt-3 text-left space-y-2"><div class="pix text-sm text-amber">${last ? '🏆 SESSION OVER · CHAMPION: ' + nm(standings()[0]).toUpperCase() : `RANDOM SESSION · AFTER GAME ${ses.k} OF ${ses.n}`}</div>${table()}
-            ${lead ? `<button id="np-next" class="btn-game btn-amber w-full py-2.5 text-sm">${last ? '🔁 New session' : `🎲 Next game (${ses.k + 1} of ${ses.n})${autoT ? ' · ' + autoLeft : ''}`}</button>` : `<div class="text-xs text-muted">${last ? '' : `Waiting for ${nm(leader())} to start game ${ses.k + 1}...`}</div>`}</div>`;
+            ${lead ? `<button id="np-next" class="btn-game btn-amber w-full py-2.5 text-sm">${last ? '🔁 New session' : `🎲 Next game (${ses.k + 1} of ${ses.n})${autoT ? ' · ' + autoLeft : ''}`}</button>` : `<div class="text-xs text-muted">${last ? '' : `Next game (${ses.k + 1} of ${ses.n}) in ${Math.max(0, autoLeft)}...`}</div>`}</div>`;
           const b = document.getElementById('np-next'); if (b) b.onclick = () => next(last ? 'newses' : 'random');
           return;
         }
@@ -8603,12 +8637,13 @@
       };
       ch.on('go', (d) => { if (d && d.code && d.game) go(d, false); });
       ch.on('pts', (d, from) => { if (d && isFinite(d.p)) { pts[from] = Math.max(0, Math.min(40, +d.p)); paint(); } });
-      ch.presence((list) => { present = list.map((x) => x.uid); if (!present.includes(me)) present.push(me); paint(); });
+      ch.presence((list) => { const now = Date.now(); list.forEach((x) => { seen[x.uid] = now; }); const was = present.join(); present = L.uids.filter((u) => u === me || now - (seen[u] || 0) < 10000); if (present.join() !== was) paint(); });
+      const keepSeen = setInterval(() => { if (gone || !document.body.contains(slot)) return clearInterval(keepSeen); try { (ch.members ? ch.members() : []).forEach((x) => { seen[x.uid] = Date.now(); }); } catch (e) {} }, 2000);
       // tell the others how many points this game gave me (for the session standings)
       const sayPts = () => { if (!gone) ch.send('pts', { p: myP }); };
       ch.ready && ch.ready.then ? ch.ready.then(() => { sayPts(); setTimeout(sayPts, 1500); }) : setTimeout(sayPts, 500);
       // in a session the next game starts by itself after a short countdown (the leader can press it sooner)
-      if (ses && ses.k < ses.n) autoT = setInterval(() => { if (gone || !document.body.contains(slot)) return clearInterval(autoT); if (leader() !== me) return; autoLeft--; if (autoLeft <= 0) { clearInterval(autoT); autoT = null; next('random'); } else paint(); }, 1000);
+      if (ses && ses.k < ses.n) autoT = setInterval(() => { if (gone || !document.body.contains(slot)) return clearInterval(autoT); autoLeft--; if (autoLeft <= 0 && leader() === me) { clearInterval(autoT); autoT = null; next('random'); } else paint(); }, 1000);
       paint();
     }
 
@@ -18091,15 +18126,28 @@
         if (!f) return;
         CF.sel = f; const host = body(); if (!host) return;
         host.innerHTML = `<div class="cf-head"><button class="cf-back">← Friends</button><span class="text-lg">${esc(f.avatar || '🙂')}</span><b>${esc(f.name)}</b></div>
-          <div class="chatbox"><div class="chat-list" id="cf-msgs"></div><form class="chat-form" id="cf-form" autocomplete="off"><input maxlength="300" placeholder="Message ${esc(f.name)}..." aria-label="Message"><button type="submit">Send</button></form></div>`;
+          <div class="chatbox"><div class="chat-list dm-list cf-dm" id="cf-msgs"></div><form class="chat-form" id="cf-form" autocomplete="off"><input maxlength="300" placeholder="Message ${esc(f.name)}..." aria-label="Message"><button type="submit">Send</button></form></div>`;
         host.querySelector('.cf-back').onclick = () => openList();
         const paint = async () => {
           if (!CF.on || CF.sel !== f) return;
           let ms = []; try { ms = await NET.dmHistory(f.id); } catch (e) {}
           const el = document.getElementById('cf-msgs'); if (!el) return;
           const me = NET.me && NET.me.id;
-          el.innerHTML = ms.length ? ms.map((m) => `<div class="chat-msg ${(m.from || m.from_id) === me ? 'me' : ''}"><div class="min-w-0 flex-1"><div>${esc(m.text)}</div></div></div>`).join('') : '<div class="text-xs text-muted p-3">Say hi!</div>';
-          el.scrollTop = el.scrollHeight;
+          // the same tidy conversation as the Friends page (Inna, Nov 2026: "fix this in game chat"): bubbles with
+          // yours on the right, a line for each day, the time in each bubble, room invites as a card with Join
+          const day = (t) => { const d = new Date(t), now = new Date(), y = new Date(Date.now() - 864e5); return d.toDateString() === now.toDateString() ? 'TODAY' : d.toDateString() === y.toDateString() ? 'YESTERDAY' : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase(); };
+          const codeOf = (t) => (typeof frRoomCode === 'function' ? frRoomCode(t) : null);
+          let lastDay = '';
+          const near = el.scrollHeight - el.scrollTop - el.clientHeight < 40;
+          el.innerHTML = ms.length ? ms.map((m) => {
+            const mine = (m.from || m.from_id) === me, at = m.at || m.created_at || Date.now(), d = day(at), code = codeOf(m.text);
+            const tm = new Date(at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+            const sep = d !== lastDay ? `<div class="dm-day">${d}</div>` : ''; lastDay = d;
+            if (code) return sep + `<div class="dm-inv ${mine ? 'me' : ''}">🎲 ${mine ? `You invited ${esc(f.name)} to room <b>${esc(code)}</b>` : `${esc(f.name)} invited you to room <b>${esc(code)}</b>`}${mine ? '' : ` <button class="btn-game btn-teal py-1 px-3 text-xs" data-join="${esc(code)}">Join</button>`}<time>${tm}</time></div>`;
+            return sep + `<div class="dm-b ${mine ? 'me' : ''}">${esc(m.text)}<time>${tm}</time></div>`;
+          }).join('') : '<div class="dm-day">SAY HI! ONLY THE TWO OF YOU CAN READ THIS.</div>';
+          el.querySelectorAll('[data-join]').forEach((b) => { b.onclick = () => { if (typeof joinRoomCode === 'function') joinRoomCode(b.dataset.join); }; });
+          if (near || !el.dataset.done) el.scrollTop = el.scrollHeight; el.dataset.done = 1;
         };
         paint(); clearInterval(CF.timer); CF.timer = setInterval(paint, 4000);
         document.getElementById('cf-form').onsubmit = async (e) => {
@@ -19872,7 +19920,7 @@
        Uno places, Find the Impostor rounds, the movable log. VI_MORE4 = exact lines, VI_PAT4 = lines with numbers.
        ========================================================================= */
     window.VI_MORE4 = {
-      'Ready!': 'Sẵn sàng!', "What's new": 'Có gì mới', 'Random Game': 'Trò ngẫu nhiên', 'RANDOM GAME': 'TRÒ NGẪU NHIÊN',
+      'Ready!': 'Sẵn sàng!', 'Settings': 'Cài đặt', 'This game is being played with these settings:': 'Ván này đang chơi với các cài đặt sau:', 'Back to the game': 'Quay lại ván chơi', 'This game has no settings to show.': 'Trò này không có cài đặt nào.', "What's new": 'Có gì mới', 'Random Game': 'Trò ngẫu nhiên', 'RANDOM GAME': 'TRÒ NGẪU NHIÊN',
       'We pick the game and the settings. Play one game or a whole session: points from every game add up, and the most points wins.': 'Chúng tôi chọn trò chơi và cài đặt. Chơi một ván hoặc cả loạt: điểm của mọi ván được cộng dồn, ai nhiều điểm nhất thắng.',
       'SESSION': 'LOẠT CHƠI', 'Quickie · 1 game': 'Nhanh · 1 ván', '3 games': '3 ván', 'Long · 5 games': 'Dài · 5 ván',
       'Points from every game add up. Most points at the end is the champion.': 'Điểm của mọi ván được cộng dồn. Nhiều điểm nhất cuối cùng là nhà vô địch.',
@@ -20856,6 +20904,21 @@
        Written for players: what changed for them, no technical words.
        ========================================================================= */
     window.UPDATES = [
+      { date: '2026-11-27',
+        en: ['Gameplay in the how-to videos, and smoother rooms',
+          'How-to videos now show real gameplay for each step, not just a picture.',
+          'New ⚙ Settings button in every game: check how the game is set up while you play.',
+          'Messages with a friend inside the game chat look tidy: bubbles, times and room invites with a Join button.',
+          'Random Game: after each game you see the results, then the next game starts in 3 seconds.',
+          'After a game, the "next game" choice appears straight away, and no more false "players have left" messages.',
+          'The Bowling room is no longer squeezed.'],
+        vi: ['Video hướng dẫn có cảnh chơi thật, phòng chơi mượt hơn',
+          'Video hướng dẫn giờ có cảnh chơi thật cho từng bước, không chỉ một tấm hình.',
+          'Nút ⚙ Cài đặt mới trong mọi trò: xem lại ván đang chơi với cài đặt gì.',
+          'Tin nhắn với bạn bè trong khung chat của trò chơi gọn gàng hơn: bong bóng, giờ gửi và lời mời vào phòng có nút Vào.',
+          'Trò ngẫu nhiên: hết mỗi ván bạn xem kết quả, rồi 3 giây sau ván tiếp theo bắt đầu.',
+          'Hết ván, phần chọn trò tiếp theo hiện ra ngay, và không còn báo nhầm "người chơi đã rời bàn".',
+          'Phòng chơi Bowling không còn bị chật chội.'] },
       { date: '2026-11-26',
         en: ['Real sounds and better how-to videos',
           'Pool now uses real recordings: ball clacks, cue strikes, cushion bounces and balls dropping into pockets. Soft shots sound soft, breaks sound loud.',

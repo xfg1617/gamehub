@@ -114,7 +114,7 @@
               const h = hs[m.e]; if (h) h(m.d, m.from); };
             const beat = setInterval(() => { if (dead) return; bch.postMessage({ e: '_here', d: meta, from: uid }); const before = Object.keys(here).length; Object.keys(here).forEach((k) => { if (k !== uid && now() - here[k].last > 5000) delete here[k]; }); if (Object.keys(here).length !== before) upd(); }, 1500);
             bch.postMessage({ e: '_here', d: meta, from: uid }); setTimeout(upd, 0);
-            return { ready: Promise.resolve(), send: async (e, d) => { if (!dead) bch.postMessage({ e, d, from: uid }); }, on: (e, f) => { hs[e] = f; }, presence: (f) => { pres = f; upd(); },
+            return { ready: Promise.resolve(), send: async (e, d) => { if (!dead) bch.postMessage({ e, d, from: uid }); }, on: (e, f) => { hs[e] = f; }, presence: (f) => { pres = f; upd(); }, members: () => list(),
               close: () => { if (dead) return; bch.postMessage({ e: '_bye', from: uid }); dead = true; clearInterval(beat); bch.close(); } };
           },
           watch(code, fn) { let last = ''; const f = () => { const r = db().rooms[code]; if (!r) return; const s = JSON.stringify(r); if (s !== last) { last = s; fn(r); } }; subs.add(f); f(); return () => subs.delete(f); },
@@ -335,7 +335,7 @@
             ch.on('broadcast', { event: 'm' }, ({ payload }) => { if (dead || !payload) return; const h = hs[payload.e]; if (h) h(payload.d, payload.from); });
             ch.on('presence', { event: 'sync' }, () => { if (!dead) pres(list()); });
             const ready = new Promise((res) => ch.subscribe((st) => { if (st === 'SUBSCRIBED') { ch.track(meta); res(); } }));
-            return { ready, send: (e, d) => ready.then(() => ch.send({ type: 'broadcast', event: 'm', payload: { e, d, from: uid } })), on: (e, f) => { hs[e] = f; }, presence: (f) => { pres = f; },
+            return { ready, send: (e, d) => ready.then(() => ch.send({ type: 'broadcast', event: 'm', payload: { e, d, from: uid } })), on: (e, f) => { hs[e] = f; }, presence: (f) => { pres = f; }, members: () => { try { return list(); } catch (e) { return []; } },
               close: () => { if (dead) return; dead = true; try { ch.untrack(); } catch (e) {} setTimeout(() => sb.removeChannel(ch), 300); } };
           },
           watch(code, fn) {

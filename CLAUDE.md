@@ -1118,3 +1118,16 @@ folder that was handed over, so they do not exist here.)
   still as poster) with the outline on top; if a clip can't play it falls back to the still with the still's outline.
   75 clips / 19 games (~5 MB). Doodle, Random, Daily Word, Sea Battle, Blackjack, Word Connect keep stills.
   `t_hv_align.py` checks outlines on clips too. Sample `prototypes/round5/howto-video-with-gameplay.mp4`.
+
+## 5ai. Nov 27 2026 (Inna's list)
+
+* **⚙ Settings in every game's top bar** (`showGameSettings` in core; `settingsPop` keeps `GT.setView = {id, m, sel, extra}`
+  before every game): the same list as the box before the game, no countdown, "Back to the game".
+* **Friend conversation inside the game chat** (`openDm` in zz_chatfriends.js) = the Friends page look: `.dm-b` bubbles
+  (yours right), day lines, times, room invites as `.dm-inv` cards with Join (`frRoomCode`, `joinRoomCode`). `t_chat_dm_tidy.py`.
+* **Rooms in capped games** (Bowling's 830 px lane): `#gs-body:has(.np-room)` has no max width; the two-column room only
+  splits when each column gets 340 px (`column-width`).
+* **After a game** (`npRematchSlot`): everyone who just played counts as present at once (the presence list arrives later;
+  a player is gone only after 10 s missing; `members()` on channels, both backends) -> the next-game choice shows at once
+  and the false "The other players have left the table." is gone. Random Game sessions: 3 s countdown for everyone, then
+  the next game starts by itself (settings box before it 4 s). `t_np_random.py`, `t_np_rematch.py` (rewritten), `t_np_next.py`.

@@ -534,7 +534,7 @@
             <span class="spr w-8 h-8">${GICONS[m.icon]}</span>
             <h2 class="text-lg font-extrabold text-bone">${m.name}</h2>
           </div>
-          <div class="flex items-center gap-2.5 flex-wrap" id="gs-tools">${toolsHTML}<button class="btn-game btn-graphite px-3 py-2 text-xs gs-moves" onclick="toggleMoves()" title="Open or close the game log">📜 <span class="gs-lbl">Log</span></button><button class="btn-game btn-graphite px-3 py-2 text-xs" onclick="openGuide('${m.id}')" title="How to play ${esc(m.name)}">? <span class="gs-lbl">Guide</span></button><button class="btn-game btn-teal px-3 py-2 text-xs gs-video" onclick="playHowTo('${m.id}')" title="Watch how to play ${esc(m.name)}">▶ <span class="gs-lbl">Video</span></button>${typeof TABLE_GAMES !== 'undefined' && TABLE_GAMES.includes(m.id) ? '<button class="btn-game btn-graphite px-3 py-2 text-xs gs-table" onclick="openTablePicker(this)" title="Change the table design">🎨 <span class="gs-lbl">Table</span></button>' : ''}<button class="btn-game btn-graphite px-3 py-2 text-xs gs-snd" onclick="openSoundPanel(this)" title="Sound and music" aria-label="Sound and music">♪</button></div>
+          <div class="flex items-center gap-2.5 flex-wrap" id="gs-tools">${toolsHTML}<button class="btn-game btn-graphite px-3 py-2 text-xs gs-sets" onclick="showGameSettings()" title="See this game's settings">⚙ <span class="gs-lbl">Settings</span></button><button class="btn-game btn-graphite px-3 py-2 text-xs gs-moves" onclick="toggleMoves()" title="Open or close the game log">📜 <span class="gs-lbl">Log</span></button><button class="btn-game btn-graphite px-3 py-2 text-xs" onclick="openGuide('${m.id}')" title="How to play ${esc(m.name)}">? <span class="gs-lbl">Guide</span></button><button class="btn-game btn-teal px-3 py-2 text-xs gs-video" onclick="playHowTo('${m.id}')" title="Watch how to play ${esc(m.name)}">▶ <span class="gs-lbl">Video</span></button>${typeof TABLE_GAMES !== 'undefined' && TABLE_GAMES.includes(m.id) ? '<button class="btn-game btn-graphite px-3 py-2 text-xs gs-table" onclick="openTablePicker(this)" title="Change the table design">🎨 <span class="gs-lbl">Table</span></button>' : ''}<button class="btn-game btn-graphite px-3 py-2 text-xs gs-snd" onclick="openSoundPanel(this)" title="Sound and music" aria-label="Sound and music">♪</button></div>
         </div>
         <div id="gs-body"></div></div>`;
       return document.getElementById('gs-body');
@@ -1008,6 +1008,7 @@
       return rows.concat(extra || []);
     }
     function settingsPop(m, sel, done, o = {}) {
+      GT.setView = { id: m.id, m, sel, extra: o.extra };                         // kept, so ⚙ Settings can show it during the game
       if (navigator.webdriver && !window.__showSettingsPop) { done(); return; }    // automated tests skip it
       const rows = settingsList(m, sel, o.extra);
       if (!rows.length && !o.head) { done(); return; }
@@ -1028,6 +1029,26 @@
       el.querySelector('[data-ok]').onclick = () => { SFX.play('click'); if (o.online) el.classList.add('closed'); else fin(); };
     }
     window.settingsPop = settingsPop; window.settingsList = settingsList;
+    // ⚙ Settings in the game's top bar (Inna, Nov 2026: "see the game settings while playing, in case you forgot"):
+    // the same list as the box before the game, with no countdown
+    function showGameSettings() {
+      const v = GT.setView, m = v && (v.id === activeGame || (v.m && v.m.id === activeGame)) ? v.m : null;
+      const rows = m ? settingsList(m, v.sel, v.extra) : [];
+      if (!m || !rows.length) { showToast('This game has no settings to show.', 'info'); return; }
+      document.querySelectorAll('.set-pop').forEach((e) => e.remove());
+      const el = document.createElement('div'); el.className = 'set-pop set-pop-view';
+      el.innerHTML = `<div class="win set-pop-win"><div class="winbar amber"><span>GAME SETTINGS</span><button class="pix text-sm" data-x aria-label="Close">✕</button></div>
+        <div class="p-4 sm:p-5"><div class="flex items-center gap-4"><span class="gart" style="--c:${m.color || '#F5B041'}">${GICONS[m.icon] || ''}</span>
+          <div class="min-w-0"><div class="text-2xl font-extrabold text-bone">${esc(m.name)}</div><div class="text-sm text-muted">This game is being played with these settings:</div></div></div>
+          <div class="set-rows">${rows.map(([i, l, val]) => `<div class="set-row"><span class="i">${i}</span><span class="l">${esc(l)}</span><span class="v">${esc(val)}</span></div>`).join('')}</div>
+          <div class="grid grid-cols-2 gap-3 mt-4"><button class="btn-game btn-graphite py-3 text-sm" data-guide>? How to play</button><button class="btn-game btn-amber py-3 text-sm" data-x>Back to the game</button></div></div></div>`;
+      document.body.appendChild(el);
+      const close = () => el.remove();
+      el.querySelectorAll('[data-x]').forEach((b) => { b.onclick = close; });
+      el.addEventListener('click', (e) => { if (e.target === el) close(); });
+      el.querySelector('[data-guide]').onclick = () => { close(); if (typeof openGuide === 'function') openGuide(m.id === 'navalnet' ? 'naval' : m.id); };
+    }
+    window.showGameSettings = showGameSettings;
 
     function gameResult(o) {
       GT.over = true;

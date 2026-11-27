@@ -90,11 +90,12 @@
     /* Bigger rooms on computers (Nov 2026, Inna: "lobby needs to expand bigger"): a wide room in two columns
        (left: code, link, players; right: computer players, game settings, Start), with a taller chat beside it */
     @media (min-width: 1280px) {
-      .np-room { max-width: 1560px; }
+      .np-room { max-width: 1560px; width: 100%; }   /* use the width it is given (a joiner's room had shrunk to ~410 px) */
       body.in-game .np-room { margin-top: 18px; }
       .np-room:has(#np-chatwin:not(.hidden)) { grid-template-columns: minmax(0, 1fr) 400px; }
       .np-room:has(.np-bots, .np-sets) .np-room-main { max-width: none; }
-      .np-room:has(.np-bots, .np-sets) #np-lob { column-count: 2; column-gap: 2.25rem; padding: 1.75rem 2rem; }
+      /* two columns only when each has room (at least 340 px); a narrow room stays one tidy column */
+      .np-room:has(.np-bots, .np-sets) #np-lob { column-count: 2; column-width: 340px; column-gap: 2.25rem; padding: 1.75rem 2rem; }
       #np-lob:has(.np-bots, .np-sets) > * { break-inside: avoid; }
       #np-lob:not(:has(.np-bots)) > .np-sets { break-before: column; margin-top: 0 !important; }
       #np-lob > .np-bots { break-before: column; margin-top: 0 !important; }
@@ -111,3 +112,6 @@
     .np-set-hero .np-set-v { font-size: 1.25rem; color: #F5B041; }
     /* "You were in a game: Rejoin?" (rejoining after a reload / lost connection) */
     .np-rj { position: fixed; z-index: 90; left: 50%; top: 18px; transform: translateX(-50%); width: min(440px, calc(100vw - 24px)); padding: 12px 14px; background: #12304C; border: 3px solid var(--ink); box-shadow: 0 6px 0 var(--ink), inset 0 0 0 2px #F5B041; }
+    /* a room uses the full width even in games whose play area is capped (Bowling's lane is 830 px wide, so its room
+       was squeezed into two cramped columns, Nov 2026) */
+    #gs-body:has(.np-room) { max-width: none !important; width: 100% !important; }

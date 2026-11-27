@@ -326,7 +326,7 @@
         const go = () => { if (S.left || NP.S !== S && NP.S) return; O.start(body, Object.assign({}, d.sel, { net: sel.net, room: code }), S); };
         const ss = d.sel && d.sel.session;
         if (m.id === 'random' || (quick && max === 2 && !ss)) go();
-        else settingsPop(m, d.sel, go, { online: true, extra, secs: ss ? 7 : 5, head: ss ? `GAME ${ss.k} OF ${ss.n} · UP NEXT` : 'GAME SETTINGS', tag: ss || d.sel.rnd ? '🎲 RANDOM' : '', sub: ss || d.sel.rnd ? 'Picked at random. Here is how this game is set up:' : quick ? 'Here is how this table is set up:' : 'Here is how the host set up this game:' });
+        else settingsPop(m, d.sel, go, { online: true, extra, secs: ss ? 4 : 5, head: ss ? `GAME ${ss.k} OF ${ss.n} · UP NEXT` : 'GAME SETTINGS', tag: ss || d.sel.rnd ? '🎲 RANDOM' : '', sub: ss || d.sel.rnd ? 'Picked at random. Here is how this game is set up:' : quick ? 'Here is how this table is set up:' : 'Here is how the host set up this game:' });
       }
       await ch.ready;
       if (gone) return;
@@ -543,7 +543,12 @@
       const ch = NET.channel('rm:' + L.code, { name: NET.me.name, avatar: NET.me.avatar, at: Date.now() });
       NP.rm = ch;
       const ses = L.sel && L.sel.session ? JSON.parse(JSON.stringify(L.sel.session)) : null;
-      let present = [me], gone = false, picking = false, autoT = null, autoLeft = 15;
+      // everyone who just played is assumed to be here (the "who's here" list arrives a moment later): the choices
+      // show at once, and a player only counts as gone after 10 s missing (Inna, Nov 2026: "player left" showed after
+      // every game even when nobody left, and the next-game choice came late)
+      const seen = {}; L.uids.forEach((u) => { seen[u] = Date.now(); });
+      let present = L.uids.slice(), gone = false, picking = false, autoT = null, autoLeft = 3;
+      const missingT = setInterval(() => { if (gone || !document.body.contains(slot)) return clearInterval(missingT); const was = present.length; present = L.uids.filter((u) => u === me || Date.now() - (seen[u] || 0) < 10000); if (present.length !== was) paint(); }, 2000);
       const pts = {}; const myP = (typeof POINTS !== 'undefined' && POINTS.last && Date.now() - POINTS.last.at < 60000) ? POINTS.last.p : 0; pts[me] = myP;
       const others = () => L.uids.filter((u) => u !== me && present.includes(u));
       const group = () => L.uids.filter((u) => u === me || present.includes(u));
@@ -561,7 +566,7 @@
         if (ses) {
           const last = ses.k >= ses.n, ag = document.getElementById('g-modal-again'); if (ag) ag.style.display = 'none';
           slot.innerHTML = `<div class="pt-3 text-left space-y-2"><div class="pix text-sm text-amber">${last ? '🏆 SESSION OVER · CHAMPION: ' + nm(standings()[0]).toUpperCase() : `RANDOM SESSION · AFTER GAME ${ses.k} OF ${ses.n}`}</div>${table()}
-            ${lead ? `<button id="np-next" class="btn-game btn-amber w-full py-2.5 text-sm">${last ? '🔁 New session' : `🎲 Next game (${ses.k + 1} of ${ses.n})${autoT ? ' · ' + autoLeft : ''}`}</button>` : `<div class="text-xs text-muted">${last ? '' : `Waiting for ${nm(leader())} to start game ${ses.k + 1}...`}</div>`}</div>`;
+            ${lead ? `<button id="np-next" class="btn-game btn-amber w-full py-2.5 text-sm">${last ? '🔁 New session' : `🎲 Next game (${ses.k + 1} of ${ses.n})${autoT ? ' · ' + autoLeft : ''}`}</button>` : `<div class="text-xs text-muted">${last ? '' : `Next game (${ses.k + 1} of ${ses.n}) in ${Math.max(0, autoLeft)}...`}</div>`}</div>`;
           const b = document.getElementById('np-next'); if (b) b.onclick = () => next(last ? 'newses' : 'random');
           return;
         }
@@ -597,12 +602,13 @@
       };
       ch.on('go', (d) => { if (d && d.code && d.game) go(d, false); });
       ch.on('pts', (d, from) => { if (d && isFinite(d.p)) { pts[from] = Math.max(0, Math.min(40, +d.p)); paint(); } });
-      ch.presence((list) => { present = list.map((x) => x.uid); if (!present.includes(me)) present.push(me); paint(); });
+      ch.presence((list) => { const now = Date.now(); list.forEach((x) => { seen[x.uid] = now; }); const was = present.join(); present = L.uids.filter((u) => u === me || now - (seen[u] || 0) < 10000); if (present.join() !== was) paint(); });
+      const keepSeen = setInterval(() => { if (gone || !document.body.contains(slot)) return clearInterval(keepSeen); try { (ch.members ? ch.members() : []).forEach((x) => { seen[x.uid] = Date.now(); }); } catch (e) {} }, 2000);
       // tell the others how many points this game gave me (for the session standings)
       const sayPts = () => { if (!gone) ch.send('pts', { p: myP }); };
       ch.ready && ch.ready.then ? ch.ready.then(() => { sayPts(); setTimeout(sayPts, 1500); }) : setTimeout(sayPts, 500);
       // in a session the next game starts by itself after a short countdown (the leader can press it sooner)
-      if (ses && ses.k < ses.n) autoT = setInterval(() => { if (gone || !document.body.contains(slot)) return clearInterval(autoT); if (leader() !== me) return; autoLeft--; if (autoLeft <= 0) { clearInterval(autoT); autoT = null; next('random'); } else paint(); }, 1000);
+      if (ses && ses.k < ses.n) autoT = setInterval(() => { if (gone || !document.body.contains(slot)) return clearInterval(autoT); autoLeft--; if (autoLeft <= 0 && leader() === me) { clearInterval(autoT); autoT = null; next('random'); } else paint(); }, 1000);
       paint();
     }
 

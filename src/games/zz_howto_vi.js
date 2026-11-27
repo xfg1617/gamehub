@@ -45,6 +45,13 @@
           ['Chặt heo', 'Ba đôi thông hoặc tứ quý chặt được <b>một con 2</b>. Bốn đôi thông (hoặc tứ quý) chặt được <b>đôi 2</b>. Chặt được 2 thì lấy một điểm của người đánh 2!'],
           ['Hạng và điểm', 'Ai hết bài trước được hạng nhất, những người còn lại đánh tiếp tranh hạng nhì, ba. Mỗi ván, hạng nhất nhiều điểm nhất. Hết các ván, ai nhiều điểm nhất thắng.']], online: ONT,
           tip: 'Giữ heo và bom đến cuối, đánh rác nhỏ sớm khi còn dễ.' },
+        trivia: { goal: 'Trả lời đúng, và nhanh, để được nhiều điểm nhất.', steps: [
+          ['Chọn cài đặt', 'Trong phòng, chọn ngôn ngữ câu hỏi (English hoặc Tiếng Việt), chủ đề (hoặc trộn tất cả), số câu và độ khó.'],
+          ['Trả lời', 'Mọi người thấy cùng một câu hỏi cùng lúc. Chạm vào một trong bốn đáp án trước khi hết giờ. Đã chốt thì không đổi được.'],
+          ['Tính điểm', 'Trả lời đúng được 500 điểm, cộng thêm tối đa 500 nếu trả lời nhanh. Đúng ba câu liên tiếp trở lên được thưởng 🔥 chuỗi.'],
+          ['Xem ai đúng', 'Sau mỗi câu, đáp án đúng sáng lên và bạn thấy mọi người đã chọn gì.'],
+          ['Chiến thắng', 'Hết câu cuối, ai nhiều điểm nhất thắng. Chơi một mình? Thử phá kỷ lục của chính bạn.']], online: ONT,
+          tip: 'Không chắc? Loại các đáp án sai rõ ràng, rồi tin vào cảm giác. Đoán nhanh vẫn hơn không trả lời.' },
         tictactoe: { goal: 'Xếp ba quân của bạn thẳng hàng.', steps: [
           ['Đánh quân', 'Chạm vào một ô trống. X đi trước ở ván đầu.'],
           ['Lần lượt', 'Hai người lần lượt mỗi người đánh một quân.'],

@@ -23,8 +23,16 @@
       'Time is up! Your lowest card was played.': 'Hết giờ! Đã đánh lá nhỏ nhất của bạn.', 'Time is up! You passed.': 'Hết giờ! Bạn đã bỏ lượt.',
       'You went out first! 🏆': 'Bạn về nhất! 🏆', 'Your points': 'Điểm của bạn', 'Bombs': 'Chặt heo', 'Your place': 'Hạng của bạn', 'BOMB': 'CHẶT',
       'A TWO': 'HEO', 'with a higher one, or pass.': 'bằng bộ lớn hơn, hoặc bỏ lượt.', 'Beat': 'Chặn',
+      // Trivia Rush
+      'Quick-fire quiz: everyone gets the same question, fastest right answer scores most. 12 categories, English or Vietnamese.': 'Đố vui siêu tốc: mọi người cùng một câu hỏi, ai đúng nhanh nhất được nhiều điểm nhất. 12 chủ đề, tiếng Anh hoặc tiếng Việt.',
+      'QUESTIONS IN': 'NGÔN NGỮ CÂU HỎI', 'Everyone at the table gets the questions in this language.': 'Mọi người trong bàn nhận câu hỏi bằng ngôn ngữ này.',
+      'CATEGORY': 'CHỦ ĐỀ', 'All mixed': 'Trộn tất cả', 'Geography': 'Địa lý', 'Movies & TV': 'Phim ảnh', 'Music': 'Âm nhạc', 'Sports': 'Thể thao', 'Science': 'Khoa học',
+      'History': 'Lịch sử', 'Food': 'Ẩm thực', 'Animals': 'Động vật', 'Games': 'Trò chơi', 'Vietnam': 'Việt Nam', 'USA': 'Nước Mỹ', 'Weird Facts': 'Chuyện lạ',
+      'QUESTIONS': 'SỐ CÂU HỎI', 'TIME TO ANSWER': 'THỜI GIAN TRẢ LỜI', 'DIFFICULTY': 'ĐỘ KHÓ', 'Mixed': 'Trộn', 'Hard': 'Khó', 'Just me': 'Chỉ mình tôi', 'Genius': 'Thiên tài',
+      'Right answers': 'Câu trả lời đúng', 'Score': 'Điểm', 'Best streak': 'Chuỗi dài nhất', 'RIGHT ANSWERS': 'CÂU ĐÚNG', 'BEST STREAK': 'CHUỖI DÀI NHẤT',
     };
     window.VI_PAT5 = [
+      [/^(\d+) \/ (\d+) right!$/, 'Đúng $1 / $2 câu!'], [/^([\d,]+) points$/, '$1 điểm'], [/^(\d+)\/(\d+) right$/, 'đúng $1/$2'],
       [/^PAIR OF (.+)S$/, 'ĐÔI $1'], [/^THREE (.+)S$/, 'SÁM $1'], [/^FOUR (.+)S$/, 'TỨ QUÝ $1'], [/^STRAIGHT (\S+) → (\S+)$/, 'SẢNH $1 → $2'], [/^(\d) PAIRS IN A ROW$/, '$1 ĐÔI THÔNG'],
       [/^HAND (\d+) OF (\d+)$/, 'VÁN $1 / $2'], [/^HAND (\d+) OVER$/, 'HẾT VÁN $1'], [/^(\d+) cards? · (-?\d+) pts$/, '$1 lá · $2 điểm'], [/^(\d+) cards?$/, '$1 lá'],
       [/^(.+) leads?: any play$/, '$1 đi trước: đánh gì cũng được'], [/^(.+) · (\d+) passed$/, '$1 · $2 bỏ lượt'],

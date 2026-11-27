@@ -60,6 +60,13 @@
           ['Places and points', 'The first player out of cards is 1st, the others play on for 2nd and 3rd. Each hand, 1st gets the most points. After the last hand, most points wins.']],
           items: () => row([[card(3, 's'), 'Lowest card', '3 of spades'], [card(2, 'h'), 'Highest card', '2 of hearts'], [card(7, 'c') + card(8, 'd') + card(9, 'h'), 'Straight', 'three or more in a row']]),
           tip: 'Keep your 2s and bombs for the end, and get rid of low single cards early while it is still easy.', online: NET_TABLE },
+        trivia: { tag: '1-8 PLAYERS · QUIZ', goal: 'Answer quiz questions right, and fast, to score the most points.', steps: [
+          ['Pick the settings', 'In the room, choose the language of the questions (English or Tiếng Việt), a category (or all mixed), how many questions and how hard.'],
+          ['Answer', 'Everyone sees the same question at the same time. Tap one of the four answers before the time runs out. You can\'t change it once it is locked in.'],
+          ['Score', 'A right answer gets 500 points, plus up to 500 more for answering quickly. Three or more right in a row adds a 🔥 streak bonus.'],
+          ['See who got it', 'After each question the right answer lights up, and you see which answer everyone picked.'],
+          ['Win', 'After the last question, the player with the most points wins. Playing alone? Try to beat your best score.']],
+          tip: 'Not sure? Rule out the answers that are clearly wrong, then go with your gut. A quick guess scores more than no answer.', online: NET_TABLE },
         tictactoe: { tag: '1v1 · 3×3', goal: 'Get three of your marks in a row.', steps: [
           ['Place your mark', 'Tap an empty square. X goes first in the first game.'],
           ['Take turns', 'Players take turns, one mark each.'],

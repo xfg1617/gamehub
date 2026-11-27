@@ -82,6 +82,12 @@
         [0, '#th-opp', "Someone played a two? Four of a kind or three pairs in a row will bomb it!", 'Ai đánh heo? Tứ quý hay ba đôi thông là chặt được ngay!'],
         [0, '#th-hand', "Get rid of all your cards first, and you win.", 'Ai hết bài trước là thắng.'],
       ] },
+      trivia: { shots: [{}], lines: [
+        ['icon', null, "Trivia Rush! A quick quiz with your friends.", 'Đố Vui Nhanh! Thi đố cùng bạn bè.'],
+        [0, '#tv-q', "Everyone gets the same question at the same time.", 'Mọi người nhận cùng một câu hỏi cùng lúc.'],
+        [0, '#tv-ans', "Tap one of the four answers. The faster you're right, the more points you get.", 'Chọn một trong bốn đáp án. Đúng càng nhanh, điểm càng cao.'],
+        [0, '#tv-scores', "Get three in a row for a fire streak bonus. Most points at the end wins!", 'Đúng ba câu liền là có thưởng chuỗi lửa. Cuối cùng ai nhiều điểm nhất thắng!'],
+      ] },
       tictactoe: { shots: [{}], lines: [
         ['icon', null, "Tic Tac Toe. You've probably played this on paper.", 'Cờ ca rô ba ô. Chắc bạn chơi trên giấy rồi.'],
         [0, '#ttt-board', "Take turns putting your mark in an empty square.", 'Lần lượt đánh dấu vào một ô trống.'],

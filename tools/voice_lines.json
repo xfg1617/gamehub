@@ -348,6 +348,48 @@
 "lang": "en"
 },
 {
+"id": "bumpoff",
+"text": "Bump Off! Bumper boats, and only one stays afloat.",
+"hash": "f8ac07b5",
+"lang": "en"
+},
+{
+"id": "bumpoff",
+"text": "Everyone starts somewhere on the pond. The room picks: random spots, around the edge, or all squeezed together.",
+"hash": "67000e26",
+"lang": "en"
+},
+{
+"id": "bumpoff",
+"text": "Drag from your boat to aim. The longer the arrow, the harder you go. Then hit Ready.",
+"hash": "cdfabf8b",
+"lang": "en"
+},
+{
+"id": "bumpoff",
+"text": "Plans are secret. You can see every boat, just not where they're about to go.",
+"hash": "e2868efc",
+"lang": "en"
+},
+{
+"id": "bumpoff",
+"text": "When everyone's ready, all the arrows show up at once. Too late to change your mind!",
+"hash": "849d3182",
+"lang": "en"
+},
+{
+"id": "bumpoff",
+"text": "Then every boat moves together. Bump someone off the edge, and they're out!",
+"hash": "f6ea4842",
+"lang": "en"
+},
+{
+"id": "bumpoff",
+"text": "Last boat floating wins the round. Tip: aim where they'll be, not where they are.",
+"hash": "ae627606",
+"lang": "en"
+},
+{
 "id": "tictactoe",
 "text": "Tic Tac Toe. You've probably played this on paper.",
 "hash": "de425bed",
@@ -1335,6 +1377,48 @@
 "id": "werewolf",
 "text": "Mẹo cho sói: trà trộn thật khéo. Mẹo cho dân: để ý ai hay bỏ phiếu cùng nhau.",
 "hash": "cd054df5",
+"lang": "vi"
+},
+{
+"id": "bumpoff",
+"text": "Đụng Thuyền! Thuyền đụng nhau, và chỉ một chiếc trụ lại.",
+"hash": "cba0565a",
+"lang": "vi"
+},
+{
+"id": "bumpoff",
+"text": "Mọi người bắt đầu ở đâu đó trên hồ. Phòng sẽ chọn: chỗ ngẫu nhiên, quanh mép hồ, hay chen chúc ở giữa.",
+"hash": "39ca0d35",
+"lang": "vi"
+},
+{
+"id": "bumpoff",
+"text": "Kéo từ thuyền của bạn để nhắm. Mũi tên càng dài thì lao càng mạnh. Rồi bấm Sẵn sàng.",
+"hash": "47f9dbf4",
+"lang": "vi"
+},
+{
+"id": "bumpoff",
+"text": "Kế hoạch là bí mật. Bạn thấy hết các thuyền, chỉ không biết họ sắp lao về đâu.",
+"hash": "da2c808d",
+"lang": "vi"
+},
+{
+"id": "bumpoff",
+"text": "Khi mọi người sẵn sàng, tất cả mũi tên hiện ra cùng lúc. Giờ đổi ý là không kịp rồi!",
+"hash": "d39e0122",
+"lang": "vi"
+},
+{
+"id": "bumpoff",
+"text": "Rồi tất cả thuyền cùng lao đi. Húc được ai rơi khỏi mép hồ là người đó bị loại!",
+"hash": "379cfb6a",
+"lang": "vi"
+},
+{
+"id": "bumpoff",
+"text": "Thuyền cuối cùng còn nổi thắng ván. Mẹo: nhắm vào chỗ họ sắp tới, chứ đừng nhắm chỗ họ đang đứng.",
+"hash": "ffb2d728",
 "lang": "vi"
 },
 {

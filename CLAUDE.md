@@ -1236,5 +1236,5 @@ folder that was handed over, so they do not exist here.)
   every screen snaps to them. Rejoin replays instantly (`NP.catchup` skips the animation).
 * Tests: `test/t_bumpoff.py` (start settings, repeatable movement, a whole match with real drags, phone width),
   `test/t_np_bumpoff.py` (3 people + 1 computer: every screen agrees after each turn). Guide EN/VI, What's new `2026-11-28b`,
-  banner `og/bumpoff.png`. No how-to video yet.
+  banner `og/bumpoff.png`. How-to video: 3 staged pictures (plan with your arrow, reveal, GO with a bump) + 7 lines EN/VI (Puck).
 

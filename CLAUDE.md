@@ -1162,3 +1162,32 @@ folder that was handed over, so they do not exist here.)
 * All five: guides EN + VI (zz_howto / zz_howto_vi), video scripts (Werewolf's video is the long one, 11 lines, its
   pictures are staged by `js` in its shots), `zz_i18n_vi5.js` (VI_MORE5 / VI_PAT5), banners (make_images.py), What's new
   entry `2026-11-27b`. Trivia Rush's old "coming soon" placeholder was removed from CATALOG.
+
+## 5ak. Nov 27 2026 round 7 (Inna)
+
+* **Say What!?** = the new shown name of Funny Answers (id still `funny`; same name in Vietnamese). Prompts rewritten in the
+  short fill-in-the-blank, pop-culture style Inna showed (`______` blanks; "crazy" = cheeky, never explicit, site is 13+);
+  Vietnamese prompts built on Vietnamese everyday jokes (Tết relatives, con nhà người ta, kẹt xe, nhậu, Zalo...). All our own.
+* **Online count** is no longer shown to players (side menu line hidden: `#online-count` kept hidden for old code; chat
+  header count empty); only the owner's stats page shows ONLINE NOW. **Home page**: Points leaderboard and Discord links
+  removed (both stay in the side menu); no CHAT button on the home page (`chatKeyFor('play')` = null).
+* **Werewolf video**: introduces every role (Werewolf, Seer, Doctor, Hunter, Witch, Villager) with its own role-card
+  picture, then night / morning / talk / vote (15 lines). The "voice changed half way" bug: two lines were recorded after
+  the last build, so the live site was missing them and fell back to the device voice. `make_voices.py` now also writes
+  new files into `dist/site/voice/`. Rule: after recording, rebuild before committing.
+* **Refreshed look everywhere** (`src/css/95-refresh.css`, Inna liked the prototypes): navy grid background on every page
+  (games with their own scenery keep theirs), and the game's top bar is a row of separate chips (no panel): ← Lobby, the
+  game's name as an amber pixel chip (`.gs-name`), icon chips ⚙ 📜 ? (+ 🎨 Table in card games), ▶ Video, ♪, VI.
+  All how-to pictures and gameplay clips were retaken with the new look.
+* **No ▶ Video button in game bars** (Inna: the ? Guide pop-up has the video). `t_hv_voice.py` opens it from the Guide.
+* **Friends see what you're playing**: the lobby presence also carries `g` (what this screen has open: a game id,
+  `room:<game>` while waiting in a room, or ''); `NET.setActivity` re-tracks when it changes (checked every 3 s in
+  zz_friends.js), `NET.activityOf(id)`, `friendStatus(id)` → "PLAYING CHESS" / "IN A POKER ROOM" / "ONLINE". Shown in the
+  friends list, friend chat header, invite list and the chat's Friends view. No SQL needed (presence). `t_activity.py`.
+* **Trivia Rush scoring like Doodle Guess**: a right answer = 20-100 by speed (+10 per answer in a streak beyond 2); the
+  places at the end go into the site's normal points as before.
+* **Fun-moment badges** (Bluff King etc.): big amber chips beside the name tag (right side, tilted, bouncing; the
+  corner of board-game player boxes), so they no longer hide under the tag or cover cards (28-points.css).
+* **Next game without people who left** (Inna, Nov 27 2026): `npRematchSlot` leaves out players whose seat was handed to
+  a computer during the game (`seat.left`), and leaving the result screen (Back to lobby, closing it, closing the tab)
+  sends `bye` on `rm:<code>` so the others drop that player at once (no 10 s wait). `test/t_np_next_left.py`.

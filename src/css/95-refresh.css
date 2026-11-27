@@ -1,0 +1,36 @@
+    /* =========================================================================
+       REFRESHED LOOK (Nov 27 2026, Inna: "I like the refreshed design from the prototypes, use it for the whole page and
+       the other games"; prototypes/round6). Same arcade style, cleaner:
+       - the whole site sits on a navy grid (instead of the faint water texture)
+       - the game's top bar is a row of separate square chips: ← Lobby, the game's name as an amber pixel chip, then
+         small icon chips (⚙ 📜 ? ▶ 🎨 ♪ VI); no panel behind them
+       Card games keep their table designs (🎨 Table chip); games with their own scenery keep it.
+       ========================================================================= */
+    html, body { background-color: #0A1A2B; }
+    body::before { background-image: linear-gradient(rgba(45, 212, 191, .05) 2px, transparent 2px), linear-gradient(90deg, rgba(45, 212, 191, .05) 2px, transparent 2px) !important;
+      background-size: 40px 40px !important; opacity: 1 !important; }
+    /* games that paint their own scene (felt tables, the village, quiz grid, stripes) don't get the grid on top */
+    body.in-game:is([data-game="poker"], [data-game="kittens"], [data-game="colorclash"], [data-game="dominoes"], [data-game="blackjack"], [data-game="fibber"], [data-game="thirteen"], [data-game="werewolf"], [data-game="funny"], [data-game="trivia"])::before { opacity: 0 !important; }
+
+    /* the game bar: chips, no panel */
+    #gs-wrap > .panel:first-child { background: transparent !important; border: 0 !important; box-shadow: none !important; padding: 0 0 6px !important; }
+    #gs-wrap > .panel:first-child > div:first-child { gap: 8px !important; }
+    #gs-wrap > .panel:first-child .spr { display: none !important; }
+    #gs-wrap .gs-name { font-family: 'Arcade Pixel', 'Outfit', sans-serif !important; font-weight: 400 !important; text-transform: uppercase; letter-spacing: .03em;
+      background: #F5B041; color: #231505 !important; border: 3px solid #050E18; box-shadow: 0 4px 0 #050E18; padding: 1px 11px 2px; font-size: 19px !important; line-height: 1.2; white-space: nowrap; }
+    #gs-wrap > .panel:first-child .btn-game { box-shadow: 0 4px 0 #050E18; }
+    #gs-tools { gap: 8px !important; }
+    /* icon chips: Settings, Log, Guide, Table show just their symbol (the words are in the tooltip) */
+    #gs-tools :is(.gs-sets, .gs-moves, .gs-guide, .gs-table) .gs-lbl { display: none; }
+    #gs-tools :is(.gs-sets, .gs-moves, .gs-guide, .gs-table, .gs-snd) { min-width: 38px; justify-content: center; }
+    @media (min-width: 1024px) {
+      body.in-game #gs-wrap > .panel:first-child { padding: 0 !important; background: transparent !important; }
+    }
+    @media (max-width: 640px) {
+      #gs-wrap .gs-name { font-size: 15px !important; padding: 1px 7px 2px; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+      #gs-tools :is(.gs-sets, .gs-moves, .gs-guide, .gs-table, .gs-snd) { min-width: 0; }
+    }
+    /* settings with many choices (e.g. Trivia Rush's 13 categories) wrap into a tidy grid instead of squeezing into one row */
+    .seg:has(> .seg-btn:nth-child(6)) { display: grid !important; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 6px; }
+    .seg:has(> .seg-btn:nth-child(6)) > .seg-btn { flex: none !important; min-width: 0; white-space: normal; line-height: 1.15; padding: .5rem .4rem; }
+    @media (max-width: 640px) { .seg:has(> .seg-btn:nth-child(6)) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

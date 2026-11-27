@@ -63,17 +63,17 @@
         trivia: { tag: '1-8 PLAYERS · QUIZ', goal: 'Answer quiz questions right, and fast, to score the most points.', steps: [
           ['Pick the settings', 'In the room, choose the language of the questions (English or Tiếng Việt), a category (or all mixed), how many questions and how hard.'],
           ['Answer', 'Everyone sees the same question at the same time. Tap one of the four answers before the time runs out. You can\'t change it once it is locked in.'],
-          ['Score', 'A right answer gets 500 points, plus up to 500 more for answering quickly. Three or more right in a row adds a 🔥 streak bonus.'],
+          ['Score', 'A right answer gets 20 to 100 points: answer straight away for 100, at the last second for 20. Three or more right in a row adds a 🔥 streak bonus. At the end, your place gives you points for the leaderboard, like every game.'],
           ['See who got it', 'After each question the right answer lights up, and you see which answer everyone picked.'],
           ['Win', 'After the last question, the player with the most points wins. Playing alone? Try to beat your best score.']],
           tip: 'Not sure? Rule out the answers that are clearly wrong, then go with your gut. A quick guess scores more than no answer.', online: NET_TABLE },
         funny: { tag: '3-8 PLAYERS · PARTY', goal: 'Write the funniest answers and win the most votes.', steps: [
-          ['Make a room', 'Funny Answers is played with friends: create a room, send them the link, pick the language of the prompts and press Start. Everyone plays on their own phone or computer.'],
+          ['Make a room', 'Say What!? is played with friends: create a room, send them the link, pick the language of the prompts and press Start. Everyone plays on their own phone or computer.'],
           ['Write', 'Each round you get two prompts, like "A terrible name for a pet goldfish". Type the funniest answer you can think of. One other player gets the same prompt.'],
           ['Vote', 'The two answers to each prompt appear side by side, with no names. Everyone who didn\'t write them taps the funnier one.'],
           ['Points', 'Every vote is 100 points (×2 in round 2), and the winner of each prompt gets a bonus. Win every single vote for a <b class="text-coral">CLEAN SWEEP</b>!'],
           ['Final round', 'Everyone answers the same prompt, then picks a gold, silver and bronze favourite (not their own). Most points at the end wins.']],
-          tip: 'Short and surprising beats long and clever. Make the room picture it!', online: 'Funny Answers needs at least 3 people and has no computer players (they aren\'t funny enough). Create a room and invite your friends with the link.' },
+          tip: 'Short and surprising beats long and clever. Make the room picture it!', online: 'Say What!? needs at least 3 people and has no computer players (they aren\'t funny enough). Create a room and invite your friends with the link.' },
         werewolf: { tag: '5-12 PLAYERS · SECRET ROLES', goal: 'Village: find and vote out every wolf. Wolves: take the village one by one without being caught.', steps: [
           ['Make a room', 'Werewolf is played with friends: 5 to 12 people, each on their own phone or computer. Create a room, send the link, choose the roles in the room settings and press Start.'],
           ['Your secret role', 'At the start everyone sees their own role card. Keep it secret! Most players are Villagers. A few are Werewolves, and the wolves know who the other wolves are.'],

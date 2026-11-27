@@ -1,6 +1,6 @@
     /* =========================================================================
        TRIVIA RUSH — Nov 2026, Inna's list. Everyone gets the same question at the same time; four answers; faster right
-       answers score more (500 + up to 500 for speed), 3 right in a row = a 🔥 streak bonus. 12 categories, easy to hard,
+       answers score more (20-100 points, like Doodle Guess), 3 right in a row = a 🔥 streak bonus. 12 categories, easy to hard,
        questions in English or Vietnamese (room setting). Questions: trivia_q1-3.js (window.TRIVIA_Q).
        Solo, or 2-8 players (computer players answer right more or less often by level). Netplay script style:
        everyone answers at once through S.collect.
@@ -137,14 +137,14 @@
         }, () => ({ t: 'ans', i: -1, ms: G.secs * 1000 }), G.secs + 0.3);
         if (!G || G.tok !== t) throw ABORT;
         gClearInt(tick); G.keys = null;
-        // score it: a right answer = 500 + up to 500 for speed; 3+ in a row = +100 per extra
+        // score it: a right answer = 20-100 by speed; 3+ in a row = +10 per extra
         G.reveal = {};
         G.players.forEach((p) => {
           const a = got[p.seat] || { i: -1, ms: G.secs * 1000 };
           let pts = 0;
           if (a.i === q.right) {
             p.right++; p.streak++; p.best = Math.max(p.best, p.streak);
-            pts = 500 + Math.round(500 * Math.max(0, 1 - (a.ms || 0) / (G.secs * 1000))) + (p.streak >= 3 ? 100 * (p.streak - 2) : 0);
+            pts = Math.round(20 + 80 * Math.max(0, 1 - (a.ms || 0) / (G.secs * 1000))) + (p.streak >= 3 ? 10 * (p.streak - 2) : 0);   // like Doodle Guess: 20-100, faster = more
             if (p.streak === 5) funMoment('tv-seat-' + p.seat, { key: 'streak5', icon: '🔥', label: 'x5', fire: true, burst: 'ON FIRE!', sub: `${p.name} got 5 right in a row`, mine: p.seat === G.me });
           } else p.streak = 0;
           p.pts += pts; G.reveal[p.seat] = { i: a.i, got: pts };
@@ -188,7 +188,7 @@
         blurb: 'Quick-fire quiz: everyone gets the same question, fastest right answer scores most. 12 categories, English or Vietnamese.',
         rules: { tag: 'QUIZ · 1-8 PLAYERS', steps: [
           '<strong class="text-bone">Answer fast:</strong> everyone gets the same question with four answers. Tap one before the time runs out.',
-          '<strong class="text-bone">Points:</strong> a right answer scores 500, plus up to 500 more for being quick. Three right in a row starts a 🔥 streak bonus.',
+          '<strong class="text-bone">Points:</strong> a right answer scores 20 to 100 points: the faster you answer, the more you get. Three right in a row adds a 🔥 streak bonus.',
           '<strong class="text-bone">Win:</strong> after the last question, the most points wins.',
         ], tip: 'Not sure? Rule out the answers that are clearly wrong, then go with your gut. A fast guess beats no answer.' },
         profileTiles: (s) => [['WINS', s.wins, 'text-amber'], ['GAMES', s.played, 'text-bone'], ['RIGHT ANSWERS', s.right || 0, 'text-emerald'], ['BEST STREAK', s.bestStreak || 0, 'text-coral']],

@@ -193,8 +193,8 @@
 },
 {
 "id": "funny",
-"text": "Funny Answers! The funniest person in the room wins.",
-"hash": "fb51d859",
+"text": "Say What!? The funniest person in the room wins.",
+"hash": "a380bd90",
 "lang": "en"
 },
 {
@@ -229,26 +229,50 @@
 },
 {
 "id": "werewolf",
-"text": "Everyone gets a secret role. Most of you are villagers. But a few of you... are werewolves.",
-"hash": "4b86cdf5",
+"text": "Everyone gets a secret role card. Keep it to yourself!",
+"hash": "1d0f84c1",
 "lang": "en"
 },
 {
 "id": "werewolf",
-"text": "Your role card stays in the corner. Keep it secret! The wolves know each other, nobody else does.",
-"hash": "f4f8728e",
+"text": "The Werewolves: each night, your pack picks someone to take. In the day, act innocent.",
+"hash": "3ccad992",
+"lang": "en"
+},
+{
+"id": "werewolf",
+"text": "The Seer: each night, tap a player to find out if they're a wolf.",
+"hash": "63242367",
+"lang": "en"
+},
+{
+"id": "werewolf",
+"text": "The Doctor: each night, protect one player from the wolves. Just not the same one twice in a row.",
+"hash": "fbe933b3",
+"lang": "en"
+},
+{
+"id": "werewolf",
+"text": "The Hunter: if you go out, you take someone down with you.",
+"hash": "e0aced97",
+"lang": "en"
+},
+{
+"id": "werewolf",
+"text": "The Witch: one potion to save the wolves' target, and one poison. Each only once.",
+"hash": "3014e776",
+"lang": "en"
+},
+{
+"id": "werewolf",
+"text": "And the Villagers: no power, just your brain. Listen, argue, and vote the wolves out!",
+"hash": "5880c62b",
 "lang": "en"
 },
 {
 "id": "werewolf",
 "text": "When night falls, everyone taps a player. The wolves' taps decide who they take.",
 "hash": "addd840d",
-"lang": "en"
-},
-{
-"id": "werewolf",
-"text": "The Seer can check if someone is a wolf. The Doctor can protect one player.",
-"hash": "359ff849",
 "lang": "en"
 },
 {
@@ -1123,8 +1147,8 @@
 },
 {
 "id": "funny",
-"text": "Trả Lời Bá Đạo! Ai hài nhất phòng là người thắng.",
-"hash": "38dee286",
+"text": "Say What!? Ai hài nhất phòng là người thắng.",
+"hash": "cc4dc1f2",
 "lang": "vi"
 },
 {
@@ -1159,26 +1183,50 @@
 },
 {
 "id": "werewolf",
-"text": "Mỗi người nhận một vai bí mật. Phần lớn là dân làng. Nhưng vài người trong số các bạn... là ma sói.",
-"hash": "ab9b3f7a",
+"text": "Mỗi người nhận một thẻ vai bí mật. Giữ kín cho riêng mình nhé!",
+"hash": "ae3cdb5c",
 "lang": "vi"
 },
 {
 "id": "werewolf",
-"text": "Thẻ vai của bạn nằm ở góc màn hình. Giữ bí mật nhé! Bầy sói biết nhau, ngoài ra không ai biết.",
-"hash": "1a9aa50c",
+"text": "Ma Sói: mỗi đêm, cả bầy chọn một người để cắn. Ban ngày thì giả vờ vô tội.",
+"hash": "02062041",
+"lang": "vi"
+},
+{
+"id": "werewolf",
+"text": "Tiên Tri: mỗi đêm, chạm vào một người để biết họ có phải sói không.",
+"hash": "e33673ef",
+"lang": "vi"
+},
+{
+"id": "werewolf",
+"text": "Bác Sĩ: mỗi đêm, bảo vệ một người khỏi bầy sói. Nhưng không được bảo vệ một người hai đêm liền.",
+"hash": "21dedcb0",
+"lang": "vi"
+},
+{
+"id": "werewolf",
+"text": "Thợ Săn: nếu bạn bị loại, bạn được kéo theo một người.",
+"hash": "1e5f0825",
+"lang": "vi"
+},
+{
+"id": "werewolf",
+"text": "Phù Thủy: một bình cứu người bị sói cắn, và một bình độc. Mỗi bình chỉ dùng một lần.",
+"hash": "a5ab21ab",
+"lang": "vi"
+},
+{
+"id": "werewolf",
+"text": "Còn Dân Làng: không có chức năng, chỉ có cái đầu. Lắng nghe, tranh luận, và vote sói ra!",
+"hash": "8ea4fabe",
 "lang": "vi"
 },
 {
 "id": "werewolf",
 "text": "Khi đêm xuống, ai cũng chạm vào một người. Lựa chọn của bầy sói quyết định ai bị cắn.",
 "hash": "e92c0df9",
-"lang": "vi"
-},
-{
-"id": "werewolf",
-"text": "Tiên Tri được soi xem ai là sói. Bác Sĩ được bảo vệ một người.",
-"hash": "a2ae8ae5",
 "lang": "vi"
 },
 {

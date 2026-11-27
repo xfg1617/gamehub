@@ -920,10 +920,7 @@
       <svg viewBox="0 0 16 16" fill="currentColor"><rect x="2" y="6" width="3" height="4"/><rect x="5" y="4" width="2" height="8"/><rect x="7" y="2" width="2" height="12"/><g id="snd-waves"><rect x="10" y="5" width="1" height="6"/><rect x="12" y="3" width="1" height="10"/></g></svg>
       <span id="snd-label">Sound: On</span>
     </button>
-    <div class="px-5 pb-3 pt-1 flex items-center gap-2 text-xs text-muted">
-      <span class="w-2.5 h-2.5 rounded-full bg-emerald border-2 border-ink animate-pulse"></span>
-      <span><strong id="online-count" class="pix text-sm text-bone">1</strong> online now</span>
-    </div>
+    <span id="online-count" class="hidden">1</span><!-- the online count is only shown on the owner's stats page (Inna, Nov 27 2026) -->
 
     <button id="btn-signin" onclick="openAuthModal('signup')" class="btn-game btn-amber btn-sm side-signin">Sign up · Log in</button>
     <div class="side-me">
@@ -985,10 +982,7 @@
           </div>
         </div>
       </div>
-      <div class="nh-links">
-        <button id="rank-link" class="b1" onclick="navigateTo('leaderboard')"><span>🏆 Points leaderboard <small>· this week's top players</small></span><span>▶</span></button>
-        <button id="discord-link" class="b2" onclick="openDiscord()"><span>💬 Discord <small>· find people to play with</small></span><span>▶</span></button>
-      </div>
+      <!-- Points leaderboard and Discord links removed from the home page for a cleaner look (Inna, Nov 27 2026); both stay in the side menu -->
 
       <!-- All games in one grid with category buttons (built from the game catalogue) -->
       <div id="shelves" class="min-w-0"></div>

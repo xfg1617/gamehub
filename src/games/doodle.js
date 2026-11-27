@@ -28,6 +28,10 @@
       ];
       const PROMPTS = ['A cat wearing a tiny hat', 'Pizza on the moon', 'A dragon afraid of fire', 'A fish riding a bicycle', 'An octopus playing drums', 'Grandma skateboarding', 'A sleepy volcano', 'A robot eating spaghetti', 'A penguin on vacation', 'The world\'s tallest sandwich', 'A ghost doing laundry', 'A dog driving a taxi', 'A cow on a trampoline', 'A banana with sunglasses', 'Two snails racing', 'A pirate who hates water', 'A snowman at the beach', 'A giraffe in a tiny car', 'An alien ordering coffee', 'A shark with a toothbrush', 'A squirrel with a jetpack', 'A knight afraid of a mouse', 'A birthday party for a monster', 'A pig flying a kite', 'A chef made of cheese', 'A turtle winning a race', 'A bear playing the guitar', 'A superhero doing homework', 'A frog on a surfboard', 'A cactus getting a hug', 'A unicorn eating tacos', 'A tiny house on a giant pumpkin', 'A rocket made of cardboard', 'A lion at the dentist', 'A duck wearing roller skates', 'A mermaid with a laptop', 'A bee delivering pizza', 'A monkey painting a picture', 'A sheep counting people', 'A walrus on a swing'];
       const COLS = ['#16212E', '#E11D48', '#F59E0B', '#16A34A', '#2563EB', '#92400E', '#FFFFFF'];
+      const ERASER_ICON = '<svg viewBox="0 0 12 10" width="20" height="17" shape-rendering="crispEdges" aria-hidden="true"><rect x="3" y="0" width="9" height="6" fill="#050E18"/><rect x="4" y="1" width="7" height="4" fill="#FB7185"/><rect x="0" y="3" width="7" height="6" fill="#050E18"/><rect x="1" y="4" width="5" height="4" fill="#F7F4EC"/><rect x="0" y="9" width="12" height="1" fill="#9DB4CC"/></svg>';
+      // the eraser is its own clear button (Inna, Nov 2026: "add eraser"); it paints with the canvas colour
+      const eraserBtn = (cls, style) => `<button data-c="#FFFFFF" class="${cls} dg-eraser" style="${style || ''}" title="Eraser">${ERASER_ICON}<span>Eraser</span></button>`;
+
       const CANVAS_BG = '#FDFBF5';
       const ABORT = { a: 1 };
       let G = null;
@@ -151,7 +155,7 @@
           const fin = (v) => { if (done) return; done = true; if (clk) clk.stop(); res(v); };
           main(`<div class="win overflow-hidden"><div class="winbar teal"><span>${esc(G.names[p])}: DRAW THIS</span></div><div class="p-4 space-y-3"><div id="dd-clock"></div><div class="pix text-lg text-amber text-center">${esc(text)}</div>
             <canvas id="dd-cv" width="760" height="480" style="width:100%;touch-action:none;background:${CANVAS_BG};border:4px solid var(--ink);cursor:crosshair"></canvas>
-            <div class="flex flex-wrap items-center gap-2 justify-center"><div id="dd-cols" class="flex gap-1.5">${COLS.map((c, i) => `<button data-c="${c}" style="width:30px;height:30px;background:${c};border:3px solid var(--ink);${i === 0 ? 'outline:3px solid #F5B041;' : ''}" title="${c === '#FFFFFF' ? 'Eraser' : 'Colour'}"></button>`).join('')}</div>
+            <div class="flex flex-wrap items-center gap-2 justify-center"><div id="dd-cols" class="flex gap-1.5">${COLS.filter((c) => c !== '#FFFFFF').map((c, i) => `<button data-c="${c}" style="width:30px;height:30px;background:${c};border:3px solid var(--ink);${i === 0 ? 'outline:3px solid #F5B041;' : ''}" title="${c === '#FFFFFF' ? 'Eraser' : 'Colour'}"></button>`).join('')}</div>${eraserBtn('dd-er', 'height:30px')}
             <div class="seg"><button data-sz="4" class="seg-btn">Thin</button><button data-sz="9" class="seg-btn on">Medium</button><button data-sz="20" class="seg-btn">Fat</button></div>
             <button id="dd-undo" class="btn-game btn-graphite py-1.5 px-3 text-sm">Undo</button><button id="dd-clr" class="btn-game btn-graphite py-1.5 px-3 text-sm">Clear</button><button id="dd-ok" class="btn-game btn-amber py-1.5 px-6">Done</button></div></div></div>`);
           const cv = $('dd-cv'), ctx = cv.getContext('2d');
@@ -381,7 +385,7 @@
       // my turn to draw: the canvas, colours, sizes, undo, clear; strokes go out about 15 times a second
       function drawPad(k) {
         $('dg-stage').innerHTML = `<canvas id="dg-cv" width="760" height="480" class="dg-cv draw"></canvas>`;
-        $('dg-tools').innerHTML = `<div class="flex flex-wrap items-center gap-2 justify-center"><div class="flex gap-1.5">${COLS.map((c, i) => `<button data-c="${c}" class="dg-col ${i === 0 ? 'on' : ''}" style="background:${c}" title="${c === '#FFFFFF' ? 'Eraser' : 'Colour'}"></button>`).join('')}</div>
+        $('dg-tools').innerHTML = `<div class="flex flex-wrap items-center gap-2 justify-center"><div class="flex gap-1.5">${COLS.filter((c) => c !== '#FFFFFF').map((c, i) => `<button data-c="${c}" class="dg-col ${i === 0 ? 'on' : ''}" style="background:${c}" title="Colour"></button>`).join('')}</div>${eraserBtn('dg-col')}
           <div class="seg"><button data-sz="4" class="seg-btn">Thin</button><button data-sz="9" class="seg-btn on">Medium</button><button data-sz="20" class="seg-btn">Fat</button></div>
           <button id="dg-undo" class="btn-game btn-graphite py-1.5 px-3 text-sm">Undo</button><button id="dg-clr" class="btn-game btn-graphite py-1.5 px-3 text-sm">Clear</button></div>`;
         const cv = $('dg-cv'), ctx = cv.getContext('2d'), S = G.S;

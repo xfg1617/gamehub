@@ -16,7 +16,7 @@ def rec(r):
         p = subprocess.run(['curl', '-sS', '-m', '90', '-H', 'Content-Type: application/json', '-d', json.dumps(body), 'https://texttospeech.googleapis.com/v1/text:synthesize'], capture_output=True, text=True)
         try:
             a = json.loads(p.stdout)['audioContent']
-            os.makedirs(os.path.dirname(out), exist_ok=True); open(out, 'wb').write(base64.b64decode(a)); return 'new'
+            os.makedirs(os.path.dirname(out), exist_ok=True); open(out, 'wb').write(base64.b64decode(a)); pub = out.replace(os.path.join('assets', 'site'), os.path.join('dist', 'site')); os.makedirs(os.path.dirname(pub), exist_ok=True); open(pub, 'wb').write(base64.b64decode(a)); return 'new'   # also into the published folder, so a new line is never left out of the live site
         except Exception:
             err = p.stdout[:160]
             if '429' in err or 'RESOURCE_EXHAUSTED' in err: time.sleep(20 + attempt * 10)   # per-minute limit: wait, then try again

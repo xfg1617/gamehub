@@ -143,3 +143,5 @@
       body:has(#view-daily:not(.hidden)) #chat-fab #chat-fab-lab { display: none; }
       #view-daily:not(.hidden) { padding-bottom: 72px; }
     }
+.dg-eraser { width: auto !important; height: 30px; padding: 0 9px 0 6px; background: #F7F4EC !important; color: #050E18; display: inline-flex; align-items: center; gap: 5px; font-weight: 800; font-size: 13px; border: 3px solid #050E18; }
+.dg-eraser.on { outline: 3px solid #F5B041; }

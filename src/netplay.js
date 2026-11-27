@@ -546,9 +546,18 @@
       // everyone who just played is assumed to be here (the "who's here" list arrives a moment later): the choices
       // show at once, and a player only counts as gone after 10 s missing (Inna, Nov 2026: "player left" showed after
       // every game even when nobody left, and the next-game choice came late)
-      const seen = {}; L.uids.forEach((u) => { seen[u] = Date.now(); });
-      let present = L.uids.slice(), gone = false, picking = false, autoT = null, autoLeft = 3;
-      const missingT = setInterval(() => { if (gone || !document.body.contains(slot)) return clearInterval(missingT); const was = present.length; present = L.uids.filter((u) => u === me || Date.now() - (seen[u] || 0) < 10000); if (present.length !== was) paint(); }, 2000);
+      // ...except players who left DURING the game (their seat was handed to a computer): they never count (Inna, Nov 2026:
+      // "a player who already left still joined the next game")
+      const leftU = new Set(((NP.S && NP.S.seats) || []).filter((x) => x && x.left && x.uid && x.uid !== me).map((x) => x.uid));
+      const seen = {}; L.uids.forEach((u) => { seen[u] = leftU.has(u) ? 0 : Date.now(); });
+      const byes = new Set(leftU);
+      const here = (u) => u === me || (!byes.has(u) && Date.now() - (seen[u] || 0) < 10000);
+      let present = L.uids.filter(here), gone = false, picking = false, autoT = null, autoLeft = 3;
+      // leaving the result screen (Back to lobby, closing it, closing the tab) tells the others at once
+      const bye = () => { if (gone) return; gone = true; try { ch.send('bye', {}); } catch (e) {} setTimeout(() => { try { ch.close(); } catch (e) {} }, 400); if (NP.rm === ch) NP.rm = null; window.removeEventListener('pagehide', bye); };
+      window.addEventListener('pagehide', bye);
+      let shown = false;
+      const missingT = setInterval(() => { if (gone) return clearInterval(missingT); const vis = document.body.contains(slot) && slot.getClientRects().length > 0; if (vis) shown = true; else if (shown || !document.body.contains(slot)) { clearInterval(missingT); return bye(); } const was = present.join(); present = L.uids.filter(here); if (present.join() !== was) paint(); }, 1000);
       const pts = {}; const myP = (typeof POINTS !== 'undefined' && POINTS.last && Date.now() - POINTS.last.at < 60000) ? POINTS.last.p : 0; pts[me] = myP;
       const others = () => L.uids.filter((u) => u !== me && present.includes(u));
       const group = () => L.uids.filter((u) => u === me || present.includes(u));
@@ -602,7 +611,8 @@
       };
       ch.on('go', (d) => { if (d && d.code && d.game) go(d, false); });
       ch.on('pts', (d, from) => { if (d && isFinite(d.p)) { pts[from] = Math.max(0, Math.min(40, +d.p)); paint(); } });
-      ch.presence((list) => { const now = Date.now(); list.forEach((x) => { seen[x.uid] = now; }); const was = present.join(); present = L.uids.filter((u) => u === me || now - (seen[u] || 0) < 10000); if (present.join() !== was) paint(); });
+      ch.presence((list) => { const now = Date.now(); list.forEach((x) => { seen[x.uid] = now; }); const was = present.join(); present = L.uids.filter(here); if (present.join() !== was) paint(); });
+      ch.on('bye', (d, from) => { if (!from || from === me) return; byes.add(from); present = L.uids.filter(here); paint(); });
       const keepSeen = setInterval(() => { if (gone || !document.body.contains(slot)) return clearInterval(keepSeen); try { (ch.members ? ch.members() : []).forEach((x) => { seen[x.uid] = Date.now(); }); } catch (e) {} }, 2000);
       // tell the others how many points this game gave me (for the session standings)
       const sayPts = () => { if (!gone) ch.send('pts', { p: myP }); };

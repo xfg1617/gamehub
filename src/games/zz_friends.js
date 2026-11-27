@@ -131,6 +131,23 @@
       ['keyup', 'keypress'].forEach((t) => q.addEventListener(t, (e) => e.stopPropagation()));
       paintResults(); paintFriendList(); paintFriendChat();
     }
+    // "Playing Chess" / "In a Werewolf room" / "Online" for a friend who is on the site (Inna, Nov 27 2026)
+    const gameName = (id) => { const m = (typeof GAME_MODS !== 'undefined' && GAME_MODS[id]) || (typeof CATALOG !== 'undefined' && CATALOG.find((c) => c.id === id)); return m ? m.name : id; };
+    function statusOf(id) {
+      if (!NET.isOnline || !NET.isOnline(id)) return '';
+      const a = NET.activityOf ? NET.activityOf(id) : '';
+      if (!a) return 'ONLINE';
+      if (a.startsWith('room:')) return 'IN A ' + String(gameName(a.slice(5))).toUpperCase() + ' ROOM';
+      return 'PLAYING ' + String(gameName(a)).toUpperCase();
+    }
+    window.friendStatus = statusOf;
+    // tell the others what this screen is doing: checked every 3 s (cheap: only sent when it changes)
+    setInterval(() => {
+      if (typeof NET === 'undefined' || !NET.setActivity) return;
+      const inGame = document.body.classList.contains('in-game') && typeof activeGame !== 'undefined' && activeGame;
+      const room = typeof NP !== 'undefined' && NP.lobby && !NP.table;
+      NET.setActivity(inGame ? (room ? 'room:' + activeGame : activeGame) : (typeof activeView !== 'undefined' && activeView === 'naval' && document.body.classList.contains('in-game') ? 'naval' : ''));
+    }, 3000);
     const frRow = (p, right) => `<div class="fr-row"><button class="fr-who" data-card="${esc(p.id)}"><span class="avatar-tile w-9 h-9 text-xl">${esc(p.avatar)}</span>${p.dot !== undefined ? `<span class="fr-dot ${p.dot ? 'on' : ''}" title="${p.dot ? 'Online' : 'Offline'}"></span>` : ''}<span class="min-w-0"><span class="block font-bold text-bone truncate">${esc(p.name)}</span>${p.sub ? `<span class="block pix text-xs text-muted">${p.sub}</span>` : ''}</span></button><span class="flex gap-1.5 shrink-0">${right || ''}</span></div>`;
     async function frSearch() {
       const box = document.getElementById('fr-results'); if (!box) return;
@@ -151,7 +168,7 @@
       const cnt = document.getElementById('fr-count'); if (cnt) cnt.textContent = `${fl.filter((f) => f.dot).length} ONLINE · ${fl.length}`;
       box.innerHTML = (L.incoming.length ? `<div class="pix text-xs text-amber px-1">FRIEND REQUESTS</div>${L.incoming.map((p) => frRow(Object.assign({ sub: 'WANTS TO BE FRIENDS' }, p), `<button class="btn-game btn-emerald py-1.5 px-3 text-xs" data-acc="${esc(p.id)}">Accept</button><button class="btn-game btn-graphite py-1.5 px-3 text-xs" data-rm="${esc(p.id)}">Decline</button>`)).join('')}` : '')
         + (fl.length ? fl.map((p) => { const last = (FR.msgs[p.id] || []).slice(-1)[0], pre = last ? (last.from === NET.me.id ? 'You: ' : '') + (frRoomCode(last.text) ? '🎲 room invite' : last.text) : '';
-            return frRow(Object.assign({ sub: pre ? `<span class="fr-pre">${esc(pre.slice(0, 40))}</span>` : p.dot ? 'ONLINE' : 'OFFLINE' }, p), `${FR.unread[p.id] ? `<span class="badge on fr-badge">${FR.unread[p.id]}</span>` : ''}<button class="btn-game btn-teal py-1.5 px-3 text-xs" data-chat="${esc(p.id)}">Chat</button>`).replace('<div class="fr-row">', `<div class="fr-row ${FR.sel === p.id ? 'sel' : ''}" data-row="${esc(p.id)}">`); }).join('')
+            return frRow(Object.assign({ sub: (p.dot && statusOf(p.id) !== 'ONLINE' ? `<span class="text-emerald">${esc(statusOf(p.id))}</span>` : pre ? `<span class="fr-pre">${esc(pre.slice(0, 40))}</span>` : p.dot ? 'ONLINE' : 'OFFLINE') }, p), `${FR.unread[p.id] ? `<span class="badge on fr-badge">${FR.unread[p.id]}</span>` : ''}<button class="btn-game btn-teal py-1.5 px-3 text-xs" data-chat="${esc(p.id)}">Chat</button>`).replace('<div class="fr-row">', `<div class="fr-row ${FR.sel === p.id ? 'sel' : ''}" data-row="${esc(p.id)}">`); }).join('')
           : `<div class="text-sm text-muted px-1 py-2">No friends yet. Look players up above, or tap a name in any chat, then press <b class="text-bone">Add friend</b>.</div>`)
         + (L.outgoing.length ? `<div class="pix text-xs text-muted px-1 pt-2">WAITING FOR AN ANSWER</div>${L.outgoing.map((p) => frRow(Object.assign({ sub: 'REQUEST SENT' }, p), `<button class="btn-game btn-graphite py-1.5 px-3 text-xs" data-rm="${esc(p.id)}">Cancel</button>`)).join('')}` : '');
       box.querySelectorAll('[data-card]').forEach((b) => { b.onclick = () => openPlayerCard(b.dataset.card); });
@@ -182,7 +199,7 @@
         if (code) return sep + `<div class="dm-inv ${mine ? 'me' : ''}">🎲 ${mine ? `You invited ${esc(f.name)} to room <b>${esc(code)}</b>` : `${esc(f.name)} invited you to room <b>${esc(code)}</b>`}${mine ? '' : ` <button class="btn-game btn-teal py-1 px-3 text-xs" data-join="${esc(code)}">Join</button>`}<time>${tm}</time></div>`;
         return sep + `<div class="dm-b ${mine ? 'me' : ''}">${esc(m.text)}<time>${tm}</time></div>`;
       }).join('');
-      win.innerHTML = `<div class="dm-head"><span class="dm-av">${esc(f.avatar)}<i class="${on ? 'on' : ''}"></i></span><div class="min-w-0 flex-1"><b class="truncate block">${esc(f.name)}</b><small class="${on ? 'text-emerald' : 'text-muted'}">${on ? '● Online now' : 'Offline'}</small></div>
+      win.innerHTML = `<div class="dm-head"><span class="dm-av">${esc(f.avatar)}<i class="${on ? 'on' : ''}"></i></span><div class="min-w-0 flex-1"><b class="truncate block">${esc(f.name)}</b><small class="${on ? 'text-emerald' : 'text-muted'}">${on ? '● ' + (statusOf(f.id) === 'ONLINE' ? 'Online now' : esc(statusOf(f.id).charAt(0) + statusOf(f.id).slice(1).toLowerCase())) : 'Offline'}</small></div>
           <button class="btn-game btn-graphite py-1.5 px-3 text-xs" data-card="${esc(f.id)}">Player card</button>${room ? `<button class="btn-game btn-amber py-1.5 px-3 text-xs" id="fr-inv">Invite to my room</button>` : ''}</div>
         <div class="chatbox dm-box"><div class="chat-list dm-list" id="fr-msgs">${ms.length ? body : '<div class="dm-day">SAY HI TO YOUR FRIEND! ONLY THE TWO OF YOU CAN READ THIS.</div>'}</div>
         <div class="chat-quick">${['Wanna play?', 'GG!', 'Join my room', 'Be right back'].map((q) => `<button type="button">${q}</button>`).join('')}</div>
@@ -307,7 +324,7 @@
       if (!el) { el = document.createElement('div'); el.id = 'finv-modal'; el.className = 'hidden fixed inset-0 z-[66] bg-black/80 overflow-y-auto p-4'; document.body.appendChild(el); el.onclick = (e) => { if (e.target === el) el.classList.add('hidden'); }; }
       const fl = FR.list.friends.map((f) => Object.assign({}, f, { dot: NET.isOnline(f.id) })).sort((a, b) => b.dot - a.dot);
       el.innerHTML = `<div class="win max-w-sm mx-auto my-6 sm:my-12 overflow-hidden"><div class="winbar teal"><span>INVITE FRIENDS</span><button class="pix text-sm" id="finv-x" aria-label="Close">✕</button></div>
-        <div class="p-4 space-y-2">${fl.length ? fl.map((p) => frRow(Object.assign({ sub: p.dot ? 'ONLINE' : 'OFFLINE' }, p), `<button class="btn-game btn-amber py-1.5 px-3 text-xs" data-inv="${esc(p.id)}">Invite</button>`)).join('')
+        <div class="p-4 space-y-2">${fl.length ? fl.map((p) => frRow(Object.assign({ sub: p.dot ? statusOf(p.id) : 'OFFLINE' }, p), `<button class="btn-game btn-amber py-1.5 px-3 text-xs" data-inv="${esc(p.id)}">Invite</button>`)).join('')
           : '<div class="text-sm text-muted">No friends yet. Add friends from the Friends page, or copy the invite link.</div>'}</div></div>`;
       el.classList.remove('hidden');
       el.querySelector('#finv-x').onclick = () => el.classList.add('hidden');

@@ -57,7 +57,7 @@
       [/lol|haha|lmao|😂/i, ['😂', 'lol', 'haha']],
     ];
     const CHAT = { rooms: {}, room: null, open: false, unread: 0, next: {}, typing: {}, here: {} };
-    const chatKeyFor = (view) => (view === 'game' ? (typeof NP !== 'undefined' && NP.table && CHAT.mode !== 'game' ? 't:' + NP.table : activeGame) : view === 'naval' ? 'naval' : view === 'connect4' ? 'c4' : view === 'daily' ? 'daily' : view === 'play' ? 'global' : null);
+    const chatKeyFor = (view) => (view === 'game' ? (typeof NP !== 'undefined' && NP.table && CHAT.mode !== 'game' ? 't:' + NP.table : activeGame) : view === 'naval' ? 'naval' : view === 'connect4' ? 'c4' : view === 'daily' ? 'daily' : null);   // no chat on the home page (Inna, Nov 27 2026: cleaner look)
     const chatRoomName = (k) => (k === 'global' ? 'Global chat' : String(k).startsWith('t:') ? `Table ${k.slice(2)} chat` : ((GAME_MODS[k] && GAME_MODS[k].name) || { naval: 'Sea Battle', c4: 'Four-in-a-Row', daily: 'Daily Word' }[k] || 'Game') + ' room');
     function chatLoad() { try { const d = JSON.parse(localStorage.getItem('ps_chat_v1') || '{}'); if (d && typeof d === 'object') CHAT.rooms = d; } catch (e) {} }
     function chatSave() { try { localStorage.setItem('ps_chat_v1', JSON.stringify(CHAT.rooms)); } catch (e) {} }
@@ -164,7 +164,7 @@
           sw.innerHTML = `<button data-cm="table" class="${tbl ? 'on' : ''}">Table</button><button data-cm="game" class="${tbl ? '' : 'on'}">All players</button>`;
           sw.querySelectorAll('[data-cm]').forEach((b) => { b.onclick = (e) => { e.stopPropagation(); CHAT.mode = b.dataset.cm; chatOnView('game'); }; });
         } else if (sw) sw.remove();
-        document.getElementById('chat-room-count').textContent = NET.on ? `● ${NET.count} online` : `● ${chatHere(k).length + 1} here`;
+        document.getElementById('chat-room-count').textContent = '';   // the online count is only on the owner's stats page (Inna, Nov 27 2026)
         if (NET.on) netChatRoom(k);
         chatMount(document.getElementById('chat-room'), k);
         CHAT.next[k] = Date.now() + 6000 + rnd(8000);
@@ -532,9 +532,9 @@
           <div class="flex items-center gap-3.5">
             <button onclick="navigateTo('play')" class="btn-game btn-graphite px-3.5 py-2 text-xs" aria-label="Back to the lobby">← <span class="gs-lbl">Lobby</span></button>
             <span class="spr w-8 h-8">${GICONS[m.icon]}</span>
-            <h2 class="text-lg font-extrabold text-bone">${m.name}</h2>
+            <h2 class="text-lg font-extrabold text-bone gs-name">${m.name}</h2>
           </div>
-          <div class="flex items-center gap-2.5 flex-wrap" id="gs-tools">${toolsHTML}<button class="btn-game btn-graphite px-3 py-2 text-xs gs-sets" onclick="showGameSettings()" title="See this game's settings">⚙ <span class="gs-lbl">Settings</span></button><button class="btn-game btn-graphite px-3 py-2 text-xs gs-moves" onclick="toggleMoves()" title="Open or close the game log">📜 <span class="gs-lbl">Log</span></button><button class="btn-game btn-graphite px-3 py-2 text-xs" onclick="openGuide('${m.id}')" title="How to play ${esc(m.name)}">? <span class="gs-lbl">Guide</span></button><button class="btn-game btn-teal px-3 py-2 text-xs gs-video" onclick="playHowTo('${m.id}')" title="Watch how to play ${esc(m.name)}">▶ <span class="gs-lbl">Video</span></button>${typeof TABLE_GAMES !== 'undefined' && TABLE_GAMES.includes(m.id) ? '<button class="btn-game btn-graphite px-3 py-2 text-xs gs-table" onclick="openTablePicker(this)" title="Change the table design">🎨 <span class="gs-lbl">Table</span></button>' : ''}<button class="btn-game btn-graphite px-3 py-2 text-xs gs-snd" onclick="openSoundPanel(this)" title="Sound and music" aria-label="Sound and music">♪</button></div>
+          <div class="flex items-center gap-2.5 flex-wrap" id="gs-tools">${toolsHTML}<button class="btn-game btn-graphite px-3 py-2 text-xs gs-sets" onclick="showGameSettings()" title="See this game's settings">⚙ <span class="gs-lbl">Settings</span></button><button class="btn-game btn-graphite px-3 py-2 text-xs gs-moves" onclick="toggleMoves()" title="Open or close the game log">📜 <span class="gs-lbl">Log</span></button><button class="btn-game btn-graphite px-3 py-2 text-xs gs-guide" onclick="openGuide('${m.id}')" title="How to play ${esc(m.name)}">? <span class="gs-lbl">Guide</span></button>${typeof TABLE_GAMES !== 'undefined' && TABLE_GAMES.includes(m.id) ? '<button class="btn-game btn-graphite px-3 py-2 text-xs gs-table" onclick="openTablePicker(this)" title="Change the table design">🎨 <span class="gs-lbl">Table</span></button>' : ''}<button class="btn-game btn-graphite px-3 py-2 text-xs gs-snd" onclick="openSoundPanel(this)" title="Sound and music" aria-label="Sound and music">♪</button></div>
         </div>
         <div id="gs-body"></div></div>`;
       return document.getElementById('gs-body');

@@ -77,8 +77,9 @@
           },
           async report() {},
           presence() {
-            const beat = () => { try { const p = JSON.parse(localStorage.getItem('psnet_pres') || '{}'); p[uid] = now(); Object.keys(p).forEach((k) => { if (now() - p[k] > 20000) delete p[k]; }); localStorage.setItem('psnet_pres', JSON.stringify(p)); NET.onlineIds = new Set(Object.keys(p)); setCount(Object.keys(p).length); } catch (e) {} };
-            beat(); setInterval(beat, 5000);
+            const beat = () => { try { const p = JSON.parse(localStorage.getItem('psnet_pres') || '{}'); p[uid] = now(); Object.keys(p).forEach((k) => { if (now() - p[k] > 20000) delete p[k]; }); localStorage.setItem('psnet_pres', JSON.stringify(p)); NET.onlineIds = new Set(Object.keys(p));
+              const a = JSON.parse(localStorage.getItem('psnet_act') || '{}'); a[uid] = NET.myActivity || ''; localStorage.setItem('psnet_act', JSON.stringify(a)); NET.activity = new Map(Object.keys(p).map((k) => [k, a[k] || ''])); setCount(Object.keys(p).length); } catch (e) {} };
+            beat(); setInterval(beat, 5000); NET._retrack = beat;
           },
           async create(game, settings, pub, code) {
             const d = db(); let c = (code || '').toUpperCase();
@@ -321,7 +322,9 @@
           async report(id, reason) { ok(await sb.from('reports').insert({ message_id: id, reason })); },
           presence() {
             const ch = sb.channel('lobby', { config: { presence: { key: uid } } });
-            ch.on('presence', { event: 'sync' }, () => { const ids = Object.keys(ch.presenceState()); NET.onlineIds = new Set(ids); setCount(ids.length); }).subscribe((st) => { if (st === 'SUBSCRIBED') ch.track({ at: Date.now() }); });
+            // each screen also says which game it has open (g), so friends can see "Playing Chess" (Inna, Nov 27 2026)
+            ch.on('presence', { event: 'sync' }, () => { const st = ch.presenceState(), ids = Object.keys(st); NET.onlineIds = new Set(ids); NET.activity = new Map(ids.map((k) => [k, ((st[k] || [])[0] || {}).g || ''])); setCount(ids.length); }).subscribe((st) => { if (st === 'SUBSCRIBED') ch.track({ at: Date.now(), g: NET.myActivity || '' }); });
+            NET._retrack = () => { try { ch.track({ at: Date.now(), g: NET.myActivity || '' }); } catch (e) {} };
           },
           async create(game, settings, pub, code) { return ok(await rpc('create_room', { p_game: game, p_settings: settings || {}, p_public: !!pub, p_code: code || null })); },
           async join(code) { return ok(await rpc('join_room', { p_code: code.toUpperCase() })); },
@@ -486,6 +489,9 @@
       NET.dmSend = (id, text) => needAccount('message friends') || B.dmSend(id, NET.clean(text).slice(0, 300));
       NET.onSocial = (fn) => B.onSocial(fn);
       NET.isOnline = (id) => !!(NET.onlineIds && NET.onlineIds.has(id));
+      // what a player is doing right now: '' (on the site), 'room:<game>' (waiting in a room) or a game id
+      NET.activityOf = (id) => (NET.isOnline(id) && NET.activity && NET.activity.get(id)) || '';
+      NET.setActivity = (g) => { g = g || ''; if (g === NET.myActivity) return; NET.myActivity = g; if (NET._retrack) NET._retrack(); };
       NET.chatHistory = (room) => B.history(room);
       NET.chatSend = (room, text) => needAccount('chat') || B.send(room, NET.clean(text).slice(0, 200)).catch(serverNo('chat'));
       NET.chatSub = (room, fn) => B.sub(room, fn);

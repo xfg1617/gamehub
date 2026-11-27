@@ -48,7 +48,7 @@
         trivia: { goal: 'Trả lời đúng, và nhanh, để được nhiều điểm nhất.', steps: [
           ['Chọn cài đặt', 'Trong phòng, chọn ngôn ngữ câu hỏi (English hoặc Tiếng Việt), chủ đề (hoặc trộn tất cả), số câu và độ khó.'],
           ['Trả lời', 'Mọi người thấy cùng một câu hỏi cùng lúc. Chạm vào một trong bốn đáp án trước khi hết giờ. Đã chốt thì không đổi được.'],
-          ['Tính điểm', 'Trả lời đúng được 500 điểm, cộng thêm tối đa 500 nếu trả lời nhanh. Đúng ba câu liên tiếp trở lên được thưởng 🔥 chuỗi.'],
+          ['Tính điểm', 'Trả lời đúng được 20 đến 100 điểm: trả lời ngay được 100, giây cuối được 20. Đúng ba câu liên tiếp trở lên được thưởng 🔥 chuỗi. Cuối trận, thứ hạng của bạn được tính điểm bảng xếp hạng như mọi trò.'],
           ['Xem ai đúng', 'Sau mỗi câu, đáp án đúng sáng lên và bạn thấy mọi người đã chọn gì.'],
           ['Chiến thắng', 'Hết câu cuối, ai nhiều điểm nhất thắng. Chơi một mình? Thử phá kỷ lục của chính bạn.']], online: ONT,
           tip: 'Không chắc? Loại các đáp án sai rõ ràng, rồi tin vào cảm giác. Đoán nhanh vẫn hơn không trả lời.' },

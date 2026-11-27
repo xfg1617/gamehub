@@ -1,5 +1,5 @@
     /* =========================================================================
-       VIETNAMESE, part 5 (Nov 2026 round 6): the new games (Caro, Thirteen, Werewolf, Trivia Rush, Funny Answers).
+       VIETNAMESE, part 5 (Nov 2026 round 6): the new games (Caro, Thirteen, Werewolf, Trivia Rush, Say What!?).
        VI_MORE5 = exact lines, VI_PAT5 = lines with numbers or names in them.
        ========================================================================= */
     window.VI_MORE5 = {
@@ -30,12 +30,12 @@
       'History': 'Lịch sử', 'Food': 'Ẩm thực', 'Animals': 'Động vật', 'Games': 'Trò chơi', 'Vietnam': 'Việt Nam', 'USA': 'Nước Mỹ', 'Weird Facts': 'Chuyện lạ',
       'QUESTIONS': 'SỐ CÂU HỎI', 'TIME TO ANSWER': 'THỜI GIAN TRẢ LỜI', 'DIFFICULTY': 'ĐỘ KHÓ', 'Mixed': 'Trộn', 'Hard': 'Khó', 'Just me': 'Chỉ mình tôi', 'Genius': 'Thiên tài',
       'Right answers': 'Câu trả lời đúng', 'Score': 'Điểm', 'Best streak': 'Chuỗi dài nhất', 'RIGHT ANSWERS': 'CÂU ĐÚNG', 'BEST STREAK': 'CHUỖI DÀI NHẤT',
-      // Funny Answers
+      // Say What!?
       'Answer silly prompts, then vote for the funniest. Two players get the same prompt, and the room decides who wins!': 'Trả lời những đề bá đạo, rồi bình chọn câu hài nhất. Hai người cùng một đề, cả phòng quyết định ai thắng!',
       'Everyone answers silly prompts, then votes for the funniest answer. Played with friends: create a room and send them the link.': 'Mọi người trả lời những đề bá đạo, rồi bình chọn câu hài nhất. Chơi cùng bạn bè: tạo phòng và gửi link cho họ.',
       'PROMPTS IN': 'NGÔN NGỮ ĐỀ', 'Which language the prompts are in.': 'Đề bằng ngôn ngữ nào.', 'TIME TO WRITE': 'THỜI GIAN VIẾT', '2 min': '2 phút', 'PROMPTS': 'LOẠI ĐỀ',
       'Crazy': 'Bá đạo', 'Family friendly': 'Cho cả nhà', 'The last round is always the final round, where everyone answers the same prompt.': 'Vòng cuối luôn là vòng chung kết, mọi người cùng trả lời một đề.',
-      'Funny Answers is played with friends online: create a room and invite them.': 'Trò này chơi cùng bạn bè online: tạo phòng và mời họ nhé.',
+      'Say What!? is played with friends online: create a room and invite them.': 'Say What!? chơi cùng bạn bè online: tạo phòng và mời họ nhé.',
       "You're the funniest!": 'Bạn hài nhất!', 'Prompts won': 'Đề thắng', 'Clean sweeps': 'Thắng tuyệt đối', 'PROMPTS WON': 'ĐỀ THẮNG', 'CLEAN SWEEPS': 'THẮNG TUYỆT ĐỐI', 'SWEEP': 'TUYỆT ĐỐI',
       // Werewolf
       'Secret roles: wolves hide among the villagers. Each night they strike; each day the village talks and votes someone out.': 'Vai bí mật: sói trà trộn giữa dân làng. Đêm nào sói cũng ra tay; ngày nào dân làng cũng bàn bạc và vote loại một người.',
@@ -51,6 +51,7 @@
       'WOLF WINS': 'THẮNG KHI LÀM SÓI', 'SURVIVED': 'SỐNG SÓT', 'CAUGHT': 'BẮT ĐƯỢC',
     };
     window.VI_PAT5 = [
+      [/^PLAYING (.+)$/, 'ĐANG CHƠI $1'], [/^IN A (.+) ROOM$/, 'TRONG PHÒNG $1'], [/^● Playing (.+)$/, '● Đang chơi $1'], [/^● In a (.+) room$/, '● Trong phòng $1'],
       [/^(\d+) \/ (\d+) right!$/, 'Đúng $1 / $2 câu!'], [/^([\d,]+) points$/, '$1 điểm'], [/^(\d+)\/(\d+) right$/, 'đúng $1/$2'],
       [/^PAIR OF (.+)S$/, 'ĐÔI $1'], [/^THREE (.+)S$/, 'SÁM $1'], [/^FOUR (.+)S$/, 'TỨ QUÝ $1'], [/^STRAIGHT (\S+) → (\S+)$/, 'SẢNH $1 → $2'], [/^(\d) PAIRS IN A ROW$/, '$1 ĐÔI THÔNG'],
       [/^HAND (\d+) OF (\d+)$/, 'VÁN $1 / $2'], [/^HAND (\d+) OVER$/, 'HẾT VÁN $1'], [/^(\d+) cards? · (-?\d+) pts$/, '$1 lá · $2 điểm'], [/^(\d+) cards?$/, '$1 lá'],

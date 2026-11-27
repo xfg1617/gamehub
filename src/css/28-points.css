@@ -53,11 +53,17 @@
     .fx-burst b { display: block; font-family: 'Arcade Pixel', monospace; font-weight: 400; font-size: clamp(36px, 7vw, 68px); color: #F97316; text-shadow: 4px 4px 0 #050E18, -2px -2px 0 #FDE68A; line-height: 1; white-space: nowrap; }
     .fx-burst span { display: inline-block; background: #050E18; color: #F7F4EC; font-weight: 800; padding: 4px 12px; font-size: 14px; margin-top: 6px; }
     @keyframes fxPop { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.4) rotate(-4deg); } 12% { opacity: 1; transform: translate(-50%, -50%) scale(1.08) rotate(-4deg); } 20% { transform: translate(-50%, -50%) scale(1) rotate(-4deg); } 85% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -60%) scale(1) rotate(-4deg); } }
-    .fx-minis { position: absolute; left: 50%; top: 100%; transform: translate(-50%, 3px); display: flex; gap: 3px; white-space: nowrap; z-index: 3; pointer-events: none; }
-    .fx-mini { font-family: 'Arcade Pixel', monospace; font-size: 12px; background: #050E18; color: #FDE68A; padding: 0 5px; border: 2px solid #F97316; line-height: 16px; }
+    .fx-minis { position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%) rotate(-5deg); display: flex; flex-direction: column; align-items: flex-start; gap: 5px; white-space: nowrap; z-index: 8; pointer-events: none; animation: fxBob 1.6s ease-in-out infinite; }
+    .pl-tag > .fx-minis { left: auto; right: -8px; top: -14px; transform: rotate(-5deg); flex-direction: row; animation: fxBob2 1.6s ease-in-out infinite; }
+    @keyframes fxBob { 0%, 100% { transform: translateY(-50%) rotate(-5deg); } 50% { transform: translateY(calc(-50% - 4px)) rotate(-3deg); } }
+    @keyframes fxBob2 { 0%, 100% { transform: rotate(-5deg); } 50% { transform: translateY(-4px) rotate(-3deg); } }
+    .fx-mini { font-family: 'Arcade Pixel', monospace; font-size: 17px; background: #F5B041; color: #231505; padding: 2px 9px 3px; border: 3px solid #050E18; box-shadow: 0 4px 0 #050E18; line-height: 18px; animation: fxIn .5s cubic-bezier(.2, 1.6, .4, 1); }
+    .fx-mini:nth-child(2) { background: #FB7185; color: #2A0710; }
+    @keyframes fxIn { from { transform: scale(2.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @media (max-width: 640px) { .fx-mini { font-size: 13px; padding: 1px 6px 2px; line-height: 15px; } }
     .fx-fire { border-color: #FB923C !important; box-shadow: 0 0 0 2px #F97316 !important; }
     .fx-flames { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(100% - 4px); display: flex; gap: 1px; pointer-events: none; z-index: 3; }
     .fx-flames svg { width: 14px; height: 19px; animation: fxFl .35s steps(2) infinite alternate; transform-origin: bottom; }
     .fx-flames svg:nth-child(2) { width: 19px; height: 25px; animation-delay: .12s; }
     @keyframes fxFl { 0% { transform: scaleY(1); } 100% { transform: scaleY(1.18) translateY(-2px); } }
-    @media (prefers-reduced-motion: reduce) { .fx-burst { animation: none; } .fx-flames svg { animation: none; } }
+    @media (prefers-reduced-motion: reduce) { .fx-burst { animation: none; } .fx-flames svg { animation: none; } .fx-minis, .fx-mini { animation: none; } }

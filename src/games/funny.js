@@ -22,7 +22,7 @@
           { key: 'rounds', label: 'ROUNDS', def: 3, choices: [[2, '2'], [3, '3']], hint: 'The last round is always the final round, where everyone answers the same prompt.' },
           { key: 'wtime', label: 'TIME TO WRITE', def: 90, choices: [[60, '60 sec'], [90, '90 sec'], [120, '2 min']] },
           { key: 'kind', label: 'PROMPTS', def: 'crazy', choices: [['crazy', 'Crazy'], ['clean', 'Family friendly']] },
-        ], () => showToast('Funny Answers is played with friends online: create a room and invite them.', 'info'),
+        ], () => showToast('Say What!? is played with friends online: create a room and invite them.', 'info'),
           'Everyone answers silly prompts, then votes for the funniest answer. Played with friends: create a room and send them the link.');
       }
       function start(body, sel, S) {
@@ -191,7 +191,7 @@
       // tile icon: two speech bubbles, one laughing
       GICONS.funny = `<svg viewBox="0 0 24 24" shape-rendering="crispEdges" aria-hidden="true">${rr(1, 2, 14, 10, K)}${rr(2, 3, 12, 8, '#F5B041')}${rr(3, 12, 3, 3, K)}${rr(4, 12, 1, 2, '#F5B041')}${rr(4, 5, 2, 2, K)}${rr(10, 5, 2, 2, K)}${rr(5, 8, 6, 2, K)}${rr(6, 8, 4, 1, '#FB7185')}${rr(9, 11, 14, 10, K)}${rr(10, 12, 12, 8, '#F7F4EC')}${rr(18, 21, 3, 3, K)}${rr(19, 20, 1, 2, '#F7F4EC')}${rr(12, 14, 2, 1, K)}${rr(18, 14, 2, 1, K)}${rr(13, 17, 6, 1, K)}${rr(12, 16, 1, 1, K)}${rr(19, 16, 1, 1, K)}</svg>`;
       const mod = {
-        id: 'funny', name: 'Funny Answers', icon: 'funny', cats: ['party'], sub: '3-8 PLAYERS · ~15 MIN', color: '#F5B041', tone: 'amber', btn: 'amber', flag: 'NEW',
+        id: 'funny', name: 'Say What!?', icon: 'funny', cats: ['party'], sub: '3-8 PLAYERS · ~15 MIN', color: '#F5B041', tone: 'amber', btn: 'amber', flag: 'NEW',
         blurb: 'Answer silly prompts, then vote for the funniest. Two players get the same prompt, and the room decides who wins!',
         rules: { tag: 'PARTY · 3-8 PLAYERS', steps: [
           '<strong class="text-bone">Write:</strong> You get two prompts. Type the funniest answer you can think of. Another player gets the same prompt.',

@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bomb Squad prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Jersey+15&display=swap" rel="stylesheet">
+<style>
+:root { --ink:#050E18; --navy:#0B1B2B; --card:#12304C; --well:#0B1B2B; --bone:#F7F4EC; --muted:#9DB4CC; --amber:#F5B041; --teal:#2DD4BF; --coral:#FB7185; --emerald:#34D399; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0B1B2B; color: var(--bone); font-family: Outfit, sans-serif;
+  background-image: linear-gradient(#0F2338 2px, transparent 2px), linear-gradient(90deg, #0F2338 2px, transparent 2px); background-size: 48px 48px; }
+.pix { font-family: 'Jersey 15', monospace; letter-spacing: .5px; }
+.wrap { max-width: 1320px; margin: 0 auto; padding: 18px 16px 40px; }
+.top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.chip { font-family: 'Jersey 15', monospace; font-size: 22px; background: var(--amber); color: var(--ink); border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); padding: 0 14px 2px; }
+.note { color: var(--muted); font-size: 14px; flex: 1; min-width: 240px; }
+.btn { font-family: Outfit, sans-serif; font-weight: 800; font-size: 14px; border: 3px solid var(--ink); box-shadow: 0 5px 0 var(--ink); padding: 8px 16px; cursor: pointer; background: var(--card); color: var(--bone); }
+.btn:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--ink); }
+.btn.amber { background: var(--amber); color: var(--ink); } .btn.teal { background: var(--teal); color: var(--ink); }
+.cols { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.panel { background: #0F2338; border: 4px solid var(--ink); box-shadow: 0 8px 0 var(--ink); }
+.ph { display: flex; justify-content: space-between; align-items: center; padding: 8px 14px; border-bottom: 4px solid var(--ink); }
+.ph .pix { font-size: 22px; } .who { font-size: 13px; color: var(--muted); }
+.def .ph { background: var(--coral); color: var(--ink); } .def .ph .who { color: #3a0a12; }
+.exp .ph { background: var(--teal); color: var(--ink); } .exp .ph .who { color: #063a33; }
+/* the bomb */
+.bomb { padding: 16px; }
+.case { background: #2A3B4F; border: 4px solid var(--ink); box-shadow: inset 0 0 0 4px #3B5068; padding: 12px; position: relative; }
+.bar { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+.clock { font-family: 'Jersey 15', monospace; font-size: 46px; color: #FF4D5E; background: #120507; border: 4px solid var(--ink); padding: 0 14px; line-height: 1.1; min-width: 132px; text-align: center; text-shadow: 0 0 0 transparent; }
+.clock.low { animation: blink .5s steps(1) infinite; } @keyframes blink { 50% { color: #5a1018; } }
+.strikes { display: flex; gap: 6px; } .strikes i { width: 22px; height: 22px; background: #2b1418; border: 3px solid var(--ink); display: block; }
+.strikes i.on { background: #FF4D5E; }
+.tag { font-size: 12px; background: var(--bone); color: var(--ink); border: 3px solid var(--ink); padding: 2px 8px; font-weight: 800; }
+.tag.bat { background: #F5D06B; }
+.mods { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mod { background: #1C2A3A; border: 4px solid var(--ink); padding: 10px; position: relative; min-height: 190px; }
+.mod h4 { margin: 0 0 6px; font-family: 'Jersey 15', monospace; font-size: 18px; color: var(--muted); font-weight: 400; letter-spacing: 1px; }
+.led { position: absolute; top: 8px; right: 8px; width: 16px; height: 16px; background: #2b3542; border: 3px solid var(--ink); }
+.mod.done .led { background: var(--emerald); } .mod.bad .led { background: #FF4D5E; }
+.mod.done::after { content: 'SAFE'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'Jersey 15', monospace; font-size: 40px; color: var(--emerald); background: rgba(8,20,32,.55); }
+/* wires */
+.wires { display: flex; flex-direction: column; gap: 8px; padding: 6px 4px 0; }
+.wire { height: 18px; border: 3px solid var(--ink); cursor: pointer; position: relative; }
+.wire:hover { outline: 3px solid var(--bone); }
+.wire.cut { background-image: linear-gradient(90deg, transparent 46%, #1C2A3A 46%, #1C2A3A 54%, transparent 54%) !important; cursor: default; }
+.wire .n { position: absolute; left: -2px; top: -2px; transform: translateX(-100%); font-size: 11px; color: var(--muted); padding-right: 4px; }
+/* button */
+.bigb { display: flex; flex-direction: column; align-items: center; gap: 10px; padding-top: 4px; }
+.press { width: 118px; height: 118px; border-radius: 50%; border: 5px solid var(--ink); box-shadow: 0 8px 0 var(--ink); font-family: Outfit; font-weight: 900; font-size: 22px; cursor: pointer; user-select: none; touch-action: none; }
+.press:active, .press.down { transform: translateY(6px); box-shadow: 0 2px 0 var(--ink); }
+.strip { width: 150px; height: 14px; border: 3px solid var(--ink); background: #2b3542; }
+/* symbols */
+.keys { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.key { background: var(--bone); border: 4px solid var(--ink); box-shadow: 0 5px 0 var(--ink); height: 74px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; }
+.key svg { width: 48px; height: 48px; } .key.ok { background: #BFF2D7; } .key.ok::after { content: ''; position: absolute; top: 4px; right: 4px; width: 10px; height: 10px; background: var(--emerald); border: 2px solid var(--ink); }
+.key:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--ink); }
+/* dial */
+.dial { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.screen { font-family: 'Jersey 15', monospace; font-size: 34px; background: #0B2B1C; color: #6EF0A3; border: 4px solid var(--ink); padding: 0 16px; letter-spacing: 4px; min-width: 170px; text-align: center; }
+.knob { display: flex; align-items: center; gap: 8px; }
+.knob b { font-family: 'Jersey 15', monospace; font-size: 40px; width: 70px; text-align: center; background: var(--ink); color: var(--amber); }
+.overlay { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: rgba(5,14,24,.86); z-index: 5; text-align: center; padding: 20px; }
+.overlay.on { display: flex; } .overlay .big { font-family: 'Jersey 15', monospace; font-size: 64px; line-height: 1; }
+.boom { animation: shake .5s; } @keyframes shake { 20% { transform: translate(-8px, 4px); } 40% { transform: translate(8px, -6px); } 60% { transform: translate(-6px, -3px); } 80% { transform: translate(5px, 5px); } }
+.flash { position: fixed; inset: 0; background: #fff; opacity: 0; pointer-events: none; transition: opacity .5s; z-index: 50; }
+/* manual */
+.tabs { display: flex; gap: 6px; padding: 10px 12px 0; flex-wrap: wrap; }
+.tab { font-family: 'Jersey 15', monospace; font-size: 18px; padding: 2px 12px 4px; border: 3px solid var(--ink); background: var(--card); color: var(--bone); cursor: pointer; }
+.tab.on { background: var(--amber); color: var(--ink); }
+.page { margin: 10px 12px 14px; background: #F1E9D2; color: #20170A; border: 4px solid var(--ink); padding: 14px 18px; min-height: 420px; font-size: 15px; line-height: 1.45;
+  background-image: repeating-linear-gradient(#F1E9D2 0 27px, #E6DCBF 27px 28px); }
+.page h3 { font-family: 'Jersey 15', monospace; font-size: 30px; margin: 0 0 2px; color: #8A2A1B; font-weight: 400; }
+.page h5 { margin: 12px 0 4px; font-size: 15px; text-transform: uppercase; letter-spacing: .5px; color: #5c4214; }
+.page ol { margin: 4px 0; padding-left: 22px; } .page li { margin: 2px 0; }
+.page .small { font-size: 13px; color: #6b5530; }
+.col5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 8px; }
+.col5 div { background: #FFF9E8; border: 3px solid #20170A; padding: 4px; display: flex; flex-direction: column; gap: 3px; align-items: center; }
+.col5 svg { width: 30px; height: 30px; } .col5 span { font-family: 'Jersey 15'; font-size: 16px; }
+table.t { border-collapse: collapse; width: 100%; margin-top: 6px; } table.t td, table.t th { border: 2px solid #20170A; padding: 3px 6px; text-align: left; font-size: 14px; }
+table.t th { background: #E6D4A6; }
+.how { margin-top: 18px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.how div { background: #0F2338; border: 3px solid var(--ink); padding: 10px 12px; font-size: 14px; color: var(--muted); }
+.how b { color: var(--bone); display: block; font-size: 15px; margin-bottom: 2px; }
+.room { margin-top: 18px; }
+@media (max-width: 900px) { .cols { grid-template-columns: 1fr; } .how { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 520px) { .mods { grid-template-columns: 1fr; } .clock { font-size: 38px; min-width: 110px; } .how { grid-template-columns: 1fr; } .col5 svg { width: 24px; height: 24px; } }
+</style></head><body>
+<div class="flash" id="flash"></div>
+<div class="wrap">
+  <div class="top"><span class="chip">BOMB SQUAD · PROTOTYPE</span>
+    <div class="note">One player sees the bomb. Everyone else sees only the manual. Talk it through before the timer hits zero. <b style="color:#F7F4EC">In the real game each person only sees their own screen</b>: here both are side by side so you can try it.</div>
+    <button class="btn amber" id="newb">New bomb</button></div>
+  <div class="cols">
+    <section class="panel def"><div class="ph"><span class="pix">DEFUSER · YOU SEE THE BOMB</span><span class="who">🦊 Inna</span></div>
+      <div class="bomb"><div class="case" id="case">
+        <div class="bar"><div class="clock" id="clock">3:00</div><div class="strikes" id="strikes"><i></i><i></i><i></i></div>
+          <span class="tag" id="serial">SERIAL GH4K27</span><span class="tag bat" id="bats">🔋 x2</span></div>
+        <div class="mods">
+          <div class="mod" id="m-wires"><span class="led"></span><h4>WIRES</h4><div class="wires" id="wires"></div></div>
+          <div class="mod" id="m-btn"><span class="led"></span><h4>THE BIG BUTTON</h4><div class="bigb"><button class="press" id="press">HOLD</button><div class="strip" id="strip"></div></div></div>
+          <div class="mod" id="m-keys"><span class="led"></span><h4>SYMBOLS</h4><div class="keys" id="keys"></div></div>
+          <div class="mod" id="m-dial"><span class="led"></span><h4>RADIO DIAL</h4><div class="dial"><div class="screen" id="word">SHARK</div>
+            <div class="knob"><button class="btn" id="dm">◀</button><b id="dval">0</b><button class="btn" id="dp">▶</button></div><button class="btn teal" id="dgo">TRANSMIT</button></div></div>
+        </div>
+        <div class="overlay" id="over"><div class="big" id="ovt">BOOM</div><div id="ovs"></div><button class="btn amber" id="again">Next bomb</button></div>
+      </div></div>
+    </section>
+    <section class="panel exp"><div class="ph"><span class="pix">EXPERTS · YOU SEE THE MANUAL</span><span class="who">🐻 Bao · 🦉 Luna · 🐸 Minh</span></div>
+      <div class="tabs" id="tabs"></div><div class="page" id="page"></div>
+    </section>
+  </div>
+  <div class="how">
+    <div><b>1 · Make a room</b>2 to 6 friends. Best on a voice call (or use the table chat).</div>
+    <div><b>2 · One Defuser</b>The Defuser describes what they see: "four wires, red, blue, blue, white".</div>
+    <div><b>3 · The Experts</b>Everyone else reads their manual pages and tells the Defuser what to do. Each Expert can hold different pages.</div>
+    <div><b>4 · 3 strikes = BOOM</b>Wrong move = a strike, and the clock speeds up. Defuse every module to win. The role passes on each round.</div>
+  </div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id), rnd = (n) => Math.floor(Math.random() * n), pick = (a) => a[rnd(a.length)];
+const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+// ---------- pixel symbols (our own little drawings) ----------
+const PX = {
+  anchor: ['...##...','..#..#..','...##...','...##...','#..##..#','##.##.##','.######.','..####..'],
+  star: ['...##...','...##...','########','.######.','..####..','.##..##.','##....##','........'],
+  moon: ['..####..','.###....','###.....','###.....','###.....','###.....','.###....','..####..'],
+  key: ['.###....','#...#...','#...####','#...#.#.','.###..#.','........','........','........'],
+  crown: ['#..##..#','##.##.##','########','########','.######.','.#.##.#.','.######.','........'],
+  fish: ['........','..###..#','.#####.#','###.####','.#####.#','..###..#','........','........'],
+  heart: ['.##..##.','########','########','########','.######.','..####..','...##...','........'],
+  bolt: ['....###.','...###..','..###...','.######.','...###..','..###...','.###....','.#......'],
+  eye: ['........','..####..','.#....#.','#..##..#','#..##..#','.#....#.','..####..','........'],
+  bell: ['...##...','..####..','.######.','.######.','.######.','########','........','...##...'],
+  cat: ['#......#','##....##','########','#.#..#.#','########','#..##..#','.######.','........'],
+  cherry: ['.....##.','....#.#.','...#..#.','..#...#.','.##..##.','####.###','####.###','.##...#.'],
+  ghost: ['..####..','.######.','##.##.##','########','########','########','##.##.##','#..#..#.'],
+  mush: ['..####..','.#.##.#.','########','#.####.#','...##...','...##...','..####..','........'],
+  sun: ['#..##..#','.#....#.','..####..','#.####.#','#.####.#','..####..','.#....#.','#..##..#'],
+  drop: ['...#....','...#....','..###...','..###...','.#####..','.#####..','..###...','........'],
+};
+const NAME = { anchor:'Anchor', star:'Star', moon:'Moon', key:'Key', crown:'Crown', fish:'Fish', heart:'Heart', bolt:'Bolt', eye:'Eye', bell:'Bell', cat:'Cat', cherry:'Cherry', ghost:'Ghost', mush:'Mushroom', sun:'Sun', drop:'Drop' };
+const svg = (k, col = '#20170A') => `<svg viewBox="0 0 8 8" shape-rendering="crispEdges">${PX[k].map((r, y) => [...r].map((c, x) => c === '#' ? `<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${col}"/>` : '').join('')).join('')}</svg>`;
+const COLS = [['anchor','moon','cat','bolt','eye','fish'],['star','anchor','bell','ghost','moon','cherry'],['heart','sun','key','cat','star','drop'],['crown','eye','mush','heart','bell','key'],['fish','drop','ghost','crown','sun','mush']];
+// ---------- wire rules (first rule that fits) ----------
+const WC = { red: '#E2453C', blue: '#3B82F6', yellow: '#F5C842', white: '#F2F2F2', black: '#1A1A1A' };
+function wireAnswer(w, serialOdd) {
+  const n = w.length, cnt = (c) => w.filter((x) => x === c).length, last = (c) => w.lastIndexOf(c);
+  if (n === 3) { if (!cnt('blue')) return 1; if (w[2] === 'red') return 0; return last('blue'); }
+  if (n === 4) { if (cnt('yellow') >= 2) return last('yellow'); if (!serialOdd) return 2; if (!cnt('black')) return 0; return 3; }
+  if (w[0] === 'white') return 3; if (cnt('red') === 1) return w.indexOf('red'); if (cnt('blue') > cnt('yellow')) return 1; return 0;
+}
+// ---------- the big button ----------
+const BC = { red: '#E2453C', blue: '#3B82F6', yellow: '#F5C842', white: '#F2F2F2' };
+function buttonMode(color, label, bats) {
+  if (label === 'STOP') return 'tap'; if (color === 'blue' && label === 'HOLD') return 'hold';
+  if (bats >= 3) return 'tap'; if (color === 'yellow') return 'hold'; return label === 'PUSH' ? 'tap' : 'hold';
+}
+const STRIP = { blue: 7, yellow: 9, white: 5, red: 5 };
+// ---------- radio dial ----------
+const WORDS = { SHARK: 3, OCEAN: 7, PIXEL: 12, ROBOT: 5, LEMON: 9, TIGER: 14, CLOUD: 2, NINJA: 11, PIZZA: 6, GHOST: 15, MANGO: 8, ROCKET: 4, CANDY: 13, BRAVE: 10, SPOON: 1 };
+// ---------- state ----------
+let B, T, timer;
+function newBomb() {
+  clearInterval(timer);
+  const serial = 'GH' + pick('ABCDKMPX') + rnd(10) + pick('QRSTZ') + rnd(10), odd = (+serial.slice(-1)) % 2 === 1;
+  const n = 3 + rnd(3), w = Array.from({ length: n }, () => pick(Object.keys(WC)));
+  const col = rnd(5), syms = shuffle(shuffle(COLS[col]).slice(0, 4));
+  const color = pick(Object.keys(BC)), label = pick(['HOLD','PUSH','STOP','BOOM']), bats = 1 + rnd(3);
+  const word = pick(Object.keys(WORDS));
+  B = { serial, odd, w, cut: [], wAns: wireAnswer(w, odd), col, syms, order: COLS[col].filter((k) => syms.includes(k)), pressed: 0, color, label, bats,
+    mode: buttonMode(color, label, bats), stripC: pick(Object.keys(STRIP)), word, dial: 0, done: {}, strikes: 0, left: 180, over: false };
+  $('serial').textContent = 'SERIAL ' + serial; $('bats').textContent = '🔋 x' + bats;
+  $('wires').innerHTML = w.map((c, i) => `<div class="wire" data-i="${i}" style="background:${WC[c]}"></div>`).join('');
+  $('wires').querySelectorAll('.wire').forEach((el) => el.onclick = () => cutWire(+el.dataset.i, el));
+  const p = $('press'); p.textContent = label; p.style.background = BC[color]; p.style.color = color === 'white' || color === 'yellow' ? '#050E18' : '#F7F4EC';
+  $('strip').style.background = '#2b3542';
+  $('keys').innerHTML = syms.map((k) => `<div class="key" data-k="${k}">${svg(k)}</div>`).join('');
+  $('keys').querySelectorAll('.key').forEach((el) => el.onclick = () => pressKey(el));
+  $('word').textContent = word; $('dval').textContent = '0';
+  document.querySelectorAll('.mod').forEach((m) => m.classList.remove('done', 'bad'));
+  $('over').classList.remove('on'); drawStrikes(); tick();
+  timer = setInterval(tick, 1000);
+}
+function tick() {
+  if (B.over) return;
+  const sp = B.strikes ? 1 + B.strikes * 0.25 : 1;     // the clock runs faster after a strike
+  B.left -= sp; if (B.left <= 0) { B.left = 0; return explode('Time ran out!'); }
+  const s = Math.ceil(B.left); $('clock').textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+  $('clock').classList.toggle('low', s <= 30);
+}
+const secDigits = () => { const s = Math.ceil(B.left) % 60; return Math.floor(s / 10) + (s % 10); };
+function strike(mod) {
+  B.strikes++; drawStrikes(); const m = $(mod); m.classList.add('bad'); setTimeout(() => m.classList.remove('bad'), 700);
+  $('case').classList.remove('boom'); void $('case').offsetWidth; $('case').classList.add('boom');
+  if (B.strikes >= 3) explode('Three strikes!');
+}
+function drawStrikes() { [...$('strikes').children].forEach((i, k) => i.classList.toggle('on', k < B.strikes)); }
+function solved(mod) { B.done[mod] = 1; $(mod).classList.add('done'); if (Object.keys(B.done).length === 4) win(); }
+function cutWire(i, el) {
+  if (B.over || B.done['m-wires'] || B.cut.includes(i)) return; B.cut.push(i); el.classList.add('cut');
+  if (i === B.wAns) solved('m-wires'); else strike('m-wires');
+}
+function pressKey(el) {
+  if (B.over || B.done['m-keys'] || el.classList.contains('ok')) return;
+  if (el.dataset.k === B.order[B.pressed]) { el.classList.add('ok'); B.pressed++; if (B.pressed === 4) solved('m-keys'); }
+  else { strike('m-keys'); B.pressed = 0; $('keys').querySelectorAll('.key').forEach((k) => k.classList.remove('ok')); }
+}
+// the big button: a quick tap, or hold until the strip lights and let go at the right moment
+let downAt = 0, holdT = null;
+$('press').addEventListener('pointerdown', (e) => { if (B.over || B.done['m-btn']) return; e.preventDefault(); downAt = Date.now(); $('press').classList.add('down');
+  holdT = setTimeout(() => { $('strip').style.background = BC[B.stripC]; }, 600); });
+window.addEventListener('pointerup', () => {
+  if (!downAt) return; const held = Date.now() - downAt; downAt = 0; clearTimeout(holdT); $('press').classList.remove('down');
+  const strip = $('strip').style.background; $('strip').style.background = '#2b3542';
+  if (B.over || B.done['m-btn']) return;
+  if (held < 600) return B.mode === 'tap' ? solved('m-btn') : strike('m-btn');
+  if (B.mode !== 'hold') return strike('m-btn');
+  secDigits() === STRIP[B.stripC] ? solved('m-btn') : strike('m-btn');
+});
+$('dm').onclick = () => { B.dial = (B.dial + 15) % 16; $('dval').textContent = B.dial; };
+$('dp').onclick = () => { B.dial = (B.dial + 1) % 16; $('dval').textContent = B.dial; };
+$('dgo').onclick = () => { if (B.over || B.done['m-dial']) return; B.dial === WORDS[B.word] ? solved('m-dial') : strike('m-dial'); };
+function explode(why) {
+  B.over = true; clearInterval(timer); const f = $('flash'); f.style.transition = 'none'; f.style.opacity = 1; setTimeout(() => { f.style.transition = 'opacity .9s'; f.style.opacity = 0; }, 60);
+  $('case').classList.remove('boom'); void $('case').offsetWidth; $('case').classList.add('boom');
+  $('ovt').textContent = 'BOOM 💥'; $('ovt').style.color = '#FF4D5E'; $('ovs').textContent = why + ' The squad gets 0 points.'; $('over').classList.add('on');
+}
+function win() {
+  B.over = true; clearInterval(timer); const s = Math.ceil(B.left);
+  $('ovt').textContent = 'DEFUSED!'; $('ovt').style.color = '#34D399'; $('ovs').textContent = `With ${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')} left and ${B.strikes} strike${B.strikes === 1 ? '' : 's'}. Everyone gets ${100 + s * 2 - B.strikes * 40} points.`; $('over').classList.add('on');
+}
+$('newb').onclick = newBomb; $('again').onclick = newBomb;
+// ---------- the manual ----------
+const PAGES = {
+  'Wires': () => `<h3>WIRES</h3><div class="small">Count the wires top to bottom. Use the list for that number of wires. Do the FIRST rule that fits, then stop. Cut only ONE wire.</div>
+    <h5>3 wires</h5><ol><li>No blue wire? Cut the <b>middle</b> wire.</li><li>The last wire is red? Cut the <b>first</b> wire.</li><li>Otherwise cut the <b>last blue</b> wire.</li></ol>
+    <h5>4 wires</h5><ol><li>Two or more yellow wires? Cut the <b>last yellow</b> wire.</li><li>The serial number ends in an EVEN digit? Cut the <b>third</b> wire.</li><li>No black wire? Cut the <b>first</b> wire.</li><li>Otherwise cut the <b>last</b> wire.</li></ol>
+    <h5>5 wires</h5><ol><li>The first wire is white? Cut the <b>fourth</b> wire.</li><li>Exactly one red wire? Cut <b>the red</b> wire.</li><li>More blue wires than yellow? Cut the <b>second</b> wire.</li><li>Otherwise cut the <b>first</b> wire.</li></ol>`,
+  'Big Button': () => `<h3>THE BIG BUTTON</h3><div class="small">Ask the Defuser for the button's colour, the word on it, and how many 🔋 batteries the bomb has.</div>
+    <h5>Tap or hold?</h5><ol><li>The word says STOP → <b>tap</b> it (press and let go at once).</li><li>Blue button that says HOLD → <b>hold</b> it.</li><li>3 or more batteries → <b>tap</b> it.</li><li>Yellow button → <b>hold</b> it.</li><li>Says PUSH → <b>tap</b> it. Otherwise <b>hold</b> it.</li></ol>
+    <h5>Holding it</h5><div>A light strip turns on. Let go when the two <b>seconds digits</b> on the clock add up to:</div>
+    <table class="t"><tr><th>Strip colour</th><th>Seconds add up to</th><th>Example</th></tr><tr><td>Blue</td><td>7</td><td>0:<b>43</b> → 4+3</td></tr><tr><td>Yellow</td><td>9</td><td>1:<b>54</b> → 5+4</td></tr><tr><td>White or red</td><td>5</td><td>2:<b>14</b> → 1+4</td></tr></table>`,
+  'Symbols': () => `<h3>SYMBOLS</h3><div class="small">The Defuser sees 4 symbols. Only ONE column below has all four. Press them in that column's order, top to bottom. A wrong press = strike, start again.</div>
+    <div class="col5">${COLS.map((c) => `<div>${c.map((k) => svg(k) + `<span>${NAME[k]}</span>`).join('')}</div>`).join('')}</div>`,
+  'Radio Dial': () => `<h3>RADIO DIAL</h3><div class="small">The Defuser reads the word on the green screen. Turn the dial to its channel and press TRANSMIT.</div>
+    <table class="t"><tr><th>Word</th><th>Channel</th><th>Word</th><th>Channel</th></tr>${(() => { const e = Object.entries(WORDS); let r = ''; for (let i = 0; i < e.length; i += 2) r += `<tr><td>${e[i][0]}</td><td>${e[i][1]}</td><td>${e[i + 1] ? e[i + 1][0] : ''}</td><td>${e[i + 1] ? e[i + 1][1] : ''}</td></tr>`; return r; })()}</table>`,
+};
+let cur = 'Wires';
+function drawManual() { $('tabs').innerHTML = Object.keys(PAGES).map((k) => `<button class="tab ${k === cur ? 'on' : ''}" data-p="${k}">${k}</button>`).join(''); $('tabs').querySelectorAll('.tab').forEach((b) => b.onclick = () => { cur = b.dataset.p; drawManual(); }); $('page').innerHTML = PAGES[cur](); }
+drawManual(); newBomb();
+</script></body></html>

@@ -5,6 +5,15 @@
        Written for players: what changed for them, no technical words.
        ========================================================================= */
     window.UPDATES = [
+      { date: '2026-11-28', id: '2026-11-28b',
+        en: ['New game: Bump Off',
+          'Bumper boats for 2-6 players: everyone secretly picks a direction and power, then all boats move at once. Knock the others off the pond!',
+          'Choose where boats start: random spots, evenly around the edge, or all close together for pure chaos.',
+          'Play with friends online or against computer boats.'],
+        vi: ['Trò mới: Đụng Thuyền',
+          'Thuyền đụng cho 2-6 người: mọi người bí mật chọn hướng và lực, rồi tất cả thuyền chạy cùng lúc. Húc những thuyền khác rơi khỏi hồ!',
+          'Chọn vị trí xuất phát: ngẫu nhiên, chia đều quanh mép hồ, hoặc tất cả sát nhau cho thật hỗn loạn.',
+          'Chơi online cùng bạn bè hoặc với thuyền máy.'] },
       { date: '2026-11-28',
         en: ['A fresh new look',
           'A cleaner look everywhere: a new background and a simpler bar at the top of every game.',

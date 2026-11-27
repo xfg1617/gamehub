@@ -69,6 +69,14 @@
           ['Vai thêm', 'Bật trong cài đặt phòng (mỗi vai Bật / Tắt):<br>• <b>Thợ Săn</b>: khi bị loại được kéo theo một người.<br>• <b>Phù Thủy</b>: một lần cứu người bị sói cắn, một lần đầu độc ai đó.<br>• <b>Thần Tình Yêu</b>: đêm đầu chọn hai người yêu nhau. Một người bị loại thì người kia cũng ra theo vì trái tim tan vỡ.<br>• <b>Già Làng</b>: sống sót qua lần đầu bị sói cắn (lần thứ hai thì không).<br>• <b>Thằng Ngốc</b>: nếu bị dân làng vote ra, cả làng cười ồ và được ở lại, nhưng không được bỏ phiếu nữa.<br>• <b>Kẻ Chán Đời</b>: thắng một mình nếu bị dân làng vote ra, nên cố tình tỏ ra đáng ngờ!<br>• <b>Sói Con</b>: là một con sói. Nếu Sói Con bị loại, cả bầy nổi giận và cắn hai người vào đêm sau.<br>• <b>Người Lai Sói</b>: thuộc phe dân làng, nhưng Tiên Tri soi sẽ thấy là sói.'],
           ['Chiến thắng', 'Dân làng thắng khi hết sói. Sói thắng khi số sói bằng số người còn lại. Người đã ra vẫn được xem tiếp, và thấy vai của mọi người.']], online: 'Ma Sói cần ít nhất 5 người và không có người chơi máy. Tạo phòng và gửi link mời bạn bè. Vừa chơi vừa gọi thoại càng vui!',
           tip: 'Sói: đừng im lặng quá, cũng đừng nói nhiều quá. Dân làng: để ý ai hay đổi lời, và ai hay bỏ phiếu cùng nhau.' },
+        bumpoff: { goal: 'Là chiếc thuyền cuối cùng còn nổi: húc những thuyền khác rơi khỏi hồ.', steps: [
+          ['Vị trí xuất phát', 'Phòng chọn chỗ các thuyền bắt đầu: ngẫu nhiên, chia đều quanh mép hồ, hoặc tất cả sát nhau ở giữa (hỗn loạn!).'],
+          ['Tính nước đi bí mật', 'Bạn thấy mọi thuyền, nhưng không biết họ sẽ đi đâu. Kéo từ thuyền của bạn để chọn hướng; mũi tên càng dài lực càng mạnh (hoặc dùng phím mũi tên). Bấm SẴN SÀNG trước khi hết giờ.'],
+          ['Lộ kế hoạch', 'Khi mọi người sẵn sàng, tất cả mũi tên hiện ra cùng lúc. Giờ bạn thấy ai đang lao tới, nhưng đã quá muộn để đổi!'],
+          ['ĐI!', 'Tất cả thuyền chạy cùng lúc. Thuyền gặp nhau sẽ bật ra: BỤP! Thuyền nào bị đẩy ra khỏi mép hồ là bị loại: TÕM!'],
+          ['Lượt tiếp theo', 'Tính lại từ chỗ bạn dừng. Từ lượt thứ 3, hồ nhỏ lại một chút sau mỗi lượt (tùy chọn trong phòng).'],
+          ['Chiến thắng', 'Thuyền cuối cùng còn nổi thắng ván. Ai thắng đủ số ván trước sẽ thắng cả trận.']],
+          tip: 'Nhắm vào chỗ đối thủ sẽ tới, chứ không phải chỗ họ đang đứng. Né nhẹ một chút có khi hơn lao thật mạnh, và thuyền gần mép hồ là mục tiêu dễ.', online: 'Chơi cùng bạn bè trong phòng riêng hoặc ghép trận online; thuyền máy sẽ lấp chỗ trống. Mọi người tính nước cùng lúc nên chơi 6 người vẫn rất nhanh.' },
         tictactoe: { goal: 'Xếp ba quân của bạn thẳng hàng.', steps: [
           ['Đánh quân', 'Chạm vào một ô trống. X đi trước ở ván đầu.'],
           ['Lần lượt', 'Hai người lần lượt mỗi người đánh một quân.'],

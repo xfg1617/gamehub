@@ -1222,3 +1222,19 @@ folder that was handed over, so they do not exist here.)
   phone screenshot, built frame by frame with Pillow) with "NO DOWNLOAD" / "SEND A LINK", end card. Segments are
   re-encoded when joined (a straight copy froze the pan). Uses the make.py recordings in /tmp/gh_tiktok.
 
+## 5al. Bump Off (Nov 28 2026, Inna's design; prototypes in `prototypes/round8/`)
+
+* `src/games/bumpoff.js` + `src/css/39-bumpoff.css`; Vietnamese name "Đụng Thuyền". Bumper boats on a round pond, 2-6 players,
+  computer boats (Easy / Smart), online tables. Every turn: **plan in secret** (all boats visible, only the plans are hidden:
+  drag from your boat = direction + power, or arrow keys + Enter; READY; others show ? / ✓) → **reveal** (everyone's arrow,
+  2.2 s) → **GO** (everyone moves at once, bumps, off the edge = out). Last boat floating wins the round; ROUNDS TO WIN 2/3/5.
+* Settings: **WHERE BOATS START** (`spawn`: random spots / around the edge = fair ring / close together = chaos; `spawn()`),
+  players, rounds, PLANNING TIME 8/10/15, pond shrinks after turn 2 (toggle), computer level.
+* Online: plans arrive through `S.collect` (stored on every screen, drawn only at the reveal). `simulate()` is a fixed-step
+  simulation using only + - * / and sqrt (drag factor written out as `KD`) on the shared target radius `G.Rgoal`, so every
+  screen computes the same thing; the host's end positions are then sent as a table decision (`S.ask(-1, ...)`, 'end') and
+  every screen snaps to them. Rejoin replays instantly (`NP.catchup` skips the animation).
+* Tests: `test/t_bumpoff.py` (start settings, repeatable movement, a whole match with real drags, phone width),
+  `test/t_np_bumpoff.py` (3 people + 1 computer: every screen agrees after each turn). Guide EN/VI, What's new `2026-11-28b`,
+  banner `og/bumpoff.png`. No how-to video yet.
+

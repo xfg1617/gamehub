@@ -85,6 +85,14 @@
           ['Winning', 'The village wins when every wolf is out. The wolves win when there are as many wolves as everyone else. Players who are out can still watch, and they see every role.']],
           items: () => row([['🐺', 'Werewolf', 'takes someone each night'], ['🔮', 'Seer', 'checks one player each night'], ['💉', 'Doctor', 'protects one player each night'], ['🏹', 'Hunter', 'takes someone when out'], ['🧪', 'Witch', 'one save, one poison'], ['💘', 'Cupid', 'makes two lovers'], ['👴', 'Elder', 'survives one bite'], ['🤪', 'Village Fool', 'survives the vote once'], ['🃏', 'Jester', 'wins if voted out'], ['🐾', 'Wolf Cub', 'revenge: two taken'], ['🌗', 'Lycan', 'looks like a wolf'], ['🙂', 'Villager', 'talks and votes']]),
           tip: 'Wolves: don\'t be too quiet, and don\'t be too loud. Villagers: watch who keeps changing their story, and who votes together.', online: 'Werewolf needs at least 5 people and has no computer players. Create a room and invite your friends with the link. A voice call makes it even more fun!' },
+        bumpoff: { tag: '2-6 PLAYERS · BUMPER BOATS', goal: 'Be the last boat floating: knock the others off the pond.', steps: [
+          ['Where you start', 'The room picks where the boats start: random spots, evenly around the edge, or all close together in the middle (chaos!).'],
+          ['Plan in secret', 'You can see every boat, but not where they will go. Drag from your boat to choose a direction; the longer the arrow, the more power (or use the arrow keys). Press READY before the time runs out.'],
+          ['Reveal', 'When everyone is ready, all the planned arrows appear at once. Now you see who is coming for you, but it is too late to change!'],
+          ['GO!', 'All boats move at the same time. Boats that meet bounce off each other: BONK! Anyone pushed off the edge of the pond is out: SPLASH!'],
+          ['Next turn', 'Plan again from wherever you stopped. From the 3rd turn the pond gets a little smaller every turn (a room setting).'],
+          ['Winning', 'The last boat floating wins the round. The first player to win the set number of rounds wins the match.']],
+          tip: 'Aim where someone will be, not where they are. A small sidestep can beat a big charge, and a boat near the edge is an easy target.', online: 'Play with friends in a private room or an online match; computer boats fill the empty seats. Everyone plans at the same time, so it is fast even with 6 players.' },
         tictactoe: { tag: '1v1 · 3×3', goal: 'Get three of your marks in a row.', steps: [
           ['Place your mark', 'Tap an empty square. X goes first in the first game.'],
           ['Take turns', 'Players take turns, one mark each.'],

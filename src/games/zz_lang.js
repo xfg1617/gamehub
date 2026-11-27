@@ -36,7 +36,7 @@
         'Anyone up for a game?': 'Có ai chơi một ván không?', 'GG': 'GG', 'Send': 'Gửi', 'Say something nice…': 'Nói gì đó dễ thương…',
         'No open rooms right now. Create one!': 'Chưa có phòng nào. Tạo một phòng nhé!',
         // game names
-        'Chess': 'Cờ Vua', 'Checkers': 'Cờ Đam', 'Landlord': 'Cờ Tỷ Phú', 'Four-in-a-Row': 'Bốn Quân Liền', 'Tic-Tac-Toe': 'Cờ Ca-rô 3×3', 'Caro': 'Cờ Caro', 'CARO': 'CỜ CARO', 'Thirteen': 'Tiến Lên', 'THIRTEEN': 'TIẾN LÊN', 'Werewolf': 'Ma Sói', 'WEREWOLF': 'MA SÓI', 'TRIVIA RUSH': 'ĐỐ VUI NHANH', 'Blackjack': 'Xì Dách',
+        'Chess': 'Cờ Vua', 'Checkers': 'Cờ Đam', 'Landlord': 'Cờ Tỷ Phú', 'Four-in-a-Row': 'Bốn Quân Liền', 'Tic-Tac-Toe': 'Cờ Ca-rô 3×3', 'Caro': 'Cờ Caro', 'CARO': 'CỜ CARO', 'Bump Off': 'Đụng Thuyền', 'BUMP OFF': 'ĐỤNG THUYỀN', 'Thirteen': 'Tiến Lên', 'THIRTEEN': 'TIẾN LÊN', 'Werewolf': 'Ma Sói', 'WEREWOLF': 'MA SÓI', 'TRIVIA RUSH': 'ĐỐ VUI NHANH', 'Blackjack': 'Xì Dách',
         'Kaboom Cats': 'Mèo Nổ', 'Word Duel': 'Đấu Chữ', 'Word Connect': 'Nối Chữ', 'Find the Impostor': 'Tìm Kẻ Giả Mạo', 'Doodle Guess': 'Vẽ & Đoán',
         'Pool': 'Bi-a', 'Dominoes': 'Domino', 'Whodunit': 'Ai Là Thủ Phạm?', 'Island Settlers': 'Khai Hoang Đảo', 'Castles & Kings': 'Lâu Đài & Vua',
         'Mine Saboteurs': 'Phá Hoại Hầm Mỏ', 'Wall Maze': 'Mê Cung Tường', 'Bullshit': 'Nói Xạo', 'Trivia Rush': 'Đố Vui Nhanh', 'Sea Battle': 'Hải Chiến',

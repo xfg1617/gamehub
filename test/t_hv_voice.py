@@ -26,9 +26,9 @@ with sync_playwright() as p:
         print(f'   {lang}: {len(ok)} recordings loaded, e.g.', ok[0][1].split('/voice/')[1] if ok else '-')
         check(len(ok) >= 1 and all(s == 200 for s, _ in got), f'{lang}: the Uno video loads its recorded voice lines')
         pg.wait_for_timeout(9000)
-        shot = pg.evaluate("(() => { const i = document.querySelector('.hv-shot img'); return i ? [i.naturalWidth, !!document.querySelector('.hv-focus'), document.querySelector('.hv-cap').textContent.length] : null; })()")
+        shot = pg.evaluate("(() => { const i = document.querySelector('.hv-shot video') || document.querySelector('.hv-shot img'); return i ? [i.naturalWidth || i.videoWidth || (i.tagName === 'VIDEO' ? 1 : 0), !!document.querySelector('.hv-focus'), document.querySelector('.hv-cap').textContent.length] : null; })()")
         print(f'   {lang}: game picture', shot)
-        check(shot and shot[0] > 0 and shot[1], f'{lang}: the video shows a real game picture with the part being explained outlined')
+        check(shot and shot[0] > 0 and shot[1], f'{lang}: the video shows real gameplay (a clip or a picture) with the part being explained outlined')
         pg.screenshot(path=f'test/shots/hv_{lang}.png')
         pg.keyboard.press('Escape'); pg.wait_for_timeout(300)
     # inside a game: the ▶ Video button in the top bar

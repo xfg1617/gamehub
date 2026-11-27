@@ -1109,3 +1109,12 @@ folder that was handed over, so they do not exist here.)
   in bio). Recordings are saved in /tmp/gh_tiktok/<name>.json: `make.py --recut <names>` re-cuts with a new hook.
 * Clips in `prototypes/tiktok/` + `captions.txt`: bowling, pool, fibber, kittens, colorclash, poker, tycoon, tour.
   Hooks must match what happens in the clip; keep "Bullshit" / brand names out of captions; music is added in TikTok.
+* **Gameplay clips in the how-to videos** (Nov 27 2026, Inna: "real video game play instead of one screenshot"):
+  `tools/make_howto_clips.py` (after build) lets the computers play each game in a 1280x720 window (rec.py screencast;
+  `AUTOPLAY` makes seat 0 a computer, `__noMine` for games that wait for "your" taps, a `nudge` action every 2.5 s for
+  turn-by-turn games, Impostor's reveal/ready tapped, Bowling thrown with `botPlan`), gives each script line (after the
+  title) its own 5 s slice in order, measures that line's highlight mid-slice, and writes `assets/site/howto/<id>/c<n>.mp4`
+  (silent H.264, ~25-120 KB) + `howto/clips.json`. The player (`zz_howto_video.js`) plays the clip (muted, looping, the
+  still as poster) with the outline on top; if a clip can't play it falls back to the still with the still's outline.
+  75 clips / 19 games (~5 MB). Doodle, Random, Daily Word, Sea Battle, Blackjack, Word Connect keep stills.
+  `t_hv_align.py` checks outlines on clips too. Sample `prototypes/round5/howto-video-with-gameplay.mp4`.

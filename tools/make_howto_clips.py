@@ -16,7 +16,9 @@ from rec import Take, sync_playwright, ROOT
 OUT = os.path.join(ROOT, 'assets', 'site', 'howto')
 WORK = os.path.join('/tmp', 'gh_howto_clips'); os.makedirs(WORK, exist_ok=True)
 HIDE = "#chat-fab,#em-fab,#gm-note,#tt-host,.gm-loading,#np-rj,.fx-burst,#toast-container{display:none!important}"
-AUTOPLAY = "(() => { const real = npLocal; npLocal = function (seats, sel) { seats = seats.map((x, i) => i === 0 ? Object.assign({}, x, { bot: true }) : x); return real(seats, sel); }; })()"
+AUTOPLAY = "(() => { const real = npLocal; npLocal = function (seats, sel) { seats = seats.map((x, i) => i === 0 ? Object.assign({}, x, { bot: true }) : x); const S = real(seats, sel); if (window.__noMine) S.mine = () => false; return S; }; })()"
+# games that still wait for "your" taps even when a computer holds your seat: no seat belongs to a person
+NO_MINE = ('c4', 'tunnel', 'guild', 'impostor', 'wordduel')
 # the games whose every seat a computer can take (they run on npLocal); bowling is thrown by the script
 GAMES = ['colorclash', 'kittens', 'fibber', 'poker', 'dominoes', 'chess', 'checkers', 'tictactoe', 'c4', 'hedge', 'pool',
          'bowling', 'tycoon', 'isles', 'manor', 'tunnel', 'guild', 'impostor', 'wordduel']
@@ -59,6 +61,7 @@ def record(p, gid, lines):
     t = Take(p, gid, WORK, size=(1280, 720), mobile=False, audio=False, quality=85, nth=2)
     pg = t.page
     pg.add_style_tag(content=HIDE); pg.evaluate(AUTOPLAY)
+    if gid in NO_MINE: pg.evaluate('window.__noMine = true')
     if gid in PICKS: pg.evaluate(f"setupSave('{gid}', {json.dumps(PICKS[gid])})")
     pg.evaluate(f"navigateTo('play', true); openGame('{gid}')"); pg.wait_for_timeout(500)
     if pg.query_selector('#su-go'): pg.click('#su-go')
@@ -68,16 +71,23 @@ def record(p, gid, lines):
     if gid in ('chess', 'checkers', 'tictactoe', 'c4', 'hedge', 'wordduel'): pg.evaluate("try { NP.S.act({ t: 'nudge' }); } catch (e) {}")
     t.start()
     n = len(lines); total = LEAD + SLICE * (n - 1) + 0.5; t0 = time.time(); boxes = {}; E = "GAME_MODS.bowling.engine"
+    last_nudge = 0
     while time.time() - t0 < total:
         el = time.time() - t0
         for j in range(1, n):    # line j (the first is the title card) plays slice j-1; its part is measured mid-slice
             mid = start(j) + SLICE / 2
             if j not in boxes and el >= mid: boxes[j] = pg.evaluate(MEAS, lines[j][1]) if lines[j][1] else 'none'
+        if gid in ('chess', 'checkers', 'tictactoe', 'c4', 'hedge', 'wordduel') and el - last_nudge > 2.5:
+            last_nudge = el; pg.evaluate("try { NP.S.act({ t: 'nudge' }); } catch (e) {}")   # keep the turn-by-turn computers moving
+        pg.evaluate("""(() => { const f = document.getElementById('im-flip'), r = document.getElementById('im-ready');
+          if (f && f.offsetParent && !f.dataset.t) { f.dataset.t = 1; f.click(); } else if (r && r.offsetParent && !r.disabled) r.click(); })()""")
         if gid == 'bowling':  # throw like the Pro computer whenever it is our turn
             pg.evaluate(f"""(() => {{ const E = {E}, G = E.state(); if (!G || G.phase !== 'idle' || !G.players[G.cur].human || G.__t && Date.now() - G.__t < 1500) return;
               G.__t = Date.now(); const st = G.pins.map((q, i) => q.up ? i : -1).filter(i => i >= 0); const q = E.botPlan(st.length ? st : [0,1,2,3,4,5,6,7,8,9], 2);
               G.aimX = q.x0; E.throwBall(q.x0, q.ang, q.speed, q.spin); }})()""")
         t.wait(150)
+    try: pg.screenshot(path=os.path.join(WORK, f'end_{gid}.png'))
+    except Exception: pass
     r = t.stop(); r['boxes'] = boxes; return r
 
 
@@ -104,7 +114,7 @@ if __name__ == '__main__':
                 bx = r['boxes'].get(j)
                 if ln[1] and not bx: continue             # the part it talks about isn't on screen: keep the still
                 moving = len([f for f in frames if a < f[0] < b])
-                if moving < 6: continue                  # nothing happens: keep the still
+                if moving < 1: continue                  # nothing happens at all: keep the still
                 out = os.path.join(OUT, gid, f'c{j}.mp4')
                 if encode(frames, a, b, out):
                     got[str(j)] = {'src': f'/howto/{gid}/c{j}.mp4', 'box': bx if isinstance(bx, list) else None, 'w': 1280, 'h': 720}

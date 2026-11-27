@@ -1261,3 +1261,5 @@ folder that was handed over, so they do not exist here.)
   if Inna adds the secrets TURN_KEY_ID + TURN_KEY_API_TOKEN in Cloudflare Pages settings; without them it returns none
   (STUN only: most players still connect). `test/t_voice.py` (Chromium's fake microphone; tlib.launch passes the flags and
   treats http://gamehub.test as secure). No Supabase change.
+* **Sound & Music panel = three sliders** (Inna): Sound effects (`ps_sfx_vol`, sets `SFX._master()` gain 0.6 × vol), Music (`st.vol`),
+  Voice chat (`VOICE.setVol`, in `ps_voice_v1`). Sliding to 0 turns that sound off (OFF label); sliding up turns it on again.

@@ -6,6 +6,7 @@ it plays after the first tap, follows the game in Auto, and the choices are reme
 import sys, time; sys.path.insert(0, 'test')
 from nplib import *
 SH = 'test/shots/'
+def slide(pg, k, v): pg.evaluate("([k, v]) => { const r = document.getElementById('mu-' + k); r.value = v; r.dispatchEvent(new Event('input', { bubbles: true })); r.dispatchEvent(new Event('change', { bubbles: true })); }", [k, v]); pg.wait_for_timeout(150)
 with sync_playwright() as p:
     # ---------- offline: poker vs computers on one screen ----------
     br = launch(p)
@@ -31,10 +32,13 @@ with sync_playwright() as p:
         check(pg.evaluate("document.body.classList.contains('in-game')") and not pg.evaluate("document.querySelector('aside.side').offsetWidth"), f'{tag}: full-screen game (side menu hidden)')
         # sound & music from the game header
         pg.click('#gs-tools .gs-snd'); pg.wait_for_timeout(300)
-        check(pg.query_selector('#mu-pop [data-mu="sfx"]') is not None and pg.query_selector('#mu-pop [data-mu="on"]') is not None, f'{tag}: the game header opens Sound & Music (both switches)')
-        was = pg.evaluate("SFX.isOn()"); pg.click('#mu-pop [data-mu="sfx"]'); pg.wait_for_timeout(200)
-        check(pg.evaluate("SFX.isOn()") != was, f'{tag}: the sound effects switch works')
-        pg.click('#mu-pop [data-mu="sfx"]'); pg.click('#mu-pop [data-mu="close"]')
+        check(all(pg.query_selector(f'#mu-pop #mu-{k}') for k in ('sfx', 'mus', 'vc')), f'{tag}: the game header opens Sound & Music (sliders: effects, music, voice)')
+        slide(pg, 'sfx', 40); a = pg.evaluate("[SFX.isOn(), localStorage.getItem('ps_sfx_vol'), SFX._master().gain.value]")
+        slide(pg, 'sfx', 0); b = pg.evaluate("SFX.isOn()")
+        print('   effects at 40%:', a, '| at 0:', b)
+        check(a[0] and a[1] == '0.4' and abs(a[2] - 0.24) < 0.01 and b is False, f'{tag}: the sound effects slider sets the volume, 0 = off')
+        slide(pg, 'vc', 55); check(abs(pg.evaluate("VOICE.getVol()") - 0.55) < 0.001 and pg.inner_text('#mu-p-vc') == '55%', f'{tag}: the voice chat slider works')
+        slide(pg, 'vc', 100); pg.click('#mu-pop [data-mu="close"]')
         pg.evaluate("navigateTo('play', true)"); pg.wait_for_timeout(700)
         check(pg.query_selector('#em-fab') is None, f'{tag}: no emote button outside a game')
         # music
@@ -51,9 +55,9 @@ with sync_playwright() as p:
         pg.screenshot(path=SH + f'music_{tag}.png')
         pg.click('#mu-pop [data-pick="card"]'); pg.wait_for_timeout(700)
         check(pg.evaluate("MUSIC.state().playing") == 'card', f'{tag}: picking a tune switches the music')
-        pg.click('#mu-pop [data-pick="auto"]'); pg.click('#mu-pop [data-mu="on"]'); pg.wait_for_timeout(700)
-        check(pg.evaluate("MUSIC.state().playing") is None, f'{tag}: switching music off stops it')
-        pg.click('#mu-pop [data-mu="on"]'); pg.evaluate("document.body.click()"); pg.wait_for_timeout(300)
+        pg.click('#mu-pop [data-pick="auto"]'); slide(pg, 'mus', 0); pg.wait_for_timeout(700)
+        check(pg.evaluate("MUSIC.state().playing") is None, f'{tag}: music slider at 0 stops the music')
+        slide(pg, 'mus', 60); check(pg.evaluate("MUSIC.state().on") and abs(pg.evaluate("MUSIC.state().vol") - 0.6) < 0.01, f'{tag}: sliding music up turns it back on at that volume'); pg.evaluate("document.body.click()"); pg.wait_for_timeout(300)
         check(pg.query_selector('#mu-pop') is None, f'{tag}: tapping outside closes the panel')
         pg.evaluate("openGame('poker')"); pg.wait_for_timeout(300); go = pg.query_selector('#su-go'); go and go.click(); pg.wait_for_timeout(1500)
         check(pg.evaluate("MUSIC.state().playing") == 'card', f'{tag}: Auto plays the card tune at the poker table')

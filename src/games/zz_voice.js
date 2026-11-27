@@ -11,8 +11,8 @@
     (function voiceChat() {
       const V = { code: null, ch: null, peers: {}, stream: null, mode: 'ptt', live: false, talk: {}, muted: {}, names: {}, joining: false, ice: null, iceAt: 0, open: false };
       const MAX = 8;
-      try { const s = JSON.parse(localStorage.getItem('ps_voice_v1') || '{}'); if (s.mode === 'open') V.mode = 'open'; V.muted = s.muted || {}; } catch (e) {}
-      const save = () => { try { localStorage.setItem('ps_voice_v1', JSON.stringify({ mode: V.mode, muted: V.muted })); } catch (e) {} };
+      try { const s = JSON.parse(localStorage.getItem('ps_voice_v1') || '{}'); if (s.mode === 'open') V.mode = 'open'; V.muted = s.muted || {}; V.vol = typeof s.vol === 'number' ? s.vol : 1; } catch (e) { V.vol = 1; }
+      const save = () => { try { localStorage.setItem('ps_voice_v1', JSON.stringify({ mode: V.mode, muted: V.muted, vol: V.vol })); } catch (e) {} };
       const me = () => (typeof NET !== 'undefined' && NET.me ? NET.me.id : '');
       const can = () => typeof RTCPeerConnection !== 'undefined' && navigator.mediaDevices && navigator.mediaDevices.getUserMedia;
       // the room we are in, if voice is allowed there (private rooms only)
@@ -83,7 +83,7 @@
         pc.onicecandidate = (e) => { if (e.candidate && V.ch) V.ch.send('sig', { to: u, ice: e.candidate.toJSON ? e.candidate.toJSON() : e.candidate }); };
         pc.ontrack = (e) => {
           let a = P.audio; if (!a) { a = P.audio = document.createElement('audio'); a.autoplay = true; a.setAttribute('playsinline', ''); a.dataset.vc = u; box().appendChild(a); }
-          a.srcObject = e.streams[0] || new MediaStream([e.track]); a.muted = !!V.muted[u]; a.play().catch(() => {});
+          a.srcObject = e.streams[0] || new MediaStream([e.track]); a.muted = !!V.muted[u]; a.volume = V.vol; a.play().catch(() => {});
         };
         pc.onconnectionstatechange = () => {
           const st = pc.connectionState; paint();
@@ -242,6 +242,7 @@
         fab(); if (V.open) paint(); marks();
       }, 800);
       window.addEventListener('pagehide', () => { if (V.ch) leave(); });
-      window.VOICE = { join, leave, setLive, state: () => ({ code: V.code, on: !!V.ch, mode: V.mode, live: V.live, talk: Object.assign({}, V.talk), peers: Object.fromEntries(Object.entries(V.peers).map(([u, P]) => [u, P.pc.connectionState])) }),
+      function setVol(v) { V.vol = Math.max(0, Math.min(1, +v || 0)); save(); Object.values(V.peers).forEach((P) => { if (P.audio) P.audio.volume = V.vol; }); }
+      window.VOICE = { join, leave, setLive, setVol, getVol: () => (typeof V.vol === 'number' ? V.vol : 1), state: () => ({ code: V.code, on: !!V.ch, mode: V.mode, live: V.live, talk: Object.assign({}, V.talk), peers: Object.fromEntries(Object.entries(V.peers).map(([u, P]) => [u, P.pc.connectionState])) }),
         stats: async () => { const out = {}; for (const [u, P] of Object.entries(V.peers)) { let rx = 0; (await P.pc.getStats()).forEach((r) => { if (r.type === 'inbound-rtp' && r.kind === 'audio') rx += r.bytesReceived || 0; }); out[u] = rx; } return out; } };
     })();

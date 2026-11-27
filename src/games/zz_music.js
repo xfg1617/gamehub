@@ -136,15 +136,21 @@
         });
         paint();
       }
+      // one slider each for sound effects, music and voice chat (Inna, Nov 2026); 0 = off
+      const sfxVol = () => { try { const v = parseFloat(localStorage.getItem('ps_sfx_vol')); return isNaN(v) ? 1 : Math.max(0, Math.min(1, v)); } catch (e) { return 1; } };
+      const vcVol = () => (window.VOICE && VOICE.getVol ? VOICE.getVol() : 1);
+      function applySfx() { try { if (typeof SFX !== 'undefined' && SFX._master && unlocked) SFX._master().gain.value = 0.6 * sfxVol(); } catch (e) {} }
+      const slider = (k, name, sub, v) => `<div class="mu-sl"><div class="mu-row"><span>${name}<small>${sub}</small></span><b class="mu-pct" id="mu-p-${k}">${v ? v + '%' : 'OFF'}</b></div>
+        <input id="mu-${k}" class="mu-range" type="range" min="0" max="100" value="${v}" aria-label="${name} volume"></div>`;
       function panelHTML() {
         const sw = (k) => `<button class="mu-sw ${st[k] ? 'on' : ''}" data-mu="${k}" role="switch" aria-checked="${st[k] ? 'true' : 'false'}"><i></i></button>`;
         const choice = (id, name, mood) => `<button class="mu-ch ${st.pick === id ? 'sel' : ''}" data-pick="${id}">${name}<small>${mood}</small></button>`;
         const sfx = typeof SFX !== 'undefined' && SFX.isOn();
         return `<div class="mu-hd"><span>♪ SOUND & MUSIC</span><button data-mu="close" aria-label="Close">✕</button></div>
           <div class="mu-bd">
-            <div class="mu-row"><span>Sound effects<small>Clicks, dice, cards, wins...</small></span><button class="mu-sw ${sfx ? 'on' : ''}" data-mu="sfx" role="switch" aria-checked="${sfx ? 'true' : 'false'}"><i></i></button></div>
-            <div class="mu-row"><span>Music<small>Background tunes</small></span>${sw('on')}</div>
-            <div><div class="mu-lab">VOLUME</div><input id="mu-vol" class="mu-range" type="range" min="0" max="100" value="${Math.round(st.vol * 100)}" aria-label="Music volume"></div>
+            ${slider('sfx', 'Sound effects', 'Clicks, dice, cards, wins...', sfx ? Math.round(sfxVol() * 100) : 0)}
+            ${slider('mus', 'Music', 'Background tunes', st.on ? Math.round(st.vol * 100) : 0)}
+            ${slider('vc', 'Voice chat', 'Your friends\' voices in private rooms', Math.round(vcVol() * 100))}
             <div><div class="mu-lab">WHICH MUSIC</div><div class="mu-grid">${choice('auto', 'Auto', 'Changes with the game')}${ORDER.map((k) => choice(k, TRACKS[k].name, TRACKS[k].mood)).join('')}${choice('shuffle', 'Shuffle', 'All of them')}</div></div>
             <div class="mu-row"><span>Music during games<small>Off = only on the menus</small></span>${sw('inGames')}</div>
             <div class="mu-now" id="mu-now"></div>
@@ -169,7 +175,16 @@
         });
         wire(p); paint();
       }
-      function wire(p) { const v = p.querySelector('#mu-vol'); if (v) v.oninput = () => set('vol', +v.value / 100); paint(); }
+      function wire(p) {
+        const lab = (k, v) => { const e = p.querySelector('#mu-p-' + k); if (e) e.textContent = v ? v + '%' : 'OFF'; };
+        const sf = p.querySelector('#mu-sfx'), mu = p.querySelector('#mu-mus'), vc = p.querySelector('#mu-vc');
+        if (sf) { sf.oninput = () => { const v = +sf.value; lab('sfx', v); if (v) { try { localStorage.setItem('ps_sfx_vol', String(v / 100)); } catch (e) {} applySfx(); }
+          const on = typeof SFX !== 'undefined' && SFX.isOn(); if (!!v !== on && typeof toggleSound === 'function') toggleSound(); };
+          sf.onchange = () => { if (+sf.value && typeof SFX !== 'undefined') SFX.play('click'); paint(); }; }
+        if (mu) mu.oninput = () => { const v = +mu.value; lab('mus', v); if (v) set('vol', v / 100); if (!!v !== !!st.on) set('on', !!v); };
+        if (vc) vc.oninput = () => { const v = +vc.value; lab('vc', v); if (window.VOICE && VOICE.setVol) VOICE.setVol(v / 100); };
+        paint();
+      }
       function paint() {
         const sfx = typeof SFX !== 'undefined' && SFX.isOn();
         const lab = document.getElementById('mu-label'); if (lab) lab.innerHTML = `Sound & Music <small class="mu-state">${sfx ? 'ON' : 'OFF'} · ${st.on ? 'ON' : 'OFF'}</small>`;
@@ -177,7 +192,7 @@
         const now = document.getElementById('mu-now');
         if (now) now.innerHTML = cur ? `<span class="mu-eq"><i></i><i></i><i></i><i></i></span>Now playing: <b>${TRACKS[cur].name}</b>` : (st.on ? (unlocked ? 'Quiet here (music during games is off)' : 'Starts when you tap anywhere') : 'Music is off');
       }
-      function unlock() { if (unlocked) return; unlocked = true; setup(); if (ac && ac.state === 'suspended') ac.resume(); sync(); }
+      function unlock() { if (unlocked) return; unlocked = true; setTimeout(applySfx, 0); setup(); if (ac && ac.state === 'suspended') ac.resume(); sync(); }
       document.addEventListener('pointerdown', unlock, { capture: true });
       document.addEventListener('keydown', unlock, { capture: true });
       document.addEventListener('click', (e) => { const p = document.getElementById('mu-pop'); if (p && !p.contains(e.target) && !e.target.closest('.gs-snd, #mu-btn, #mu-btn-m')) p.remove(); });

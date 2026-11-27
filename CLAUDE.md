@@ -1211,4 +1211,8 @@ folder that was handed over, so they do not exist here.)
   `_back` returns the seat). `backIn` sets `S._left` and drops `NP.S` first so closing the stale copy never sends `_left`.
   `test/t_np_hostfreeze.py` freezes the host's page from inside (headless Chrome can't freeze a tab: timers and incoming
   messages are held while `window.__frozen`, then run on `__wake()`).
+* **Cold-open TikTok clips** (Nov 27 2026, Inna: "hooks instantly, 1-2 seconds in"): `tools/tiktok/hook.py` cuts the saved
+  recordings (/tmp/gh_tiktok/*.json from make.py) so the clip STARTS on the payoff (pins flying / the break) with the hook
+  text from frame 0, then replays the whole shot, then the end card. `prototypes/tiktok/hook_bowling.mp4`, `hook_pool.mp4`
+  (+ captions in captions.txt). Check the first frames with ffmpeg before sending.
 

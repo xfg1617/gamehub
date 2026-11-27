@@ -1285,7 +1285,8 @@ folder that was handed over, so they do not exist here.)
 * **Bump Off controls v3 (Nov 28 2026, Inna)**: no power bar and no READY button. Round / phase banner / clock sit in a strip
   ABOVE the pond (`.bo-top`; they used to cover the pond on phones). Mouse: the arrow follows, a click locks the move in;
   touch: drag, lifting the finger locks it in (arrows under 6 % are ignored); keys + Enter still work; time up = the
-  current arrow is used. `engine.send()` for tests / how-to shots. Name tags always show rounds won (`★ 1/3`).
+  current arrow is used. `engine.send()` for tests / how-to shots. Name tags show rounds won as stars inside the tag
+  (`.bo-wins`: gold = won, dim = still to win). Players column sits right beside the pond (`.bo-wrap` flex, centred).
   If the last boats all fall in on the same move, the one that went in LAST wins the round (`end[i].out` = the step it
   went in; same step = nearer the middle), never "nobody wins".
 * **Trivia Rush: change your answer** (Inna): tap another answer until the question closes. `S.collect(..., {change: ms})`

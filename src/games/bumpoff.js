@@ -111,8 +111,10 @@
         const el = $('bo-side'); if (!el || !G) return;
         el.innerHTML = G.players.map((p) => {
           const b = G.boats[p.seat] || { alive: true }, planning = G.phase === 'plan' && b.alive;
-          const sub = !b.alive ? T('SPLASH! out', 'RƠI XUỐNG NƯỚC!') : planning ? (p.seat in G.got || (p.seat === G.me && G.sent) ? '✓ ' + T('ready', 'sẵn sàng') : T('planning...', 'đang tính...')) : p.seat === G.me ? T('you', 'bạn') : '';
-          return `<div id="bo-seat-${p.seat}" class="tg-seat bo-tag ${b.alive ? '' : 'out'}" style="--pc:${p.col[0]}">${nameTag({ av: p.av, name: p.seat === G.me ? T('You', 'Bạn') : p.name, sub, me: p.seat === G.me, badge: `★ ${p.wins}/${G.to}` })}</div>`;
+          const st = !b.alive ? T('SPLASH! out', 'RƠI XUỐNG NƯỚC!') : planning ? (p.seat in G.got || (p.seat === G.me && G.sent) ? '✓ ' + T('ready', 'sẵn sàng') : T('planning...', 'đang tính...')) : '';
+          // rounds won sit inside the tag (a corner badge covered the name)
+          const sub = `<span class="bo-wins" title="${p.wins}/${G.to}">${'★'.repeat(p.wins)}<i>${'★'.repeat(Math.max(0, G.to - p.wins))}</i></span>${st ? `<span class="bo-st">${st}</span>` : ''}`;
+          return `<div id="bo-seat-${p.seat}" class="tg-seat bo-tag ${b.alive ? '' : 'out'}" style="--pc:${p.col[0]}">${nameTag({ av: p.av, name: p.seat === G.me ? T('You', 'Bạn') : p.name, sub, me: p.seat === G.me })}</div>`;
         }).join('');
       }
 

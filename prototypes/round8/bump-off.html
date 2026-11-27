@@ -57,7 +57,7 @@ canvas.aim { cursor: crosshair; }
     <div class="side" id="side"></div>
   </div>
   <div class="steps">
-    <div class="s1"><b>1 · PLAN (secret)</b>You only see your own boat. Drag from it to pick a direction; the longer the arrow, the more power. Press READY.</div>
+    <div class="s1"><b>1 · LOOK, then PLAN (secret)</b>For 3 seconds you see everyone: remember where they are! Then they hide and you only see your own boat. Drag from it to pick a direction; the longer the arrow, the more power. Press READY.</div>
     <div class="s2"><b>2 · REVEAL</b>Everyone appears with their arrow. Now you see who is coming for you, but it's too late to change!</div>
     <div class="s3"><b>3 · GO!</b>All boats move at the same time and bump. Anyone knocked off the pond is out. Then plan again from where you stopped.</div>
   </div>
@@ -87,13 +87,19 @@ function newRound() {
     while (tries < 200 && boats.some((b) => Math.hypot(b.x - x, b.y - y) < 60));
     boats.push({ p, x, y, vx: 0, vy: 0, ang: Math.random() * 6.28, alive: true, sink: 9, plan: null, ready: false, readyAt: 0 });
   }
-  R = Rgoal = R0; turn = 1; parts = []; $('over').classList.remove('on'); startSetup();
+  R = Rgoal = R0; turn = 1; parts = []; $('over').classList.remove('on'); startLook();
+}
+const LOOK_SECS = 3;
+function startLook() {
+  phase = 'look'; phaseT = 0; drag = null; for (const b of boats) { b.plan = null; b.ready = !b.alive; }
+  setPhase('reveal', 'LOOK! REMEMBER WHERE EVERYONE IS'); $('bottom').style.display = 'none'; cv.classList.remove('aim');
+  $('round').textContent = `ROUND ${round} · TURN ${turn}`; drawSide(); tone(520, 520, 0.08, 0.05, 'triangle');
 }
 function startSetup() {
   phase = 'setup'; phaseT = 0; drag = null;
   for (const b of boats) { b.plan = null; b.ready = !b.alive; b.readyAt = 1.5 + Math.random() * 6; }
   me().plan = { ang: me().ang, pow: 0 };
-  setPhase('setup', 'PLAN YOUR MOVE'); $('bottom').style.display = 'flex'; $('ready').disabled = false; $('ready').textContent = 'READY';
+  setPhase('setup', 'THEY\'RE HIDDEN · PLAN YOUR MOVE'); $('bottom').style.display = 'flex'; $('ready').disabled = false; $('ready').textContent = 'READY';
   $('round').textContent = `ROUND ${round} · TURN ${turn}`; cv.classList.add('aim'); drawSide(); showPow();
 }
 const me = () => boats.find((b) => b.p.me);
@@ -125,7 +131,10 @@ const reach = (pow) => pow * VMAX / DRAG;
 // ---------- the turn ----------
 function update(dt) {
   phaseT += dt;
-  if (phase === 'setup') {
+  if (phase === 'look') {
+    const left = Math.max(0, LOOK_SECS - phaseT); $('clock').textContent = Math.ceil(left);
+    if (left <= 0) { startSetup(); tone(300, 150, 0.2, 0.05, 'triangle'); }
+  } else if (phase === 'setup') {
     const left = Math.max(0, PLAN_SECS - phaseT); $('clock').textContent = Math.ceil(left);
     let changed = false; for (const b of boats) if (!b.p.me && b.alive && !b.ready && phaseT > b.readyAt) { b.ready = true; changed = true; }
     if (changed) drawSide();
@@ -176,7 +185,7 @@ function endTurn() {
   const live = boats.filter((b) => b.alive);
   if (live.length <= 1) return endRound(live[0]);
   turn++; if (turn > 2) Rgoal = Math.max(70, Rgoal * 0.9);           // the pond shrinks a little every turn after the 2nd
-  phase = 'wait'; setTimeout(() => { if (phase === 'wait') startSetup(); }, 600);
+  phase = 'wait'; setTimeout(() => { if (phase === 'wait') startLook(); }, 600);
 }
 function endRound(w) {
   phase = 'end'; setPhase('', ''); $('bottom').style.display = 'none'; if (w) w.p.wins++;

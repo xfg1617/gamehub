@@ -1,0 +1,41 @@
+    /* ===== Funny Answers (funny.js) ===== */
+    body.in-game[data-game="funny"] { background-color: #0B1B2B; background-image: repeating-linear-gradient(45deg, rgba(245, 176, 65, .05) 0 18px, transparent 18px 36px); }
+    .fa-wrap { display: flex; flex-direction: column; align-items: center; gap: 22px; }
+    .fa-stage { width: min(1040px, 100%); display: flex; flex-direction: column; align-items: center; gap: 16px; min-height: 320px; padding-top: 8px; }
+    .fa-banner { font-size: 40px; background: #F5B041; color: #231505; border: 4px solid var(--ink); box-shadow: 0 6px 0 var(--ink); padding: 4px 28px; margin-top: 40px; }
+    .fa-banner.co { background: #FB7185; color: #2A0710; }
+    .fa-sub { color: #9DB4CC; font-size: 15px; text-align: center; max-width: 640px; }
+    .fa-step { font-size: 19px; color: #9DB4CC; text-align: center; }
+    .fa-cd { color: #F5B041; } .fa-cd.low { color: #FB7185; }
+    .fa-p { background: #F5B041; color: #231505; border: 4px solid var(--ink); box-shadow: 0 7px 0 var(--ink); padding: 18px 26px; font-family: Outfit, sans-serif; font-size: clamp(19px, 2.3vw, 30px); font-weight: 800; text-align: center; line-height: 1.25; width: 100%; }
+    .fa-in { width: 100%; display: flex; align-items: center; background: #F7F4EC; border: 4px solid var(--ink); box-shadow: 0 6px 0 var(--ink); padding: 0 16px 0 0; }
+    .fa-in input { flex: 1; min-width: 0; background: transparent; border: 0; outline: 0; padding: 16px 18px; font-family: Outfit, sans-serif; font-size: clamp(17px, 1.8vw, 24px); font-weight: 800; color: #0B1B2B; }
+    .fa-in small { color: #5C7A99; font-weight: 700; font-size: 13px; }
+    .fa-vs { display: grid; grid-template-columns: 1fr 64px 1fr; gap: 14px; align-items: stretch; width: 100%; }
+    .fa-vsb { font-size: 40px; color: #FB7185; display: flex; align-items: center; justify-content: center; text-shadow: 3px 3px 0 var(--ink); }
+    .fa-a { background: #F7F4EC; color: #0B1B2B; border: 4px solid var(--ink); box-shadow: 0 7px 0 var(--ink); padding: 30px 20px 20px; font-family: Outfit, sans-serif; font-size: clamp(17px, 1.9vw, 25px); font-weight: 800; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 8px; position: relative; min-height: 170px; cursor: pointer; transition: transform .08s; }
+    .fa-a:not([disabled]):not(.res):hover { transform: translateY(-3px); }
+    .fa-a[disabled]:not(.res) { cursor: default; }
+    .fa-a.empty { color: #9DB4CC; font-style: italic; }
+    .fa-a.picked { outline: 5px solid #2DD4BF; outline-offset: 4px; }
+    .fa-a.win { outline: 5px solid #34D399; outline-offset: 4px; }
+    .fa-a.lose { opacity: .72; }
+    .fa-a.own { opacity: .6; }
+    .fa-a.small { min-height: 110px; font-size: clamp(15px, 1.5vw, 19px); padding: 22px 14px 14px; }
+    .fa-pc { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 30px; background: var(--ink); color: #F5B041; padding: 0 12px; }
+    .fa-by { font-size: 14px; color: #27496B; font-weight: 800; }
+    .fa-vts { display: flex; justify-content: center; gap: 3px; font-size: 21px; min-height: 24px; }
+    .fa-sweep { font-size: 44px; background: #FB7185; color: #2A0710; border: 4px solid var(--ink); box-shadow: 0 7px 0 var(--ink); padding: 2px 28px; transform: rotate(-4deg); animation: faStamp .45s cubic-bezier(.2, 1.6, .4, 1); }
+    @keyframes faStamp { from { transform: rotate(-4deg) scale(2.2); opacity: 0; } to { transform: rotate(-4deg) scale(1); opacity: 1; } }
+    .fa-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; width: 100%; }
+    .fa-medal { position: absolute; top: -14px; right: -10px; font-size: 16px; border: 2px solid var(--ink); padding: 0 8px; color: #231505; }
+    .fa-meds { display: flex; gap: 4px; } .fa-meds i { font-style: normal; font-weight: 800; font-size: 13px; border: 2px solid var(--ink); min-width: 24px; color: #231505; }
+    .fa-board { display: grid; gap: 6px; width: min(520px, 100%); }
+    .fa-row { display: grid; grid-template-columns: 32px 32px 1fr auto; gap: 10px; align-items: center; background: #0F2338; border: 3px solid var(--ink); padding: 8px 12px; color: #F7F4EC; font-size: 17px; }
+    .fa-row.me { border-color: #2DD4BF; } .fa-row .pix { color: #F5B041; font-size: 20px; }
+    .fa-tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+    @media (max-width: 640px) {
+      .fa-vs { grid-template-columns: 1fr; gap: 10px; } .fa-vsb { font-size: 26px; }
+      .fa-a { min-height: 0; padding: 26px 14px 14px; } .fa-banner { font-size: 28px; }
+      .fa-sweep { font-size: 28px; }
+    }

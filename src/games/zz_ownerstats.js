@@ -8,6 +8,9 @@
       const nameOf = (id) => { const c = (typeof CATALOG !== 'undefined' && CATALOG.find((x) => x.id === id)) || (typeof GAME_MODS !== 'undefined' && GAME_MODS.find && GAME_MODS.find((x) => x.id === id)); return c ? c.name : id; };
       const fmtDay = (d) => { const [y, m, day] = d.split('-').map(Number); return new Date(y, m - 1, day).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); };
       let el = null;
+      // the time zone of this device (Inna: "my correct time wherever I go"): "today" and each day's bar follow it
+      const TZ = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'; } catch (e) { return 'UTC'; } })();
+      const tzName = () => { try { const p = new Intl.DateTimeFormat('en-US', { timeZoneName: 'short' }).formatToParts(new Date()).find((x) => x.type === 'timeZoneName'); return (TZ.split('/').pop() || TZ).replace(/_/g, ' ') + (p ? ' (' + p.value + ')' : ''); } catch (e) { return TZ; } };
 
       function shell(body) {
         if (!el) {
@@ -35,7 +38,7 @@
           `<button class="btn-game btn-amber w-full py-2.5 mt-4" onclick="openAuthModal('signin')">Log in</button>`);
         shell(`<div class="os-loading pix">Loading numbers…</div>`);
         let st;
-        try { st = await NET.ownerStats(); } catch (e) {
+        try { st = await NET.ownerStats(TZ); } catch (e) {
           const m = String((e && e.message) || e);
           if (/private|not allowed/i.test(m)) return note('PRIVATE PAGE', 'This page is private.');
           if (/does not exist|could not find|schema cache/i.test(m)) return note('ONE STEP LEFT', 'The stats aren\'t switched on yet: run <b>backend/owner-stats.sql</b> in Supabase, then add yourself as the owner (the steps are at the top of that file).');
@@ -57,14 +60,15 @@
         const glist = games.slice(0, 12).map((g) => `<div class="os-g"><span class="os-gn">${esc(nameOf(g.g))}</span><span class="os-gbar"><i style="width:${g.n / gmax * 100}%"></i></span><span class="os-gv">${g.n.toLocaleString('en-US')} games · ${g.p} ${g.p === 1 ? 'player' : 'players'}</span></div>`).join('');
         const rows = days.slice().reverse().map((d) => `<tr><td>${fmtDay(d.d)}</td><td>${d.new}</td><td>${d.played}</td><td>${d.accounts}</td><td>${d.rooms}</td><td>${d.chats}</td></tr>`).join('');
         shell(`
-          <p class="os-intro">Counted from your Supabase database. A "player" is one browser: the same person on a phone and a computer counts twice. Test players are left out.</p>
+          <p class="os-intro">Counted from your Supabase database. A "player" is one browser: the same person on a phone and a computer counts twice. Test players are left out.
+            ${st.utc ? '<br><b class="text-amber">Days are in world time (UTC).</b> To see your own time, run the updated <b>backend/owner-stats.sql</b> in Supabase once.' : `<br>Days and "today" follow your time here: <b class="text-bone">${esc(tzName())}</b>.`}</p>
           <div class="os-tiles">
             ${tile(st.played, 'REAL PLAYERS', 'played at least one game (the best count of real people)', true)}
             ${tile(st.total, 'ALL VISITORS', 'every browser that opened the site online, including ones that left at once')}
             ${tile(st.returned, 'CAME BACK', 'opened the site again later')}
             ${tile(st.accounts, 'ACCOUNTS', 'signed up with email or Google')}
-            ${tile(st.new_today, 'NEW TODAY', 'first visit today (UTC day)')}
-            ${tile(st.active_today, 'ACTIVE TODAY', 'were on the site today')}
+            ${tile(st.new_today, 'NEW TODAY', st.utc ? 'first visit today (UTC day)' : 'first visit today (your time)')}
+            ${tile(st.active_today, 'ACTIVE TODAY', st.utc ? 'were on the site today (UTC day)' : 'were on the site today (your time)')}
             ${tile(st.games_total, 'GAMES PLAYED', 'all games ever played, all players')}
             ${tile(NET.count || 0, 'ONLINE NOW', 'on the site right this moment')}
           </div>

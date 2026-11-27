@@ -1131,3 +1131,7 @@ folder that was handed over, so they do not exist here.)
   a player is gone only after 10 s missing; `members()` on channels, both backends) -> the next-game choice shows at once
   and the false "The other players have left the table." is gone. Random Game sessions: 3 s countdown for everyone, then
   the next game starts by itself (settings box before it 4 s). `t_np_random.py`, `t_np_rematch.py` (rewritten), `t_np_next.py`.
+* **Site stats in the owner's own time** (Nov 27 2026, Inna: "my correct time wherever I go"): the page sends this device's
+  time zone (`Intl...timeZone`) to `owner_stats(tz)`; days, "today" and the 14-day bars use it (`at time zone tz`; an
+  unknown zone falls back to UTC). Until the updated `backend/owner-stats.sql` is run, the page falls back to the old
+  no-argument function and says "Days are in world time (UTC)". Tested on PostgreSQL 16 (UTC / Ho Chi Minh / Indianapolis).

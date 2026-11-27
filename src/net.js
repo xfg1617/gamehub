@@ -360,7 +360,12 @@
           async publishStats(o) { ok(await rpc('publish_stats', { p: o })); },   // throws on failure, so the page tries again
           /* the owner's private stats page (backend/owner-stats.sql): the server decides who may see it */
           async isOwner() { try { return !!ok(await rpc('is_site_owner')); } catch (e) { return false; } },
-          async ownerStats() { return ok(await rpc('owner_stats')); },
+          // tz = this device's time zone, so days follow the owner's own clock; an older owner_stats() (before the
+          // updated backend/owner-stats.sql is run) takes no time zone: then it answers in world time (UTC)
+          async ownerStats(tz) {
+            try { return ok(await rpc('owner_stats', { tz })); }
+            catch (e) { if (!/function|schema cache|argument/i.test(String(e && e.message))) throw e; const r = ok(await rpc('owner_stats')); if (r) r.utc = true; return r; }
+          },
           async playerStats(id) { try { return ok(await rpc('player_stats', { p_id: id })); } catch (e) { return null; } },
           async friends() {
             const rows = ok(await sb.from('friend_requests').select('from_id,to_id,status')) || [];
@@ -467,7 +472,7 @@
       NET.publishStats = (o) => B.publishStats(o);
       NET.playerStats = (id) => B.playerStats(id);
       NET.isOwner = () => B.isOwner();
-      NET.ownerStats = () => B.ownerStats();
+      NET.ownerStats = (tz) => B.ownerStats(tz);
       NET.friends = () => B.friends();
       // Only players with an account can add friends and chat (Inna, Nov 2026). Guests can still read chat. The server
       // checks the same thing (backend/accounts-only.sql), so this can't be skipped.

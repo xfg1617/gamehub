@@ -62,7 +62,7 @@
           tip: 'Keep your 2s and bombs for the end, and get rid of low single cards early while it is still easy.', online: NET_TABLE },
         trivia: { tag: '1-8 PLAYERS · QUIZ', goal: 'Answer quiz questions right, and fast, to score the most points.', steps: [
           ['Pick the settings', 'In the room, choose the language of the questions (English or Tiếng Việt), a category (or all mixed), how many questions and how hard.'],
-          ['Answer', 'Everyone sees the same question at the same time. Tap one of the four answers before the time runs out. You can\'t change it once it is locked in.'],
+          ['Answer', 'Everyone sees the same question at the same time. Tap one of the four answers before the time runs out. Changed your mind? Tap another answer before the question closes (speed counts from your last tap).'],
           ['Score', 'A right answer gets 20 to 100 points: answer straight away for 100, at the last second for 20. Three or more right in a row adds a 🔥 streak bonus. At the end, your place gives you points for the leaderboard, like every game.'],
           ['See who got it', 'After each question the right answer lights up, and you see which answer everyone picked.'],
           ['Win', 'After the last question, the player with the most points wins. Playing alone? Try to beat your best score.']],
@@ -87,7 +87,7 @@
           tip: 'Wolves: don\'t be too quiet, and don\'t be too loud. Villagers: watch who keeps changing their story, and who votes together.', online: 'Werewolf needs at least 5 people and has no computer players. Create a room and invite your friends with the link. A voice call makes it even more fun!' },
         bumpoff: { tag: '2-6 PLAYERS · BUMPER BOATS', goal: 'Be the last boat floating: knock the others off the pond.', steps: [
           ['Where you start', 'The room picks where the boats start: random spots, evenly around the edge, or all close together in the middle (chaos!).'],
-          ['Plan in secret', 'You can see every boat, but not where they will go. Move the mouse and the arrow follows it (on a phone, drag your finger); its tip shows where your boat would stop, so the longer the arrow, the more power. Click to lock it (or use the arrow keys). Press READY before the time runs out.'],
+          ['Plan in secret', 'You can see every boat, but not where they will go. Move the mouse and the arrow follows it (on a phone, drag your finger); its tip shows where your boat would stop, so the longer the arrow, the more power. Click, or let go of your finger, to lock your move in (keyboard: arrow keys + Enter). If the time runs out, the arrow you have is used.'],
           ['Reveal', 'When everyone is ready, all the planned arrows appear at once. Now you see who is coming for you, but it is too late to change!'],
           ['GO!', 'All boats move at the same time. Boats that meet bounce off each other: BONK! Anyone pushed off the edge of the pond is out: SPLASH!'],
           ['Next turn', 'Plan again from wherever you stopped. From the 3rd turn the pond gets a little smaller every turn (a room setting).'],

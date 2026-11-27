@@ -79,13 +79,24 @@
       };
       // everyone decides at the same time (bets, votes...): returns { seat: action } once every seat in `seats` has
       // answered. The host answers for computer seats right away, and for slow people after `secs` (autoFn).
-      S.collect = async (key, seats, botFn, autoFn, secs) => {
-        const got = {}, t0 = Date.now(), left = () => seats.filter((i) => !(i in got));
+      // opt.change = ms: people may change their answer (a new action from the same seat replaces the old one). Once
+      // everyone has answered, the table still waits that long after the last change, or until `secs` runs out.
+      S.collect = async (key, seats, botFn, autoFn, secs, opt) => {
+        const got = {}, t0 = Date.now(), left = () => seats.filter((i) => !(i in got)), chg = opt && opt.change;
+        const mine = (x) => x.key === key && seats.includes(x.s) && (chg ? !(x.s in got) || !S.bot(x.s) : !(x.s in got));
         while (left().length) {
           const bots = left().filter((i) => S.bot(i));
           const ms = bots.length ? 350 + Math.floor(Math.random() * 400) : Math.max(250, secs * 1000 - (Date.now() - t0));
-          const a = await S.ask(-1, () => { const b = left().filter((i) => S.bot(i)); const k = b.length ? b[0] : left()[0]; return Object.assign((b.length ? botFn : autoFn)(k), { s: k, key, auto: !b.length }); }, ms,
-            (x) => x.key === key && seats.includes(x.s) && !(x.s in got));
+          const a = await S.ask(-1, () => { const b = left().filter((i) => S.bot(i)); const k = b.length ? b[0] : left()[0]; return Object.assign((b.length ? botFn : autoFn)(k), { s: k, key, auto: !b.length }); }, ms, mine);
+          got[a.s] = a;
+          if (S.onCollect) S.onCollect(key, got);
+        }
+        while (chg) {
+          const ms = Math.max(0, Math.min(chg, secs * 1000 - (Date.now() - t0)));
+          if (ms <= 0) break;
+          const a = await S.ask(-1, () => ({ t: '_cdone', key }), ms, (x) => x.key === key && (x.t === '_cdone' || mine(x)));
+          if (a.t === '_cdone') break;
+          if (a.auto) continue;
           got[a.s] = a;
           if (S.onCollect) S.onCollect(key, got);
         }

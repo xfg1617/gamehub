@@ -57,7 +57,7 @@
           if (s > 20 && b.every((q) => !q.alive || q.vx * q.vx + q.vy * q.vy < 9)) break;
         }
         frames.push(b.map((q) => [q.x, q.y, q.alive ? 1 : 0, 0, 0]));
-        return { frames, bumps, end: b.map((q) => ({ x: Math.round(q.x * 100) / 100, y: Math.round(q.y * 100) / 100, alive: q.alive })), outs: b.map((q, i) => (boats[i].alive && !q.alive ? i : -1)).filter((i) => i >= 0) };
+        return { frames, bumps, end: b.map((q) => ({ x: Math.round(q.x * 100) / 100, y: Math.round(q.y * 100) / 100, alive: q.alive, out: q.outAt })), outs: b.map((q, i) => (boats[i].alive && !q.alive ? i : -1)).filter((i) => i >= 0) };
       }
       // the computer captains plan from where the boats are NOW (they can't see anyone's plan either)
       function botPlan(i, boats, R, lvl, rnd) {
@@ -93,10 +93,8 @@
         G = { S, sel, me: S.online ? S.me : 0, players, boats: [], round: 0, turn: 0, R: R0, Rgoal: R0, to: +sel.to || 3, secs: +sel.secs || 10, lvl: +sel.lvl || 2,
           shrink: +sel.shrink !== 0, spawnMode: sel.spawn || 'random', phase: 'start', plan: null, sent: false, got: {}, parts: [], shake: 0, over: false, tok: ++GT.cur, frame: null };
         GT.started = true; GT.over = false;
-        body.innerHTML = `<div class="bo-wrap"><div class="bo-pondbox" id="bo-box"><canvas id="bo-cv" width="${W}" height="${H}"></canvas>
-            <div class="bo-hud"><span class="bo-pill" id="bo-round"></span><span class="bo-pill" id="bo-clock"></span></div>
-            <div class="bo-phase" id="bo-phase"></div>
-            <div class="bo-ctl" id="bo-ctl"><div class="bo-pow"><i id="bo-pw"></i><b id="bo-pwt">0%</b></div><button class="btn-game btn-teal py-2 px-4 text-sm" id="bo-ready">${T('READY', 'SẴN SÀNG')}</button></div></div>
+        body.innerHTML = `<div class="bo-wrap"><div class="bo-pondbox" id="bo-box"><div class="bo-top"><span class="bo-pill" id="bo-round"></span><div class="bo-phase" id="bo-phase"></div><span class="bo-pill" id="bo-clock"></span></div><canvas id="bo-cv" width="${W}" height="${H}"></canvas>
+</div>
           <div class="bo-side" id="bo-side"></div><div id="bo-log" class="logbox" style="height:160px"></div></div>`;
         S.track();
         S.onLeft = (a) => { if (!G) return; const p = G.players[a.s]; if (p) { p.name += ' (CPU)'; p.av = '🤖'; } side(); };
@@ -108,19 +106,20 @@
       async function W8(ms) { const t = G && G.tok; await gSleep(window.__fast ? Math.min(ms, 40) : ms); if (!G || G.tok !== t) throw ABORT; }
       const log = (h) => { const el = $('bo-log'); if (el) { el.insertAdjacentHTML('beforeend', `<div>${h}</div>`); el.scrollTop = el.scrollHeight; } };
       const meP = () => G.players[G.me], meB = () => G.boats[G.me];
-      function setPhase(cls, txt) { const el = $('bo-phase'); if (!el) return; el.className = 'bo-phase ' + cls; el.textContent = txt || ''; el.style.display = txt ? 'block' : 'none'; }
+      function setPhase(cls, txt) { const el = $('bo-phase'); if (!el) return; el.className = 'bo-phase ' + cls; el.textContent = txt || ''; el.style.visibility = txt ? 'visible' : 'hidden'; }
       function side() {
         const el = $('bo-side'); if (!el || !G) return;
         el.innerHTML = G.players.map((p) => {
           const b = G.boats[p.seat] || { alive: true }, planning = G.phase === 'plan' && b.alive;
           const sub = !b.alive ? T('SPLASH! out', 'RƠI XUỐNG NƯỚC!') : planning ? (p.seat in G.got || (p.seat === G.me && G.sent) ? '✓ ' + T('ready', 'sẵn sàng') : T('planning...', 'đang tính...')) : p.seat === G.me ? T('you', 'bạn') : '';
-          return `<div id="bo-seat-${p.seat}" class="tg-seat bo-tag ${b.alive ? '' : 'out'}" style="--pc:${p.col[0]}">${nameTag({ av: p.av, name: p.seat === G.me ? T('You', 'Bạn') : p.name, sub, me: p.seat === G.me, badge: p.wins ? '★'.repeat(p.wins) : undefined })}</div>`;
+          return `<div id="bo-seat-${p.seat}" class="tg-seat bo-tag ${b.alive ? '' : 'out'}" style="--pc:${p.col[0]}">${nameTag({ av: p.av, name: p.seat === G.me ? T('You', 'Bạn') : p.name, sub, me: p.seat === G.me, badge: `★ ${p.wins}/${G.to}` })}</div>`;
         }).join('');
       }
 
       // ---------- input: the arrow's tip follows the mouse / finger (Inna, Nov 2026) ----------
-      // Mouse: just move over the pond and the arrow follows; click to lock it (click again to re-aim).
-      // Touch: put a finger down anywhere and slide; the arrow follows it and stays where you lift.
+      // Mouse: the arrow follows the mouse; a click locks your move in (no READY button: Inna, Nov 2026).
+      // Touch: put a finger down anywhere and slide; the arrow follows it, and lifting the finger locks it in.
+      // A tiny arrow (a stray tap on your own boat) is not sent. When time runs out, the arrow you have is sent.
       const MAXL = () => reach(VMAX);                    // the longest arrow = full power
       function bindInput() {
         const cv = $('bo-cv');
@@ -130,10 +129,9 @@
         let down = false;
         gOn(cv, 'pointerdown', (e) => { if (!can()) return; e.preventDefault(); down = true; G.locked = false; try { cv.setPointerCapture(e.pointerId); } catch (x) {} aim(toPond(e)); });
         gOn(cv, 'pointermove', (e) => { if (!can()) return; G.hover = toPond(e); if (down || (e.pointerType === 'mouse' && !G.locked)) aim(G.hover); });
-        const up = (e) => { if (!down) return; down = false; if (can()) { aim(toPond(e)); G.locked = true; SFX.play('click'); } };
+        const up = (e) => { if (!down) return; down = false; if (can()) { aim(toPond(e)); if (G.plan && G.plan.pow >= 0.06) { G.locked = true; sendPlan(); } } };   // letting go (or a click) locks your move in
         gOn(cv, 'pointerup', up); gOn(cv, 'pointercancel', () => { down = false; });
         gOn(cv, 'pointerleave', () => { G && (G.hover = null); });
-        gOn($('bo-ready'), 'click', () => sendPlan());
         gOn(document, 'keydown', (e) => {
           if (!can() || /INPUT|TEXTAREA/.test((e.target || {}).tagName || '')) return;
           const p = G.plan || { a: -Math.PI / 2, pow: 0.5 };
@@ -171,7 +169,7 @@
           $('bo-round').textContent = `${T('ROUND', 'VÁN')} ${G.round} · ${T('TURN', 'LƯỢT')} ${G.turn}`;
           const plans = await planPhase(); if (!G || G.tok !== t) throw ABORT;
           // reveal: everyone's arrow
-          G.phase = 'reveal'; G.plans = plans; setPhase('reveal', T('PLANS REVEALED!', 'LỘ KẾ HOẠCH!')); $('bo-ctl').style.visibility = 'hidden'; side(); SFX.play('reveal');
+          G.phase = 'reveal'; G.plans = plans; setPhase('reveal', T('PLANS REVEALED!', 'LỘ KẾ HOẠCH!')); side(); SFX.play('reveal');
           for (let i = 0; i < G.boats.length; i++) { const p = plans[i]; if (G.boats[i].alive && p && (p.vx || p.vy)) G.boats[i].ang = Math.atan2(p.vy, p.vx); }
           await W8(2200);
           // GO: everyone moves at once
@@ -191,10 +189,17 @@
           side();
           const live = G.boats.filter((b) => b.alive);
           if (live.length <= 1) {
-            const w = live.length ? G.boats.indexOf(live[0]) : -1;
+            // everyone left went in on the same move: the boat that stayed on longest wins (Inna, Nov 2026: never "nobody wins");
+            // same moment = the one that ended nearer the middle
+            let w = live.length ? G.boats.indexOf(live[0]) : -1;
+            if (w < 0 && outs.length) {
+              const ends = a.b || sim.end, d = (i) => dist(G.boats[i].x, G.boats[i].y, CX, CY);
+              w = outs.slice().sort((i, j) => ((ends[j] && ends[j].out) || 0) - ((ends[i] && ends[i].out) || 0) || d(i) - d(j))[0];
+              log(`🛟 ${esc(G.players[w].name)} ${T('was the last one to fall in, so they take the round.', 'rơi xuống nước sau cùng nên thắng ván này.')}`);
+            }
             if (w >= 0) G.players[w].wins++;
             G.phase = 'roundend'; side();
-            setPhase('reveal', w < 0 ? T('EVERYONE SANK!', 'CHÌM HẾT!') : w === G.me ? T('YOU WIN THE ROUND!', 'BẠN THẮNG VÁN NÀY!') : `${G.players[w].name.toUpperCase()} ${T('WINS THE ROUND', 'THẮNG VÁN NÀY')}`);
+            setPhase('reveal', w < 0 ? T('NO WINNER', 'KHÔNG AI THẮNG') : w === G.me ? T('YOU WIN THE ROUND!', 'BẠN THẮNG VÁN NÀY!') : `${G.players[w].name.toUpperCase()} ${T('WINS THE ROUND', 'THẮNG VÁN NÀY')}`);
             log(w < 0 ? T('Everyone sank: nobody wins the round.', 'Tất cả đều chìm: không ai thắng ván.') : `🏆 ${esc(G.players[w].name)} ${T('wins round', 'thắng ván')} ${G.round}.`);
             SFX.play(w === G.me ? 'win' : 'coin');
             await W8(2600); setPhase('', ''); return;
@@ -205,9 +210,7 @@
       async function planPhase() {
         const S = G.S, t = G.tok, key = `p${G.round}_${G.turn}`, me = meB();
         G.phase = 'plan'; G.ckey = key; G.got = {}; G.sent = false; G.plan = null; G.plans = null; G.locked = false; setPlan(me.ang, 0);
-        setPhase('plan', T('PLAN YOUR MOVE · PLANS ARE SECRET', 'TÍNH NƯỚC ĐI · KẾ HOẠCH BÍ MẬT'));
-        const ctl = $('bo-ctl'); ctl.style.visibility = me.alive && S.mine(G.me) ? 'visible' : 'hidden';
-        const r = $('bo-ready'); r.disabled = false; r.textContent = T('READY', 'SẴN SÀNG');
+        setPhase('plan', T('PLAN IN SECRET', 'TÍNH BÍ MẬT'));
         side();
         const t0 = Date.now();
         const tick = gInterval(() => {
@@ -220,7 +223,7 @@
         const lvl = S.online ? (+(S.sel && S.sel.lvl) || 2) : G.lvl;
         const got = await S.collect(key, seats, (s) => Object.assign({ t: 'plan' }, botPlan(s, G.boats, G.R, lvl, Math.random)), () => ({ t: 'plan', vx: 0, vy: 0 }), G.secs + 0.4);
         gClearInt(tick); if (!G || G.tok !== t) throw ABORT;
-        $('bo-clock').textContent = '';
+        if ($('bo-clock')) $('bo-clock').textContent = '';
         return G.boats.map((b, i) => (got[i] ? { vx: +got[i].vx || 0, vy: +got[i].vy || 0 } : { vx: 0, vy: 0 }));
       }
       // play the movement back at real speed (instantly while catching up on a rejoin)
@@ -402,11 +405,12 @@
         if (G.phase === 'plan') {
           G.boats.forEach((b, i) => { if (!b.alive || i === G.me) return; const ok = i in G.got; label(ctx, ok ? '✓ READY' : '?', b.x, b.y - RAD - 9 + Math.sin(tt * 4 + i) * 1.2, ok ? '#34D399' : '#F7F4EC', '#050E18'); });
           if (me && me.alive && !G.sent && G.S.mine(G.me)) {
-            if (!(G.plan && G.plan.pow > 0.02)) label(ctx, T('AIM WITH THE MOUSE OR DRAG', 'NGẮM BẰNG CHUỘT HOẶC KÉO'), me.x, me.y + RAD + 13, '#F7F4EC', '#050E18');
-            else if (!G.locked) label(ctx, T('CLICK TO LOCK YOUR AIM', 'BẤM ĐỂ CHỐT HƯỚNG'), me.x, me.y + RAD + 13, '#F7F4EC', '#050E18');
-            else label(ctx, T('LOCKED · PRESS READY', 'ĐÃ CHỐT · BẤM SẴN SÀNG'), me.x, me.y + RAD + 13, '#F5B041', '#050E18');
+            const touch = window.matchMedia && matchMedia('(pointer: coarse)').matches;
+            if (!(G.plan && G.plan.pow > 0.02)) label(ctx, touch ? T('DRAG TO AIM · LET GO TO LOCK IN', 'KÉO ĐỂ NGẮM · THẢ RA ĐỂ CHỐT') : T('AIM WITH THE MOUSE · CLICK TO LOCK IN', 'NGẮM BẰNG CHUỘT · BẤM ĐỂ CHỐT'), me.x, me.y + RAD + 13, '#F7F4EC', '#050E18');
+            else label(ctx, touch ? T('LET GO TO LOCK IN', 'THẢ RA ĐỂ CHỐT') : T('CLICK TO LOCK IN', 'BẤM ĐỂ CHỐT'), me.x, me.y + RAD + 13, '#F7F4EC', '#050E18');
           }
         }
+        if (G.phase === 'plan' && me && me.alive && G.sent) label(ctx, T('✓ LOCKED IN · WAITING', '✓ ĐÃ CHỐT · ĐANG CHỜ'), me.x, me.y + RAD + 13, '#34D399', '#050E18');
         if (me && me.alive) label(ctx, T('YOU', 'BẠN'), me.x, me.y - RAD - (G.phase === 'plan' ? 9 : 9), '#2DD4BF', '#050E18');
         for (const q of G.parts) if (q.txt) {
           ctx.font = '22px "Jersey 15", monospace'; ctx.textAlign = 'center'; ctx.globalAlpha = Math.min(1, q.l * 3);
@@ -446,13 +450,13 @@
         id: 'bumpoff', name: 'Bump Off', icon: 'bumpoff', cats: ['party', 'sports'], sub: '2-6 PLAYERS · ~5 MIN', color: '#2DD4BF', tone: 'teal', btn: 'teal', flag: 'NEW',
         blurb: 'Bumper boats! Everyone secretly picks a direction and power, then all boats move at once. Knock the others off the pond.',
         rules: { tag: 'PARTY · 2-6 PLAYERS', steps: [
-          '<strong class="text-bone">Plan in secret:</strong> the arrow follows your mouse (on a phone, drag your finger): where its tip points is where you\'ll stop, so a longer arrow = more power. Click to lock it, then press READY. You can see every boat, but not where they will go.',
+          '<strong class="text-bone">Plan in secret:</strong> the arrow follows your mouse (on a phone, drag your finger): where its tip points is where you\'ll stop, so a longer arrow = more power. Click (or let go) to lock your move in. You can see every boat, but not where they will go.',
           '<strong class="text-bone">Reveal:</strong> everyone\'s arrows appear at once. Too late to change!',
           '<strong class="text-bone">GO:</strong> all boats move at the same time and bump. Anyone knocked off the pond is out.',
           '<strong class="text-bone">Win:</strong> the last boat floating wins the round. First to win the set number of rounds wins.',
         ], tip: 'Aim where someone will be, not where they are. A small move to dodge can beat a big charge.' },
         profileTiles: (s) => [['WINS', s.wins, 'text-amber'], ['GAMES', s.played, 'text-bone'], ['ROUNDS WON', s.rounds || 0, 'text-teal']],
-        engine: { spawn, simulate, botPlan, get G() { return G; } }, open, close() { G = null; },
+        engine: { spawn, simulate, botPlan, send: () => sendPlan(), get G() { return G; } }, open, close() { G = null; },
         online: { seats: (sel) => Math.max(2, +sel.n || 4), min: 2, ranked: false, start: (body, sel, S) => start(body, sel, S) },
       };
       registerGame(mod);

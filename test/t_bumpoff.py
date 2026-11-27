@@ -24,6 +24,10 @@ with sync_playwright() as p:
     check(same[0], 'the same plans always give the same result (online screens agree)')
     out = pg.evaluate(f"""(() => {{ const r = {E}.simulate([{{x:180,y:196,alive:true}},{{x:180+100,y:196,alive:true}}], [{{vx:330,vy:0}},{{vx:0,vy:0}}], 130); return r.outs; }})()""")
     check(out == [1], f'a full-power ram pushes a boat near the edge off the pond (out: {out})')
+    # both last boats fall in on the same move: the one that stayed on longer is known (it wins the round, never "nobody")
+    ends = pg.evaluate(f"{E}.simulate([{{x: 180, y: 70, alive: true}}, {{x: 180, y: 300, alive: true}}], [{{vx: 0, vy: -330}}, {{vx: 0, vy: 150}}], 150).end")
+    print('   both fall in:', ends)
+    check(not ends[0]['alive'] and not ends[1]['alive'] and ends[1]['out'] > ends[0]['out'] >= 0, 'when both fall in, the moment each went in is recorded (the later one wins)')
     # a whole match
     pg.evaluate("setupSave('bumpoff', Object.assign({}, setupLoad('bumpoff'), {n: 4, to: 2, secs: 8, spawn: 'random', lvl: 2}))")
     pg.evaluate("openGame('bumpoff')"); pg.wait_for_timeout(600)
@@ -41,7 +45,7 @@ with sync_playwright() as p:
             d = max(1, ((ox - mx) ** 2 + (oy - my) ** 2) ** .5)
             pg.mouse.move(box['x'] + mx * k, box['y'] + my * k); pg.mouse.down(); pg.mouse.move(box['x'] + (mx + (ox - mx) / d * 85) * k, box['y'] + (my + (oy - my) / d * 85) * k, steps=5); pg.mouse.up()
             if 'plan' not in shots: pg.screenshot(path='test/shots/bumpoff_plan.png'); shots.add('plan')
-            pg.click('#bo-ready'); turns += 1
+            turns += 1   # letting go locks the move in (no READY button)
         if ph == 'reveal' and 'reveal' not in shots: pg.wait_for_timeout(400); pg.screenshot(path='test/shots/bumpoff_reveal.png'); shots.add('reveal')
         pg.wait_for_timeout(200)
     txt = pg.evaluate("(document.getElementById('g-modal') || {innerText: ''}).innerText").replace('\n', ' ')

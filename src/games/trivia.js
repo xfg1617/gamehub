@@ -112,11 +112,13 @@
         $('tv-time').style.visibility = 'visible';
         const t0 = Date.now();
         $('tv-ans').innerHTML = q.answers.map((a, i) => `<button class="tv-a" data-i="${i}" style="background:${COL[i]}"><span class="k">${'ABCD'[i]}</span><span class="tx">${esc(a)}</span><span class="who"></span></button>`).join('');
+        // you can change your answer until the question closes (Inna, Nov 2026): tap another one
+        G.open = true;
         const answer = (i) => {
-          if (G.mine !== null || !S.mine(me.seat) || G.qi < 0) return;
+          if (!G.open || G.mine === i || !S.mine(me.seat) || G.qi < 0) return;
           G.mine = i; SFX.play('click');
           $('tv-ans').querySelectorAll('.tv-a').forEach((b) => b.classList.toggle('picked', +b.dataset.i === i));
-          $('tv-note').innerHTML = `<span class="text-muted">${T('Answer locked in. Waiting for the others...', 'Đã chốt đáp án. Đang chờ mọi người...')}</span>`;
+          $('tv-note').innerHTML = `<span class="text-muted">${T(`You picked <b class="text-bone">${'ABCD'[i]}</b>. Changed your mind? Tap another answer before time's up.`, `Bạn chọn <b class="text-bone">${'ABCD'[i]}</b>. Đổi ý? Chạm đáp án khác trước khi hết giờ.`)}</span>`;
           S.act({ t: 'ans', key, s: me.seat, i, ms: Date.now() - t0 });
         };
         $('tv-ans').querySelectorAll('.tv-a').forEach((b) => { b.onclick = () => answer(+b.dataset.i); });
@@ -134,7 +136,8 @@
           const right = Math.random() < botRight(S.online ? (+(S.sel && S.sel.lvl) || 2) : G.lvl, q.lvl);
           const wrong = [0, 1, 2, 3].filter((x) => x !== q.right);
           return { t: 'ans', i: right ? q.right : wrong[Math.floor(Math.random() * 3)], ms: 1800 + Math.floor(Math.random() * (G.secs * 700)) };
-        }, () => ({ t: 'ans', i: -1, ms: G.secs * 1000 }), G.secs + 0.3);
+        }, () => ({ t: 'ans', i: -1, ms: G.secs * 1000 }), G.secs + 0.3, { change: window.__fast && !S.online ? 60 : 2500 });
+        G.open = false;
         if (!G || G.tok !== t) throw ABORT;
         gClearInt(tick); G.keys = null;
         // score it: a right answer = 20-100 by speed; 3+ in a row = +10 per extra

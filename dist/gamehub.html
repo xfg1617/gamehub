@@ -2441,23 +2441,20 @@
     /* Bump Off (Nov 2026) */
     .bo-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 16px; align-items: start; }
     .bo-pondbox { position: relative; width: min(100%, 640px); justify-self: center; background: #0F2338; border: 4px solid var(--ink); box-shadow: 0 8px 0 var(--ink); }
+    .bo-top { display: flex; align-items: center; gap: 8px; padding: 6px 8px; background: #0F2338; border-bottom: 4px solid #050E18; min-height: 46px; }
+    .bo-phase { flex: 1; min-width: 0; text-align: center; font-family: 'Arcade Pixel', 'Jersey 15', monospace; font-size: 22px; line-height: 1.1; padding: 2px 10px 4px; border: 3px solid #050E18; visibility: hidden;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .bo-pondbox canvas { display: block; width: 100%; height: auto; aspect-ratio: 360 / 380; touch-action: none; cursor: crosshair; }
-    .bo-hud { position: absolute; left: 10px; right: 10px; top: 10px; display: flex; justify-content: space-between; gap: 8px; pointer-events: none; }
     .bo-pill { font-family: 'Arcade Pixel', 'Jersey 15', monospace; font-size: 20px; background: #050E18; color: #F5B041; padding: 0 12px 2px; border: 3px solid #050E18; }
     .bo-pill:empty { display: none; }
-    .bo-phase { position: absolute; left: 50%; top: 50px; transform: translateX(-50%); font-family: 'Arcade Pixel', 'Jersey 15', monospace; font-size: 26px; padding: 2px 16px 4px;
-      border: 4px solid #050E18; box-shadow: 0 6px 0 #050E18; white-space: nowrap; pointer-events: none; display: none; max-width: calc(100% - 20px); overflow: hidden; text-overflow: ellipsis; }
     .bo-phase.plan { background: #2DD4BF; color: #050E18; } .bo-phase.reveal { background: #F5B041; color: #050E18; } .bo-phase.go { background: #FB7185; color: #050E18; }
-    .bo-ctl { position: absolute; left: 10px; right: 10px; bottom: 10px; display: flex; align-items: center; gap: 10px; }
-    .bo-pow { flex: 1; height: 22px; background: #050E18; border: 3px solid #050E18; position: relative; }
-    .bo-pow i { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, #34D399, #F5B041 60%, #FB7185); }
-    .bo-pow b { position: absolute; right: 6px; top: -1px; font-family: 'Arcade Pixel', monospace; font-size: 17px; color: #F7F4EC; }
     .bo-side { display: flex; flex-direction: column; gap: 10px; }
     .bo-side .tg-seat { display: block; } .bo-side .tg-tag { border-left: 6px solid var(--pc); }
     .bo-tag.out { opacity: .45; }
-    @media (min-width: 1024px) { body.in-game[data-game="bumpoff"] .bo-pondbox { width: min(100%, calc(var(--av, 100vh) - 30px)); } }
+    @media (min-width: 1024px) { body.in-game[data-game="bumpoff"] .bo-pondbox { width: min(100%, calc((var(--av, 100vh) - 84px) * 0.947)); } }
     @media (max-width: 820px) { .bo-wrap { grid-template-columns: 1fr; } .bo-side { flex-direction: row; flex-wrap: wrap; } .bo-side .tg-seat { flex: 1 1 140px; } }
-    @media (max-width: 480px) { .bo-phase { font-size: 18px; top: 44px; } .bo-pill { font-size: 16px; } }
+
+    @media (max-width: 560px) { .bo-top { gap: 5px; padding: 5px; min-height: 38px; } .bo-phase { font-size: 15px; padding: 2px 6px 3px; } .bo-pill { font-size: 15px; padding: 0 7px 1px; } }
     /* ===== Caro (five in a row) ===== */
     .cr-board { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); grid-template-rows: repeat(var(--n), minmax(0, 1fr)); aspect-ratio: 1 / 1; width: 100%;
       background: #F7F4EC; border: 4px solid var(--ink); box-shadow: 0 6px 0 var(--ink); }
@@ -8458,13 +8455,24 @@
       };
       // everyone decides at the same time (bets, votes...): returns { seat: action } once every seat in `seats` has
       // answered. The host answers for computer seats right away, and for slow people after `secs` (autoFn).
-      S.collect = async (key, seats, botFn, autoFn, secs) => {
-        const got = {}, t0 = Date.now(), left = () => seats.filter((i) => !(i in got));
+      // opt.change = ms: people may change their answer (a new action from the same seat replaces the old one). Once
+      // everyone has answered, the table still waits that long after the last change, or until `secs` runs out.
+      S.collect = async (key, seats, botFn, autoFn, secs, opt) => {
+        const got = {}, t0 = Date.now(), left = () => seats.filter((i) => !(i in got)), chg = opt && opt.change;
+        const mine = (x) => x.key === key && seats.includes(x.s) && (chg ? !(x.s in got) || !S.bot(x.s) : !(x.s in got));
         while (left().length) {
           const bots = left().filter((i) => S.bot(i));
           const ms = bots.length ? 350 + Math.floor(Math.random() * 400) : Math.max(250, secs * 1000 - (Date.now() - t0));
-          const a = await S.ask(-1, () => { const b = left().filter((i) => S.bot(i)); const k = b.length ? b[0] : left()[0]; return Object.assign((b.length ? botFn : autoFn)(k), { s: k, key, auto: !b.length }); }, ms,
-            (x) => x.key === key && seats.includes(x.s) && !(x.s in got));
+          const a = await S.ask(-1, () => { const b = left().filter((i) => S.bot(i)); const k = b.length ? b[0] : left()[0]; return Object.assign((b.length ? botFn : autoFn)(k), { s: k, key, auto: !b.length }); }, ms, mine);
+          got[a.s] = a;
+          if (S.onCollect) S.onCollect(key, got);
+        }
+        while (chg) {
+          const ms = Math.max(0, Math.min(chg, secs * 1000 - (Date.now() - t0)));
+          if (ms <= 0) break;
+          const a = await S.ask(-1, () => ({ t: '_cdone', key }), ms, (x) => x.key === key && (x.t === '_cdone' || mine(x)));
+          if (a.t === '_cdone') break;
+          if (a.auto) continue;
           got[a.s] = a;
           if (S.onCollect) S.onCollect(key, got);
         }
@@ -10220,7 +10228,7 @@
           if (s > 20 && b.every((q) => !q.alive || q.vx * q.vx + q.vy * q.vy < 9)) break;
         }
         frames.push(b.map((q) => [q.x, q.y, q.alive ? 1 : 0, 0, 0]));
-        return { frames, bumps, end: b.map((q) => ({ x: Math.round(q.x * 100) / 100, y: Math.round(q.y * 100) / 100, alive: q.alive })), outs: b.map((q, i) => (boats[i].alive && !q.alive ? i : -1)).filter((i) => i >= 0) };
+        return { frames, bumps, end: b.map((q) => ({ x: Math.round(q.x * 100) / 100, y: Math.round(q.y * 100) / 100, alive: q.alive, out: q.outAt })), outs: b.map((q, i) => (boats[i].alive && !q.alive ? i : -1)).filter((i) => i >= 0) };
       }
       // the computer captains plan from where the boats are NOW (they can't see anyone's plan either)
       function botPlan(i, boats, R, lvl, rnd) {
@@ -10256,10 +10264,8 @@
         G = { S, sel, me: S.online ? S.me : 0, players, boats: [], round: 0, turn: 0, R: R0, Rgoal: R0, to: +sel.to || 3, secs: +sel.secs || 10, lvl: +sel.lvl || 2,
           shrink: +sel.shrink !== 0, spawnMode: sel.spawn || 'random', phase: 'start', plan: null, sent: false, got: {}, parts: [], shake: 0, over: false, tok: ++GT.cur, frame: null };
         GT.started = true; GT.over = false;
-        body.innerHTML = `<div class="bo-wrap"><div class="bo-pondbox" id="bo-box"><canvas id="bo-cv" width="${W}" height="${H}"></canvas>
-            <div class="bo-hud"><span class="bo-pill" id="bo-round"></span><span class="bo-pill" id="bo-clock"></span></div>
-            <div class="bo-phase" id="bo-phase"></div>
-            <div class="bo-ctl" id="bo-ctl"><div class="bo-pow"><i id="bo-pw"></i><b id="bo-pwt">0%</b></div><button class="btn-game btn-teal py-2 px-4 text-sm" id="bo-ready">${T('READY', 'SẴN SÀNG')}</button></div></div>
+        body.innerHTML = `<div class="bo-wrap"><div class="bo-pondbox" id="bo-box"><div class="bo-top"><span class="bo-pill" id="bo-round"></span><div class="bo-phase" id="bo-phase"></div><span class="bo-pill" id="bo-clock"></span></div><canvas id="bo-cv" width="${W}" height="${H}"></canvas>
+</div>
           <div class="bo-side" id="bo-side"></div><div id="bo-log" class="logbox" style="height:160px"></div></div>`;
         S.track();
         S.onLeft = (a) => { if (!G) return; const p = G.players[a.s]; if (p) { p.name += ' (CPU)'; p.av = '🤖'; } side(); };
@@ -10271,19 +10277,20 @@
       async function W8(ms) { const t = G && G.tok; await gSleep(window.__fast ? Math.min(ms, 40) : ms); if (!G || G.tok !== t) throw ABORT; }
       const log = (h) => { const el = $('bo-log'); if (el) { el.insertAdjacentHTML('beforeend', `<div>${h}</div>`); el.scrollTop = el.scrollHeight; } };
       const meP = () => G.players[G.me], meB = () => G.boats[G.me];
-      function setPhase(cls, txt) { const el = $('bo-phase'); if (!el) return; el.className = 'bo-phase ' + cls; el.textContent = txt || ''; el.style.display = txt ? 'block' : 'none'; }
+      function setPhase(cls, txt) { const el = $('bo-phase'); if (!el) return; el.className = 'bo-phase ' + cls; el.textContent = txt || ''; el.style.visibility = txt ? 'visible' : 'hidden'; }
       function side() {
         const el = $('bo-side'); if (!el || !G) return;
         el.innerHTML = G.players.map((p) => {
           const b = G.boats[p.seat] || { alive: true }, planning = G.phase === 'plan' && b.alive;
           const sub = !b.alive ? T('SPLASH! out', 'RƠI XUỐNG NƯỚC!') : planning ? (p.seat in G.got || (p.seat === G.me && G.sent) ? '✓ ' + T('ready', 'sẵn sàng') : T('planning...', 'đang tính...')) : p.seat === G.me ? T('you', 'bạn') : '';
-          return `<div id="bo-seat-${p.seat}" class="tg-seat bo-tag ${b.alive ? '' : 'out'}" style="--pc:${p.col[0]}">${nameTag({ av: p.av, name: p.seat === G.me ? T('You', 'Bạn') : p.name, sub, me: p.seat === G.me, badge: p.wins ? '★'.repeat(p.wins) : undefined })}</div>`;
+          return `<div id="bo-seat-${p.seat}" class="tg-seat bo-tag ${b.alive ? '' : 'out'}" style="--pc:${p.col[0]}">${nameTag({ av: p.av, name: p.seat === G.me ? T('You', 'Bạn') : p.name, sub, me: p.seat === G.me, badge: `★ ${p.wins}/${G.to}` })}</div>`;
         }).join('');
       }
 
       // ---------- input: the arrow's tip follows the mouse / finger (Inna, Nov 2026) ----------
-      // Mouse: just move over the pond and the arrow follows; click to lock it (click again to re-aim).
-      // Touch: put a finger down anywhere and slide; the arrow follows it and stays where you lift.
+      // Mouse: the arrow follows the mouse; a click locks your move in (no READY button: Inna, Nov 2026).
+      // Touch: put a finger down anywhere and slide; the arrow follows it, and lifting the finger locks it in.
+      // A tiny arrow (a stray tap on your own boat) is not sent. When time runs out, the arrow you have is sent.
       const MAXL = () => reach(VMAX);                    // the longest arrow = full power
       function bindInput() {
         const cv = $('bo-cv');
@@ -10293,10 +10300,9 @@
         let down = false;
         gOn(cv, 'pointerdown', (e) => { if (!can()) return; e.preventDefault(); down = true; G.locked = false; try { cv.setPointerCapture(e.pointerId); } catch (x) {} aim(toPond(e)); });
         gOn(cv, 'pointermove', (e) => { if (!can()) return; G.hover = toPond(e); if (down || (e.pointerType === 'mouse' && !G.locked)) aim(G.hover); });
-        const up = (e) => { if (!down) return; down = false; if (can()) { aim(toPond(e)); G.locked = true; SFX.play('click'); } };
+        const up = (e) => { if (!down) return; down = false; if (can()) { aim(toPond(e)); if (G.plan && G.plan.pow >= 0.06) { G.locked = true; sendPlan(); } } };   // letting go (or a click) locks your move in
         gOn(cv, 'pointerup', up); gOn(cv, 'pointercancel', () => { down = false; });
         gOn(cv, 'pointerleave', () => { G && (G.hover = null); });
-        gOn($('bo-ready'), 'click', () => sendPlan());
         gOn(document, 'keydown', (e) => {
           if (!can() || /INPUT|TEXTAREA/.test((e.target || {}).tagName || '')) return;
           const p = G.plan || { a: -Math.PI / 2, pow: 0.5 };
@@ -10334,7 +10340,7 @@
           $('bo-round').textContent = `${T('ROUND', 'VÁN')} ${G.round} · ${T('TURN', 'LƯỢT')} ${G.turn}`;
           const plans = await planPhase(); if (!G || G.tok !== t) throw ABORT;
           // reveal: everyone's arrow
-          G.phase = 'reveal'; G.plans = plans; setPhase('reveal', T('PLANS REVEALED!', 'LỘ KẾ HOẠCH!')); $('bo-ctl').style.visibility = 'hidden'; side(); SFX.play('reveal');
+          G.phase = 'reveal'; G.plans = plans; setPhase('reveal', T('PLANS REVEALED!', 'LỘ KẾ HOẠCH!')); side(); SFX.play('reveal');
           for (let i = 0; i < G.boats.length; i++) { const p = plans[i]; if (G.boats[i].alive && p && (p.vx || p.vy)) G.boats[i].ang = Math.atan2(p.vy, p.vx); }
           await W8(2200);
           // GO: everyone moves at once
@@ -10354,10 +10360,17 @@
           side();
           const live = G.boats.filter((b) => b.alive);
           if (live.length <= 1) {
-            const w = live.length ? G.boats.indexOf(live[0]) : -1;
+            // everyone left went in on the same move: the boat that stayed on longest wins (Inna, Nov 2026: never "nobody wins");
+            // same moment = the one that ended nearer the middle
+            let w = live.length ? G.boats.indexOf(live[0]) : -1;
+            if (w < 0 && outs.length) {
+              const ends = a.b || sim.end, d = (i) => dist(G.boats[i].x, G.boats[i].y, CX, CY);
+              w = outs.slice().sort((i, j) => ((ends[j] && ends[j].out) || 0) - ((ends[i] && ends[i].out) || 0) || d(i) - d(j))[0];
+              log(`🛟 ${esc(G.players[w].name)} ${T('was the last one to fall in, so they take the round.', 'rơi xuống nước sau cùng nên thắng ván này.')}`);
+            }
             if (w >= 0) G.players[w].wins++;
             G.phase = 'roundend'; side();
-            setPhase('reveal', w < 0 ? T('EVERYONE SANK!', 'CHÌM HẾT!') : w === G.me ? T('YOU WIN THE ROUND!', 'BẠN THẮNG VÁN NÀY!') : `${G.players[w].name.toUpperCase()} ${T('WINS THE ROUND', 'THẮNG VÁN NÀY')}`);
+            setPhase('reveal', w < 0 ? T('NO WINNER', 'KHÔNG AI THẮNG') : w === G.me ? T('YOU WIN THE ROUND!', 'BẠN THẮNG VÁN NÀY!') : `${G.players[w].name.toUpperCase()} ${T('WINS THE ROUND', 'THẮNG VÁN NÀY')}`);
             log(w < 0 ? T('Everyone sank: nobody wins the round.', 'Tất cả đều chìm: không ai thắng ván.') : `🏆 ${esc(G.players[w].name)} ${T('wins round', 'thắng ván')} ${G.round}.`);
             SFX.play(w === G.me ? 'win' : 'coin');
             await W8(2600); setPhase('', ''); return;
@@ -10368,9 +10381,7 @@
       async function planPhase() {
         const S = G.S, t = G.tok, key = `p${G.round}_${G.turn}`, me = meB();
         G.phase = 'plan'; G.ckey = key; G.got = {}; G.sent = false; G.plan = null; G.plans = null; G.locked = false; setPlan(me.ang, 0);
-        setPhase('plan', T('PLAN YOUR MOVE · PLANS ARE SECRET', 'TÍNH NƯỚC ĐI · KẾ HOẠCH BÍ MẬT'));
-        const ctl = $('bo-ctl'); ctl.style.visibility = me.alive && S.mine(G.me) ? 'visible' : 'hidden';
-        const r = $('bo-ready'); r.disabled = false; r.textContent = T('READY', 'SẴN SÀNG');
+        setPhase('plan', T('PLAN IN SECRET', 'TÍNH BÍ MẬT'));
         side();
         const t0 = Date.now();
         const tick = gInterval(() => {
@@ -10383,7 +10394,7 @@
         const lvl = S.online ? (+(S.sel && S.sel.lvl) || 2) : G.lvl;
         const got = await S.collect(key, seats, (s) => Object.assign({ t: 'plan' }, botPlan(s, G.boats, G.R, lvl, Math.random)), () => ({ t: 'plan', vx: 0, vy: 0 }), G.secs + 0.4);
         gClearInt(tick); if (!G || G.tok !== t) throw ABORT;
-        $('bo-clock').textContent = '';
+        if ($('bo-clock')) $('bo-clock').textContent = '';
         return G.boats.map((b, i) => (got[i] ? { vx: +got[i].vx || 0, vy: +got[i].vy || 0 } : { vx: 0, vy: 0 }));
       }
       // play the movement back at real speed (instantly while catching up on a rejoin)
@@ -10565,11 +10576,12 @@
         if (G.phase === 'plan') {
           G.boats.forEach((b, i) => { if (!b.alive || i === G.me) return; const ok = i in G.got; label(ctx, ok ? '✓ READY' : '?', b.x, b.y - RAD - 9 + Math.sin(tt * 4 + i) * 1.2, ok ? '#34D399' : '#F7F4EC', '#050E18'); });
           if (me && me.alive && !G.sent && G.S.mine(G.me)) {
-            if (!(G.plan && G.plan.pow > 0.02)) label(ctx, T('AIM WITH THE MOUSE OR DRAG', 'NGẮM BẰNG CHUỘT HOẶC KÉO'), me.x, me.y + RAD + 13, '#F7F4EC', '#050E18');
-            else if (!G.locked) label(ctx, T('CLICK TO LOCK YOUR AIM', 'BẤM ĐỂ CHỐT HƯỚNG'), me.x, me.y + RAD + 13, '#F7F4EC', '#050E18');
-            else label(ctx, T('LOCKED · PRESS READY', 'ĐÃ CHỐT · BẤM SẴN SÀNG'), me.x, me.y + RAD + 13, '#F5B041', '#050E18');
+            const touch = window.matchMedia && matchMedia('(pointer: coarse)').matches;
+            if (!(G.plan && G.plan.pow > 0.02)) label(ctx, touch ? T('DRAG TO AIM · LET GO TO LOCK IN', 'KÉO ĐỂ NGẮM · THẢ RA ĐỂ CHỐT') : T('AIM WITH THE MOUSE · CLICK TO LOCK IN', 'NGẮM BẰNG CHUỘT · BẤM ĐỂ CHỐT'), me.x, me.y + RAD + 13, '#F7F4EC', '#050E18');
+            else label(ctx, touch ? T('LET GO TO LOCK IN', 'THẢ RA ĐỂ CHỐT') : T('CLICK TO LOCK IN', 'BẤM ĐỂ CHỐT'), me.x, me.y + RAD + 13, '#F7F4EC', '#050E18');
           }
         }
+        if (G.phase === 'plan' && me && me.alive && G.sent) label(ctx, T('✓ LOCKED IN · WAITING', '✓ ĐÃ CHỐT · ĐANG CHỜ'), me.x, me.y + RAD + 13, '#34D399', '#050E18');
         if (me && me.alive) label(ctx, T('YOU', 'BẠN'), me.x, me.y - RAD - (G.phase === 'plan' ? 9 : 9), '#2DD4BF', '#050E18');
         for (const q of G.parts) if (q.txt) {
           ctx.font = '22px "Jersey 15", monospace'; ctx.textAlign = 'center'; ctx.globalAlpha = Math.min(1, q.l * 3);
@@ -10609,13 +10621,13 @@
         id: 'bumpoff', name: 'Bump Off', icon: 'bumpoff', cats: ['party', 'sports'], sub: '2-6 PLAYERS · ~5 MIN', color: '#2DD4BF', tone: 'teal', btn: 'teal', flag: 'NEW',
         blurb: 'Bumper boats! Everyone secretly picks a direction and power, then all boats move at once. Knock the others off the pond.',
         rules: { tag: 'PARTY · 2-6 PLAYERS', steps: [
-          '<strong class="text-bone">Plan in secret:</strong> the arrow follows your mouse (on a phone, drag your finger): where its tip points is where you\'ll stop, so a longer arrow = more power. Click to lock it, then press READY. You can see every boat, but not where they will go.',
+          '<strong class="text-bone">Plan in secret:</strong> the arrow follows your mouse (on a phone, drag your finger): where its tip points is where you\'ll stop, so a longer arrow = more power. Click (or let go) to lock your move in. You can see every boat, but not where they will go.',
           '<strong class="text-bone">Reveal:</strong> everyone\'s arrows appear at once. Too late to change!',
           '<strong class="text-bone">GO:</strong> all boats move at the same time and bump. Anyone knocked off the pond is out.',
           '<strong class="text-bone">Win:</strong> the last boat floating wins the round. First to win the set number of rounds wins.',
         ], tip: 'Aim where someone will be, not where they are. A small move to dodge can beat a big charge.' },
         profileTiles: (s) => [['WINS', s.wins, 'text-amber'], ['GAMES', s.played, 'text-bone'], ['ROUNDS WON', s.rounds || 0, 'text-teal']],
-        engine: { spawn, simulate, botPlan, get G() { return G; } }, open, close() { G = null; },
+        engine: { spawn, simulate, botPlan, send: () => sendPlan(), get G() { return G; } }, open, close() { G = null; },
         online: { seats: (sel) => Math.max(2, +sel.n || 4), min: 2, ranked: false, start: (body, sel, S) => start(body, sel, S) },
       };
       registerGame(mod);
@@ -18255,11 +18267,13 @@
         $('tv-time').style.visibility = 'visible';
         const t0 = Date.now();
         $('tv-ans').innerHTML = q.answers.map((a, i) => `<button class="tv-a" data-i="${i}" style="background:${COL[i]}"><span class="k">${'ABCD'[i]}</span><span class="tx">${esc(a)}</span><span class="who"></span></button>`).join('');
+        // you can change your answer until the question closes (Inna, Nov 2026): tap another one
+        G.open = true;
         const answer = (i) => {
-          if (G.mine !== null || !S.mine(me.seat) || G.qi < 0) return;
+          if (!G.open || G.mine === i || !S.mine(me.seat) || G.qi < 0) return;
           G.mine = i; SFX.play('click');
           $('tv-ans').querySelectorAll('.tv-a').forEach((b) => b.classList.toggle('picked', +b.dataset.i === i));
-          $('tv-note').innerHTML = `<span class="text-muted">${T('Answer locked in. Waiting for the others...', 'Đã chốt đáp án. Đang chờ mọi người...')}</span>`;
+          $('tv-note').innerHTML = `<span class="text-muted">${T(`You picked <b class="text-bone">${'ABCD'[i]}</b>. Changed your mind? Tap another answer before time's up.`, `Bạn chọn <b class="text-bone">${'ABCD'[i]}</b>. Đổi ý? Chạm đáp án khác trước khi hết giờ.`)}</span>`;
           S.act({ t: 'ans', key, s: me.seat, i, ms: Date.now() - t0 });
         };
         $('tv-ans').querySelectorAll('.tv-a').forEach((b) => { b.onclick = () => answer(+b.dataset.i); });
@@ -18277,7 +18291,8 @@
           const right = Math.random() < botRight(S.online ? (+(S.sel && S.sel.lvl) || 2) : G.lvl, q.lvl);
           const wrong = [0, 1, 2, 3].filter((x) => x !== q.right);
           return { t: 'ans', i: right ? q.right : wrong[Math.floor(Math.random() * 3)], ms: 1800 + Math.floor(Math.random() * (G.secs * 700)) };
-        }, () => ({ t: 'ans', i: -1, ms: G.secs * 1000 }), G.secs + 0.3);
+        }, () => ({ t: 'ans', i: -1, ms: G.secs * 1000 }), G.secs + 0.3, { change: window.__fast && !S.online ? 60 : 2500 });
+        G.open = false;
         if (!G || G.tok !== t) throw ABORT;
         gClearInt(tick); G.keys = null;
         // score it: a right answer = 20-100 by speed; 3+ in a row = +10 per extra
@@ -22392,7 +22407,7 @@
           tip: 'Keep your 2s and bombs for the end, and get rid of low single cards early while it is still easy.', online: NET_TABLE },
         trivia: { tag: '1-8 PLAYERS · QUIZ', goal: 'Answer quiz questions right, and fast, to score the most points.', steps: [
           ['Pick the settings', 'In the room, choose the language of the questions (English or Tiếng Việt), a category (or all mixed), how many questions and how hard.'],
-          ['Answer', 'Everyone sees the same question at the same time. Tap one of the four answers before the time runs out. You can\'t change it once it is locked in.'],
+          ['Answer', 'Everyone sees the same question at the same time. Tap one of the four answers before the time runs out. Changed your mind? Tap another answer before the question closes (speed counts from your last tap).'],
           ['Score', 'A right answer gets 20 to 100 points: answer straight away for 100, at the last second for 20. Three or more right in a row adds a 🔥 streak bonus. At the end, your place gives you points for the leaderboard, like every game.'],
           ['See who got it', 'After each question the right answer lights up, and you see which answer everyone picked.'],
           ['Win', 'After the last question, the player with the most points wins. Playing alone? Try to beat your best score.']],
@@ -22417,7 +22432,7 @@
           tip: 'Wolves: don\'t be too quiet, and don\'t be too loud. Villagers: watch who keeps changing their story, and who votes together.', online: 'Werewolf needs at least 5 people and has no computer players. Create a room and invite your friends with the link. A voice call makes it even more fun!' },
         bumpoff: { tag: '2-6 PLAYERS · BUMPER BOATS', goal: 'Be the last boat floating: knock the others off the pond.', steps: [
           ['Where you start', 'The room picks where the boats start: random spots, evenly around the edge, or all close together in the middle (chaos!).'],
-          ['Plan in secret', 'You can see every boat, but not where they will go. Move the mouse and the arrow follows it (on a phone, drag your finger); its tip shows where your boat would stop, so the longer the arrow, the more power. Click to lock it (or use the arrow keys). Press READY before the time runs out.'],
+          ['Plan in secret', 'You can see every boat, but not where they will go. Move the mouse and the arrow follows it (on a phone, drag your finger); its tip shows where your boat would stop, so the longer the arrow, the more power. Click, or let go of your finger, to lock your move in (keyboard: arrow keys + Enter). If the time runs out, the arrow you have is used.'],
           ['Reveal', 'When everyone is ready, all the planned arrows appear at once. Now you see who is coming for you, but it is too late to change!'],
           ['GO!', 'All boats move at the same time. Boats that meet bounce off each other: BONK! Anyone pushed off the edge of the pond is out: SPLASH!'],
           ['Next turn', 'Plan again from wherever you stopped. From the 3rd turn the pond gets a little smaller every turn (a room setting).'],
@@ -22722,10 +22737,10 @@
         [0, '#ck-board', "Reach the far side and your piece becomes a king. Kings can move backwards too.", 'Đi tới cuối bàn thì quân được phong vua. Vua đi lùi được.'],
         [0, '#ck-status', "Take all their pieces, or leave them with no moves, and you win.", 'Ăn hết quân đối thủ, hoặc làm họ hết nước đi, là bạn thắng.'],
       ] },
-      bumpoff: { shots: [{ wait: 1200, js: "(async () => { const sl = (ms) => new Promise((r) => setTimeout(r, ms)); let G; for (let k = 0; k < 60; k++) { G = GAME_MODS.bumpoff.engine.G; if (G && G.phase === 'plan') break; await sl(100); } const m = G.boats[G.me], o = G.boats.find((b, i) => b.alive && i !== G.me); G.plan = { a: Math.atan2(o.y - m.y, o.x - m.x), pow: 0.8 }; G.locked = true; document.getElementById('bo-pw').style.width = '80%'; document.getElementById('bo-pwt').textContent = '80%'; await sl(1200); })()", after: 400 }, { wait: 1200, js: "(async () => { const sl = (ms) => new Promise((r) => setTimeout(r, ms)); let G; for (let k = 0; k < 60; k++) { G = GAME_MODS.bumpoff.engine.G; if (G && G.phase === 'plan') break; await sl(100); } const m = G.boats[G.me], o = G.boats.find((b, i) => b.alive && i !== G.me); G.plan = { a: Math.atan2(o.y - m.y, o.x - m.x), pow: 0.8 }; document.getElementById('bo-pw').style.width = '80%'; document.getElementById('bo-pwt').textContent = '80%'; await sl(300); document.getElementById('bo-ready').click(); for (let k = 0; k < 80; k++) { if (GAME_MODS.bumpoff.engine.G.phase === 'reveal') break; await sl(100); } await sl(900); })()", after: 400 }, { wait: 1200, js: "(async () => { const sl = (ms) => new Promise((r) => setTimeout(r, ms)); let G; for (let k = 0; k < 60; k++) { G = GAME_MODS.bumpoff.engine.G; if (G && G.phase === 'plan') break; await sl(100); } const m = G.boats[G.me], o = G.boats.find((b, i) => b.alive && i !== G.me); G.plan = { a: Math.atan2(o.y - m.y, o.x - m.x), pow: 0.8 }; document.getElementById('bo-pw').style.width = '80%'; document.getElementById('bo-pwt').textContent = '80%'; await sl(300); document.getElementById('bo-ready').click(); for (let k = 0; k < 120; k++) { if (GAME_MODS.bumpoff.engine.G.phase === 'go') break; await sl(100); } await sl(650); })()", after: 400 }], lines: [
+      bumpoff: { shots: [{ wait: 1200, js: "(async () => { const sl = (ms) => new Promise((r) => setTimeout(r, ms)); let G; for (let k = 0; k < 60; k++) { G = GAME_MODS.bumpoff.engine.G; if (G && G.phase === 'plan') break; await sl(100); } const m = G.boats[G.me], o = G.boats.find((b, i) => b.alive && i !== G.me); G.plan = { a: Math.atan2(o.y - m.y, o.x - m.x), pow: 0.8 }; G.locked = true; await sl(1200); })()", after: 400 }, { wait: 1200, js: "(async () => { const sl = (ms) => new Promise((r) => setTimeout(r, ms)); let G; for (let k = 0; k < 60; k++) { G = GAME_MODS.bumpoff.engine.G; if (G && G.phase === 'plan') break; await sl(100); } const m = G.boats[G.me], o = G.boats.find((b, i) => b.alive && i !== G.me); G.plan = { a: Math.atan2(o.y - m.y, o.x - m.x), pow: 0.8 }; await sl(300); GAME_MODS.bumpoff.engine.send(); for (let k = 0; k < 80; k++) { if (GAME_MODS.bumpoff.engine.G.phase === 'reveal') break; await sl(100); } await sl(900); })()", after: 400 }, { wait: 1200, js: "(async () => { const sl = (ms) => new Promise((r) => setTimeout(r, ms)); let G; for (let k = 0; k < 60; k++) { G = GAME_MODS.bumpoff.engine.G; if (G && G.phase === 'plan') break; await sl(100); } const m = G.boats[G.me], o = G.boats.find((b, i) => b.alive && i !== G.me); G.plan = { a: Math.atan2(o.y - m.y, o.x - m.x), pow: 0.8 }; await sl(300); GAME_MODS.bumpoff.engine.send(); for (let k = 0; k < 120; k++) { if (GAME_MODS.bumpoff.engine.G.phase === 'go') break; await sl(100); } await sl(650); })()", after: 400 }], lines: [
         ['icon', null, "Bump Off! Bumper boats, and only one stays afloat.", 'Đụng Thuyền! Thuyền đụng nhau, và chỉ một chiếc trụ lại.'],
         [0, '#bo-cv', "Everyone starts somewhere on the pond. The room picks: random spots, around the edge, or all squeezed together.", 'Mọi người bắt đầu ở đâu đó trên hồ. Phòng sẽ chọn: chỗ ngẫu nhiên, quanh mép hồ, hay chen chúc ở giữa.'],
-        [0, '#bo-cv', "Point where you want to go. The arrow follows your mouse, or drag with your finger. Longer arrow, harder hit. Click to lock it, then hit Ready.", 'Chỉ chuột tới chỗ muốn đi, mũi tên sẽ chạy theo, hoặc kéo bằng ngón tay. Mũi tên càng dài thì húc càng mạnh. Bấm để chốt, rồi bấm Sẵn sàng.'],
+        [0, '#bo-cv', "Point where you want to go. The arrow follows your mouse, or drag with your finger. Longer arrow, harder hit. Click, or let go, to lock it in.", 'Chỉ chuột tới chỗ muốn đi, mũi tên sẽ chạy theo, hoặc kéo bằng ngón tay. Mũi tên càng dài thì húc càng mạnh. Bấm chuột, hoặc thả tay, để chốt.'],
         [0, '#bo-side', "Plans are secret. You can see every boat, just not where they're about to go.", 'Kế hoạch là bí mật. Bạn thấy hết các thuyền, chỉ không biết họ sắp lao về đâu.'],
         [1, '#bo-cv', "When everyone's ready, all the arrows show up at once. Too late to change your mind!", 'Khi mọi người sẵn sàng, tất cả mũi tên hiện ra cùng lúc. Giờ đổi ý là không kịp rồi!'],
         [2, '#bo-cv', "Then every boat moves together. Bump someone off the edge, and they're out!", 'Rồi tất cả thuyền cùng lao đi. Húc được ai rơi khỏi mép hồ là người đó bị loại!'],
@@ -22946,7 +22961,7 @@
           tip: 'Giữ heo và bom đến cuối, đánh rác nhỏ sớm khi còn dễ.' },
         trivia: { goal: 'Trả lời đúng, và nhanh, để được nhiều điểm nhất.', steps: [
           ['Chọn cài đặt', 'Trong phòng, chọn ngôn ngữ câu hỏi (English hoặc Tiếng Việt), chủ đề (hoặc trộn tất cả), số câu và độ khó.'],
-          ['Trả lời', 'Mọi người thấy cùng một câu hỏi cùng lúc. Chạm vào một trong bốn đáp án trước khi hết giờ. Đã chốt thì không đổi được.'],
+          ['Trả lời', 'Mọi người thấy cùng một câu hỏi cùng lúc. Chạm vào một trong bốn đáp án trước khi hết giờ. Đổi ý? Chạm đáp án khác trước khi câu hỏi đóng (tốc độ tính từ lần chạm cuối).'],
           ['Tính điểm', 'Trả lời đúng được 20 đến 100 điểm: trả lời ngay được 100, giây cuối được 20. Đúng ba câu liên tiếp trở lên được thưởng 🔥 chuỗi. Cuối trận, thứ hạng của bạn được tính điểm bảng xếp hạng như mọi trò.'],
           ['Xem ai đúng', 'Sau mỗi câu, đáp án đúng sáng lên và bạn thấy mọi người đã chọn gì.'],
           ['Chiến thắng', 'Hết câu cuối, ai nhiều điểm nhất thắng. Chơi một mình? Thử phá kỷ lục của chính bạn.']], online: ONT,
@@ -22970,7 +22985,7 @@
           tip: 'Sói: đừng im lặng quá, cũng đừng nói nhiều quá. Dân làng: để ý ai hay đổi lời, và ai hay bỏ phiếu cùng nhau.' },
         bumpoff: { goal: 'Là chiếc thuyền cuối cùng còn nổi: húc những thuyền khác rơi khỏi hồ.', steps: [
           ['Vị trí xuất phát', 'Phòng chọn chỗ các thuyền bắt đầu: ngẫu nhiên, chia đều quanh mép hồ, hoặc tất cả sát nhau ở giữa (hỗn loạn!).'],
-          ['Tính nước đi bí mật', 'Bạn thấy mọi thuyền, nhưng không biết họ sẽ đi đâu. Di chuột, mũi tên sẽ đi theo (trên điện thoại thì kéo ngón tay); đầu mũi tên là chỗ thuyền dừng lại, nên mũi tên càng dài lực càng mạnh. Bấm để chốt hướng (hoặc dùng phím mũi tên). Bấm SẴN SÀNG trước khi hết giờ.'],
+          ['Tính nước đi bí mật', 'Bạn thấy mọi thuyền, nhưng không biết họ sẽ đi đâu. Di chuột, mũi tên sẽ đi theo (trên điện thoại thì kéo ngón tay); đầu mũi tên là chỗ thuyền dừng lại, nên mũi tên càng dài lực càng mạnh. Bấm chuột, hoặc thả ngón tay, để chốt nước đi (bàn phím: phím mũi tên + Enter). Hết giờ thì mũi tên đang có sẽ được dùng.'],
           ['Lộ kế hoạch', 'Khi mọi người sẵn sàng, tất cả mũi tên hiện ra cùng lúc. Giờ bạn thấy ai đang lao tới, nhưng đã quá muộn để đổi!'],
           ['ĐI!', 'Tất cả thuyền chạy cùng lúc. Thuyền gặp nhau sẽ bật ra: BỤP! Thuyền nào bị đẩy ra khỏi mép hồ là bị loại: TÕM!'],
           ['Lượt tiếp theo', 'Tính lại từ chỗ bạn dừng. Từ lượt thứ 3, hồ nhỏ lại một chút sau mỗi lượt (tùy chọn trong phòng).'],

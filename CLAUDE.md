@@ -1282,3 +1282,12 @@ folder that was handed over, so they do not exist here.)
   hold turns the tip into "That's it!"; while talking the button says ON AIR. Notes "Bao joined / left voice". Joining once
   turns on **auto-join** for later private rooms in this tab (`ps_vc_auto`, only when the mic is already allowed; Leave
   voice turns it off). The button's picture ignores taps (`.vc-fab > *`), so a tap right after a hold still opens the panel.
+* **Bump Off controls v3 (Nov 28 2026, Inna)**: no power bar and no READY button. Round / phase banner / clock sit in a strip
+  ABOVE the pond (`.bo-top`; they used to cover the pond on phones). Mouse: the arrow follows, a click locks the move in;
+  touch: drag, lifting the finger locks it in (arrows under 6 % are ignored); keys + Enter still work; time up = the
+  current arrow is used. `engine.send()` for tests / how-to shots. Name tags always show rounds won (`★ 1/3`).
+  If the last boats all fall in on the same move, the one that went in LAST wins the round (`end[i].out` = the step it
+  went in; same step = nearer the middle), never "nobody wins".
+* **Trivia Rush: change your answer** (Inna): tap another answer until the question closes. `S.collect(..., {change: ms})`
+  in netplay accepts a newer answer from the same (human) seat; once everyone has answered it still waits `ms` (2.5 s)
+  after the last change, or until time runs out. Speed points count from your last tap. `t_trivia.py` checks it.

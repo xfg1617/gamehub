@@ -47,7 +47,7 @@
           tip: 'Giữ heo và bom đến cuối, đánh rác nhỏ sớm khi còn dễ.' },
         trivia: { goal: 'Trả lời đúng, và nhanh, để được nhiều điểm nhất.', steps: [
           ['Chọn cài đặt', 'Trong phòng, chọn ngôn ngữ câu hỏi (English hoặc Tiếng Việt), chủ đề (hoặc trộn tất cả), số câu và độ khó.'],
-          ['Trả lời', 'Mọi người thấy cùng một câu hỏi cùng lúc. Chạm vào một trong bốn đáp án trước khi hết giờ. Đã chốt thì không đổi được.'],
+          ['Trả lời', 'Mọi người thấy cùng một câu hỏi cùng lúc. Chạm vào một trong bốn đáp án trước khi hết giờ. Đổi ý? Chạm đáp án khác trước khi câu hỏi đóng (tốc độ tính từ lần chạm cuối).'],
           ['Tính điểm', 'Trả lời đúng được 20 đến 100 điểm: trả lời ngay được 100, giây cuối được 20. Đúng ba câu liên tiếp trở lên được thưởng 🔥 chuỗi. Cuối trận, thứ hạng của bạn được tính điểm bảng xếp hạng như mọi trò.'],
           ['Xem ai đúng', 'Sau mỗi câu, đáp án đúng sáng lên và bạn thấy mọi người đã chọn gì.'],
           ['Chiến thắng', 'Hết câu cuối, ai nhiều điểm nhất thắng. Chơi một mình? Thử phá kỷ lục của chính bạn.']], online: ONT,
@@ -71,7 +71,7 @@
           tip: 'Sói: đừng im lặng quá, cũng đừng nói nhiều quá. Dân làng: để ý ai hay đổi lời, và ai hay bỏ phiếu cùng nhau.' },
         bumpoff: { goal: 'Là chiếc thuyền cuối cùng còn nổi: húc những thuyền khác rơi khỏi hồ.', steps: [
           ['Vị trí xuất phát', 'Phòng chọn chỗ các thuyền bắt đầu: ngẫu nhiên, chia đều quanh mép hồ, hoặc tất cả sát nhau ở giữa (hỗn loạn!).'],
-          ['Tính nước đi bí mật', 'Bạn thấy mọi thuyền, nhưng không biết họ sẽ đi đâu. Di chuột, mũi tên sẽ đi theo (trên điện thoại thì kéo ngón tay); đầu mũi tên là chỗ thuyền dừng lại, nên mũi tên càng dài lực càng mạnh. Bấm để chốt hướng (hoặc dùng phím mũi tên). Bấm SẴN SÀNG trước khi hết giờ.'],
+          ['Tính nước đi bí mật', 'Bạn thấy mọi thuyền, nhưng không biết họ sẽ đi đâu. Di chuột, mũi tên sẽ đi theo (trên điện thoại thì kéo ngón tay); đầu mũi tên là chỗ thuyền dừng lại, nên mũi tên càng dài lực càng mạnh. Bấm chuột, hoặc thả ngón tay, để chốt nước đi (bàn phím: phím mũi tên + Enter). Hết giờ thì mũi tên đang có sẽ được dùng.'],
           ['Lộ kế hoạch', 'Khi mọi người sẵn sàng, tất cả mũi tên hiện ra cùng lúc. Giờ bạn thấy ai đang lao tới, nhưng đã quá muộn để đổi!'],
           ['ĐI!', 'Tất cả thuyền chạy cùng lúc. Thuyền gặp nhau sẽ bật ra: BỤP! Thuyền nào bị đẩy ra khỏi mép hồ là bị loại: TÕM!'],
           ['Lượt tiếp theo', 'Tính lại từ chỗ bạn dừng. Từ lượt thứ 3, hồ nhỏ lại một chút sau mỗi lượt (tùy chọn trong phòng).'],

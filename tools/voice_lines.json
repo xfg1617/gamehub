@@ -361,8 +361,8 @@
 },
 {
 "id": "bumpoff",
-"text": "Point where you want to go. The arrow follows your mouse, or drag with your finger. Longer arrow, harder hit. Click to lock it, then hit Ready.",
-"hash": "20815558",
+"text": "Point where you want to go. The arrow follows your mouse, or drag with your finger. Longer arrow, harder hit. Click, or let go, to lock it in.",
+"hash": "e0fcecd6",
 "lang": "en"
 },
 {
@@ -1393,8 +1393,8 @@
 },
 {
 "id": "bumpoff",
-"text": "Chỉ chuột tới chỗ muốn đi, mũi tên sẽ chạy theo, hoặc kéo bằng ngón tay. Mũi tên càng dài thì húc càng mạnh. Bấm để chốt, rồi bấm Sẵn sàng.",
-"hash": "623c204c",
+"text": "Chỉ chuột tới chỗ muốn đi, mũi tên sẽ chạy theo, hoặc kéo bằng ngón tay. Mũi tên càng dài thì húc càng mạnh. Bấm chuột, hoặc thả tay, để chốt.",
+"hash": "56350b17",
 "lang": "vi"
 },
 {

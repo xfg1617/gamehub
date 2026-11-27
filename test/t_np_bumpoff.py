@@ -18,7 +18,7 @@ with sync_playwright() as p:
             st = pg.evaluate(f"(() => {{ const G = {E}.G; return G && G.phase === 'plan' && G.boats[G.me].alive && !G.sent; }})()")
             if st:
                 pg.evaluate(f"(() => {{ const G = {E}.G, m = G.boats[G.me], o = G.boats.find((b, i) => b.alive && i !== G.me); G.plan = {{ a: Math.atan2(o.y - m.y, o.x - m.x), pow: 0.75 }}; }})()")
-                pg.click('#bo-ready')
+                pg.evaluate(f'{E}.send()')
         # after each turn: compare the boats on every screen
         if all(pg.evaluate(f"{E}.G && {E}.G.phase") == 'plan' for pg in (A, B, C)):
             ps = [pg.evaluate(POS) for pg in (A, B, C)]

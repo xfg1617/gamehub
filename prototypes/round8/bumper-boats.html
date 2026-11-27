@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Bumper Boats prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Jersey+15&display=swap" rel="stylesheet">
+<style>
+:root { --ink:#050E18; --bone:#F7F4EC; --muted:#9DB4CC; --amber:#F5B041; --teal:#2DD4BF; --coral:#FB7185; --emerald:#34D399; --card:#12304C; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #0B1B2B; color: var(--bone); font-family: Outfit, sans-serif; overscroll-behavior: none; }
+body { background-image: linear-gradient(#0F2338 2px, transparent 2px), linear-gradient(90deg, #0F2338 2px, transparent 2px); background-size: 48px 48px; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 14px 16px 30px; }
+.top { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+.chip { font-family: 'Jersey 15', monospace; font-size: 22px; background: var(--amber); color: var(--ink); border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); padding: 0 14px 2px; }
+.note { color: var(--muted); font-size: 14px; flex: 1; min-width: 220px; }
+.game { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 16px; align-items: start; }
+.pondbox { position: relative; width: min(100%, calc(100vh - 150px)); min-width: 300px; justify-self: center; background: #0F2338; border: 4px solid var(--ink); box-shadow: 0 8px 0 var(--ink); }
+canvas { display: block; width: 100%; height: auto; image-rendering: pixelated; touch-action: none; cursor: crosshair; }
+.hud { position: absolute; left: 10px; right: 10px; top: 10px; display: flex; justify-content: space-between; pointer-events: none; }
+.pill { font-family: 'Jersey 15', monospace; font-size: 22px; background: var(--ink); color: var(--amber); padding: 0 12px 2px; border: 3px solid var(--ink); }
+.pill.warn { background: var(--coral); color: var(--ink); animation: pulse .6s steps(1) infinite; } @keyframes pulse { 50% { background: #FFB3BF; } }
+.side { display: flex; flex-direction: column; gap: 10px; }
+.tag { display: flex; align-items: center; gap: 10px; background: #0F2338; border: 3px solid var(--ink); box-shadow: 0 5px 0 var(--ink); padding: 8px 10px; }
+.tag .sw { width: 26px; height: 26px; border: 3px solid var(--ink); flex: none; }
+.tag b { font-size: 15px; } .tag small { display: block; color: var(--muted); font-size: 12px; }
+.tag .w { margin-left: auto; font-family: 'Jersey 15', monospace; font-size: 22px; color: var(--amber); }
+.tag.out { opacity: .45; } .tag.me { outline: 3px solid var(--teal); outline-offset: -3px; }
+.btn { font-family: Outfit, sans-serif; font-weight: 900; font-size: 15px; border: 3px solid var(--ink); box-shadow: 0 5px 0 var(--ink); padding: 10px 16px; cursor: pointer; background: var(--card); color: var(--bone); }
+.btn:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--ink); } .btn.amber { background: var(--amber); color: var(--ink); }
+.dash { position: absolute; right: 14px; bottom: 14px; width: 96px; height: 96px; border-radius: 50%; background: var(--coral); color: var(--ink); font-family: 'Jersey 15', monospace; font-size: 28px;
+  border: 4px solid var(--ink); box-shadow: 0 7px 0 var(--ink); touch-action: none; user-select: none; cursor: pointer; }
+.dash:active, .dash.down { transform: translateY(5px); box-shadow: 0 2px 0 var(--ink); }
+.dash.cool { background: #5a3a42; color: #c9a3ab; }
+.dash i { position: absolute; left: 0; right: 0; bottom: 14px; font-style: normal; font-size: 13px; font-family: Outfit; font-weight: 800; }
+.overlay { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: rgba(5,14,24,.78); text-align: center; padding: 18px; }
+.overlay.on { display: flex; } .overlay .big { font-family: 'Jersey 15', monospace; font-size: 64px; line-height: 1; }
+.help { font-size: 14px; color: var(--muted); background: #0F2338; border: 3px solid var(--ink); padding: 10px 12px; line-height: 1.45; }
+.help b { color: var(--bone); }
+@media (max-width: 600px) { .dash { width: 66px; height: 66px; font-size: 20px; right: 8px; bottom: 8px; opacity: .92; } .dash i { display: none; } }
+@media (max-width: 820px) { .game { grid-template-columns: 1fr; } .side { flex-direction: row; flex-wrap: wrap; } .tag { flex: 1 1 140px; } .help { flex-basis: 100%; } }
+</style></head><body>
+<div class="wrap">
+  <div class="top"><span class="chip">BUMPER BOATS · PROTOTYPE</span><div class="note">Bump the other boats off the pond. Last boat floating wins the round. First to 3 rounds wins.</div></div>
+  <div class="game">
+    <div class="pondbox"><canvas id="cv" width="360" height="360"></canvas>
+      <div class="hud"><span class="pill" id="round">ROUND 1</span><span class="pill" id="shrink">POND SHRINKS IN 12</span></div>
+      <button class="dash" id="dash">DASH<i>SPACE</i></button>
+      <div class="overlay" id="over"><div class="big" id="ovt">YOU WIN!</div><div id="ovs"></div><button class="btn amber" id="next">Next round</button></div>
+    </div>
+    <div class="side" id="side"></div>
+  </div>
+  <div class="help" style="margin-top:14px"><b>Steer:</b> hold your finger or mouse on the pond where you want to go (or arrows / WASD). <b>DASH</b> (or Space) shoots you forward: ram someone hard to knock them flying. After 12 seconds the pond starts to shrink, so nobody can hide.</div>
+</div>
+<script>
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d'), W = 360, H = 360, CX = 180, CY = 186, $ = (id) => document.getElementById(id);
+const PLAYERS = [
+  { name: 'You', col: '#2DD4BF', dark: '#0E7C70', me: true, av: '🦊' },
+  { name: 'Luna', col: '#FB7185', dark: '#A33447', av: '🦉' },
+  { name: 'Bao', col: '#F5B041', dark: '#9C6512', av: '🐻' },
+  { name: 'Minh', col: '#A78BFA', dark: '#5B45A8', av: '🐸' },
+];
+PLAYERS.forEach((p) => p.wins = 0);
+let boats = [], parts = [], R0 = 150, R = 150, t = 0, round = 1, over = false, shake = 0, last = 0;
+const keys = {}; let aim = null, dashReq = false;
+// ---------- sound (made in the browser) ----------
+let AC; const au = () => (AC = AC || new (window.AudioContext || window.webkitAudioContext)());
+function tone(f1, f2, d, v, type = 'square') { try { const a = au(), o = a.createOscillator(), g = a.createGain(); o.type = type; o.frequency.setValueAtTime(f1, a.currentTime); o.frequency.exponentialRampToValueAtTime(Math.max(30, f2), a.currentTime + d); g.gain.setValueAtTime(v, a.currentTime); g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + d); o.connect(g).connect(a.destination); o.start(); o.stop(a.currentTime + d); } catch (e) {} }
+function splashSnd() { try { const a = au(), n = a.sampleRate * 0.5, b = a.createBuffer(1, n, a.sampleRate), d = b.getChannelData(0); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 2); const s = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain(); f.type = 'lowpass'; f.frequency.value = 900; g.gain.value = 0.35; s.buffer = b; s.connect(f).connect(g).connect(a.destination); s.start(); } catch (e) {} }
+// ---------- a round ----------
+function reset() {
+  boats = PLAYERS.map((p, i) => { const a = -Math.PI / 2 + i * Math.PI / 2 + Math.PI / 4; return { p, x: CX + Math.cos(a) * 95, y: CY + Math.sin(a) * 95, vx: 0, vy: 0, ang: a + Math.PI, alive: true, sink: 0, cd: 0, dashT: 0, bot: !p.me, think: 0, tx: 0, ty: 0 }; });
+  R = R0; t = 0; over = false; parts = []; $('over').classList.remove('on'); $('round').textContent = 'ROUND ' + round; drawSide();
+}
+function drawSide() {
+  $('side').innerHTML = boats.map((b) => `<div class="tag ${b.p.me ? 'me' : ''} ${b.alive ? '' : 'out'}"><span class="sw" style="background:${b.p.col}"></span><div><b>${b.p.av} ${b.p.name}</b><small>${b.alive ? (b.p.me ? 'you' : 'computer') : 'SPLASH! out'}</small></div><span class="w">${'★'.repeat(b.p.wins)}${'·'.repeat(3 - b.p.wins)}</span></div>`).join('');
+}
+// ---------- input ----------
+const toPond = (e) => { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) * W / r.width, y: (e.clientY - r.top) * H / r.height }; };
+cv.addEventListener('pointerdown', (e) => { au(); aim = toPond(e); cv.setPointerCapture(e.pointerId); });
+cv.addEventListener('pointermove', (e) => { if (aim) aim = toPond(e); });
+cv.addEventListener('pointerup', () => { aim = null; }); cv.addEventListener('pointercancel', () => { aim = null; });
+addEventListener('keydown', (e) => { keys[e.key.toLowerCase()] = true; if (e.key === ' ') { dashReq = true; e.preventDefault(); } if (e.key.startsWith('Arrow')) e.preventDefault(); au(); });
+addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
+$('dash').addEventListener('pointerdown', (e) => { e.preventDefault(); au(); dashReq = true; $('dash').classList.add('down'); });
+addEventListener('pointerup', () => $('dash').classList.remove('down'));
+$('next').onclick = () => { if (PLAYERS.some((p) => p.wins >= 3)) { PLAYERS.forEach((p) => p.wins = 0); round = 1; } else round++; reset(); };
+// ---------- the computer captains ----------
+function botSteer(b, dt) {
+  b.think -= dt;
+  const live = boats.filter((o) => o.alive && o !== b);
+  if (!live.length) return [0, 0, false];
+  const dc = Math.hypot(b.x - CX, b.y - CY);
+  if (dc > R - 38) return [(CX - b.x) / dc, (CY - b.y) / dc, false];             // too close to the edge: back to the middle
+  if (b.think <= 0) { b.think = 0.5 + Math.random() * 0.6; b.target = live.sort((p, q) => Math.hypot(p.x - b.x, p.y - b.y) - Math.hypot(q.x - b.x, q.y - b.y))[Math.random() < 0.7 ? 0 : live.length - 1]; }
+  const tg = b.target && b.target.alive ? b.target : live[0];
+  // get between the target and the middle of the pond, then charge it outwards
+  const ox = tg.x - CX, oy = tg.y - CY, od = Math.hypot(ox, oy) || 1;
+  const px = tg.x - (ox / od) * 34, py = tg.y - (oy / od) * 34;
+  const behind = Math.hypot(b.x - px, b.y - py) < 26;
+  const gx = behind ? tg.x : px, gy = behind ? tg.y : py, gd = Math.hypot(gx - b.x, gy - b.y) || 1;
+  const close = Math.hypot(tg.x - b.x, tg.y - b.y) < 70;
+  return [(gx - b.x) / gd * 0.85, (gy - b.y) / gd * 0.85, behind && close && Math.random() < 0.015];
+}
+// ---------- physics ----------
+const ACC = 190, DRAG = 2.4, DASH = 210, RAD = 13;
+function step(dt) {
+  t += dt;
+  if (t > 12) R = Math.max(70, R0 - (t - 12) * 5);
+  const sh = $('shrink'); if (t < 12) { sh.textContent = 'POND SHRINKS IN ' + Math.ceil(12 - t); sh.classList.remove('warn'); } else { sh.textContent = 'THE POND IS SHRINKING!'; sh.classList.add('warn'); }
+  for (const b of boats) {
+    if (!b.alive) { b.sink += dt; continue; }
+    let ax = 0, ay = 0, wantDash = false;
+    if (b.bot || window.__allBots) [ax, ay, wantDash] = botSteer(b, dt);
+    else {
+      if (aim) { const dx = aim.x - b.x, dy = aim.y - b.y, d = Math.hypot(dx, dy); if (d > 6) { ax = dx / d; ay = dy / d; } }
+      ax += (keys.arrowright || keys.d ? 1 : 0) - (keys.arrowleft || keys.a ? 1 : 0); ay += (keys.arrowdown || keys.s ? 1 : 0) - (keys.arrowup || keys.w ? 1 : 0);
+      const n = Math.hypot(ax, ay); if (n > 1) { ax /= n; ay /= n; }
+      wantDash = dashReq; dashReq = false;
+    }
+    b.cd = Math.max(0, b.cd - dt); b.dashT = Math.max(0, b.dashT - dt);
+    if (wantDash && b.cd <= 0) {                                   // DASH: a burst forward (where you are steering, or facing)
+      const dx = ax || Math.cos(b.ang), dy = ay || Math.sin(b.ang), d = Math.hypot(dx, dy) || 1;
+      b.vx += dx / d * DASH; b.vy += dy / d * DASH; b.cd = 2.2; b.dashT = 0.35; if (!b.bot) tone(200, 600, 0.18, 0.08, 'sawtooth');
+      for (let k = 0; k < 8; k++) parts.push({ x: b.x, y: b.y, vx: -dx / d * 60 + (Math.random() - 0.5) * 60, vy: -dy / d * 60 + (Math.random() - 0.5) * 60, l: 0.5, c: '#E6F6FF' });
+    }
+    b.vx += ax * ACC * dt; b.vy += ay * ACC * dt;
+    b.vx *= Math.exp(-DRAG * dt); b.vy *= Math.exp(-DRAG * dt);
+    b.x += b.vx * dt; b.y += b.vy * dt;
+    const sp = Math.hypot(b.vx, b.vy); if (sp > 20) { const ta = Math.atan2(b.vy, b.vx); let da = ta - b.ang; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI; b.ang += da * Math.min(1, dt * 8); }
+    if (sp > 40 && Math.random() < 0.6) parts.push({ x: b.x - Math.cos(b.ang) * RAD, y: b.y - Math.sin(b.ang) * RAD, vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.5) * 12, l: 0.9, c: 'rgba(230,246,255,.8)' });
+    // off the edge = splash
+    if (Math.hypot(b.x - CX, b.y - CY) > R + RAD * 0.6) { b.alive = false; b.sink = 0; shake = 0.35; splashSnd(); for (let k = 0; k < 26; k++) { const a = Math.random() * 6.28, s = 30 + Math.random() * 90; parts.push({ x: b.x, y: b.y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 40, l: 0.9, c: k % 3 ? '#BFE9FF' : '#FFFFFF', g: 1 }); } drawSide(); }
+  }
+  // boats bump each other (a heavier hit when one is dashing)
+  for (let i = 0; i < boats.length; i++) for (let j = i + 1; j < boats.length; j++) {
+    const a = boats[i], b = boats[j]; if (!a.alive || !b.alive) continue;
+    const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy); if (d >= RAD * 2 || !d) continue;
+    const nx = dx / d, ny = dy / d, ov = RAD * 2 - d; a.x -= nx * ov / 2; a.y -= ny * ov / 2; b.x += nx * ov / 2; b.y += ny * ov / 2;
+    const rv = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny; if (rv > 0) continue;
+    const boost = 1 + (a.dashT > 0 || b.dashT > 0 ? 0.75 : 0.35), jimp = -rv * boost;
+    const ma = a.dashT > 0 ? 1.6 : 1, mb = b.dashT > 0 ? 1.6 : 1;      // the dasher hits like a heavier boat
+    a.vx -= nx * jimp * (mb / (ma + mb)); a.vy -= ny * jimp * (mb / (ma + mb)); b.vx += nx * jimp * (ma / (ma + mb)); b.vy += ny * jimp * (ma / (ma + mb));
+    if (-rv > 60) { shake = Math.max(shake, Math.min(0.25, -rv / 900)); tone(160, 70, 0.12, Math.min(0.2, -rv / 1500)); for (let k = 0; k < 10; k++) parts.push({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, vx: (Math.random() - 0.5) * 120, vy: (Math.random() - 0.5) * 120, l: 0.4, c: '#FFFFFF' }); parts.push({ txt: 'BONK!', x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 - 10, vx: 0, vy: -26, l: 0.8 }); }
+  }
+  for (const q of parts) { q.x += q.vx * dt; q.y += q.vy * dt; if (q.g) q.vy += 160 * dt; q.l -= dt; } parts = parts.filter((q) => q.l > 0);
+  shake = Math.max(0, shake - dt);
+  const me = boats.find((b) => b.p.me), live = boats.filter((b) => b.alive);
+  const dsh = $('dash'); dsh.classList.toggle('cool', me.cd > 0);
+  if (!over && (live.length <= 1 || !me.alive && live.length <= 1)) endRound(live[0]);
+  if (!over && !me.alive && live.length > 1 && !boats.__spectate) { /* keep watching the others */ }
+}
+function endRound(w) {
+  over = true; if (w) w.p.wins++;
+  setTimeout(() => {
+    const champ = PLAYERS.find((p) => p.wins >= 3);
+    $('ovt').textContent = champ ? (champ.me ? 'CHAMPION!' : champ.name + ' wins!') : w ? (w.p.me ? 'YOU WIN!' : w.p.name + ' wins') : 'Everyone sank!';
+    $('ovt').style.color = w && w.p.me ? '#34D399' : '#F5B041';
+    $('ovs').textContent = champ ? 'First to 3 rounds. Play again?' : `Round ${round} goes to ${w ? w.p.name : 'nobody'}.`;
+    $('next').textContent = champ ? 'New match' : 'Next round'; $('over').classList.add('on'); drawSide();
+    if (w && w.p.me) { tone(520, 1040, 0.25, 0.08); setTimeout(() => tone(660, 1320, 0.3, 0.08), 160); }
+  }, 900);
+}
+// ---------- drawing (low resolution, scaled up: pixel art) ----------
+function draw() {
+  const sx = shake ? (Math.random() - 0.5) * 10 * shake * 4 : 0, sy = shake ? (Math.random() - 0.5) * 10 * shake * 4 : 0;
+  ctx.setTransform(1, 0, 0, 1, Math.round(sx), Math.round(sy));
+  // grass + sand bank
+  ctx.fillStyle = '#3F8F4A'; ctx.fillRect(-10, -10, W + 20, H + 20);
+  for (let i = 0; i < 70; i++) { ctx.fillStyle = i % 2 ? '#4FA35A' : '#357A3F'; ctx.fillRect((i * 53) % W, (i * 97) % H, 3, 2); }
+  ctx.fillStyle = '#D9B26A'; ctx.beginPath(); ctx.arc(CX, CY, R0 + 14, 0, 7); ctx.fill();
+  ctx.fillStyle = '#1A5C8A'; ctx.beginPath(); ctx.arc(CX, CY, R0 + 4, 0, 7); ctx.fill();          // deep water (outside the shrinking ring)
+  // the safe pond
+  ctx.fillStyle = '#2F8FD0'; ctx.beginPath(); ctx.arc(CX, CY, R, 0, 7); ctx.fill();
+  ctx.fillStyle = '#3FA3E2'; for (let y = 0; y < H; y += 12) for (let x = ((y / 12) % 2) * 12; x < W; x += 24) { const ph = Math.sin(t * 2 + x * 0.05 + y * 0.08); if (Math.hypot(x - CX, y - CY) < R - 4 && ph > 0.3) ctx.fillRect(x, y, 6, 2); }
+  ctx.strokeStyle = t > 12 ? (Math.floor(t * 4) % 2 ? '#FB7185' : '#FFFFFF') : '#E6F6FF'; ctx.lineWidth = 3; ctx.setLineDash([6, 5]); ctx.beginPath(); ctx.arc(CX, CY, R, 0, 7); ctx.stroke(); ctx.setLineDash([]);
+  // foam / splashes
+  for (const q of parts) { if (q.txt) { ctx.font = '16px "Jersey 15"'; ctx.fillStyle = '#050E18'; ctx.fillText(q.txt, q.x - 17, q.y + 1); ctx.fillStyle = '#F5B041'; ctx.fillText(q.txt, q.x - 18, q.y); continue; } ctx.fillStyle = q.c; ctx.globalAlpha = Math.min(1, q.l * 2); ctx.fillRect(Math.round(q.x), Math.round(q.y), 2, 2); ctx.globalAlpha = 1; }
+  // boats
+  for (const b of boats) {
+    if (!b.alive) { if (b.sink < 1.2) { ctx.globalAlpha = 1 - b.sink / 1.2; drawBoat(b, 1 - b.sink * 0.5); ctx.globalAlpha = 1; } continue; }
+    drawBoat(b, 1);
+  }
+  // you are here
+  const me = boats.find((b) => b.p.me);
+  if (me.alive) { ctx.fillStyle = '#2DD4BF'; ctx.font = '13px "Jersey 15"'; ctx.fillText('YOU', me.x - 10, me.y - RAD - 8); }
+  if (aim && me.alive) { ctx.strokeStyle = 'rgba(255,255,255,.5)'; ctx.setLineDash([3, 4]); ctx.beginPath(); ctx.moveTo(me.x, me.y); ctx.lineTo(aim.x, aim.y); ctx.stroke(); ctx.setLineDash([]); }
+}
+function drawBoat(b, s) {
+  ctx.save(); ctx.translate(Math.round(b.x), Math.round(b.y)); ctx.rotate(b.ang); ctx.scale(s, s);
+  ctx.fillStyle = 'rgba(5,14,24,.35)'; ctx.beginPath(); ctx.ellipse(2, 3, 15, 11, 0, 0, 7); ctx.fill();           // shadow
+  ctx.fillStyle = '#050E18'; ctx.beginPath(); ctx.ellipse(0, 0, 16, 12, 0, 0, 7); ctx.fill();                         // rubber ring
+  ctx.fillStyle = b.p.dark; ctx.beginPath(); ctx.ellipse(0, 0, 14, 10, 0, 0, 7); ctx.fill();
+  ctx.fillStyle = b.p.col; ctx.beginPath(); ctx.ellipse(0, 0, 11, 7.5, 0, 0, 7); ctx.fill();
+  ctx.fillStyle = '#F7F4EC'; ctx.fillRect(-3, -4, 7, 8);                                                               // seat
+  ctx.fillStyle = '#050E18'; ctx.fillRect(9, -2, 5, 4);                                                                 // bumper nose
+  if (b.dashT > 0) { ctx.fillStyle = '#FFFFFF'; ctx.fillRect(-18, -6, 3, 2); ctx.fillRect(-20, 0, 4, 2); ctx.fillRect(-18, 5, 3, 2); }
+  ctx.restore();
+  ctx.font = '12px serif'; ctx.textAlign = 'center'; ctx.fillText(b.p.av, Math.round(b.x), Math.round(b.y) + 4); ctx.textAlign = 'left';
+}
+function loop(now) {
+  const dt = Math.min(0.033, (now - (last || now)) / 1000); last = now;
+  if (!over || boats.some((b) => b.alive)) step(over ? dt * 0.5 : dt);
+  draw(); requestAnimationFrame(loop);
+}
+reset(); requestAnimationFrame(loop);
+window.__bb = { get boats() { return boats; }, get over() { return over; } };   // for the test
+</script></body></html>

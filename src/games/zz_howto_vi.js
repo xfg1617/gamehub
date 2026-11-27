@@ -71,7 +71,7 @@
           tip: 'Sói: đừng im lặng quá, cũng đừng nói nhiều quá. Dân làng: để ý ai hay đổi lời, và ai hay bỏ phiếu cùng nhau.' },
         bumpoff: { goal: 'Là chiếc thuyền cuối cùng còn nổi: húc những thuyền khác rơi khỏi hồ.', steps: [
           ['Vị trí xuất phát', 'Phòng chọn chỗ các thuyền bắt đầu: ngẫu nhiên, chia đều quanh mép hồ, hoặc tất cả sát nhau ở giữa (hỗn loạn!).'],
-          ['Tính nước đi bí mật', 'Bạn thấy mọi thuyền, nhưng không biết họ sẽ đi đâu. Kéo từ thuyền của bạn để chọn hướng; mũi tên càng dài lực càng mạnh (hoặc dùng phím mũi tên). Bấm SẴN SÀNG trước khi hết giờ.'],
+          ['Tính nước đi bí mật', 'Bạn thấy mọi thuyền, nhưng không biết họ sẽ đi đâu. Di chuột, mũi tên sẽ đi theo (trên điện thoại thì kéo ngón tay); đầu mũi tên là chỗ thuyền dừng lại, nên mũi tên càng dài lực càng mạnh. Bấm để chốt hướng (hoặc dùng phím mũi tên). Bấm SẴN SÀNG trước khi hết giờ.'],
           ['Lộ kế hoạch', 'Khi mọi người sẵn sàng, tất cả mũi tên hiện ra cùng lúc. Giờ bạn thấy ai đang lao tới, nhưng đã quá muộn để đổi!'],
           ['ĐI!', 'Tất cả thuyền chạy cùng lúc. Thuyền gặp nhau sẽ bật ra: BỤP! Thuyền nào bị đẩy ra khỏi mép hồ là bị loại: TÕM!'],
           ['Lượt tiếp theo', 'Tính lại từ chỗ bạn dừng. Từ lượt thứ 3, hồ nhỏ lại một chút sau mỗi lượt (tùy chọn trong phòng).'],

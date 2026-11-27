@@ -3,6 +3,14 @@
        VI_MORE5 = exact lines, VI_PAT5 = lines with numbers or names in them.
        ========================================================================= */
     window.VI_MORE5 = {
+      // Voice chat (Nov 2026)
+      'VOICE CHAT': 'TRÒ CHUYỆN THOẠI', 'Talk with the players in this private room.': 'Nói chuyện với người chơi trong phòng riêng này.',
+      'Your voice goes straight to them. Nothing is recorded or saved.': 'Giọng bạn đi thẳng tới họ. Không có gì bị ghi âm hay lưu lại.',
+      'You can mute anyone, just for you.': 'Bạn có thể tắt tiếng bất kỳ ai, chỉ riêng với bạn.', 'Be kind. Never share personal details.': 'Hãy tử tế. Đừng chia sẻ thông tin cá nhân.',
+      '🎤 Join voice': '🎤 Vào thoại', 'Connecting...': 'Đang kết nối...', 'Hold to talk': 'Giữ để nói', 'Open mic': 'Mở mic', '🎙 HOLD TO TALK': '🎙 GIỮ ĐỂ NÓI', '🎙 TALKING...': '🎙 ĐANG NÓI...',
+      'Or hold the V key, or hold the 🎤 button.': 'Hoặc giữ phím V, hoặc giữ nút 🎤.', '🎙 Your mic is on · tap to mute': '🎙 Mic đang bật · chạm để tắt', '🔇 Your mic is off · tap to turn on': '🔇 Mic đang tắt · chạm để bật',
+      'Leave voice': 'Rời thoại', 'Voice chat is for players with an account.': 'Trò chuyện thoại dành cho người chơi có tài khoản.', 'Sign up free': 'Đăng ký miễn phí',
+      'Nobody else has joined voice yet. Ask your friends to press 🎤.': 'Chưa ai khác vào thoại. Rủ bạn bè bấm 🎤 nhé.', 'CONNECTING...': 'ĐANG KẾT NỐI...', 'NO CONNECTION': 'MẤT KẾT NỐI', 'YOU': 'BẠN',
       // Caro
       "Five in a row on a big board. Vietnam's favourite pen-and-paper game: quick to learn, hard to master.": 'Năm quân liền nhau trên bàn cờ lớn. Trò chơi giấy bút được yêu thích nhất Việt Nam: dễ học, khó giỏi.',
       'BOARD': 'BÀN CỜ', '15 × 15': '15 × 15', '19 × 19': '19 × 19', "Vietnamese rule: blocked five doesn't win": 'Luật chặn hai đầu',

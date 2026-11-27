@@ -5,6 +5,15 @@
        Written for players: what changed for them, no technical words.
        ========================================================================= */
     window.UPDATES = [
+      { date: '2026-11-28', id: '2026-11-28c',
+        en: ['Voice chat in private rooms',
+          'Press the 🎤 button next to CHAT in a private room or at its table to talk with your friends. Hold to talk, or switch to open mic.',
+          'Voices go straight between players and are never recorded. You can mute anyone just for yourself. Players with an account only.',
+          'Bump Off: the arrow now follows your mouse (click to lock it), and the pond has a brand-new, sharper look.'],
+        vi: ['Trò chuyện thoại trong phòng riêng',
+          'Bấm nút 🎤 cạnh CHAT trong phòng riêng hoặc tại bàn chơi để nói chuyện với bạn bè. Giữ để nói, hoặc chuyển sang mở mic.',
+          'Giọng nói đi thẳng giữa người chơi và không bao giờ bị ghi âm. Bạn có thể tắt tiếng bất kỳ ai, chỉ riêng với bạn. Chỉ dành cho người có tài khoản.',
+          'Đụng Thuyền: mũi tên giờ chạy theo chuột (bấm để chốt), và hồ nước có giao diện mới, sắc nét hơn.'] },
       { date: '2026-11-28', id: '2026-11-28b',
         en: ['New game: Bump Off',
           'Bumper boats for 2-6 players: everyone secretly picks a direction and power, then all boats move at once. Knock the others off the pond!',

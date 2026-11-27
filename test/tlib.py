@@ -9,7 +9,7 @@ os.makedirs(SHOTS, exist_ok=True)
 EXE = '/opt/pw-browsers/chromium' if os.path.exists('/opt/pw-browsers/chromium') else None
 
 def launch(p):
-    kw = {'args': ['--no-sandbox']}
+    kw = {'args': ['--no-sandbox', '--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream', '--unsafely-treat-insecure-origin-as-secure=http://gamehub.test']}   # a pretend microphone for voice chat tests
     if EXE: kw['executable_path'] = EXE
     return p.chromium.launch(**kw)
 

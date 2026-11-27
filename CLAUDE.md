@@ -1238,3 +1238,26 @@ folder that was handed over, so they do not exist here.)
   `test/t_np_bumpoff.py` (3 people + 1 computer: every screen agrees after each turn). Guide EN/VI, What's new `2026-11-28b`,
   banner `og/bumpoff.png`. How-to video: 3 staged pictures (plan with your arrow, reveal, GO with a bump) + 7 lines EN/VI (Puck).
 
+
+## 5am. Nov 28 2026: Bump Off aiming + new pond, voice chat (Inna)
+
+* **Bump Off aiming** (Inna: "dragging is kinda buggy, make the arrow follow the mouse"): the arrow's tip now sits exactly on
+  the pointer (power = distance / `reach(VMAX)`; the tip = where the boat would stop alone). Mouse: the arrow follows the
+  mouse while planning, a click locks it (amber, "LOCKED · PRESS READY"), clicking again re-aims. Touch: finger down + slide,
+  it stays where you lift. Keys still work. A faint dotted circle shows the full-power range.
+* **Bump Off pond** is drawn at the screen's real resolution (`fit()`: canvas = box width × devicePixelRatio, everything
+  scaled from the 360×380 pond units, no more pixelated scaling): mown-stripe grass, flowers, stones, reeds, a plank
+  boardwalk with posts, life ring and flag (`scenery()`, cached per size in `G.bg`), gradient water with drifting waves, a
+  hazard-striped shrinking zone, outlined arrows with a % label, bumper boats with a rubber ring, deck, nose and captain,
+  foam + ripple rings. How-to pictures retaken, line 3 re-recorded (Puck).
+* **Voice chat** (`src/games/zz_voice.js`, `src/css/32-voice.css`, `window.VOICE`): only in PRIVATE rooms and their tables
+  (`npMarkPrivate` / `npIsPrivate` in netplay.js, kept in sessionStorage for rejoin; never quick match), accounts only
+  (guests see Sign up). 🎤 button right of the emote / CHAT button; panel: notes (nothing recorded, mute anyone, be kind),
+  Join voice, people in voice with talking bars + per-person mute (`ps_voice_v1`), Hold to talk (default; hold the panel
+  button, the 🎤 button or the V key) / Open mic (loudness check sends `talk` on/off), Leave voice. Leaving the room leaves
+  voice. Peer to peer WebRTC mesh (max 8), the smaller user id calls; handshake over `NET.channel('vc:<code>')` (`sig`
+  {to, sdp|ice}). Talking = green outline + 🔊 on that seat's name tag (`.vc-speak`).
+  Relay for blocked networks: `functions/api/turn.js` (Cloudflare Pages Function) makes 2-hour Cloudflare TURN passwords
+  if Inna adds the secrets TURN_KEY_ID + TURN_KEY_API_TOKEN in Cloudflare Pages settings; without them it returns none
+  (STUN only: most players still connect). `test/t_voice.py` (Chromium's fake microphone; tlib.launch passes the flags and
+  treats http://gamehub.test as secure). No Supabase change.

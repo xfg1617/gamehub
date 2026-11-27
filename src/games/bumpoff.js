@@ -118,16 +118,21 @@
         }).join('');
       }
 
-      // ---------- input: drag from your boat (direction + power), or the keyboard ----------
+      // ---------- input: the arrow's tip follows the mouse / finger (Inna, Nov 2026) ----------
+      // Mouse: just move over the pond and the arrow follows; click to lock it (click again to re-aim).
+      // Touch: put a finger down anywhere and slide; the arrow follows it and stays where you lift.
+      const MAXL = () => reach(VMAX);                    // the longest arrow = full power
       function bindInput() {
         const cv = $('bo-cv');
         const toPond = (e) => { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) * W / r.width, y: (e.clientY - r.top) * H / r.height }; };
         const can = () => G && G.phase === 'plan' && !G.sent && meB() && meB().alive && G.S.mine(G.me);
-        const aim = (pt) => { const b = meB(), dx = pt.x - b.x, dy = pt.y - b.y, d = dist(pt.x, pt.y, b.x, b.y); if (d < 4) return; setPlan(Math.atan2(dy, dx), Math.min(1, d / 110)); };
-        let drag = false;
-        gOn(cv, 'pointerdown', (e) => { if (!can()) return; drag = true; try { cv.setPointerCapture(e.pointerId); } catch (x) {} aim(toPond(e)); });
-        gOn(cv, 'pointermove', (e) => { if (drag && can()) aim(toPond(e)); });
-        gOn(cv, 'pointerup', () => { drag = false; });
+        const aim = (pt) => { const b = meB(), d = dist(pt.x, pt.y, b.x, b.y); if (d < 3) return setPlan(G.plan ? G.plan.a : b.ang, 0); setPlan(Math.atan2(pt.y - b.y, pt.x - b.x), Math.min(1, d / MAXL())); };
+        let down = false;
+        gOn(cv, 'pointerdown', (e) => { if (!can()) return; e.preventDefault(); down = true; G.locked = false; try { cv.setPointerCapture(e.pointerId); } catch (x) {} aim(toPond(e)); });
+        gOn(cv, 'pointermove', (e) => { if (!can()) return; G.hover = toPond(e); if (down || (e.pointerType === 'mouse' && !G.locked)) aim(G.hover); });
+        const up = (e) => { if (!down) return; down = false; if (can()) { aim(toPond(e)); G.locked = true; SFX.play('click'); } };
+        gOn(cv, 'pointerup', up); gOn(cv, 'pointercancel', () => { down = false; });
+        gOn(cv, 'pointerleave', () => { G && (G.hover = null); });
         gOn($('bo-ready'), 'click', () => sendPlan());
         gOn(document, 'keydown', (e) => {
           if (!can() || /INPUT|TEXTAREA/.test((e.target || {}).tagName || '')) return;
@@ -135,7 +140,7 @@
           if (e.key === 'ArrowLeft') setPlan(p.a - 0.14, p.pow); else if (e.key === 'ArrowRight') setPlan(p.a + 0.14, p.pow);
           else if (e.key === 'ArrowUp') setPlan(p.a, Math.min(1, p.pow + 0.1)); else if (e.key === 'ArrowDown') setPlan(p.a, Math.max(0, p.pow - 0.1));
           else if (e.key === 'Enter') sendPlan(); else return;
-          e.preventDefault();
+          G.locked = true; e.preventDefault();
         });
       }
       function setPlan(a, pow) { G.plan = { a, pow }; const pw = $('bo-pw'), pt = $('bo-pwt'); if (pw) pw.style.width = (pow * 100) + '%'; if (pt) pt.textContent = Math.round(pow * 100) + '%'; }
@@ -199,7 +204,7 @@
       }
       async function planPhase() {
         const S = G.S, t = G.tok, key = `p${G.round}_${G.turn}`, me = meB();
-        G.phase = 'plan'; G.ckey = key; G.got = {}; G.sent = false; G.plan = null; G.plans = null; setPlan(me.ang, 0);
+        G.phase = 'plan'; G.ckey = key; G.got = {}; G.sent = false; G.plan = null; G.plans = null; G.locked = false; setPlan(me.ang, 0);
         setPhase('plan', T('PLAN YOUR MOVE · PLANS ARE SECRET', 'TÍNH NƯỚC ĐI · KẾ HOẠCH BÍ MẬT'));
         const ctl = $('bo-ctl'); ctl.style.visibility = me.alive && S.mine(G.me) ? 'visible' : 'hidden';
         const r = $('bo-ready'); r.disabled = false; r.textContent = T('READY', 'SẴN SÀNG');
@@ -231,7 +236,7 @@
             f.forEach((q, i) => {
               const b = G.boats[i]; if (!b) return;
               if (b.alive && !q[2] && !outs.has(i)) { outs.add(i); b.alive = false; b.sink = 0; splash(q[0], q[1]); side(); }
-              if (b.alive) { b.x = q[0]; b.y = q[1]; const sp = q[3] * q[3] + q[4] * q[4]; if (sp > 400) { b.ang = Math.atan2(q[4], q[3]); if (Math.random() < 0.5) G.parts.push({ x: b.x - Math.cos(b.ang) * RAD, y: b.y - Math.sin(b.ang) * RAD, vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.5) * 12, l: 0.9, c: 'rgba(230,246,255,.8)' }); } }
+              if (b.alive) { b.x = q[0]; b.y = q[1]; const sp = q[3] * q[3] + q[4] * q[4]; if (sp > 400) { b.ang = Math.atan2(q[4], q[3]); if (Math.random() < 0.6) G.parts.push({ x: b.x - Math.cos(b.ang) * RAD + (Math.random() - 0.5) * 8, y: b.y - Math.sin(b.ang) * RAD + (Math.random() - 0.5) * 8, vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.5) * 12, l: 0.9, sz: 1 + Math.random(), c: 'rgba(235,248,255,.85)' }); if (Math.random() < 0.08) G.parts.push({ ring: true, x: b.x, y: b.y, r: RAD, gr: 16, l: 0.8, l0: 0.8, vx: 0, vy: 0 }); } }
             });
             while (bumpAt.length && bumpAt[0][0] <= k * 2) { const [, x, y, v] = bumpAt.shift(); bonk(x, y, v); }
             if (el >= total) return res();
@@ -264,63 +269,171 @@
           againLabel: S.online ? 'Back to setup' : 'Play again', again: () => open($('game-root')) });
       }
 
-      // ---------- drawing (low resolution, scaled up: pixel art) ----------
+      // ---------- drawing: sharp, full resolution (Inna, Nov 2026: "a better board, higher quality") ----------
+      // Game positions stay in the 360 x 380 pond units; the canvas is sized to the screen's real pixels and scaled.
       let last = 0;
+      function fit(cv) {
+        const w = cv.clientWidth; if (!w) return 1;
+        const dpr = Math.min(3, window.devicePixelRatio || 1), pw = Math.round(w * dpr), ph = Math.round(w * H / W * dpr);
+        if (cv.width !== pw || cv.height !== ph) { cv.width = pw; cv.height = ph; G.bg = null; }
+        return cv.width / W;
+      }
       function loop(now) {
         if (!G) return;
         const dt = Math.min(0.05, (now - (last || now)) / 1000); last = now;
-        for (const q of G.parts) { q.x += q.vx * dt; q.y += q.vy * dt; if (q.g) q.vy += 160 * dt; q.l -= dt; }
+        for (const q of G.parts) { q.x += q.vx * dt; q.y += q.vy * dt; if (q.g) q.vy += 160 * dt; if (q.ring) q.r += q.gr * dt; q.l -= dt; }
         G.parts = G.parts.filter((q) => q.l > 0);
         for (const b of G.boats) if (!b.alive) b.sink += dt;
         G.shake = Math.max(0, G.shake - dt); G.R += (G.Rgoal - G.R) * Math.min(1, dt * 3);
         draw(now / 1000); G.raf = gRaf(loop);
       }
-      function arrow(ctx, b, vx, vy, col, solid) {
+      // a fixed little random generator for the scenery (same garden every time)
+      const sr = (n) => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+      function scenery(k) {
+        const c = document.createElement('canvas'); c.width = Math.round(W * k); c.height = Math.round(H * k);
+        const g = c.getContext('2d'); g.setTransform(k, 0, 0, k, 0, 0);
+        // grass with mown stripes, tufts, flowers and stones
+        g.fillStyle = '#3E8B47'; g.fillRect(0, 0, W, H);
+        for (let y = 0; y < H; y += 24) { g.fillStyle = (y / 24) % 2 ? '#43944C' : '#3A8443'; g.fillRect(0, y, W, 24); }
+        for (let i = 0; i < 170; i++) { const x = sr(i) * W, y = sr(i + 500) * H; if (dist(x, y, CX, CY) < R0 + 26) continue;
+          g.fillStyle = i % 3 ? '#2F7338' : '#57A85F'; g.fillRect(x, y, 1.4, 3); g.fillRect(x + 2, y + 1, 1.4, 2.4); g.fillRect(x - 2, y + 1.4, 1.4, 2); }
+        const fl = ['#F7F4EC', '#F5B041', '#FB7185'];
+        for (let i = 0; i < 26; i++) { const x = sr(i + 900) * W, y = sr(i + 1300) * H; if (dist(x, y, CX, CY) < R0 + 30) continue;
+          g.fillStyle = fl[i % 3]; g.fillRect(x - 1.5, y, 3, 1.2); g.fillRect(x - 0.6, y - 1, 1.2, 3.2); g.fillStyle = '#F5B041'; g.fillRect(x - 0.5, y + 0.2, 1, 1); }
+        for (let i = 0; i < 9; i++) { const x = sr(i + 2000) * W, y = sr(i + 2100) * H; if (dist(x, y, CX, CY) < R0 + 34) continue;
+          g.fillStyle = '#050E18'; g.beginPath(); g.ellipse(x, y + 1, 5, 3.4, 0, 0, 7); g.fill(); g.fillStyle = '#9DB4CC'; g.beginPath(); g.ellipse(x, y, 4, 2.6, 0, 0, 7); g.fill(); g.fillStyle = '#C7D6E5'; g.fillRect(x - 2, y - 1.4, 2, 1); }
+        // reeds in the corners
+        [[18, 30], [342, 36], [16, 356], [344, 352]].forEach(([x, y], j) => { for (let i = 0; i < 6; i++) { const xx = x + (i - 2.5) * 3.2, hh = 14 + sr(j * 9 + i) * 10;
+          g.fillStyle = '#050E18'; g.fillRect(xx - 0.8, y - hh, 2.6, hh); g.fillStyle = '#6CB36A'; g.fillRect(xx - 0.2, y - hh, 1.4, hh); if (i % 2) { g.fillStyle = '#050E18'; g.fillRect(xx - 1.4, y - hh - 6, 3.8, 7); g.fillStyle = '#8A5A2B'; g.fillRect(xx - 0.8, y - hh - 5.4, 2.6, 5.8); } } });
+        // the wooden boardwalk around the pond: planks, seams and posts, with a hard shadow
+        const r1 = R0 + 4, r2 = R0 + 19;
+        g.fillStyle = 'rgba(5,14,24,.45)'; g.beginPath(); g.arc(CX + 3, CY + 5, r2 + 1, 0, 7); g.fill();
+        g.fillStyle = '#050E18'; g.beginPath(); g.arc(CX, CY, r2 + 1.6, 0, 7); g.fill();
+        const N = 72;
+        for (let i = 0; i < N; i++) { const a0 = i / N * 6.2832, a1 = (i + 1) / N * 6.2832;
+          g.fillStyle = i % 2 ? '#C99A5C' : '#BB8B4D'; g.beginPath(); g.arc(CX, CY, r2, a0, a1); g.arc(CX, CY, r1, a1, a0, true); g.closePath(); g.fill();
+          g.strokeStyle = '#7A5227'; g.lineWidth = 0.7; g.beginPath(); g.moveTo(CX + Math.cos(a0) * r1, CY + Math.sin(a0) * r1); g.lineTo(CX + Math.cos(a0) * r2, CY + Math.sin(a0) * r2); g.stroke();
+          g.fillStyle = '#E3B977'; g.beginPath(); g.arc(CX, CY, r2 - 0.6, a0 + 0.004, a1 - 0.01); g.arc(CX, CY, r2 - 2, a1 - 0.01, a0 + 0.004, true); g.closePath(); g.fill();
+          if (i % 2 === 0) { g.fillStyle = '#6B4520'; const m = (a0 + a1) / 2; g.fillRect(CX + Math.cos(m) * (r2 - 4) - 0.7, CY + Math.sin(m) * (r2 - 4) - 0.7, 1.4, 1.4); g.fillRect(CX + Math.cos(m) * (r1 + 3) - 0.7, CY + Math.sin(m) * (r1 + 3) - 0.7, 1.4, 1.4); } }
+        for (let i = 0; i < 12; i++) { const a = i / 12 * 6.2832 + 0.13, x = CX + Math.cos(a) * (r2 + 1), y = CY + Math.sin(a) * (r2 + 1);
+          g.fillStyle = '#050E18'; g.fillRect(x - 3.6, y - 3.6, 7.2, 7.2); g.fillStyle = '#8A5A2B'; g.fillRect(x - 2.6, y - 2.6, 5.2, 5.2); g.fillStyle = '#B07A40'; g.fillRect(x - 2.6, y - 2.6, 5.2, 1.6); }
+        // a life ring and a little flag on the boardwalk
+        { const a = -2.35, x = CX + Math.cos(a) * (r1 + 7.5), y = CY + Math.sin(a) * (r1 + 7.5);
+          g.lineWidth = 4.6; g.strokeStyle = '#050E18'; g.beginPath(); g.arc(x, y, 5.6, 0, 7); g.stroke();
+          for (let q = 0; q < 4; q++) { g.lineWidth = 3; g.strokeStyle = q % 2 ? '#F7F4EC' : '#FB7185'; g.beginPath(); g.arc(x, y, 5.6, q * 1.5708, (q + 1) * 1.5708); g.stroke(); } }
+        { const a = -0.6, x = CX + Math.cos(a) * (r2 + 1), y = CY + Math.sin(a) * (r2 + 1);
+          g.fillStyle = '#050E18'; g.fillRect(x - 1, y - 26, 2.4, 26); g.fillStyle = '#F7F4EC'; g.fillRect(x - 0.4, y - 25, 1.2, 24);
+          g.fillStyle = '#050E18'; g.beginPath(); g.moveTo(x + 1, y - 27); g.lineTo(x + 15, y - 22); g.lineTo(x + 1, y - 16); g.fill(); g.fillStyle = '#F5B041'; g.beginPath(); g.moveTo(x + 1.6, y - 25.6); g.lineTo(x + 12.4, y - 22); g.lineTo(x + 1.6, y - 17.6); g.fill(); }
+        // the pond's deep edge
+        g.fillStyle = '#123F62'; g.beginPath(); g.arc(CX, CY, r1, 0, 7); g.fill();
+        return c;
+      }
+      function water(ctx, tt, R) {
+        const r1 = R0 + 4;
+        const gr = ctx.createRadialGradient(CX - 30, CY - 40, 10, CX, CY, r1);
+        gr.addColorStop(0, '#4DB6EE'); gr.addColorStop(0.7, '#2E8ED0'); gr.addColorStop(1, '#2172AE');
+        ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(CX, CY, r1 - 1.5, 0, 7); ctx.fill();
+        ctx.save(); ctx.beginPath(); ctx.arc(CX, CY, r1 - 1.5, 0, 7); ctx.clip();
+        // gentle waves: short light strokes drifting across
+        ctx.strokeStyle = 'rgba(214,240,255,.42)'; ctx.lineWidth = 1.1; ctx.lineCap = 'round';
+        for (let i = 0; i < 46; i++) { const bx = sr(i + 40) * W, by = sr(i + 80) * H, x = (bx + tt * 6) % (W + 30) - 15, y = by + Math.sin(tt * 1.3 + i) * 2;
+          const s = 0.5 + 0.5 * Math.sin(tt * 1.7 + i * 1.9); if (s < 0.25) continue;
+          ctx.globalAlpha = s; ctx.beginPath(); ctx.moveTo(x - 6, y); ctx.quadraticCurveTo(x, y - 2.4, x + 6, y); ctx.stroke(); }
+        ctx.globalAlpha = 1; ctx.lineCap = 'butt';
+        // the edge zone that is no longer safe once the pond shrinks
+        if (R < R0 - 1) {
+          ctx.fillStyle = 'rgba(10,30,52,.42)'; ctx.beginPath(); ctx.arc(CX, CY, r1, 0, 7); ctx.arc(CX, CY, R, 0, 7, true); ctx.fill();
+          ctx.save(); ctx.beginPath(); ctx.arc(CX, CY, r1, 0, 7); ctx.arc(CX, CY, R, 0, 7, true); ctx.clip();
+          ctx.strokeStyle = 'rgba(251,113,133,.28)'; ctx.lineWidth = 4;
+          for (let x = -H; x < W + H; x += 14) { ctx.beginPath(); ctx.moveTo(x + (tt * 8) % 14, 0); ctx.lineTo(x + H + (tt * 8) % 14, H); ctx.stroke(); }
+          ctx.restore();
+        }
+        ctx.restore();
+        // the edge line: cream normally, coral and marching when it is closing in
+        const hot = G.Rgoal < R0;
+        ctx.lineWidth = 3.2; ctx.strokeStyle = '#050E18'; ctx.beginPath(); ctx.arc(CX, CY, R, 0, 7); ctx.stroke();
+        ctx.lineWidth = 1.8; ctx.strokeStyle = hot ? '#FB7185' : '#E6F6FF'; ctx.setLineDash([7, 5]); ctx.lineDashOffset = hot ? -tt * 14 : 0; ctx.beginPath(); ctx.arc(CX, CY, R, 0, 7); ctx.stroke(); ctx.setLineDash([]); ctx.lineDashOffset = 0;
+      }
+      // an arrow from boat b: its tip lands exactly where the boat would stop with nobody in the way
+      function arrow(ctx, b, vx, vy, col, mode) {
         const v = Math.sqrt(vx * vx + vy * vy); if (v < 6) return;
-        const a = Math.atan2(vy, vx), L = reach(v), ex = b.x + Math.cos(a) * L, ey = b.y + Math.sin(a) * L;
-        ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.setLineDash(solid ? [] : [5, 4]); ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(ex, ey); ctx.stroke(); ctx.setLineDash([]);
-        ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(ex + Math.cos(a) * 6, ey + Math.sin(a) * 6); ctx.lineTo(ex + Math.cos(a + 2.5) * 7, ey + Math.sin(a + 2.5) * 7); ctx.lineTo(ex + Math.cos(a - 2.5) * 7, ey + Math.sin(a - 2.5) * 7); ctx.fill();
-        ctx.strokeRect(Math.round(ex) - 4, Math.round(ey) - 4, 8, 8);
+        const a = Math.atan2(vy, vx), L = reach(v), ca = Math.cos(a), sa = Math.sin(a);
+        const sx = b.x + ca * (RAD + 1), sy = b.y + sa * (RAD + 1), ex = b.x + ca * L, ey = b.y + sa * L, hx = ex - ca * 8, hy = ey - sa * 8;
+        if (L > RAD + 9) {
+          ctx.lineCap = 'round'; ctx.lineWidth = 6; ctx.strokeStyle = '#050E18'; ctx.setLineDash(mode === 'dash' ? [7, 5] : []); ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(hx, hy); ctx.stroke();
+          ctx.lineWidth = 3.4; ctx.strokeStyle = col; ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(hx, hy); ctx.stroke(); ctx.setLineDash([]); ctx.lineCap = 'butt';
+        }
+        const tri = (w) => { ctx.beginPath(); ctx.moveTo(ex + ca * w * 0.4, ey + sa * w * 0.4); ctx.lineTo(hx - ca * w * 0.2 + sa * w, hy - sa * w * 0.2 - ca * w); ctx.lineTo(hx - ca * w * 0.2 - sa * w, hy - sa * w * 0.2 + ca * w); ctx.closePath(); };
+        ctx.fillStyle = '#050E18'; tri(8.4); ctx.fill(); ctx.fillStyle = col; tri(6); ctx.fill();
+        if (mode === 'mine' || mode === 'locked') {
+          const pct = Math.round(v / VMAX * 100) + '%'; ctx.font = '600 9px Outfit, sans-serif'; const tw = ctx.measureText(pct).width + 8;
+          const lx = Math.max(tw / 2 + 2, Math.min(W - tw / 2 - 2, ex + ca * 14)), ly = Math.max(10, Math.min(H - 6, ey + sa * 14));
+          ctx.fillStyle = '#050E18'; ctx.fillRect(lx - tw / 2, ly - 7, tw, 13); ctx.fillStyle = mode === 'locked' ? '#F5B041' : '#F7F4EC'; ctx.textAlign = 'center'; ctx.fillText(pct, lx, ly + 3); ctx.textAlign = 'left';
+        }
+      }
+      function label(ctx, txt, x, y, bg, fg) {
+        ctx.font = '600 9px Outfit, sans-serif'; const w = ctx.measureText(txt).width + 8;
+        ctx.fillStyle = '#050E18'; ctx.fillRect(x - w / 2 + 1, y - 7 + 1.5, w, 12); ctx.fillStyle = bg; ctx.fillRect(x - w / 2, y - 7, w, 12);
+        ctx.fillStyle = fg; ctx.textAlign = 'center'; ctx.fillText(txt, x, y + 2.4); ctx.textAlign = 'left';
       }
       function draw(tt) {
-        const cv = $('bo-cv'); if (!cv) return; const ctx = cv.getContext('2d'), R = G.R;
-        const s = G.shake * 40; ctx.setTransform(1, 0, 0, 1, Math.round(s ? (Math.random() - 0.5) * s : 0), Math.round(s ? (Math.random() - 0.5) * s : 0));
-        ctx.fillStyle = '#3F8F4A'; ctx.fillRect(-10, -10, W + 20, H + 20);
-        for (let i = 0; i < 80; i++) { ctx.fillStyle = i % 2 ? '#4FA35A' : '#357A3F'; ctx.fillRect((i * 53) % W, (i * 97) % H, 3, 2); }
-        ctx.fillStyle = '#D9B26A'; ctx.beginPath(); ctx.arc(CX, CY, R0 + 12, 0, 7); ctx.fill();
-        ctx.fillStyle = '#1A5C8A'; ctx.beginPath(); ctx.arc(CX, CY, R0 + 3, 0, 7); ctx.fill();
-        ctx.fillStyle = '#2F8FD0'; ctx.beginPath(); ctx.arc(CX, CY, R, 0, 7); ctx.fill();
-        ctx.fillStyle = '#3FA3E2'; for (let y = 0; y < H; y += 12) for (let x = ((y / 12) % 2) * 12; x < W; x += 24) if (dist(x, y, CX, CY) < R - 4 && Math.sin(tt * 2 + x * 0.05 + y * 0.08) > 0.3) ctx.fillRect(x, y, 6, 2);
-        ctx.strokeStyle = G.Rgoal < R0 ? '#FB7185' : '#E6F6FF'; ctx.lineWidth = 3; ctx.setLineDash([6, 5]); ctx.beginPath(); ctx.arc(CX, CY, R, 0, 7); ctx.stroke(); ctx.setLineDash([]);
-        for (const q of G.parts) {
-          if (q.txt) { ctx.font = '16px "Jersey 15", monospace'; ctx.textAlign = 'center'; ctx.fillStyle = '#050E18'; ctx.fillText(q.txt, q.x + 1, q.y + 1); ctx.fillStyle = q.txt === 'SPLASH!' ? '#BFE9FF' : '#F5B041'; ctx.fillText(q.txt, q.x, q.y); ctx.textAlign = 'left'; continue; }
-          ctx.fillStyle = q.c; ctx.globalAlpha = Math.min(1, q.l * 2); ctx.fillRect(Math.round(q.x), Math.round(q.y), 2, 2); ctx.globalAlpha = 1;
-        }
+        const cv = $('bo-cv'); if (!cv) return; const ctx = cv.getContext('2d'), R = G.R, k = fit(cv);
+        if (!G.bg) G.bg = scenery(k);
+        const s = G.shake * 40, ox = s ? (Math.random() - 0.5) * s : 0, oy = s ? (Math.random() - 0.5) * s : 0;
+        ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = '#3E8B47'; ctx.fillRect(0, 0, cv.width, cv.height);
+        ctx.drawImage(G.bg, ox * k, oy * k);
+        ctx.setTransform(k, 0, 0, k, ox * k, oy * k);
+        water(ctx, tt, R);
+        // ripples and foam under the boats
+        for (const q of G.parts) if (q.ring) { ctx.globalAlpha = Math.max(0, q.l / q.l0) * 0.6; ctx.strokeStyle = '#E6F6FF'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(q.x, q.y, q.r, 0, 7); ctx.stroke(); }
+        ctx.globalAlpha = 1;
+        for (const q of G.parts) if (!q.txt && !q.ring) { ctx.fillStyle = q.c; ctx.globalAlpha = Math.min(1, q.l * 2); ctx.beginPath(); ctx.arc(q.x, q.y, q.sz || 1.3, 0, 7); ctx.fill(); }
+        ctx.globalAlpha = 1;
+        const me = meB();
+        // my own aim range while planning (faint), so you can see how far full power goes
+        if (G.phase === 'plan' && me && me.alive && !G.sent && G.S.mine(G.me)) { ctx.strokeStyle = 'rgba(247,244,236,.22)'; ctx.lineWidth = 1; ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.arc(me.x, me.y, MAXL(), 0, 7); ctx.stroke(); ctx.setLineDash([]); }
+        G.boats.forEach((b, i) => { if (G.phase === 'reveal' && b.alive && G.plans && G.plans[i]) arrow(ctx, b, G.plans[i].vx, G.plans[i].vy, G.players[i].col[0], 'dash'); });
+        if (G.phase === 'plan' && me && me.alive && G.plan && G.plan.pow > 0.02) arrow(ctx, me, Math.cos(G.plan.a) * G.plan.pow * VMAX, Math.sin(G.plan.a) * G.plan.pow * VMAX, G.locked || G.sent ? '#F5B041' : '#F7F4EC', G.locked || G.sent ? 'locked' : 'mine');
         G.boats.forEach((b, i) => {
           const p = G.players[i];
-          if (!b.alive) { if (b.sink < 1.2) { ctx.globalAlpha = 1 - b.sink / 1.2; boat(ctx, b, p, 1 - b.sink * 0.5); ctx.globalAlpha = 1; } return; }
-          if (G.phase === 'reveal' && G.plans && G.plans[i]) arrow(ctx, b, G.plans[i].vx, G.plans[i].vy, p.col[0], false);
-          boat(ctx, b, p, 1);
+          if (!b.alive) { if (b.sink < 1.2) { ctx.globalAlpha = 1 - b.sink / 1.2; boat(ctx, b, p, 1 - b.sink * 0.5, tt, i); ctx.globalAlpha = 1; } return; }
+          boat(ctx, b, p, 1, tt, i);
         });
-        const me = meB();
         if (G.phase === 'plan') {
-          if (me && me.alive && G.plan && G.plan.pow > 0.02) arrow(ctx, me, Math.cos(G.plan.a) * G.plan.pow * VMAX, Math.sin(G.plan.a) * G.plan.pow * VMAX, '#F7F4EC', true);
-          else if (me && me.alive && !G.sent) { ctx.fillStyle = '#F7F4EC'; ctx.font = '13px "Jersey 15", monospace'; ctx.textAlign = 'center'; ctx.fillText(T('DRAG FROM YOUR BOAT', 'KÉO TỪ THUYỀN CỦA BẠN'), me.x, me.y + RAD + 16); ctx.textAlign = 'left'; }
-          ctx.font = '14px "Jersey 15", monospace'; ctx.textAlign = 'center';
-          G.boats.forEach((b, i) => { if (!b.alive || i === G.me) return; const ok = i in G.got; ctx.fillStyle = ok ? '#34D399' : '#F7F4EC'; ctx.fillText(ok ? '✓' : '?', b.x, b.y - RAD - 5 + Math.sin(tt * 4 + i) * 1.5); });
-          ctx.textAlign = 'left';
+          G.boats.forEach((b, i) => { if (!b.alive || i === G.me) return; const ok = i in G.got; label(ctx, ok ? '✓ READY' : '?', b.x, b.y - RAD - 9 + Math.sin(tt * 4 + i) * 1.2, ok ? '#34D399' : '#F7F4EC', '#050E18'); });
+          if (me && me.alive && !G.sent && G.S.mine(G.me)) {
+            if (!(G.plan && G.plan.pow > 0.02)) label(ctx, T('AIM WITH THE MOUSE OR DRAG', 'NGẮM BẰNG CHUỘT HOẶC KÉO'), me.x, me.y + RAD + 13, '#F7F4EC', '#050E18');
+            else if (!G.locked) label(ctx, T('CLICK TO LOCK YOUR AIM', 'BẤM ĐỂ CHỐT HƯỚNG'), me.x, me.y + RAD + 13, '#F7F4EC', '#050E18');
+            else label(ctx, T('LOCKED · PRESS READY', 'ĐÃ CHỐT · BẤM SẴN SÀNG'), me.x, me.y + RAD + 13, '#F5B041', '#050E18');
+          }
         }
-        if (me && me.alive) { ctx.fillStyle = '#2DD4BF'; ctx.font = '13px "Jersey 15", monospace'; ctx.textAlign = 'center'; ctx.fillText(T('YOU', 'BẠN'), me.x, me.y - RAD - (G.phase === 'plan' ? 16 : 6)); ctx.textAlign = 'left'; }
+        if (me && me.alive) label(ctx, T('YOU', 'BẠN'), me.x, me.y - RAD - (G.phase === 'plan' ? 9 : 9), '#2DD4BF', '#050E18');
+        for (const q of G.parts) if (q.txt) {
+          ctx.font = '22px "Jersey 15", monospace'; ctx.textAlign = 'center'; ctx.globalAlpha = Math.min(1, q.l * 3);
+          ctx.lineWidth = 4; ctx.strokeStyle = '#050E18'; ctx.lineJoin = 'round'; ctx.strokeText(q.txt, q.x, q.y); ctx.fillStyle = q.txt === 'SPLASH!' ? '#BFE9FF' : '#F5B041'; ctx.fillText(q.txt, q.x, q.y);
+          ctx.globalAlpha = 1; ctx.textAlign = 'left';
+        }
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
       }
-      function boat(ctx, b, p, s) {
-        ctx.save(); ctx.translate(Math.round(b.x), Math.round(b.y)); ctx.rotate(b.ang); ctx.scale(s, s);
-        ctx.fillStyle = 'rgba(5,14,24,.35)'; ctx.beginPath(); ctx.ellipse(2, 3, 14, 10, 0, 0, 7); ctx.fill();
-        ctx.fillStyle = '#050E18'; ctx.beginPath(); ctx.ellipse(0, 0, 15, 11, 0, 0, 7); ctx.fill();
-        ctx.fillStyle = p.col[1]; ctx.beginPath(); ctx.ellipse(0, 0, 13, 9, 0, 0, 7); ctx.fill();
-        ctx.fillStyle = p.col[0]; ctx.beginPath(); ctx.ellipse(0, 0, 10, 6.5, 0, 0, 7); ctx.fill();
-        ctx.fillStyle = '#050E18'; ctx.fillRect(8, -2, 5, 4);
+      // a bumper boat seen from above: a fat rubber ring, the deck, a steering wheel and the captain
+      function boat(ctx, b, p, s, tt, i) {
+        const bob = Math.sin(tt * 2.2 + i * 1.7) * 0.35;
+        ctx.save(); ctx.translate(b.x, b.y + bob); ctx.scale(s, s);
+        ctx.fillStyle = 'rgba(5,14,24,.38)'; ctx.beginPath(); ctx.arc(2.2, 3.2, RAD + 0.8, 0, 7); ctx.fill();
+        ctx.fillStyle = '#050E18'; ctx.beginPath(); ctx.arc(0, 0, RAD + 1.2, 0, 7); ctx.fill();
+        ctx.fillStyle = p.col[1]; ctx.beginPath(); ctx.arc(0, 0, RAD, 0, 7); ctx.fill();
+        ctx.strokeStyle = p.col[0]; ctx.lineWidth = 2.2; ctx.beginPath(); ctx.arc(0, 0, RAD - 2.4, 3.6, 5.9); ctx.stroke();          // shine on the ring
+        ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(0, 0, RAD - 2.4, 3.9, 4.6); ctx.stroke();
+        ctx.fillStyle = '#050E18'; ctx.beginPath(); ctx.arc(0, 0, RAD - 4.6, 0, 7); ctx.fill();
+        ctx.fillStyle = '#F7F4EC'; ctx.beginPath(); ctx.arc(0, 0, RAD - 5.2, 0, 7); ctx.fill();                                // deck
+        ctx.rotate(b.ang);
+        ctx.fillStyle = '#050E18'; ctx.beginPath(); ctx.moveTo(RAD + 4.2, 0); ctx.lineTo(RAD - 1, -4.4); ctx.lineTo(RAD - 1, 4.4); ctx.closePath(); ctx.fill();   // nose: where it points
+        ctx.fillStyle = p.col[0]; ctx.beginPath(); ctx.moveTo(RAD + 2.2, 0); ctx.lineTo(RAD - 0.2, -2.6); ctx.lineTo(RAD - 0.2, 2.6); ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = '#050E18'; ctx.lineWidth = 1.1; ctx.beginPath(); ctx.arc(3.6, 0, 2, 0, 7); ctx.stroke();                 // steering wheel
         ctx.restore();
-        ctx.font = '12px serif'; ctx.textAlign = 'center'; ctx.fillText(p.av, Math.round(b.x), Math.round(b.y) + 4); ctx.textAlign = 'left';
+        ctx.save(); ctx.translate(b.x, b.y + bob); ctx.scale(s, s);
+        ctx.font = '11px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(p.av, -1, 0.6);
+        ctx.restore(); ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left';
       }
 
       const K = '#050E18', rr = (x, y, w, h, f) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${f}"/>`;
@@ -333,7 +446,7 @@
         id: 'bumpoff', name: 'Bump Off', icon: 'bumpoff', cats: ['party', 'sports'], sub: '2-6 PLAYERS · ~5 MIN', color: '#2DD4BF', tone: 'teal', btn: 'teal', flag: 'NEW',
         blurb: 'Bumper boats! Everyone secretly picks a direction and power, then all boats move at once. Knock the others off the pond.',
         rules: { tag: 'PARTY · 2-6 PLAYERS', steps: [
-          '<strong class="text-bone">Plan in secret:</strong> drag from your boat to choose a direction; a longer arrow = more power. Press READY. You can see every boat, but not where they will go.',
+          '<strong class="text-bone">Plan in secret:</strong> the arrow follows your mouse (on a phone, drag your finger): where its tip points is where you\'ll stop, so a longer arrow = more power. Click to lock it, then press READY. You can see every boat, but not where they will go.',
           '<strong class="text-bone">Reveal:</strong> everyone\'s arrows appear at once. Too late to change!',
           '<strong class="text-bone">GO:</strong> all boats move at the same time and bump. Anyone knocked off the pond is out.',
           '<strong class="text-bone">Win:</strong> the last boat floating wins the round. First to win the set number of rounds wins.',

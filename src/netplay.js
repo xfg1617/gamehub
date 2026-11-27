@@ -13,6 +13,10 @@
        other player wins). If the host leaves, the next player becomes host.
        ========================================================================= */
     const NP = { S: null };
+    // private rooms (voice chat is allowed only there; remembered for this tab so a reload/rejoin keeps it)
+    NP.priv = (() => { try { return JSON.parse(sessionStorage.getItem('ps_np_priv') || '{}'); } catch (e) { return {}; } })();
+    function npMarkPrivate(c) { if (!c) return; NP.priv[c] = 1; try { sessionStorage.setItem('ps_np_priv', JSON.stringify(NP.priv)); } catch (e) {} }
+    function npIsPrivate(c) { return !!(c && NP.priv[c]); }
     function seeded(seed) {
       let a = seed >>> 0;
       const random = () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
@@ -188,6 +192,7 @@
       } catch (e) { showToast(e.message || 'Could not connect.', 'error'); return reopen(); }
       if (gone || activeGame !== m.id) return;
       const code = room.code, isHost = room.host === me, ranked = !!room.is_public && max === 2 && O.ranked !== false;
+      if (!quick) npMarkPrivate(code);
       NP.lobby = code; if (window.ROUTER) ROUTER.sync();   // the address bar shows the room's link (gamehub.us.com/r/CODE)
       const meta = { name: NET.me.name, avatar: NET.me.avatar, at: Date.now() };
       ch = NET.channel(code, meta);
@@ -665,6 +670,7 @@
       return null;
     }
     async function npRejoin(sv) {
+      if (sv && sv.net === 'room') npMarkPrivate(sv.code);
       const m = GAME_MODS[sv.game]; if (!m || !m.online || !NET.on) return;
       document.getElementById('np-rj') && document.getElementById('np-rj').remove();
       openGame(sv.game); await new Promise((r) => setTimeout(r, 350));

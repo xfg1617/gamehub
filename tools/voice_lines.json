@@ -361,8 +361,8 @@
 },
 {
 "id": "bumpoff",
-"text": "Drag from your boat to aim. The longer the arrow, the harder you go. Then hit Ready.",
-"hash": "cdfabf8b",
+"text": "Point where you want to go. The arrow follows your mouse, or drag with your finger. Longer arrow, harder hit. Click to lock it, then hit Ready.",
+"hash": "20815558",
 "lang": "en"
 },
 {
@@ -1393,8 +1393,8 @@
 },
 {
 "id": "bumpoff",
-"text": "Kéo từ thuyền của bạn để nhắm. Mũi tên càng dài thì lao càng mạnh. Rồi bấm Sẵn sàng.",
-"hash": "47f9dbf4",
+"text": "Chỉ chuột tới chỗ muốn đi, mũi tên sẽ chạy theo, hoặc kéo bằng ngón tay. Mũi tên càng dài thì húc càng mạnh. Bấm để chốt, rồi bấm Sẵn sàng.",
+"hash": "623c204c",
 "lang": "vi"
 },
 {

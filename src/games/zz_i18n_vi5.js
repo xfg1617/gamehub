@@ -48,6 +48,11 @@
       'Takes someone with them when they go out.': 'Khi bị loại được kéo theo một người.', 'One save potion and one poison.': 'Một bình cứu và một bình độc.',
       'Show the role of players who go out': 'Lộ vai của người bị loại', 'Your side wins!': 'Phe bạn thắng!', 'Your side lost': 'Phe bạn thua', 'Your role': 'Vai của bạn',
       'Winners': 'Phe thắng', 'The wolves': 'Bầy sói', 'The village': 'Dân làng', 'You survived': 'Bạn sống sót', 'Yes': 'Có', 'No': 'Không',
+      'Cupid': 'Thần Tình Yêu', 'Elder': 'Già Làng', 'Village Fool': 'Thằng Ngốc', 'Jester': 'Kẻ Chán Đời', 'Wolf Cub': 'Sói Con', 'Lycan': 'Người Lai Sói', 'The Jester': 'Kẻ Chán Đời',
+      'Makes two players fall in love on the first night: if one goes out, so does the other.': 'Đêm đầu se duyên hai người: một người bị loại thì người kia cũng ra theo.',
+      'Survives the first wolf attack.': 'Sống sót qua lần đầu bị sói cắn.', 'If voted out, stays in the game but can\'t vote any more.': 'Nếu bị vote ra thì được ở lại, nhưng không được bỏ phiếu nữa.',
+      'Wins alone if the village votes them out.': 'Thắng một mình nếu bị dân làng vote ra.', 'One of the wolves. If the cub goes out, the wolves take two players the next night.': 'Là một con sói. Nếu Sói Con bị loại, bầy sói cắn hai người vào đêm sau.',
+      'A villager the Seer sees as a wolf.': 'Là dân làng nhưng Tiên Tri soi thấy là sói.',
       'WOLF WINS': 'THẮNG KHI LÀM SÓI', 'SURVIVED': 'SỐNG SÓT', 'CAUGHT': 'BẮT ĐƯỢC',
     };
     window.VI_PAT5 = [

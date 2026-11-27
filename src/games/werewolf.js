@@ -23,9 +23,18 @@
         doctor: { en: 'Doctor', vi: 'Bác Sĩ', col: '#34D399', team: 'village', d: ['Each night, tap a player to protect them from the wolves. Not the same player two nights in a row.', 'Mỗi đêm, chạm vào một người để bảo vệ họ khỏi sói. Không bảo vệ cùng một người hai đêm liền.'] },
         hunter: { en: 'Hunter', vi: 'Thợ Săn', col: '#F5B041', team: 'village', d: ['If you go out, you take someone with you.', 'Nếu bạn bị loại, bạn được kéo theo một người.'] },
         witch: { en: 'Witch', vi: 'Phù Thủy', col: '#F4A261', team: 'village', d: ['One potion to save the wolves\' target, one to poison someone. Each once.', 'Một bình cứu người bị sói cắn, một bình độc. Mỗi bình dùng một lần.'] },
+        cupid: { en: 'Cupid', vi: 'Thần Tình Yêu', col: '#F472B6', team: 'village', d: ['On the first night, pick two players to fall in love. If one lover goes out, the other goes out too.', 'Đêm đầu tiên, chọn hai người yêu nhau. Nếu một người bị loại, người kia cũng ra theo.'] },
+        elder: { en: 'Elder', vi: 'Già Làng', col: '#A3B18A', team: 'village', d: ['Tough as old boots: you survive the first wolf attack.', 'Già nhưng cứng cỏi: bạn sống sót qua lần đầu bị sói cắn.'] },
+        fool: { en: 'Village Fool', vi: 'Thằng Ngốc', col: '#7DD3FC', team: 'village', d: ['If the village votes you out, everyone laughs and you stay, but you can\'t vote any more.', 'Nếu bị dân làng vote ra, mọi người cười và bạn được ở lại, nhưng không được bỏ phiếu nữa.'] },
+        jester: { en: 'Jester', vi: 'Kẻ Chán Đời', col: '#C084FC', team: 'jester', d: ['You win alone if the village votes you out. Act suspicious!', 'Bạn thắng một mình nếu bị dân làng vote ra. Hãy tỏ ra thật đáng ngờ!'] },
+        cub: { en: 'Wolf Cub', vi: 'Sói Con', col: '#FDA4AF', team: 'wolf', d: ['A wolf. If you go out, the angry pack takes two players the next night.', 'Một con sói. Nếu bạn bị loại, cả bầy nổi giận và cắn hai người vào đêm sau.'] },
+        lycan: { en: 'Lycan', vi: 'Người Lai Sói', col: '#94A3B8', team: 'village', d: ['You are on the village side, but you have wolf blood: the Seer sees you as a wolf.', 'Bạn thuộc phe dân làng, nhưng mang dòng máu sói: Tiên Tri soi sẽ thấy bạn là sói.'] },
         villager: { en: 'Villager', vi: 'Dân Làng', col: '#C9D6E3', team: 'village', d: ['No power. Listen, argue and vote the wolves out!', 'Không có chức năng. Lắng nghe, tranh luận và vote sói ra!'] },
       };
       const rname = (r) => T(R[r].en, R[r].vi);
+      const isW = (p) => !!p && (p.role === 'wolf' || p.role === 'cub');          // both are wolves
+      const seerW = (p) => isW(p) || p.role === 'lycan';                           // what the Seer sees
+      const EXTRA = ['hunter', 'witch', 'cupid', 'elder', 'fool', 'jester', 'lycan'];
       // pixel art for the role cards (built from simple shapes)
       const pxs = (rows, pal) => { let r = '', w = Math.max(...rows.map((x) => x.length)); rows.forEach((row, y) => [...row].forEach((ch, x) => { if (pal[ch]) r += `<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${pal[ch]}"/>`; })); return `<svg viewBox="0 0 ${w} ${rows.length}" shape-rendering="crispEdges">${r}</svg>`; };
       const grid = (n, f) => { const rows = []; for (let y = 0; y < n; y++) { let r = ''; for (let x = 0; x < n; x++) r += f(x + 0.5, y + 0.5) || '.'; rows.push(r); } return rows; };
@@ -37,9 +46,16 @@
         hunter: pxs(['...kkk......', '..kbbk......', '.kbk.s......', '.kbk..s.....', 'kbk...s....y', 'kbkaaaaaaaay', 'kbk...s....y', '.kbk..s.....', '.kbk.s......', '..kbbk......', '...kkk......'], { k, b: '#D08A4E', s: '#F7F4EC', a: '#C9D6E3', y: '#F5B041' }),
         witch: pxs(grid(14, (x, y) => { if (y < 2) return x > 5 && x < 9 ? 'b' : ''; if (y < 5) return x > 5 && x < 9 ? (x < 6.1 || x > 7.9 ? 'k' : 'g') : ''; const d = D(x, y, 7, 9); if (d < 4.9) return d > 4 ? 'k' : (y < 7.6 ? 'g' : D(x, y, 5.5, 10) < 0.9 || D(x, y, 8.5, 11.5) < 0.7 ? 'w' : 'p'); return ''; }), { k, b: '#D08A4E', g: '#C9D6E3', p: '#34D399', w: '#F7F4EC' }),
         villager: pxs(['...kkkkkk...', '..kyyyyyyk..', '.kyyyyyyyyk.', 'kyykyyyykyyk', 'kyykyyyykyyk', 'kyyyyyyyyyyk', 'kyykyyyykyyk', 'kyyykkkkyyyk', '.kyyyyyyyyk.', '..kyyyyyyk..', '...kkkkkk...'], { k, y: '#F5B041' }),
+        cupid: pxs(grid(14, (x, y) => { const sh = Math.abs(x + y - 13.5) < 0.75; if (sh && x > 10.5) return 'y'; if (sh && x < 3) return 'f'; const u = (x - 6.5) / 5.2, v = (6 - y) / 5.2, h = Math.pow(u * u + v * v - 1, 3) - u * u * v * v * v; if (h <= 0) { const h2 = Math.pow(u * u * 1.35 + v * v * 1.35 - 1, 3) - u * u * 1.35 * v * v * v * 1.35; if (sh) return 'a'; return h2 > 0 ? 'k' : (D(x, y, 4, 4) < 1 ? 'w' : 'r'); } return sh ? 'a' : ''; }), { k, r: '#F472B6', w: '#FCE7F3', a: '#D08A4E', y: '#F5B041', f: '#F7F4EC' }),
+        elder: pxs(['...kkkkkk...', '..kssssssk..', '.kwwsssswwk.', '.kskssssksk.', '.kssssssssk.', '.kwwssssswk.', '.kwwwwwwwwk.', '..kwwwwwwk..', '..kwwwwwwk..', '...kwwwwk...', '....kwwk....', '.....kk.....'], { k, s: '#F2C9A0', w: '#F7F4EC' }),
+        fool: pxs(['.....kk.....', '....kbbk....', '....kbbk....', '...kbbbbk...', '...kbybbk...', '..kbbbbbbk..', '.kkkkkkkkkk.', '.kssssssssk.', '.kskssssksk.', '.kssssssssk.', '.ksskkkkssk.', '..kssssssk..', '...kkkkkk...'], { k, b: '#7DD3FC', y: '#F5B041', s: '#F2C9A0' }),
+        jester: pxs(['y.....y.....y', 'k.....k.....k', 'pk...kgk...kp', 'ppk.kgggk.kpp', 'pppkgggggkppp', 'pppgggggggppp', 'kkkkkkkkkkkkk', '.ksssssssssk.', '.ksskssskssk.', '.ksssssssssk.', '.ksskkkkkssk.', '..ksssssssk..', '...kkkkkkk...'], { k, p: '#C084FC', g: '#34D399', y: '#F5B041', s: '#F2C9A0' }),
+        lycan: pxs(['....kk..kk....', '...kggkkggk...', '...kggkkggk...', '.kk.kk..kk.kk.', 'kggk......kggk', 'kggk......kggk', '.kk..kkkk..kk.', '....kggggk....', '...kggggggk...', '..kggggggggk..', '..kggggggggk..', '..kggggggggk..', '...kggkkggk...', '....kk..kk....'], { k, g: '#94A3B8' }),
         moon: pxs(grid(16, (x, y) => (D(x, y, 8, 8) < 7.6 && D(x, y, 11.5, 5.2) > 6.2 ? (D(x, y, 8, 8) > 6.6 ? 'e' : 'w') : '')), { w: '#F7F4EC', e: '#C9D6E3' }),
         sun: pxs(grid(18, (x, y) => { const d = D(x, y, 9, 9), a = Math.atan2(y - 9, x - 9); if (d < 5.2) return d > 4.3 ? 'o' : (D(x, y, 7.5, 7.5) < 1.6 ? 'w' : 'y'); if (d > 6.3 && d < 8.8 && Math.abs(Math.sin(a * 4)) < 0.28) return 'o'; return ''; }), { y: '#F5D06B', o: '#F5B041', w: '#FFF3C4' }),
       };
+      { const pad = '....................', W16 = ['..k..........k..', '.kgk........kgk.', '.kggk......kggk.', '.kgggkkkkkkgggk.', '.kggggggggggggk.', 'kggggggggggggggk', 'kggyykggggkyyggk', 'kggykkggggkkyggk', 'kggggggggggggggk', '.kggggwwwwggggk.', '.kgggwwwwwwgggk.', '..kggwwkkwwggk..', '..kgwwwrrwwwgk..', '...kwwwwwwwwk...', '....kkwwwwkk....', '......kkkk......'];
+        ART.cub = pxs([pad, pad, pad, pad, pad, pad].concat(W16.map((r) => '..' + r + '..')), { k, g: '#A8B8CC', y: '#F5B041', w: '#F7F4EC', r: '#FB7185' }); }
       const house = (x, wall, roof, lit) => `<g transform="translate(${x},0)"><rect x="0" y="16" width="26" height="18" fill="${wall}"/><polygon points="-3,17 13,4 29,17" fill="${roof}"/><rect x="10" y="24" width="6" height="10" fill="#050E18"/><rect x="3" y="20" width="4" height="4" fill="${lit}"/><rect x="19" y="20" width="4" height="4" fill="${lit}"/></g>`;
       const village = (night) => `<svg class="ww-vil" viewBox="0 0 400 38" shape-rendering="crispEdges">${[6, 50, 96, 140, 230, 274, 320, 366].map((x, i) => house(x, night ? ['#1A2B45', '#22385A'][i % 2] : ['#D08A4E', '#C9D6E3'][i % 2], night ? '#0F1C30' : '#B2213A', night ? (i % 3 ? '#0B1B2B' : '#F5B041') : '#7DD3FC')).join('')}<rect x="180" y="20" width="4" height="14" fill="${night ? '#0F1C30' : '#6B4A2B'}"/><rect x="172" y="12" width="20" height="10" fill="${night ? '#14301F' : '#3F8F4A'}"/><rect x="176" y="6" width="12" height="8" fill="${night ? '#14301F' : '#3F8F4A'}"/><rect y="34" width="400" height="4" fill="${night ? '#0B1B2B' : '#5E8C3A'}"/></svg>`;
 
@@ -60,15 +76,16 @@
       function deal(n, sel, rng) {
         const wolves = sel.wolves === 'auto' || !sel.wolves ? (n <= 6 ? 1 : n <= 10 ? 2 : 3) : Math.min(+sel.wolves, Math.floor((n - 1) / 2));
         const roles = Array(wolves).fill('wolf');
+        if (+sel.cub) roles[0] = 'cub';                       // the Wolf Cub is one of the wolves
         if (+sel.seer !== 0) roles.push('seer');
         if (+sel.doctor !== 0) roles.push('doctor');
-        if (+sel.hunter && roles.length < n - 1) roles.push('hunter');
-        if (+sel.witch && roles.length < n - 1) roles.push('witch');
+        for (const r of EXTRA) if (+sel[r] && roles.length < n - 1) roles.push(r);   // always leave at least one Villager
         while (roles.length < n) roles.push('villager');
         return rng.shuffle(roles.slice(0, n));
       }
-      function winner(players) {
-        const alive = players.filter((p) => p.alive), w = alive.filter((p) => p.role === 'wolf').length;
+      function winner(players, jester) {
+        if (jester) return 'jester';
+        const alive = players.filter((p) => p.alive), w = alive.filter((p) => isW(p)).length;
         if (!w) return 'village';
         if (w >= alive.length - w) return 'wolf';
         return null;
@@ -85,6 +102,12 @@
           { key: 'doctor', label: 'Doctor', toggle: true, def: 1, choices: [[1, 'On'], [0, 'Off']], hint: 'Each night, protects one player.' },
           { key: 'hunter', label: 'Hunter', toggle: true, def: 0, choices: [[1, 'On'], [0, 'Off']], hint: 'Takes someone with them when they go out.' },
           { key: 'witch', label: 'Witch', toggle: true, def: 0, choices: [[1, 'On'], [0, 'Off']], hint: 'One save potion and one poison.' },
+          { key: 'cupid', label: 'Cupid', toggle: true, def: 0, choices: [[1, 'On'], [0, 'Off']], hint: 'Makes two players fall in love on the first night: if one goes out, so does the other.' },
+          { key: 'elder', label: 'Elder', toggle: true, def: 0, choices: [[1, 'On'], [0, 'Off']], hint: 'Survives the first wolf attack.' },
+          { key: 'fool', label: 'Village Fool', toggle: true, def: 0, choices: [[1, 'On'], [0, 'Off']], hint: 'If voted out, stays in the game but can\'t vote any more.' },
+          { key: 'jester', label: 'Jester', toggle: true, def: 0, choices: [[1, 'On'], [0, 'Off']], hint: 'Wins alone if the village votes them out.' },
+          { key: 'cub', label: 'Wolf Cub', toggle: true, def: 0, choices: [[1, 'On'], [0, 'Off']], hint: 'One of the wolves. If the cub goes out, the wolves take two players the next night.' },
+          { key: 'lycan', label: 'Lycan', toggle: true, def: 0, choices: [[1, 'On'], [0, 'Off']], hint: 'A villager the Seer sees as a wolf.' },
           { key: 'reveal', label: 'Show the role of players who go out', toggle: true, def: 1, choices: [[1, 'On'], [0, 'Off']] },
         ], () => showToast(T('Werewolf is played with friends online: create a room and invite 4 or more people.', 'Ma Sói chơi cùng bạn bè online: tạo phòng và mời từ 4 người trở lên.'), 'info'),
           'Secret roles, a village, and wolves hiding among you. Played with friends: create a room and send them the link.');
@@ -92,7 +115,7 @@
       function start(body, sel, S) {
         const roles = deal(S.n, sel, S.rng);
         const players = S.seats.map((x, i) => ({ seat: i, name: x.name, av: x.avatar, role: roles[i], alive: true }));
-        G = { S, sel, me: S.online ? S.me : 0, players, night: 0, day: 0, nightT: +sel.night || 40, dayT: +sel.day || 120, reveal: +sel.reveal !== 0, potions: { save: true, poison: true }, lastSaved: -1,
+        G = { S, sel, me: S.online ? S.me : 0, players, night: 0, day: 0, nightT: +sel.night || 40, dayT: +sel.day || 120, reveal: +sel.reveal !== 0, potions: { save: true, poison: true }, lastSaved: -1, elderLife: 1, lovers: null, cubRage: false, jester: null,
           over: false, tok: ++GT.cur, log: [], voice: true, seen: {}, phase: 'start' };
         GT.started = true; GT.over = false;
         body.innerHTML = `<div class="ww-wrap" id="ww-wrap"><div class="ww-sky" id="ww-sky"></div>
@@ -113,7 +136,7 @@
       const alive = () => G.players.filter((p) => p.alive);
       const nm = (p) => (p.seat === G.me ? T('You', 'Bạn') : p.name);
       // what this screen may know: your own role; wolves know each other; the dead and the game's end see everything
-      const knows = (p) => p.seat === G.me || !me().alive || G.over || (me().role === 'wolf' && p.role === 'wolf') || (!p.alive && G.reveal) || (G.seen[p.seat] && me().role === 'seer');
+      const knows = (p) => p.seat === G.me || !me().alive || G.over || (isW(me()) && isW(p)) || (!p.alive && G.reveal) ;
       function sky(night) {
         const w = $('ww-wrap'); if (!w) return;
         w.classList.toggle('night', night); w.classList.toggle('day', !night);
@@ -136,14 +159,15 @@
         const g = $('ww-grid'); if (!g || !G) return;
         const my = me(), tally = {};
         // live counts: wolves see the pack's picks at night; everyone sees the day vote
-        if (G.got && G.ckey) Object.entries(G.got).forEach(([s, a]) => { const voter = G.players[+s]; if (a.target === undefined || a.target < 0) return; if (G.ckey.startsWith('n') && !(my.role === 'wolf' && voter.role === 'wolf')) return; if (G.ckey.startsWith('n') && my.role !== 'wolf') return; tally[a.target] = (tally[a.target] || 0) + 1; });
+        if (G.got && G.ckey) Object.entries(G.got).forEach(([s, a]) => { const voter = G.players[+s]; if (a.target === undefined || a.target < 0) return; if (G.ckey.startsWith('n') && !(isW(my) && isW(voter))) return; if (G.ckey.startsWith('n') && !isW(my)) return; tally[a.target] = (tally[a.target] || 0) + 1; });
         g.innerHTML = G.players.map((p) => {
-          const can = G.pick && p.alive && G.pick.ok(p), mine = G.myPick === p.seat;
-          const role = knows(p) ? `<span class="ww-role" style="color:${R[p.role].col}">${rname(p.role)}</span>` : '';
+          const can = G.pick && p.alive && G.pick.ok(p), mine = G.myPick === p.seat || (G.cupidTwo && G.cupidTwo.includes(p.seat));
+          const role = knows(p) ? `<span class="ww-role" style="color:${R[p.role].col}">${rname(p.role)}</span>` : (G.seen[p.seat] && my.role === 'seer' ? `<span class="ww-role" style="color:${seerW(p) ? '#FB7185' : '#34D399'}">${seerW(p) ? T('WOLF', 'SÓI') : T('NOT A WOLF', 'KHÔNG PHẢI SÓI')}</span>` : '');
+          const heart = G.lovers && G.lovers.includes(p.seat) && (G.lovers.includes(G.me) || my.role === 'cupid' || !my.alive || G.over) ? '<span class="ww-love">💘</span>' : '';
           const sub = !p.alive ? `<small>${T('out', 'đã ra')}${G.reveal || !my.alive || G.over ? ' · ' + rname(p.role) : ''}</small>` : p.seat === G.me ? `<small>${T('you', 'bạn')}</small>` : `<small>${can ? (G.pick.verb || T('tap', 'chạm')) : '&nbsp;'}</small>`;
           const cnt = tally[p.seat] ? `<span class="ww-cnt ${G.ckey && G.ckey.startsWith('n') ? 'wolf' : ''}">${G.ckey && G.ckey.startsWith('n') ? '🐺 ' : ''}${tally[p.seat]}</span>` : '';
           const ready = G.ckey && G.ckey.startsWith('r') && G.got && G.got[p.seat] ? '<span class="ww-ok">✓</span>' : '';
-          return `<button id="ww-seat-${p.seat}" class="ww-pl ${p.alive ? '' : 'dead'} ${can ? 'can' : ''} ${mine ? 'pick' : ''} ${my.role === 'wolf' && p.role === 'wolf' && my.alive ? 'mate' : ''}" data-s="${p.seat}" ${can ? '' : 'disabled'}>${cnt}${ready}<span class="av">${p.av}</span><b>${esc(nm(p))}</b>${role}${sub}</button>`;
+          return `<button id="ww-seat-${p.seat}" class="ww-pl ${p.alive ? '' : 'dead'} ${can ? 'can' : ''} ${mine ? 'pick' : ''} ${isW(my) && isW(p) && my.alive ? 'mate' : ''}" data-s="${p.seat}" ${can ? '' : 'disabled'}>${cnt}${ready}${heart}<span class="av">${p.av}</span><b>${esc(nm(p))}</b>${role}${sub}</button>`;
         }).join('');
         g.querySelectorAll('.ww-pl.can').forEach((b) => { b.onclick = () => { if (!G.pick) return; const p = G.players[+b.dataset.s]; G.myPick = p.seat; SFX.play('click'); G.pick.go(p); draw(); }; });
         card();
@@ -152,7 +176,7 @@
         const c = $('ww-card'); if (!c) return;
         const p = me(), r = R[p.role];
         c.innerHTML = `<div class="pix ww-cl">${T('YOUR SECRET ROLE', 'VAI BÍ MẬT CỦA BẠN')}</div><div class="ww-art">${ART[p.role]}</div><div class="ww-cn pix" style="color:${p.role === 'villager' ? '#27496B' : r.col === '#C9D6E3' ? '#27496B' : r.col}">${rname(p.role).toUpperCase()}</div>
-          <div class="ww-cd">${T(r.d[0], r.d[1])}${p.role === 'wolf' ? `<br><b>${T('Your pack', 'Bầy của bạn')}:</b> ${G.players.filter((q) => q.role === 'wolf' && q !== p).map((q) => esc(q.name)).join(', ') || T('just you', 'chỉ mình bạn')}` : ''}${p.role === 'witch' ? `<br>${G.potions.save ? '🧪' : '·'} ${T('save', 'cứu')} &nbsp; ${G.potions.poison ? '☠️' : '·'} ${T('poison', 'độc')}` : ''}</div>${p.alive ? '' : `<div class="ww-outtag pix">${T('YOU ARE OUT', 'BẠN ĐÃ RA')}</div>`}`;
+          <div class="ww-cd">${T(r.d[0], r.d[1])}${isW(p) ? `<br><b>${T('Your pack', 'Bầy của bạn')}:</b> ${G.players.filter((q) => isW(q) && q !== p).map((q) => esc(q.name)).join(', ') || T('just you', 'chỉ mình bạn')}` : ''}${G.lovers && G.lovers.includes(p.seat) ? `<br>💘 <b>${T('In love with', 'Đang yêu')}:</b> ${esc(G.players[G.lovers[0] === p.seat ? G.lovers[1] : G.lovers[0]].name)}` : ''}${p.noVote ? `<br>${T('You can\'t vote any more.', 'Bạn không được bỏ phiếu nữa.')}` : ''}${p.role === 'witch' ? `<br>${G.potions.save ? '🧪' : '·'} ${T('save', 'cứu')} &nbsp; ${G.potions.poison ? '☠️' : '·'} ${T('poison', 'độc')}` : ''}</div>${p.alive ? '' : `<div class="ww-outtag pix">${T('YOU ARE OUT', 'BẠN ĐÃ RA')}</div>`}`;
         c.classList.toggle('dead', !p.alive);
       }
 
@@ -160,7 +184,7 @@
         // 1. everyone sees their secret role
         sky(true); head(T('YOUR SECRET ROLE', 'VAI BÍ MẬT CỦA BẠN'), 'am');
         const my = me();
-        news(`<div class="ww-reveal"><div class="ww-art big">${ART[my.role]}</div><div><div class="pix" style="font-size:30px;color:${R[my.role].col}">${rname(my.role).toUpperCase()}</div><div class="ww-cd">${T(R[my.role].d[0], R[my.role].d[1])}</div>${my.role === 'wolf' ? `<div class="ww-cd"><b>${T('Your pack', 'Bầy của bạn')}:</b> ${G.players.filter((q) => q.role === 'wolf' && q !== my).map((q) => esc(q.name)).join(', ') || T('just you', 'chỉ mình bạn')}</div>` : ''}<div class="ww-cd text-muted">${T('Keep it secret!', 'Giữ bí mật nhé!')}</div></div></div>`);
+        news(`<div class="ww-reveal"><div class="ww-art big">${ART[my.role]}</div><div><div class="pix" style="font-size:30px;color:${R[my.role].col}">${rname(my.role).toUpperCase()}</div><div class="ww-cd">${T(R[my.role].d[0], R[my.role].d[1])}</div>${isW(my) ? `<div class="ww-cd"><b>${T('Your pack', 'Bầy của bạn')}:</b> ${G.players.filter((q) => isW(q) && q !== my).map((q) => esc(q.name)).join(', ') || T('just you', 'chỉ mình bạn')}</div>` : ''}<div class="ww-cd text-muted">${T('Keep it secret!', 'Giữ bí mật nhé!')}</div></div></div>`);
         draw(); timer(0);
         say('Welcome to the village. Look at your secret role, and keep it to yourself.', 'Chào mừng đến với ngôi làng. Hãy xem vai bí mật của bạn, và giữ kín nhé.');
         await W(9000);
@@ -175,17 +199,20 @@
         sky(true); head(`${T('NIGHT', 'ĐÊM')} ${G.night}`, 'night', ART.moon);
         SFX.play('howl');
         say('Night falls on the village. Everyone, close your eyes.', 'Màn đêm buông xuống. Mọi người nhắm mắt lại.');
-        const my = me(), key = 'n' + G.night;
+        if (G.night === 1) await cupidStep();
+        const my = me(), key = 'n' + G.night, rage = G.cubRage;
+        const wl = rage ? [T('Your cub is gone and the pack is furious: tonight you take TWO. Tap your choice; the two with the most picks are taken.', 'Sói Con đã mất, cả bầy nổi giận: đêm nay cắn HAI người. Chạm để chọn; hai người được chọn nhiều nhất sẽ bị cắn.'), T('take', 'cắn')]
+          : [T('The wolves are hunting. Tap who your pack takes tonight.', 'Bầy sói đi săn. Chạm vào người bầy bạn chọn đêm nay.'), T('take', 'cắn')];
         const lines = {
-          wolf: [T('The wolves are hunting. Tap who your pack takes tonight.', 'Bầy sói đi săn. Chạm vào người bầy bạn chọn đêm nay.'), T('take', 'cắn')],
+          wolf: wl, cub: wl,
           seer: [T('Tap a player to see if they are a wolf.', 'Chạm vào một người để xem họ có phải sói không.'), T('look', 'soi')],
           doctor: [T('Tap a player to protect tonight.', 'Chạm vào người bạn muốn bảo vệ đêm nay.'), T('protect', 'bảo vệ')],
         };
         const L = my.alive ? lines[my.role] || [T('Everyone is asleep. Tap the player you suspect most.', 'Mọi người đang ngủ. Chạm vào người bạn nghi nhất.'), T('suspect', 'nghi')] : null;
         news(my.alive ? `<b>${L[0]}</b>` : `<span class="text-muted">${T('You are out. Watch the night unfold...', 'Bạn đã ra. Xem đêm nay diễn ra thế nào...')}</span>`);
         G.ckey = key; G.got = {}; G.myPick = null;
-        G.pick = my.alive ? { verb: L[1], ok: (p) => (my.role === 'wolf' ? p.role !== 'wolf' : my.role === 'doctor' ? p.seat !== G.lastProtect : my.role === 'seer' ? p.seat !== my.seat : p.seat !== my.seat), go: (p) => {
-          if (my.role === 'seer') { G.seen[p.seat] = true; news(`<b>${esc(p.name)}</b> ${p.role === 'wolf' ? `<b class="text-coral">${T('IS A WOLF!', 'LÀ SÓI!')}</b>` : `<b class="text-emerald">${T('is not a wolf.', 'không phải sói.')}</b>`}`); log(T(`You looked at ${esc(p.name)}: ${p.role === 'wolf' ? 'a wolf' : 'not a wolf'}.`, `Bạn soi ${esc(p.name)}: ${p.role === 'wolf' ? 'là sói' : 'không phải sói'}.`)); G.pick = null; }
+        G.pick = my.alive ? { verb: L[1], ok: (p) => (isW(my) ? !isW(p) : my.role === 'doctor' ? p.seat !== G.lastProtect : p.seat !== my.seat), go: (p) => {
+          if (my.role === 'seer') { G.seen[p.seat] = true; news(`<b>${esc(p.name)}</b> ${seerW(p) ? `<b class="text-coral">${T('IS A WOLF!', 'LÀ SÓI!')}</b>` : `<b class="text-emerald">${T('is not a wolf.', 'không phải sói.')}</b>`}`); log(T(`You looked at ${esc(p.name)}: ${seerW(p) ? 'a wolf' : 'not a wolf'}.`, `Bạn soi ${esc(p.name)}: ${seerW(p) ? 'là sói' : 'không phải sói'}.`)); G.pick = null; }
           S.act({ t: 'night', key, s: my.seat, target: p.seat });
           if (my.role !== 'seer') news(`<b>${L[0]}</b> <span class="text-muted">· ${T('you chose', 'bạn chọn')} ${esc(p.name)}</span>`);
         } } : null;
@@ -195,11 +222,18 @@
         if (!G || G.tok !== t) throw ABORT;
         G.pick = null; G.ckey = null; draw();
         // the wolves' target: most wolf picks (a tie: the shared dice pick)
-        const wolves = alive().filter((p) => p.role === 'wolf'), cnt = {};
-        wolves.forEach((w) => { const x = (got[w.seat] || {}).target; if (x >= 0 && G.players[x].alive && G.players[x].role !== 'wolf') cnt[x] = (cnt[x] || 0) + 1; });
+        const wolves = alive().filter((p) => isW(p)), cnt = {};
+        wolves.forEach((w) => { const x = (got[w.seat] || {}).target; if (x >= 0 && G.players[x].alive && !isW(G.players[x])) cnt[x] = (cnt[x] || 0) + 1; });
         let target = -1; const top = Math.max(0, ...Object.values(cnt));
         if (top) { const tied = Object.keys(cnt).filter((x) => cnt[x] === top).map(Number).sort((a, b) => a - b); target = tied[S.rng.rnd(tied.length)]; }
-        else { const prey = alive().filter((p) => p.role !== 'wolf'); if (prey.length && wolves.length) target = prey[S.rng.rnd(prey.length)].seat; }   // no pick: they take someone anyway
+        else { const prey = alive().filter((p) => !isW(p)); if (prey.length && wolves.length) target = prey[S.rng.rnd(prey.length)].seat; }   // no pick: they take someone anyway
+        let target2 = -1;
+        if (rage && target >= 0) {
+          G.cubRage = false;
+          const rest = Object.keys(cnt).map(Number).filter((x) => x !== target), top2 = Math.max(0, ...rest.map((x) => cnt[x]));
+          if (top2) { const t2 = rest.filter((x) => cnt[x] === top2).sort((a, b) => a - b); target2 = t2[S.rng.rnd(t2.length)]; }
+          else { const prey = alive().filter((p) => !isW(p) && p.seat !== target); if (prey.length) target2 = prey[S.rng.rnd(prey.length)].seat; }
+        }
         const doc = alive().find((p) => p.role === 'doctor'), prot = doc ? (got[doc.seat] || {}).target : -1;
         G.lastProtect = prot;
         // the witch
@@ -229,10 +263,13 @@
           if (a.poison >= 0 && G.potions.poison && G.players[a.poison] && G.players[a.poison].alive) { poisoned = a.poison; G.potions.poison = false; }
         }
         // dawn
-        const out = [];
-        if (target >= 0 && target !== prot && !saved) out.push(target);
+        const out = []; let spared = target >= 0 && (target === prot || saved);
+        const bite = (x) => { if (x < 0 || x === prot || out.includes(x)) return; if (G.players[x].role === 'elder' && G.elderLife > 0) { G.elderLife = 0; spared = true; return; } out.push(x); };
+        if (target >= 0 && target !== prot && !saved) bite(target);
+        bite(target2);
         if (poisoned >= 0 && !out.includes(poisoned)) out.push(poisoned);
-        G.dawn = { out, protectedSomeone: target >= 0 && (target === prot || saved) };
+        G.dawn = { out, protectedSomeone: spared };
+        (G.dawns = G.dawns || []).push(out.slice());   // for tests
       }
       // ---------- day ----------
       async function dayPhase() {
@@ -253,6 +290,7 @@
         }
         draw(); timer(0);
         await W(5500);
+        await afterOut(out);
         for (const p of out) if (p.role === 'hunter') await hunterShot(p);
         if (await checkEnd()) return;
         // talk, then vote
@@ -272,11 +310,13 @@
         head(T('VILLAGE VOTE', 'BỎ PHIẾU'), 'am', ART.sun);
         news(my.alive ? `<b>${T('Vote: tap who you think is a wolf.', 'Bỏ phiếu: chạm vào người bạn nghĩ là sói.')}</b> <span class="text-muted">${T('Most votes is out. A tie: nobody.', 'Nhiều phiếu nhất sẽ ra. Hòa: không ai ra.')}</span>` : `<span class="text-muted">${T('The village is voting...', 'Dân làng đang bỏ phiếu...')}</span>`);
         say('Time to vote.', 'Đến giờ bỏ phiếu.');
-        G.pick = my.alive ? { verb: T('vote', 'bầu'), ok: (p) => p.seat !== my.seat, go: (p) => { S.act({ t: 'vote', key: vk, s: my.seat, target: p.seat }); G.pick = null; news(`<b>${T('You voted for', 'Bạn đã bầu')} ${esc(p.name)}.</b> <span class="text-muted">${T('Waiting for the others...', 'Đang chờ mọi người...')}</span>`); } } : null;
-        act(my.alive ? `<button id="ww-skip" class="btn-game btn-graphite py-2 px-4 text-sm">${T('Skip vote', 'Bỏ qua')}</button>` : '');
+        const canVote = my.alive && !my.noVote;
+        if (my.alive && my.noVote) news(`<span class="text-muted">${T('You are the Village Fool: you can\'t vote any more. Watch the others vote...', 'Bạn là Thằng Ngốc: bạn không được bỏ phiếu nữa. Xem mọi người bỏ phiếu...')}</span>`);
+        G.pick = canVote ? { verb: T('vote', 'bầu'), ok: (p) => p.seat !== my.seat, go: (p) => { S.act({ t: 'vote', key: vk, s: my.seat, target: p.seat }); G.pick = null; news(`<b>${T('You voted for', 'Bạn đã bầu')} ${esc(p.name)}.</b> <span class="text-muted">${T('Waiting for the others...', 'Đang chờ mọi người...')}</span>`); } } : null;
+        act(canVote ? `<button id="ww-skip" class="btn-game btn-graphite py-2 px-4 text-sm">${T('Skip vote', 'Bỏ qua')}</button>` : '');
         const sk = $('ww-skip'); if (sk) sk.onclick = () => { if (!G.pick) return; G.pick = null; S.act({ t: 'vote', key: vk, s: my.seat, target: -1 }); act(''); draw(); };
         draw(); timer(40);
-        const got = await S.collect(vk, alive().map((p) => p.seat), () => ({ t: 'vote', target: -1 }), () => ({ t: 'vote', target: -1 }), 40);
+        const got = await S.collect(vk, alive().filter((p) => !p.noVote).map((p) => p.seat), () => ({ t: 'vote', target: -1 }), () => ({ t: 'vote', target: -1 }), 40);
         if (!G || G.tok !== t) throw ABORT;
         G.pick = null; act(''); G.got = got; draw(); G.ckey = null;
         const cnt = {}; Object.values(got).forEach((a) => { if (a.target >= 0 && G.players[a.target].alive) cnt[a.target] = (cnt[a.target] || 0) + 1; });
@@ -287,16 +327,68 @@
           say('A tie. Nobody leaves the village today.', 'Hòa phiếu. Hôm nay không ai rời làng.');
           await W(4000);
         } else {
-          const p = G.players[+tied[0]]; p.alive = false;
-          news(`<b>${esc(nm(p))}</b> ${p.seat === G.me ? T(`are voted out with ${top} vote${top > 1 ? 's' : ''}.`, `bị loại với ${top} phiếu.`) : T(`is voted out with ${top} vote${top > 1 ? 's' : ''}.`, `bị loại với ${top} phiếu.`)}${G.reveal ? ` ${T('They were the', 'Họ là')} <b style="color:${R[p.role].col}">${rname(p.role)}</b>${p.role === 'wolf' ? ' 🐺' : ''}.` : ''}`);
+          const p = G.players[+tied[0]];
+          if (p.role === 'fool' && !p.noVote) {
+            p.noVote = true; timer(0);
+            news(`<b>${esc(nm(p))}</b> ${T(`${p.seat === G.me ? 'are' : 'is'} voted out... but ${p.seat === G.me ? 'you are' : 'they are'} the <b style="color:${R.fool.col}">Village Fool</b>! Everyone laughs, and ${p.seat === G.me ? 'you stay' : 'they stay'}, but can't vote any more.`, `bị vote ra... nhưng lại là <b style="color:${R.fool.col}">Thằng Ngốc</b>! Cả làng cười ồ, và được ở lại, nhưng không được bỏ phiếu nữa.`)}`);
+            log(T(`Vote: ${esc(p.name)} was the Village Fool and stays (no more votes).`, `Bỏ phiếu: ${esc(p.name)} là Thằng Ngốc, được ở lại (không bỏ phiếu nữa).`));
+            SFX.play('nope'); say(`${p.name} is the Village Fool! Everyone laughs, and they stay.`, `${p.name} là Thằng Ngốc! Cả làng cười ồ, và họ được ở lại.`);
+            draw(); await W(5000); await checkEnd(); return;
+          }
+          p.alive = false;
+          if (p.role === 'jester') { G.jester = p; log(T(`Vote: ${esc(p.name)} was the Jester, and wins!`, `Bỏ phiếu: ${esc(p.name)} là Kẻ Chán Đời, và thắng!`)); draw(); await checkEnd(); return; }
+          news(`<b>${esc(nm(p))}</b> ${p.seat === G.me ? T(`are voted out with ${top} vote${top > 1 ? 's' : ''}.`, `bị loại với ${top} phiếu.`) : T(`is voted out with ${top} vote${top > 1 ? 's' : ''}.`, `bị loại với ${top} phiếu.`)}${G.reveal ? ` ${T('They were the', 'Họ là')} <b style="color:${R[p.role].col}">${rname(p.role)}</b>${isW(p) ? ' 🐺' : ''}.` : ''}`);
           log(T(`Vote: ${esc(p.name)} is out (${rname(p.role)}).`, `Bỏ phiếu: ${esc(p.name)} ra (${rname(p.role)}).`));
-          SFX.play(p.role === 'wolf' ? 'win' : 'lose');
-          say(`${p.name} is voted out.${G.reveal ? (p.role === 'wolf' ? ' And they were a werewolf!' : ' They were not a wolf.') : ''}`, `${p.name} bị loại.${G.reveal ? (p.role === 'wolf' ? ' Và đó là một con sói!' : ' Họ không phải sói.') : ''}`);
-          if (p.role === 'wolf' && me().role !== 'wolf' && got[G.me] && got[G.me].target === p.seat) funMoment('ww-seat-' + G.me, { key: 'caught' + G.day, icon: '🎯', label: 'CAUGHT', burst: T('WOLF CAUGHT!', 'BẮT ĐƯỢC SÓI!'), sub: `${p.name} was a wolf`, mine: true });
+          SFX.play(isW(p) ? 'win' : 'lose');
+          say(`${p.name} is voted out.${G.reveal ? (isW(p) ? ' And they were a werewolf!' : ' They were not a wolf.') : ''}`, `${p.name} bị loại.${G.reveal ? (isW(p) ? ' Và đó là một con sói!' : ' Họ không phải sói.') : ''}`);
+          if (isW(p) && !isW(me()) && got[G.me] && got[G.me].target === p.seat) funMoment('ww-seat-' + G.me, { key: 'caught' + G.day, icon: '🎯', label: 'CAUGHT', burst: T('WOLF CAUGHT!', 'BẮT ĐƯỢC SÓI!'), sub: `${p.name} was a wolf`, mine: true });
           draw(); await W(5000);
+          await afterOut([p]);
           if (p.role === 'hunter') await hunterShot(p);
         }
         await checkEnd();
+      }
+      // Cupid, first night: picks two lovers (on Cupid's screen); then the lovers find out on their own screens
+      async function cupidStep() {
+        const S = G.S, t = G.tok, c = alive().find((p) => p.role === 'cupid');
+        if (!c) return;
+        const ck = 'c1'; G.ckey = ck; G.got = {}; G.myPick = null;
+        say('Cupid wakes up, and chooses two lovers.', 'Thần Tình Yêu thức dậy, và chọn ra hai người yêu nhau.');
+        if (c.seat === G.me) {
+          const two = []; let sent = false; G.cupidTwo = two;
+          const ui = () => { news(`<b>${T('You are Cupid! Tap two players to fall in love', 'Bạn là Thần Tình Yêu! Chạm vào hai người để họ yêu nhau')}</b> <span class="text-muted">(${two.map((x) => esc(nm(G.players[x]))).join(' 💘 ') || T('you can pick yourself too', 'có thể chọn cả bạn')})</span>`);
+            act(two.length === 2 ? `<button id="ww-love" class="btn-game btn-coral py-2 px-5 text-sm">💘 ${T('Make them fall in love', 'Se duyên')}</button>` : '');
+            const b = $('ww-love'); if (b) b.onclick = () => { if (sent) return; sent = true; G.pick = null; act(''); S.act({ t: 'love', key: ck, s: G.me, a: two[0], b: two[1] }); news(`<span class="text-muted">${T('The night goes on...', 'Đêm vẫn tiếp tục...')}</span>`); draw(); }; };
+          G.pick = { verb: '💘', ok: () => true, go: (p) => { const i = two.indexOf(p.seat); if (i >= 0) two.splice(i, 1); else { if (two.length === 2) two.shift(); two.push(p.seat); } G.myPick = null; ui(); } };
+          ui();
+        } else news(me().alive ? `<span class="text-muted">${T('Cupid is choosing two lovers... Love is in the air.', 'Thần Tình Yêu đang se duyên... Tình yêu đang lan tỏa.')}</span>` : '');
+        draw(); timer(25);
+        const got = await S.collect(ck, [c.seat], () => ({ t: 'love', a: -1, b: -1 }), () => ({ t: 'love', a: -1, b: -1 }), 25);
+        if (!G || G.tok !== t) throw ABORT;
+        G.pick = null; G.ckey = null; G.cupidTwo = null; act('');
+        const a = got[c.seat] || {};
+        if (a.a >= 0 && a.b >= 0 && a.a !== a.b && G.players[a.a] && G.players[a.b]) {
+          G.lovers = [a.a, a.b];
+          log(T(`Cupid made ${esc(G.players[a.a].name)} and ${esc(G.players[a.b].name)} fall in love.`, `Thần Tình Yêu se duyên ${esc(G.players[a.a].name)} và ${esc(G.players[a.b].name)}.`));
+          if (G.lovers.includes(G.me)) { const o = G.players[G.lovers[0] === G.me ? G.lovers[1] : G.lovers[0]]; news(`<b>💘 ${T(`You fell in love with ${esc(o.name)}!`, `Bạn đã phải lòng ${esc(o.name)}!`)}</b> <span class="text-muted">${T('If one of you goes out, the other goes out too.', 'Nếu một người bị loại, người kia cũng ra theo.')}</span>`); SFX.play('coin'); }
+          else news(`<span class="text-muted">${T('Love is in the air...', 'Tình yêu đang lan tỏa...')}</span>`);
+          draw(); await W(4000);
+        }
+      }
+      // whenever players go out: a Wolf Cub makes the pack furious, a lover leaves with a broken heart
+      async function afterOut(list) {
+        for (const p of list) if (p.role === 'cub') G.cubRage = true;
+        const L = G.lovers; if (!L) return;
+        const a = G.players[L[0]], b = G.players[L[1]], broken = !a.alive && b.alive ? b : !b.alive && a.alive ? a : null;
+        if (!broken) return;
+        broken.alive = false; G.lovers = null;
+        const other = broken === a ? b : a;
+        news(`<b>💔 ${esc(nm(broken))}</b> ${T(`${broken.seat === G.me ? 'were' : 'was'} in love with ${esc(other.name)}, and ${broken.seat === G.me ? 'leave' : 'leaves'} the village with a broken heart.`, `đã yêu ${esc(other.name)}, và rời làng với trái tim tan vỡ.`)}${G.reveal ? ` ${T('They were the', 'Họ là')} <b style="color:${R[broken.role].col}">${rname(broken.role)}</b>.` : ''}`);
+        log(T(`${esc(broken.name)} leaves with a broken heart (${rname(broken.role)}).`, `${esc(broken.name)} rời làng vì tan vỡ (${rname(broken.role)}).`));
+        SFX.play('lose'); say(`${broken.name} leaves the village with a broken heart.`, `${broken.name} rời làng với trái tim tan vỡ.`);
+        draw(); await W(4500);
+        await afterOut([broken]);
+        if (broken.role === 'hunter') await hunterShot(broken);
       }
       async function hunterShot(h) {
         const S = G.S, t = G.tok, key = 'h' + G.day + '_' + h.seat;
@@ -313,26 +405,33 @@
           news(`<b>${esc(h.name)}</b> ${T('takes', 'kéo theo')} <b>${esc(nm(p))}</b>!${G.reveal ? ` ${T('They were the', 'Họ là')} <b style="color:${R[p.role].col}">${rname(p.role)}</b>.` : ''}`);
           log(T(`The Hunter takes ${esc(p.name)} (${rname(p.role)}).`, `Thợ Săn kéo theo ${esc(p.name)} (${rname(p.role)}).`));
           SFX.play('crash'); draw(); await W(4500);
+          await afterOut([p]);
           if (p.role === 'hunter') await hunterShot(p);
         }
       }
       async function checkEnd() {
-        const w = winner(G.players);
+        const w = winner(G.players, G.jester);
         if (!w) return false;
         G.over = true; G.S.over = true; G.pick = null;
         sky(w === 'wolf');
-        head(w === 'wolf' ? T('THE WOLVES WIN!', 'BẦY SÓI THẮNG!') : T('THE VILLAGE WINS!', 'DÂN LÀNG THẮNG!'), w === 'wolf' ? 'night' : 'am', w === 'wolf' ? ART.wolf : ART.sun);
-        news(`<b>${w === 'wolf' ? T('The wolves are as many as everyone else. The village is lost!', 'Số sói đã bằng số dân. Ngôi làng thất thủ!') : T('Every wolf is out. The village is safe!', 'Tất cả sói đã bị loại. Ngôi làng an toàn!')}</b>`);
-        say(w === 'wolf' ? 'The wolves win!' : 'The village wins!', w === 'wolf' ? 'Bầy sói chiến thắng!' : 'Dân làng chiến thắng!');
+        if (w === 'jester') {
+          head(T('THE JESTER WINS!', 'KẺ CHÁN ĐỜI THẮNG!'), 'am', ART.jester);
+          news(`<b>${esc(nm(G.jester))}</b> ${T(`${G.jester.seat === G.me ? 'were' : 'was'} the <b style="color:${R.jester.col}">Jester</b>, and wanted to be voted out all along. The Jester wins alone!`, `là <b style="color:${R.jester.col}">Kẻ Chán Đời</b>, và chỉ chờ bị vote ra. Kẻ Chán Đời thắng một mình!`)}`);
+          say(`${G.jester.name} was the Jester, and wins!`, `${G.jester.name} là Kẻ Chán Đời, và chiến thắng!`); SFX.play('win');
+        } else {
+          head(w === 'wolf' ? T('THE WOLVES WIN!', 'BẦY SÓI THẮNG!') : T('THE VILLAGE WINS!', 'DÂN LÀNG THẮNG!'), w === 'wolf' ? 'night' : 'am', w === 'wolf' ? ART.wolf : ART.sun);
+          news(`<b>${w === 'wolf' ? T('The wolves are as many as everyone else. The village is lost!', 'Số sói đã bằng số dân. Ngôi làng thất thủ!') : T('Every wolf is out. The village is safe!', 'Tất cả sói đã bị loại. Ngôi làng an toàn!')}</b>`);
+          say(w === 'wolf' ? 'The wolves win!' : 'The village wins!', w === 'wolf' ? 'Bầy sói chiến thắng!' : 'Dân làng chiến thắng!');
+        }
         draw(); timer(0); await W(4500);
         const S = G.S, my = me(), won = (R[my.role].team === w), tok = G.tok;
         const row = S.online ? await S.finish(won ? 'win' : 'loss') : null;
         if (!G || G.tok !== tok) return true;
-        const s = gstat('werewolf'); if (my.role === 'wolf') s.wolfGames = (s.wolfGames || 0) + 1; if (won && my.role === 'wolf') s.wolfWins = (s.wolfWins || 0) + 1; if (my.alive) s.survived = (s.survived || 0) + 1;
+        const s = gstat('werewolf'); if (isW(my)) s.wolfGames = (s.wolfGames || 0) + 1; if (won && isW(my)) s.wolfWins = (s.wolfWins || 0) + 1; if (my.alive) s.survived = (s.survived || 0) + 1;
         reportGame('werewolf', won ? 'win' : 'loss', { xp: won ? 30 : 12, label: `${rname(my.role)} · ${G.players.length} players` });
         gameResult({ title: won ? 'Your side wins!' : 'Your side lost', sub: G.players.map((p) => `${p.av} ${p.seat === G.me ? 'You' : p.name}: ${R[p.role].en}`).join(' · '),
           tone: won ? 'amber' : 'coral', sprite: won ? 'trophy' : 'anchor',
-          rows: [['Your role', rname(my.role), 'text-amber'], ['Winners', w === 'wolf' ? 'The wolves' : 'The village', won ? 'text-emerald' : 'text-coral'], ['You survived', my.alive ? 'Yes' : 'No', 'text-bone']].concat(row ? [row] : []),
+          rows: [['Your role', rname(my.role), 'text-amber'], ['Winners', w === 'jester' ? 'The Jester' : w === 'wolf' ? 'The wolves' : 'The village', won ? 'text-emerald' : 'text-coral'], ['You survived', my.alive ? 'Yes' : 'No', 'text-bone']].concat(row ? [row] : []),
           againLabel: 'Back to setup', again: () => open($('game-root')) });
         return true;
       }

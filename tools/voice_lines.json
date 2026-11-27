@@ -265,6 +265,42 @@
 },
 {
 "id": "werewolf",
+"text": "Cupid: on the first night, pick two players to fall in love. If one goes out, the other goes out too, heartbroken.",
+"hash": "8b3db3a3",
+"lang": "en"
+},
+{
+"id": "werewolf",
+"text": "The Elder is tough. The first time the wolves bite, the Elder survives.",
+"hash": "1517b4ee",
+"lang": "en"
+},
+{
+"id": "werewolf",
+"text": "The Village Fool: if the village votes you out, everyone laughs and you stay. But you lose your vote.",
+"hash": "1de58b2c",
+"lang": "en"
+},
+{
+"id": "werewolf",
+"text": "The Jester wants to be voted out. If the village falls for it, the Jester wins alone!",
+"hash": "639b4503",
+"lang": "en"
+},
+{
+"id": "werewolf",
+"text": "The Wolf Cub is a wolf too. If the cub goes out, the angry pack takes two players the next night.",
+"hash": "c9dfd106",
+"lang": "en"
+},
+{
+"id": "werewolf",
+"text": "The Lycan is on the village side, but has wolf blood, so the Seer sees them as a wolf. Tricky!",
+"hash": "b3a6faa7",
+"lang": "en"
+},
+{
+"id": "werewolf",
 "text": "And the Villagers: no power, just your brain. Listen, argue, and vote the wolves out!",
 "hash": "5880c62b",
 "lang": "en"
@@ -1215,6 +1251,42 @@
 "id": "werewolf",
 "text": "Phù Thủy: một bình cứu người bị sói cắn, và một bình độc. Mỗi bình chỉ dùng một lần.",
 "hash": "a5ab21ab",
+"lang": "vi"
+},
+{
+"id": "werewolf",
+"text": "Thần Tình Yêu: đêm đầu tiên, chọn hai người để họ yêu nhau. Một người bị loại thì người kia cũng ra theo, vì trái tim tan vỡ.",
+"hash": "85cee5c1",
+"lang": "vi"
+},
+{
+"id": "werewolf",
+"text": "Già Làng rất cứng cỏi. Lần đầu bị sói cắn, Già Làng vẫn sống.",
+"hash": "fd7c76a4",
+"lang": "vi"
+},
+{
+"id": "werewolf",
+"text": "Thằng Ngốc: nếu bị cả làng vote ra, mọi người cười ồ và bạn được ở lại. Nhưng bạn mất quyền bỏ phiếu.",
+"hash": "2135ffbe",
+"lang": "vi"
+},
+{
+"id": "werewolf",
+"text": "Kẻ Chán Đời chỉ mong bị vote ra. Nếu cả làng mắc bẫy, Kẻ Chán Đời thắng một mình!",
+"hash": "cc5864da",
+"lang": "vi"
+},
+{
+"id": "werewolf",
+"text": "Sói Con cũng là sói. Nếu Sói Con bị loại, cả bầy nổi giận và cắn hai người vào đêm sau.",
+"hash": "d9585919",
+"lang": "vi"
+},
+{
+"id": "werewolf",
+"text": "Người Lai Sói thuộc phe dân làng, nhưng mang dòng máu sói, nên Tiên Tri soi thấy là sói. Rối chưa!",
+"hash": "3dabb744",
 "lang": "vi"
 },
 {

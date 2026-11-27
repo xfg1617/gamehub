@@ -1146,7 +1146,7 @@ folder that was handed over, so they do not exist here.)
   ♠<♣<♦<♥; singles, pairs, triples, quads, straights, runs of pairs; bombs on 2s (+1/-1 point, ×2 for a pair of 2s);
   places per hand → points; HANDS 1/3/5. `classify`, `beats`, `combos`, `botMove`. Uses the card-table look (TABLE_GAMES,
   25-fullscreen / 27-tables selectors copied from Bullshit with `#th-opp`). `t_thirteen.py`, `t_np_thirteen.py`.
-* **Trivia Rush** (`trivia.js`, 39-trivia.css; questions `trivia_q1-3.js` = `TRIVIA_Q`, 366 questions, 12 categories,
+* **Trivia Rush** (`trivia.js`, 39-trivia.css; questions `trivia_q1-8.js` = `TRIVIA_Q`, 1,091 questions (tripled Nov 27), 12 categories,
   each `[cat, level, en, 'right|w|w|w', vi, vi answers or '']`): QUESTIONS IN English / Tiếng Việt (hero setting), category,
   10/15/20, time, difficulty; solo or 2-8, computer players (Easy/Smart/Genius). Everyone answers via `S.collect`;
   500 + up to 500 for speed, streak bonus from 3 in a row. Add questions in the same format. `t_trivia.py`, `t_np_trivia.py`.
@@ -1191,3 +1191,12 @@ folder that was handed over, so they do not exist here.)
 * **Next game without people who left** (Inna, Nov 27 2026): `npRematchSlot` leaves out players whose seat was handed to
   a computer during the game (`seat.left`), and leaving the result screen (Back to lobby, closing it, closing the tab)
   sends `bye` on `rm:<code>` so the others drop that player at once (no 10 s wait). `test/t_np_next_left.py`.
+* **Werewolf: 6 more roles** (Nov 27 2026, Inna: "add all roles"), each an On/Off room setting (off by default): **Cupid**
+  (`cupidStep`, first night, picks two lovers `G.lovers`; 💘 on their tags for the lovers/Cupid; one out → the other leaves
+  heartbroken, `afterOut`), **Elder** (`G.elderLife`: survives the first bite), **Village Fool** (voted out → stays,
+  `p.noVote`, left out of later votes), **Jester** (team 'jester'; voted out → `G.jester`, wins alone), **Wolf Cub**
+  (replaces one wolf; `isW()` = wolf or cub; when out `G.cubRage` → next night the two most-picked players are taken),
+  **Lycan** (village; `seerW()`: the Seer sees WOLF; the Seer only ever sees WOLF / NOT A WOLF, never the role name).
+  `deal` always leaves at least one Villager, so with few players not every extra fits. Guide + video lines for every role
+  (video shots 11-16). `test/t_ww_roles.py` (scripted seats on one screen; `G.dawns` records each night's victims).
+

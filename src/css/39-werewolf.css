@@ -45,3 +45,4 @@
       .ww-reveal { flex-direction: column; text-align: center; }
       .ww-col { padding-bottom: 80px; }
     }
+    .ww-love { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); font-size: 18px; line-height: 1; filter: drop-shadow(0 2px 0 var(--ink)); }

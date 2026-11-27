@@ -26,3 +26,24 @@
     /* whoever is talking: a green outline and a small speaker on their name tag */
     .vc-speak { outline: 3px solid #34D399 !important; outline-offset: 2px; position: relative; }
     .vc-speak::after { content: '🔊'; position: absolute; right: -10px; top: -12px; font-size: 14px; background: #34D399; border: 2px solid #050E18; padding: 0 2px; line-height: 16px; z-index: 5; }
+    /* reminder to join, tip after joining, "X joined voice" notes: speech bubbles pointing at the 🎤 button */
+    .vc-bub { position: fixed; z-index: 71; width: 300px; max-width: calc(100vw - 16px); background: #F7F4EC; color: #050E18; border: 3px solid #050E18; box-shadow: 0 5px 0 #050E18; padding: 10px 12px; animation: vcIn .25s steps(4); }
+    .vc-bub::after { content: ''; position: absolute; left: calc(var(--ax, 34px) - 9px); bottom: -12px; width: 14px; height: 14px; background: inherit; border-right: 3px solid #050E18; border-bottom: 3px solid #050E18; transform: rotate(45deg); }
+    .vc-bub.coach { background: #2DD4BF; } .vc-bub.coach.good { background: #34D399; }
+    .vc-bub.note { width: auto; padding: 6px 12px; background: #12304D; color: #F7F4EC; font-size: 14px; }
+    .vc-bt { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.35; padding-right: 18px; }
+    .vc-bub.note .vc-bt { padding-right: 0; }
+    .vc-bi { font-size: 22px; line-height: 1; }
+    .vc-bb { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 9px; }
+    .vc-try { flex: 1; font-size: 12px; font-weight: 700; }
+    .vc-later { font-size: 13px; font-weight: 700; text-decoration: underline; color: #12304D; }
+    .vc-bx { position: absolute; right: 4px; top: 4px; width: 24px; height: 24px; font-weight: 700; color: #050E18; }
+    @keyframes vcIn { from { transform: translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }
+    /* "hold me" while the tip is showing: the button bobs and says HOLD */
+    .vc-fab.coach { animation: vcBob .9s steps(2) infinite; }
+    .vc-fab.coach::before, .vc-fab.live::before { content: 'HOLD'; position: absolute; left: 50%; top: -22px; transform: translateX(-50%); background: #050E18; color: #2DD4BF; font: 700 11px/16px Outfit, sans-serif; padding: 0 5px; white-space: nowrap; }
+    .vc-fab.live::before { content: 'ON AIR'; color: #34D399; }
+    @keyframes vcBob { 50% { transform: translateY(-3px); } }
+    .vc-fab { -webkit-touch-callout: none; }
+    html[lang="vi"] .vc-fab.coach::before { content: 'GIỮ'; } html[lang="vi"] .vc-fab.live::before { content: 'ĐANG NÓI'; }
+    .vc-fab > * { pointer-events: none; }   /* the button's picture is redrawn while you hold it: taps must land on the button itself */

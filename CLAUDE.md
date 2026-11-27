@@ -1273,3 +1273,12 @@ folder that was handed over, so they do not exist here.)
   connection details arrived, and they were thrown away. Now relay details are fetched on Join, and each side sends ONE
   message with its whole gathered address list (no trickle ICE); not connected in 15 s → the caller starts again (3 tries,
   then "NO CONNECTION" + a tip, still retrying every 10 s). `t_voice.py` runs with `window.__vcIceDelay` (slow network).
+* **Voice chat made easy (Nov 28 2026, Inna)**: speech bubbles pointing at the 🎤 button (`.vc-bub`, `placeBubbles`):
+  a **reminder** ~2.5 s after entering a private room ("Want to talk while you play? Join voice chat", Join voice / Not now,
+  fades after 14 s, once per room) and, while others are in voice, "Luna is in voice chat. Join them!" (shown again when
+  more join; guests get "Sign up to talk"). Who is in voice is seen through a listen-only channel (`NET.channel(name, meta,
+  {quiet: true})`: subscribed but not counted as present, both backends). After joining, a **tip**: "Hold the 🎤 button to
+  talk, let go to stop" (+ V key on computers; short version after 3 joins), the button bobs with a HOLD label; the first
+  hold turns the tip into "That's it!"; while talking the button says ON AIR. Notes "Bao joined / left voice". Joining once
+  turns on **auto-join** for later private rooms in this tab (`ps_vc_auto`, only when the mic is already allowed; Leave
+  voice turns it off). The button's picture ignores taps (`.vc-fab > *`), so a tap right after a hold still opens the panel.

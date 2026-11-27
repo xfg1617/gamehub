@@ -4,6 +4,7 @@
        ========================================================================= */
     window.VI_MORE5 = {
       // Voice chat (Nov 2026)
+      'HOLD': 'GIỮ', 'ON AIR': 'ĐANG NÓI',
       'Voice chat': 'Trò chuyện thoại', "Your friends' voices in private rooms": 'Giọng bạn bè trong phòng riêng', 'OFF': 'TẮT',
       'VOICE CHAT': 'TRÒ CHUYỆN THOẠI', 'Talk with the players in this private room.': 'Nói chuyện với người chơi trong phòng riêng này.',
       'Your voice goes straight to them. Nothing is recorded or saved.': 'Giọng bạn đi thẳng tới họ. Không có gì bị ghi âm hay lưu lại.',

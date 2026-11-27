@@ -104,19 +104,21 @@
           },
           async get(code) { return db().rooms[code] || null; },
           // a live channel for one table: instant messages + who is here (BroadcastChannel between tabs)
-          channel(name, meta) {
+          channel(name, meta, opt) {
+            const quiet = !!(opt && opt.quiet);              // quiet = listen only: see who is there without being counted
             const bch = new BroadcastChannel('np:' + name), hs = {}, here = {}; let pres = () => {}, dead = false;
             const list = () => Object.entries(here).filter(([, x]) => x.id === uid || now() - x.last < 5000).map(([id, x]) => ({ uid: id, ...x.meta }));
             const upd = () => { const l = list(); pres(l); };
-            here[uid] = { id: uid, last: now(), meta };
+            if (!quiet) here[uid] = { id: uid, last: now(), meta };
             bch.onmessage = (ev) => { const m = ev.data || {}; if (dead) return;
-              if (m.e === '_here') { const was = !!here[m.from]; here[m.from] = { last: now(), meta: m.d }; if (!was) { upd(); bch.postMessage({ e: '_here', d: meta, from: uid }); } return; }
+              if (m.e === '_here') { const was = !!here[m.from]; here[m.from] = { last: now(), meta: m.d }; if (!was) { upd(); if (!quiet) bch.postMessage({ e: '_here', d: meta, from: uid }); } return; }
               if (m.e === '_bye') { delete here[m.from]; upd(); return; }
+              if (m.e === '_who') { if (!quiet) bch.postMessage({ e: '_here', d: meta, from: uid }); return; }
               const h = hs[m.e]; if (h) h(m.d, m.from); };
-            const beat = setInterval(() => { if (dead) return; bch.postMessage({ e: '_here', d: meta, from: uid }); const before = Object.keys(here).length; Object.keys(here).forEach((k) => { if (k !== uid && now() - here[k].last > 5000) delete here[k]; }); if (Object.keys(here).length !== before) upd(); }, 1500);
-            bch.postMessage({ e: '_here', d: meta, from: uid }); setTimeout(upd, 0);
+            const beat = setInterval(() => { if (dead) return; if (!quiet) bch.postMessage({ e: '_here', d: meta, from: uid }); const before = Object.keys(here).length; Object.keys(here).forEach((k) => { if (k !== uid && now() - here[k].last > 5000) delete here[k]; }); if (Object.keys(here).length !== before) upd(); }, 1500);
+            if (quiet) bch.postMessage({ e: '_who', from: uid }); else bch.postMessage({ e: '_here', d: meta, from: uid }); setTimeout(upd, 0);
             return { ready: Promise.resolve(), send: async (e, d) => { if (!dead) bch.postMessage({ e, d, from: uid }); }, on: (e, f) => { hs[e] = f; }, presence: (f) => { pres = f; upd(); }, members: () => list(),
-              close: () => { if (dead) return; bch.postMessage({ e: '_bye', from: uid }); dead = true; clearInterval(beat); bch.close(); } };
+              close: () => { if (dead) return; if (!quiet) bch.postMessage({ e: '_bye', from: uid }); dead = true; clearInterval(beat); bch.close(); } };
           },
           watch(code, fn) { let last = ''; const f = () => { const r = db().rooms[code]; if (!r) return; const s = JSON.stringify(r); if (s !== last) { last = s; fn(r); } }; subs.add(f); f(); return () => subs.delete(f); },
           async move(code, mv, idx) {
@@ -361,15 +363,16 @@
           async quick(game, settings) { return ok(await rpc('quick_match', { p_game: game, p_settings: settings || {} })); },
           async get(code) { const r = ok(await sb.from('rooms').select('*').eq('code', code).maybeSingle()); return r; },
           // a live channel for one table: instant messages (broadcast) + who is here (presence); no database rows
-          channel(name, meta) {
+          channel(name, meta, opt) {
+            const quiet = !!(opt && opt.quiet);              // listen only (not counted as present)
             const ch = sb.channel('np:' + name, { config: { broadcast: { self: false }, presence: { key: uid } } }), hs = {};
             let pres = () => {}, dead = false;
             const list = () => { const st = ch.presenceState(); return Object.keys(st).map((k) => ({ uid: k, ...(st[k][0] || {}) })); };
             ch.on('broadcast', { event: 'm' }, ({ payload }) => { if (dead || !payload) return; const h = hs[payload.e]; if (h) h(payload.d, payload.from); });
             ch.on('presence', { event: 'sync' }, () => { if (!dead) pres(list()); });
-            const ready = new Promise((res) => ch.subscribe((st) => { if (st === 'SUBSCRIBED') { ch.track(meta); res(); } }));
+            const ready = new Promise((res) => ch.subscribe((st) => { if (st === 'SUBSCRIBED') { if (!quiet) ch.track(meta); res(); } }));
             return { ready, send: (e, d) => ready.then(() => ch.send({ type: 'broadcast', event: 'm', payload: { e, d, from: uid } })), on: (e, f) => { hs[e] = f; }, presence: (f) => { pres = f; }, members: () => { try { return list(); } catch (e) { return []; } },
-              close: () => { if (dead) return; dead = true; try { ch.untrack(); } catch (e) {} setTimeout(() => sb.removeChannel(ch), 300); } };
+              close: () => { if (dead) return; dead = true; try { if (!quiet) ch.untrack(); } catch (e) {} setTimeout(() => sb.removeChannel(ch), 300); } };
           },
           watch(code, fn) {
             const conv = (r) => ({ ...r, host_seen: Date.parse(r.host_seen) || 0, guest_seen: Date.parse(r.guest_seen) || 0 });
@@ -539,7 +542,7 @@
       NET.getRoom = (code) => B.get(String(code || '').toUpperCase());
       NET.createRoom = (game, settings, pub, code) => B.create(game, settings, pub, code);
       NET.joinRoom = (code) => B.join(code);
-      NET.channel = (name, meta) => B.channel(name, meta);
+      NET.channel = (name, meta, opt) => B.channel(name, meta, opt);
       NET._B = B;   // for tests
       NET.sendMove = (code, mv, idx) => B.move(code, mv, idx);
       NET.ping = (code) => B.ping(code).catch(() => {});

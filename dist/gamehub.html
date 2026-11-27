@@ -1793,8 +1793,8 @@
     .set-pop.closed { display: none; }
     .set-pop-win { width: min(470px, 100%); max-height: calc(100vh - 32px); overflow-y: auto; }
     .set-rows { display: grid; gap: 6px; margin: 14px 0; }
-    .set-row { display: grid; grid-template-columns: 28px 1fr auto; align-items: center; gap: 10px; background: #0B1B2B; border: 2px solid var(--ink); padding: 8px 10px; }
-    .set-row .i { text-align: center; font-size: 1.05rem; } .set-row .l { color: #9DB4CC; font-size: .85rem; } .set-row .v { color: #F7F4EC; font-weight: 800; font-size: .9rem; text-align: right; }
+    .set-rows > .set-row { display: grid; grid-template-columns: 28px 1fr auto; align-items: center; gap: 10px; background: #0B1B2B; border: 2px solid var(--ink); padding: 8px 10px; }
+    .set-rows .set-row .i { text-align: center; font-size: 1.05rem; } .set-rows .set-row .l { color: #9DB4CC; font-size: .85rem; } .set-rows .set-row .v { color: #F7F4EC; font-weight: 800; font-size: .9rem; text-align: right; }
     .set-bar { height: 10px; background: #0B1B2B; border: 2px solid var(--ink); margin-top: 6px; overflow: hidden; }
     .set-bar i { display: block; height: 100%; background: #F5B041; width: 100%; transform-origin: left; animation: setBar linear forwards; }
     @keyframes setBar { from { transform: scaleX(1); } to { transform: scaleX(0); } }

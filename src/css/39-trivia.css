@@ -23,7 +23,7 @@
     .tv-a.no { filter: saturate(.25) brightness(.55); cursor: default; }
     .tv-a .tick { font-family: 'Arcade Pixel', monospace; font-size: 26px; }
     .tv-note { text-align: center; min-height: 26px; font-size: 16px; }
-    .tv-scores { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .tv-scores { display: flex; gap: 26px 10px; justify-content: center; flex-wrap: wrap; padding-bottom: 30px; }
     .tv-scores .tg-seat { display: block; }
     body.in-game[data-game="trivia"] { background-color: #0A1A2B; background-image: linear-gradient(rgba(45, 212, 191, .05) 2px, transparent 2px), linear-gradient(90deg, rgba(45, 212, 191, .05) 2px, transparent 2px); background-size: 40px 40px; }
     @media (min-width: 1024px) { body.in-game[data-game="trivia"] .tv-col { margin-top: 14px; } }

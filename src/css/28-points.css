@@ -56,6 +56,10 @@
     .fx-minis { position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%) rotate(-5deg); display: flex; flex-direction: column; align-items: flex-start; gap: 5px; white-space: nowrap; z-index: 8; pointer-events: none; animation: fxBob 1.6s ease-in-out infinite; }
     .pl-tag > .fx-minis { left: auto; right: -8px; top: -14px; transform: rotate(-5deg); flex-direction: row; animation: fxBob2 1.6s ease-in-out infinite; }
     @keyframes fxBob { 0%, 100% { transform: translateY(-50%) rotate(-5deg); } 50% { transform: translateY(calc(-50% - 4px)) rotate(-3deg); } }
+    /* tags side by side (Trivia's score row, and phones): the chip hangs under the tag, so it never covers the next player */
+    .tv-scores .fx-minis, .pl-tag > .fx-minis.below { left: 50%; right: auto; top: calc(100% + 3px); flex-direction: row; transform: translateX(-50%) rotate(-4deg); animation: fxBob3 1.6s ease-in-out infinite; }
+    @media (max-width: 640px) { .fx-minis, .pl-tag > .fx-minis { left: 50%; right: auto; top: calc(100% + 3px); flex-direction: row; transform: translateX(-50%) rotate(-4deg); animation: fxBob3 1.6s ease-in-out infinite; } }
+    @keyframes fxBob3 { 0%, 100% { transform: translateX(-50%) rotate(-4deg); } 50% { transform: translateX(-50%) translateY(3px) rotate(-2deg); } }
     @keyframes fxBob2 { 0%, 100% { transform: rotate(-5deg); } 50% { transform: translateY(-4px) rotate(-3deg); } }
     .fx-mini { font-family: 'Arcade Pixel', monospace; font-size: 17px; background: #F5B041; color: #231505; padding: 2px 9px 3px; border: 3px solid #050E18; box-shadow: 0 4px 0 #050E18; line-height: 18px; animation: fxIn .5s cubic-bezier(.2, 1.6, .4, 1); }
     .fx-mini:nth-child(2) { background: #FB7185; color: #2A0710; }

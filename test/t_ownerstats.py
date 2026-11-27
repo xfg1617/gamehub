@@ -25,6 +25,14 @@ with sync_playwright() as p:
     check(A.evaluate("document.querySelector('.os-gn').textContent") == 'Chess', 'most played games lists Chess first')
     A.set_viewport_size({'width': 1366, 'height': 900}); A.wait_for_timeout(300); A.screenshot(path='test/shots/ownerstats.png', full_page=False)
     A.set_viewport_size({'width': 390, 'height': 844}); A.wait_for_timeout(300); A.screenshot(path='test/shots/ownerstats_phone.png')
+    # phone: the ☰ menu has Site stats and tapping it opens the page (Nov 27 2026: it did nothing)
+    A.click('#os-close'); A.wait_for_timeout(400)
+    A.click('#m-burger'); A.wait_for_timeout(400)
+    item = A.locator('#m-drawer .m-item', has_text='Site stats')
+    check(item.count() == 1, 'phone: the menu lists Site stats')
+    item.click(); A.wait_for_timeout(1500)
+    check(A.evaluate("!!document.querySelector('#os-page .os-tile')"), 'phone: tapping it opens the stats page')
+    A.screenshot(path='test/shots/ownerstats_phone_menu.png')
     # a preview picture with made-up SAMPLE numbers (only in this test browser), to show what a busy fortnight looks like
     A.set_viewport_size({'width': 1366, 'height': 900})
     A.evaluate("""(() => { const days = []; const r = [0,0,0,0,0,0,0,0,0,3,21,64,57,38];

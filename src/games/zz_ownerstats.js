@@ -110,7 +110,7 @@
         const after = document.getElementById('nav-discord'); if (!after) return;
         const b = document.createElement('button'); b.id = 'nav-stats'; b.className = 'side-link'; b.setAttribute('data-no-tr', '');
         b.innerHTML = '<svg viewBox="0 0 16 16" fill="currentColor"><rect x="2" y="9" width="3" height="5"/><rect x="6.5" y="5" width="3" height="9"/><rect x="11" y="2" width="3" height="12"/></svg> Site stats';
-        b.onclick = openOwnerStats; after.after(b);
+        b.setAttribute('onclick', 'openOwnerStats()'); after.after(b);   // an attribute, so the phone ☰ menu can copy it
       }
       document.addEventListener('ps-online', () => setTimeout(ownerButton, 300));
       setInterval(ownerButton, 5000);   // also after logging in

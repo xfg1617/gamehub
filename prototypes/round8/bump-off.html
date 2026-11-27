@@ -57,8 +57,8 @@ canvas.aim { cursor: crosshair; }
     <div class="side" id="side"></div>
   </div>
   <div class="steps">
-    <div class="s1"><b>1 · LOOK, then PLAN (secret)</b>For 3 seconds you see everyone: remember where they are! Then they hide and you only see your own boat. Drag from it to pick a direction; the longer the arrow, the more power. Press READY.</div>
-    <div class="s2"><b>2 · REVEAL</b>Everyone appears with their arrow. Now you see who is coming for you, but it's too late to change!</div>
+    <div class="s1"><b>1 · PLAN (secret)</b>Everyone can see every boat, but nobody can see where the others will go. Drag from it to pick a direction; the longer the arrow, the more power. Press READY.</div>
+    <div class="s2"><b>2 · REVEAL</b>Everyone's arrows appear at once. Now you see who is coming for you, but it's too late to change!</div>
     <div class="s3"><b>3 · GO!</b>All boats move at the same time and bump. Anyone knocked off the pond is out. Then plan again from where you stopped.</div>
   </div>
   <div class="help"><b>Tips:</b> aim where you think someone will be, not where they are. A small move to dodge can be as good as a big hit. The pond gets smaller every turn after the 2nd.</div>
@@ -87,7 +87,7 @@ function newRound() {
     while (tries < 200 && boats.some((b) => Math.hypot(b.x - x, b.y - y) < 60));
     boats.push({ p, x, y, vx: 0, vy: 0, ang: Math.random() * 6.28, alive: true, sink: 9, plan: null, ready: false, readyAt: 0 });
   }
-  R = Rgoal = R0; turn = 1; parts = []; $('over').classList.remove('on'); startLook();
+  R = Rgoal = R0; turn = 1; parts = []; $('over').classList.remove('on'); startSetup();
 }
 const LOOK_SECS = 3;
 function startLook() {
@@ -99,7 +99,7 @@ function startSetup() {
   phase = 'setup'; phaseT = 0; drag = null;
   for (const b of boats) { b.plan = null; b.ready = !b.alive; b.readyAt = 1.5 + Math.random() * 6; }
   me().plan = { ang: me().ang, pow: 0 };
-  setPhase('setup', 'THEY\'RE HIDDEN · PLAN YOUR MOVE'); $('bottom').style.display = 'flex'; $('ready').disabled = false; $('ready').textContent = 'READY';
+  setPhase('setup', 'PLAN YOUR MOVE · PLANS ARE SECRET'); $('bottom').style.display = 'flex'; $('ready').disabled = false; $('ready').textContent = 'READY';
   $('round').textContent = `ROUND ${round} · TURN ${turn}`; cv.classList.add('aim'); drawSide(); showPow();
 }
 const me = () => boats.find((b) => b.p.me);
@@ -185,7 +185,7 @@ function endTurn() {
   const live = boats.filter((b) => b.alive);
   if (live.length <= 1) return endRound(live[0]);
   turn++; if (turn > 2) Rgoal = Math.max(70, Rgoal * 0.9);           // the pond shrinks a little every turn after the 2nd
-  phase = 'wait'; setTimeout(() => { if (phase === 'wait') startLook(); }, 600);
+  phase = 'wait'; setTimeout(() => { if (phase === 'wait') startSetup(); }, 600);
 }
 function endRound(w) {
   phase = 'end'; setPhase('', ''); $('bottom').style.display = 'none'; if (w) w.p.wins++;
@@ -219,9 +219,7 @@ function draw(now) {
   for (const q of parts) { if (q.txt) { ctx.font = '16px "Jersey 15"'; ctx.textAlign = 'center'; ctx.fillStyle = '#050E18'; ctx.fillText(q.txt, q.x + 1, q.y + 1); ctx.fillStyle = q.txt === 'SPLASH!' ? '#BFE9FF' : '#F5B041'; ctx.fillText(q.txt, q.x, q.y); ctx.textAlign = 'left'; continue; } ctx.fillStyle = q.c; ctx.globalAlpha = Math.min(1, q.l * 2); ctx.fillRect(Math.round(q.x), Math.round(q.y), 2, 2); ctx.globalAlpha = 1; }
   const secret = phase === 'setup';
   // during the plan, the others are hidden: only a "?" ripple shows the pond is not empty
-  if (secret) { ctx.fillStyle = 'rgba(5,14,24,.35)'; ctx.beginPath(); ctx.arc(CX, CY, R, 0, 7); ctx.fill(); }
   for (const b of boats) {
-    if (secret && !b.p.me) continue;
     if (!b.alive) { if (b.sink < 1.2) { ctx.globalAlpha = 1 - b.sink / 1.2; drawBoat(b, 1 - b.sink * 0.5); ctx.globalAlpha = 1; } continue; }
     if ((phase === 'reveal') && b.plan && b.plan.pow > 0.02) arrow(b, b.p.col, true);
     drawBoat(b, 1);
@@ -230,8 +228,9 @@ function draw(now) {
   if (secret && m.alive) {
     if (m.plan && m.plan.pow > 0.02) arrow(m, '#F7F4EC', false);
     else { ctx.fillStyle = '#F7F4EC'; ctx.font = '13px "Jersey 15"'; ctx.textAlign = 'center'; ctx.fillText('DRAG FROM YOUR BOAT', m.x, m.y + RAD + 16); ctx.textAlign = 'left'; }
-    ctx.fillStyle = 'rgba(247,244,236,.5)'; ctx.font = '22px "Jersey 15"'; ctx.textAlign = 'center';
-    const n = boats.filter((b) => b.alive && !b.p.me).length; for (let k = 0; k < n; k++) { const a = tt * 0.4 + k * 2.1, r = R * 0.55; ctx.fillText('?', CX + Math.cos(a) * r, CY + Math.sin(a) * r * 0.8); }
+    // the others are planning too: a little "?" over each boat until the reveal
+    ctx.font = '14px "Jersey 15"'; ctx.textAlign = 'center';
+    for (const b of boats) if (b.alive && !b.p.me) { ctx.fillStyle = b.ready ? '#34D399' : '#F7F4EC'; ctx.fillText(b.ready ? '✓' : '?', b.x, b.y - RAD - 5 + Math.sin(tt * 4 + b.x) * 1.5); }
     ctx.textAlign = 'left';
   }
   if (m.alive) { ctx.fillStyle = '#2DD4BF'; ctx.font = '13px "Jersey 15"'; ctx.textAlign = 'center'; ctx.fillText('YOU', m.x, m.y - RAD - 6); ctx.textAlign = 'left'; }

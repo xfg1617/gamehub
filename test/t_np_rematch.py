@@ -7,7 +7,7 @@ with sync_playwright() as p:
     A, B, C = players(p, 3, REAL)
     for pg in (A, B): open_table(pg, 'tictactoe', 'quick', {'len': 1}); pg.wait_for_timeout(500)
     A.wait_for_timeout(3000)
-    B.click('#ttt-quit'); B.click('#ttt-quit')
+    B.click('#ttt-quit'); B.click('#ttt-quit', force=True)   # force: the second press must land inside the 3 s "Really resign?" window
     modal_text(A); modal_text(B)
     # after the game the same group stays together: whoever is choosing presses "Tic-Tac-Toe again" (the box shows at once,
     # with no false "players have left" message), and both land at the new table

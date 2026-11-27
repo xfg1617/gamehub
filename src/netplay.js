@@ -363,9 +363,27 @@
         mark(a); log.push(a); next++; S._push(a);
         while (buf[next]) { const b = buf[next]; delete buf[next]; mark(b); log.push(b); next++; S._push(b); }
       }
-      ch.on('act', (a) => { if (!S.isHost) take(a); });
+      // the host's screen says "I'm still here" every 2 s; a host whose phone went to sleep or switched apps can still
+      // show as connected while doing nothing, which froze the whole table (Nov 2026, Inna: "game just freezes and the
+      // timer still runs"). Silence from the host now counts as being away (see the watch below).
+      let hbAt = Date.now();
+      const hb = gInterval(() => { if (S.isHost && !S.over && !S._left) ch.send('hb', { n: log.length, gone: S.seats.map((x, i) => (x.left ? i : -1)).filter((i) => i >= 0) }); }, 2000);
+      ch.on('hb', (d, from) => { const i = S.seats.findIndex((x) => x && x.uid === from); if (i < 0 || i === S.me) return;
+        if (d && d.gone && d.gone.includes(S.me) && !S._left && !S.over && !NP.catchup) return backIn();   // the table gave my seat away while my screen was asleep
+        if (i === host) hbAt = Date.now(); else if (S.isHost && i >= 0 && i !== S.me && i === pickHost()) demote(i); });   // only to the rightful host (the first player still seated)
+      // a screen that was asleep while hosting wakes up to find someone else running the table: it hands over
+      // back from sleep / a lost connection to find my seat played by a computer: rejoin properly (the game is rebuilt from
+      // the other screens' moves, so anything this screen did while it was cut off is thrown away) and get the seat back
+      function backIn() {
+        if (S._rejoining || S._left || S.over) return; const sv = npSaved(); if (!sv || sv.code !== S.code) return;
+        S._rejoining = true; S._left = true; S.isHost = false; if (NP.S === S) NP.S = null; showToast('You were away for a while. Catching up and taking your seat back...', 'info');
+        try { ch.close(); } catch (e) {} gClearInt(hb); gClearInt(watch); gClearInt(resend);
+        setTimeout(() => npRejoin(sv), 400);
+      }
+      function demote(i) { if (!S.isHost) return; S.isHost = false; host = i; hbAt = Date.now(); next = log.length; showToast('Another player took over hosting while you were away.', 'info'); }
+      ch.on('act', (a, from) => { if (S.isHost && from && from !== me && a && a._n >= log.length) { const i = S.seats.findIndex((x) => x && x.uid === from); if (i >= 0) demote(i); } if (!S.isHost) { hbAt = Date.now(); take(a); } });
       S._load = (list) => { (list || []).forEach((a) => { if (a && a._n !== undefined) take(a); }); };
-      ch.on('acts', (d) => { if (!S.isHost) (d.list || []).forEach(take); });
+      ch.on('acts', (d) => { if (!S.isHost) { hbAt = Date.now(); (d.list || []).forEach(take); } });
       ch.on('sync', (d) => { if (S.isHost && log.length > (d.from || 0)) ch.send('acts', { list: log.slice(d.from || 0) }); });
       // every 3 s: send again any of my decisions the table hasn't confirmed yet, and ask whether I missed the
       // latest move (a lost last message used to go unnoticed until the next one arrived)
@@ -399,7 +417,12 @@
       ch.on('emo', (d, from) => { const i = S.seats.findIndex((x) => x && x.uid === from); if (i >= 0 && i !== S.me && d && window.emoteShow) window.emoteShow(i, d.id); });
       // after every action: re-check who the host is (the first player still at the table)
       const origPush = S._push;
-      S._push = (a) => { origPush(a); const h = pickHost(); if (h !== host) { host = h; const was = S.isHost; S.isHost = h === S.me; if (S.isHost && !was) { next = log.length; showToast('You are now hosting this table.', 'info'); S._kick(); } } if (S.script) S._maybeBot(); };
+      S._push = (a) => {
+        // my own seat was handed to a computer while my screen was asleep or offline, but I'm here now: ask for it back
+        if ((a.t === '_gone' || a.t === '_left') && a.s === S.me && !S._left && !S.over && !NP.catchup) {
+          gTimeout(backIn, 300);
+        }
+        origPush(a); const h = pickHost(); if (h !== host) { host = h; const was = S.isHost; S.isHost = h === S.me; if (S.isHost && !was) { next = log.length; showToast('You are now hosting this table.', 'info'); S._kick(); } } if (S.script) S._maybeBot(); };
       // who is still here: a player missing for 20 s gets a warning, after 45 s a computer player takes the seat
       const missing = {};
       let present = S.seats.map((x) => x.uid);
@@ -409,13 +432,14 @@
         const now = Date.now(); let warn = '';
         for (let i = 0; i < S.n; i++) {
           if (!humanUp(i) || i === S.me) continue;
-          if (present.includes(S.seats[i].uid)) { if (missing[i]) { delete missing[i]; showToast(`${S.name(i)} is back.`, 'success'); } continue; }
+          const silent = i === host && !S.isHost && now - hbAt > 10000;   // the host is "here" but its screen stopped answering
+          if (present.includes(S.seats[i].uid) && !silent) { if (missing[i]) { delete missing[i]; showToast(`${S.name(i)} is back.`, 'success'); } continue; }
           missing[i] = missing[i] || now;
-          const t = now - missing[i];
-          if (t > 15000) warn = `${S.name(i)} disconnected. ${S.n === 2 ? 'You win' : 'A computer player takes over'} in ${Math.max(0, Math.ceil((45000 - t) / 1000))}s if they don't come back.`;
-          if (t > 45000) {
+          const t = now - missing[i], warnAt = i === host ? 3000 : 15000, goAt = i === host ? (S.n === 2 ? 30000 : 20000) : 45000;   // the whole table waits on the host, so it gets less time
+          if (t > warnAt) warn = `${S.name(i)} ${silent ? 'is not responding' : 'disconnected'}. ${S.n === 2 ? 'You win' : 'A computer player takes over'} in ${Math.max(0, Math.ceil((goAt - t) / 1000))}s if they don't come back.`;
+          if (t > goAt) {
             // the first player still here sends it (so only one screen does)
-            const first = [...Array(S.n).keys()].find((k) => humanUp(k) && (k === S.me || present.includes(S.seats[k].uid)));
+            const first = [...Array(S.n).keys()].find((k) => humanUp(k) && (k === S.me || (present.includes(S.seats[k].uid) && !(k === host && silent))));
             if (first === S.me) { const a = { t: '_gone', s: i }; if (S.isHost || host === i) { S.isHost = true; host = S.me; seq(a); } else ch.send('req', Object.assign(a, { s: S.me, who: i })); }
             missing[i] = now + 1e9;
           }
@@ -436,7 +460,7 @@
       S.leave = () => {
         if (S._left) return; S._left = true;
         try { localStorage.removeItem('ps_np_cur:' + (NET.me && NET.me.id)); } catch (e) {}
-        gClearInt(watch); gClearInt(resend);
+        gClearInt(watch); gClearInt(resend); gClearInt(hb);
         if (!S.over) { ch.send(S.isHost ? 'act' : 'req', S.isHost ? { t: '_left', s: S.me, _n: log.length } : { t: '_left', s: S.me }); if (S.ranked) NET.reportResult(S.code, 'loss').catch(() => {}); }
         setTimeout(() => ch.close(), 400);
         if (NP.S === S) NP.S = null;

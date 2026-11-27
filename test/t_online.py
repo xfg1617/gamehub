@@ -45,7 +45,7 @@ with sync_playwright() as p:
     check('Checkmate' in white.evaluate("document.getElementById('ch-msg').textContent"), "the loser's board shows checkmate too")
     res_w = white.evaluate("document.getElementById('g-modal') && document.getElementById('g-modal').innerText"); res_b = black.evaluate("document.getElementById('g-modal') && document.getElementById('g-modal').innerText")
     print('   winner sees:', (res_b or '').replace('\n', ' ')[:140]); print('   loser sees :', (res_w or '').replace('\n', ' ')[:140])
-    check('+10' in (res_b or '') and '+1' in (res_w or '') and 'ELO' not in (res_b + res_w).upper(), 'no Elo any more: the winner gets +10 points, the loser +1')
+    check(('+10' in (res_b or '') or '+12' in (res_b or '')) and '+1' in (res_w or '') and 'ELO' not in (res_b + res_w).upper(), 'no Elo any more: the winner gets +10 points (+2 for a quick mate), the loser +1')
     black.screenshot(path='test/shots/online_result.png')
     lb = A.evaluate("NET.pointsBoard('week').then(l => l.map(x => x.name + ':' + x.points))")
     check(len(lb) == 2, f'the points leaderboard lists both players {lb}')

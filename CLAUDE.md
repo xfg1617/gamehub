@@ -1202,4 +1202,13 @@ folder that was handed over, so they do not exist here.)
 * **Say What!? crazy prompts** (Nov 27 2026, Inna): +30 grown-up prompts per language in the "Three things..." / hear-me-out /
   headline style (our own; cheeky, never explicit, site is 13+). Crazy mode now deals the crazy prompts first (72 per
   language) and only falls back to family ones if a game runs out; Family friendly = clean only.
+* **Frozen host / away players** (Nov 27 2026, Inna: "players get disconnected or the game freezes and the timer still
+  runs"): in `npOnline` the host sends `hb` every 2 s (`{n, gone}`); a host that is still "present" but silent for 10 s
+  counts as away (warning after 3 s, a computer takes its seat and the next player hosts after 20 s, 30 s in 2-player
+  games; ordinary players keep 15 / 45 s). A screen that was asleep while hosting hands over (`demote`: only to the
+  rightful host = `pickHost()`); any screen whose seat was given away while it was asleep / cut off (`hb.gone` or a
+  `_gone` for its own seat) calls `backIn()` = a proper rejoin (`npRejoin`: rebuilt from the other screens' moves, then
+  `_back` returns the seat). `backIn` sets `S._left` and drops `NP.S` first so closing the stale copy never sends `_left`.
+  `test/t_np_hostfreeze.py` freezes the host's page from inside (headless Chrome can't freeze a tab: timers and incoming
+  messages are held while `window.__frozen`, then run on `__wake()`).
 

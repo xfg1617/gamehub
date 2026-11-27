@@ -5,6 +5,19 @@
        Written for players: what changed for them, no technical words.
        ========================================================================= */
     window.UPDATES = [
+      { date: '2026-11-27', id: '2026-11-27b',
+        en: ['5 new games!',
+          'Werewolf: secret roles, wolves hiding in the village, night and day. 5-12 friends, with a narrator voice.',
+          'Thirteen (Tiến Lên): Vietnam\'s favourite card game, with bombs on 2s. Play friends or computer players.',
+          'Caro: five in a row on a big board, with 3 computer levels and the optional Vietnamese "blocked ends" rule.',
+          'Trivia Rush: a quick-fire quiz in 12 categories, in English or Vietnamese. Faster right answers score more.',
+          'Funny Answers: write the funniest answer to silly prompts, then everyone votes. Win every vote for a Clean Sweep!'],
+        vi: ['5 trò chơi mới!',
+          'Ma Sói: vai bí mật, sói trà trộn trong làng, ngày và đêm. 5-12 người, có giọng dẫn chuyện.',
+          'Tiến Lên: trò bài được yêu thích nhất Việt Nam, có chặt heo. Chơi với bạn bè hoặc với máy.',
+          'Cờ Caro: năm quân liền nhau trên bàn cờ lớn, 3 cấp độ máy và luật chặn hai đầu (tùy chọn).',
+          'Đố Vui Nhanh: thi đố siêu tốc với 12 chủ đề, bằng tiếng Anh hoặc tiếng Việt. Trả lời đúng càng nhanh càng nhiều điểm.',
+          'Trả Lời Bá Đạo: viết câu trả lời hài nhất cho những đề bá đạo, rồi cả phòng bình chọn. Giành hết phiếu là Thắng Tuyệt Đối!'] },
       { date: '2026-11-27',
         en: ['Gameplay in the how-to videos, and smoother rooms',
           'How-to videos now show real gameplay for each step, not just a picture.',

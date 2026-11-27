@@ -102,6 +102,192 @@
 "lang": "en"
 },
 {
+"id": "caro",
+"text": "Caro! Five in a row, on a big board.",
+"hash": "ec6213ed",
+"lang": "en"
+},
+{
+"id": "caro",
+"text": "Take turns putting your mark on any empty square.",
+"hash": "ee504d94",
+"lang": "en"
+},
+{
+"id": "caro",
+"text": "Line up five, across, down, or diagonally, and you win.",
+"hash": "7b774002",
+"lang": "en"
+},
+{
+"id": "caro",
+"text": "See three or four in a row from your opponent? Block an end, fast!",
+"hash": "6a318d2e",
+"lang": "en"
+},
+{
+"id": "caro",
+"text": "Tip: make two threats at once. They can only block one.",
+"hash": "a529e62a",
+"lang": "en"
+},
+{
+"id": "thirteen",
+"text": "Thirteen! Vietnam calls it Tien Len, and everyone plays it at New Year.",
+"hash": "ec752a78",
+"lang": "en"
+},
+{
+"id": "thirteen",
+"text": "You get thirteen cards. Three is the lowest, and two is the highest.",
+"hash": "e803c387",
+"lang": "en"
+},
+{
+"id": "thirteen",
+"text": "Beat what's on the table with the same kind of play, but higher. One card, a pair, a straight...",
+"hash": "b2af2567",
+"lang": "en"
+},
+{
+"id": "thirteen",
+"text": "Can't beat it, or don't want to? Pass, and wait for the next round.",
+"hash": "3bf50ed6",
+"lang": "en"
+},
+{
+"id": "thirteen",
+"text": "Someone played a two? Four of a kind or three pairs in a row will bomb it!",
+"hash": "f76d2d38",
+"lang": "en"
+},
+{
+"id": "thirteen",
+"text": "Get rid of all your cards first, and you win.",
+"hash": "7732282e",
+"lang": "en"
+},
+{
+"id": "trivia",
+"text": "Trivia Rush! A quick quiz with your friends.",
+"hash": "af16c428",
+"lang": "en"
+},
+{
+"id": "trivia",
+"text": "Everyone gets the same question at the same time.",
+"hash": "2cd8d169",
+"lang": "en"
+},
+{
+"id": "trivia",
+"text": "Tap one of the four answers. The faster you're right, the more points you get.",
+"hash": "a398715a",
+"lang": "en"
+},
+{
+"id": "trivia",
+"text": "Get three in a row for a fire streak bonus. Most points at the end wins!",
+"hash": "02a6db81",
+"lang": "en"
+},
+{
+"id": "funny",
+"text": "Funny Answers! The funniest person in the room wins.",
+"hash": "fb51d859",
+"lang": "en"
+},
+{
+"id": "funny",
+"text": "You get a silly prompt, and you type the funniest answer you can think of.",
+"hash": "7da92c21",
+"lang": "en"
+},
+{
+"id": "funny",
+"text": "Someone else gets the same prompt. Then everyone votes for the funnier answer, with no names.",
+"hash": "789cad0f",
+"lang": "en"
+},
+{
+"id": "funny",
+"text": "Win every vote, and that's a clean sweep!",
+"hash": "0d965a1f",
+"lang": "en"
+},
+{
+"id": "funny",
+"text": "Grab some friends, make a room, and get ready to laugh.",
+"hash": "425f6d9c",
+"lang": "en"
+},
+{
+"id": "werewolf",
+"text": "Werewolf! A game of secrets, lies, and very suspicious friends.",
+"hash": "a05ea676",
+"lang": "en"
+},
+{
+"id": "werewolf",
+"text": "Everyone gets a secret role. Most of you are villagers. But a few of you... are werewolves.",
+"hash": "4b86cdf5",
+"lang": "en"
+},
+{
+"id": "werewolf",
+"text": "Your role card stays in the corner. Keep it secret! The wolves know each other, nobody else does.",
+"hash": "f4f8728e",
+"lang": "en"
+},
+{
+"id": "werewolf",
+"text": "When night falls, everyone taps a player. The wolves' taps decide who they take.",
+"hash": "addd840d",
+"lang": "en"
+},
+{
+"id": "werewolf",
+"text": "The Seer can check if someone is a wolf. The Doctor can protect one player.",
+"hash": "359ff849",
+"lang": "en"
+},
+{
+"id": "werewolf",
+"text": "Villagers tap someone too, so nobody can tell who has a special power.",
+"hash": "a976f782",
+"lang": "en"
+},
+{
+"id": "werewolf",
+"text": "In the morning, everyone finds out who was taken in the night.",
+"hash": "470004b2",
+"lang": "en"
+},
+{
+"id": "werewolf",
+"text": "Then the village talks it over in the chat. Who's lying? Who's too quiet?",
+"hash": "7024396c",
+"lang": "en"
+},
+{
+"id": "werewolf",
+"text": "Everyone votes. The player with the most votes is out.",
+"hash": "23c8fb7a",
+"lang": "en"
+},
+{
+"id": "werewolf",
+"text": "The village wins when every wolf is gone. The wolves win when they're as many as everyone else.",
+"hash": "caba31b5",
+"lang": "en"
+},
+{
+"id": "werewolf",
+"text": "Tip for wolves: blend in. Tip for villagers: watch who votes together.",
+"hash": "b36ffb12",
+"lang": "en"
+},
+{
 "id": "tictactoe",
 "text": "Tic Tac Toe. You've probably played this on paper.",
 "hash": "de425bed",
@@ -846,6 +1032,192 @@
 "lang": "vi"
 },
 {
+"id": "caro",
+"text": "Cờ Caro! Năm quân liền nhau, trên bàn cờ lớn.",
+"hash": "01f0d51a",
+"lang": "vi"
+},
+{
+"id": "caro",
+"text": "Hai bên lần lượt đánh quân vào ô trống bất kỳ.",
+"hash": "e0748199",
+"lang": "vi"
+},
+{
+"id": "caro",
+"text": "Năm quân thẳng hàng, ngang, dọc hay chéo, là bạn thắng.",
+"hash": "42b88855",
+"lang": "vi"
+},
+{
+"id": "caro",
+"text": "Thấy đối thủ có ba hay bốn quân liền? Chặn một đầu ngay!",
+"hash": "ff8e8345",
+"lang": "vi"
+},
+{
+"id": "caro",
+"text": "Mẹo: tạo hai đường cùng lúc. Họ chỉ chặn được một thôi.",
+"hash": "01a4e982",
+"lang": "vi"
+},
+{
+"id": "thirteen",
+"text": "Tiến Lên! Tết nào cũng phải có vài ván.",
+"hash": "27f939a7",
+"lang": "vi"
+},
+{
+"id": "thirteen",
+"text": "Mỗi người mười ba lá. Ba nhỏ nhất, hai là lớn nhất.",
+"hash": "75a4229d",
+"lang": "vi"
+},
+{
+"id": "thirteen",
+"text": "Chặn bài trên bàn bằng cùng kiểu nhưng lớn hơn. Rác, đôi, sảnh...",
+"hash": "abe0fb0a",
+"lang": "vi"
+},
+{
+"id": "thirteen",
+"text": "Không chặn được, hoặc không muốn? Bỏ lượt, chờ vòng sau.",
+"hash": "5ce11007",
+"lang": "vi"
+},
+{
+"id": "thirteen",
+"text": "Ai đánh heo? Tứ quý hay ba đôi thông là chặt được ngay!",
+"hash": "ace4d0eb",
+"lang": "vi"
+},
+{
+"id": "thirteen",
+"text": "Ai hết bài trước là thắng.",
+"hash": "5f572c5d",
+"lang": "vi"
+},
+{
+"id": "trivia",
+"text": "Đố Vui Nhanh! Thi đố cùng bạn bè.",
+"hash": "5258752f",
+"lang": "vi"
+},
+{
+"id": "trivia",
+"text": "Mọi người nhận cùng một câu hỏi cùng lúc.",
+"hash": "3dd08aed",
+"lang": "vi"
+},
+{
+"id": "trivia",
+"text": "Chọn một trong bốn đáp án. Đúng càng nhanh, điểm càng cao.",
+"hash": "8bdbba8c",
+"lang": "vi"
+},
+{
+"id": "trivia",
+"text": "Đúng ba câu liền là có thưởng chuỗi lửa. Cuối cùng ai nhiều điểm nhất thắng!",
+"hash": "f73b2389",
+"lang": "vi"
+},
+{
+"id": "funny",
+"text": "Trả Lời Bá Đạo! Ai hài nhất phòng là người thắng.",
+"hash": "38dee286",
+"lang": "vi"
+},
+{
+"id": "funny",
+"text": "Bạn nhận một đề bá đạo, và gõ câu trả lời hài nhất có thể.",
+"hash": "e5025f29",
+"lang": "vi"
+},
+{
+"id": "funny",
+"text": "Một người khác cũng nhận đề đó. Rồi cả phòng bình chọn câu hài hơn, giấu tên.",
+"hash": "bb76eaa0",
+"lang": "vi"
+},
+{
+"id": "funny",
+"text": "Giành hết phiếu là thắng tuyệt đối!",
+"hash": "6bcc4594",
+"lang": "vi"
+},
+{
+"id": "funny",
+"text": "Rủ bạn bè, tạo phòng, và chuẩn bị cười đi nhé.",
+"hash": "4cbd0564",
+"lang": "vi"
+},
+{
+"id": "werewolf",
+"text": "Ma Sói! Trò chơi của bí mật, dối trá, và những người bạn rất đáng nghi.",
+"hash": "980894b9",
+"lang": "vi"
+},
+{
+"id": "werewolf",
+"text": "Mỗi người nhận một vai bí mật. Phần lớn là dân làng. Nhưng vài người trong số các bạn... là ma sói.",
+"hash": "ab9b3f7a",
+"lang": "vi"
+},
+{
+"id": "werewolf",
+"text": "Thẻ vai của bạn nằm ở góc màn hình. Giữ bí mật nhé! Bầy sói biết nhau, ngoài ra không ai biết.",
+"hash": "1a9aa50c",
+"lang": "vi"
+},
+{
+"id": "werewolf",
+"text": "Khi đêm xuống, ai cũng chạm vào một người. Lựa chọn của bầy sói quyết định ai bị cắn.",
+"hash": "e92c0df9",
+"lang": "vi"
+},
+{
+"id": "werewolf",
+"text": "Tiên Tri được soi xem ai là sói. Bác Sĩ được bảo vệ một người.",
+"hash": "a2ae8ae5",
+"lang": "vi"
+},
+{
+"id": "werewolf",
+"text": "Dân làng cũng chạm vào một người, nên không ai biết ai có chức năng.",
+"hash": "2cec6905",
+"lang": "vi"
+},
+{
+"id": "werewolf",
+"text": "Sáng ra, mọi người biết ai đã bị cắn trong đêm.",
+"hash": "9f35d1cc",
+"lang": "vi"
+},
+{
+"id": "werewolf",
+"text": "Rồi cả làng bàn bạc trong chat. Ai đang nói dối? Ai im lặng quá?",
+"hash": "3d29455e",
+"lang": "vi"
+},
+{
+"id": "werewolf",
+"text": "Mọi người bỏ phiếu. Ai nhiều phiếu nhất sẽ bị loại.",
+"hash": "421e5ba2",
+"lang": "vi"
+},
+{
+"id": "werewolf",
+"text": "Dân làng thắng khi hết sói. Sói thắng khi số sói bằng số người còn lại.",
+"hash": "6339ddf8",
+"lang": "vi"
+},
+{
+"id": "werewolf",
+"text": "Mẹo cho sói: trà trộn thật khéo. Mẹo cho dân: để ý ai hay bỏ phiếu cùng nhau.",
+"hash": "cd054df5",
+"lang": "vi"
+},
+{
 "id": "tictactoe",
 "text": "Cờ ca rô ba ô. Chắc bạn chơi trên giấy rồi.",
 "hash": "ae414239",
@@ -951,12 +1323,6 @@
 "id": "fibber",
 "text": "Ai nói dối bị bắt thì ôm hết chồng bài. Nhưng nếu họ nói thật, bạn phải ôm.",
 "hash": "c30d2526",
-"lang": "vi"
-},
-{
-"id": "fibber",
-"text": "Ai hết bài trước là thắng.",
-"hash": "5f572c5d",
 "lang": "vi"
 },
 {

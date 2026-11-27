@@ -1135,3 +1135,30 @@ folder that was handed over, so they do not exist here.)
   time zone (`Intl...timeZone`) to `owner_stats(tz)`; days, "today" and the 14-day bars use it (`at time zone tz`; an
   unknown zone falls back to UTC). Until the updated `backend/owner-stats.sql` is run, the page falls back to the old
   no-argument function and says "Days are in world time (UTC)". Tested on PostgreSQL 16 (UTC / Ho Chi Minh / Indianapolis).
+
+## 5aj. Five new games (Nov 27 2026, Inna; prototypes in `prototypes/round6/`, approved)
+
+* **Caro** (`caro.js`, 39-caro.css): 15×15 or 19×19, five in a row; Vietnamese "blocked at both ends" rule is a setting,
+  **off by default** (Inna). Computer Easy / Medium / Hard (`aiMove`: 5-square window scoring; Hard adds threat search:
+  makes/blocks open fours and double threats; beats Easy 20/20, Medium ~65%). apply/drive netplay like Tic-Tac-Toe.
+  Vietnamese name "Cờ Caro"; Tic-Tac-Toe's Vietnamese name became "Cờ Ca-rô 3×3". `t_caro.py`, `t_np_caro.py`.
+* **Thirteen** (`thirteen.js`, 39-thirteen.css; shown as "Tiến Lên" in Vietnamese): 2-4 players, 3 low / 2 high,
+  ♠<♣<♦<♥; singles, pairs, triples, quads, straights, runs of pairs; bombs on 2s (+1/-1 point, ×2 for a pair of 2s);
+  places per hand → points; HANDS 1/3/5. `classify`, `beats`, `combos`, `botMove`. Uses the card-table look (TABLE_GAMES,
+  25-fullscreen / 27-tables selectors copied from Bullshit with `#th-opp`). `t_thirteen.py`, `t_np_thirteen.py`.
+* **Trivia Rush** (`trivia.js`, 39-trivia.css; questions `trivia_q1-3.js` = `TRIVIA_Q`, 366 questions, 12 categories,
+  each `[cat, level, en, 'right|w|w|w', vi, vi answers or '']`): QUESTIONS IN English / Tiếng Việt (hero setting), category,
+  10/15/20, time, difficulty; solo or 2-8, computer players (Easy/Smart/Genius). Everyone answers via `S.collect`;
+  500 + up to 500 for speed, streak bonus from 3 in a row. Add questions in the same format. `t_trivia.py`, `t_np_trivia.py`.
+* **Funny Answers** (`funny.js`, 39-funny.css; prompts `funny_prompts.js`, our own, EN + natural VI, clean / crazy): people
+  only (3-8, `bots: false`). Paired prompts (prompt j → players j, j+1), votes hidden by name, 100 × round per vote, winner
+  bonus, CLEAN SWEEP (all votes, needs 2+ voters) +250 × round; final round everyone answers, gold/silver/bronze 300/200/100.
+  Vietnamese name "Trả Lời Bá Đạo". `t_np_funny.py` (3 players).
+* **Werewolf** (`werewolf.js`, 39-werewolf.css; "Ma Sói"): people only (5-12, Inna). Roles: wolves (auto 1/2/3), Seer,
+  Doctor, optional Hunter, Witch; reveal roles of players who are out (setting). Night: EVERYONE taps a player (hides who
+  has powers); wolves' majority = target; Seer's result shows on their screen only; Doctor can't repeat; Witch step after.
+  Day: news, talk (Ready to vote), vote (tie = nobody), Hunter shot. Narrator = browser voice (`say`, off under webdriver).
+  Roles are in every screen's memory (like other card games: not server-secret). `t_np_werewolf.py` (5 players).
+* All five: guides EN + VI (zz_howto / zz_howto_vi), video scripts (Werewolf's video is the long one, 11 lines, its
+  pictures are staged by `js` in its shots), `zz_i18n_vi5.js` (VI_MORE5 / VI_PAT5), banners (make_images.py), What's new
+  entry `2026-11-27b`. Trivia Rush's old "coming soon" placeholder was removed from CATALOG.

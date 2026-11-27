@@ -660,7 +660,7 @@
     // which setup option is the computer players' level, and which one is the table size, per game
     const BOT_LEVEL = { trivia: 'lvl', caro: 'lvl', thirteen: 'lvl', hedge: 'lvl', checkers: 'lvl', c4: 'lvl', pool: 'lvl', tictactoe: 'lvl', wordduel: 'lvl', dominoes: 'lvl', isles: 'lvl', manor: 'lvl', poker: 'style', bowling: 'mode', chess: 'lvl', navalnet: 'ai' };
     const botLevelKey = (id) => BOT_LEVEL[id] || null;
-    const tableSizeKey = (id) => (id === 'bowling' ? 'seats' : ['dominoes', 'colorclash', 'kittens', 'tycoon', 'isles', 'manor', 'impostor', 'hedge', 'fibber', 'thirteen', 'trivia', 'tunnel', 'guild', 'doodle'].includes(id) ? 'n' : null);
+    const tableSizeKey = (id) => (id === 'bowling' ? 'seats' : ['dominoes', 'colorclash', 'kittens', 'tycoon', 'isles', 'manor', 'impostor', 'hedge', 'fibber', 'thirteen', 'trivia', 'funny', 'werewolf', 'tunnel', 'guild', 'doodle'].includes(id) ? 'n' : null);
     // the screen before a game starts: its settings, plus a room code and invite link to share
     // an option is { key, label, def, choices: [[value, 'Text'], ...], toggle?: true, hint?: '...' }
     function setupScreen(body, m, opts, onStart, blurb) {
@@ -1161,11 +1161,11 @@
       { id: 'dominoes', name: 'Dominoes', icon: 'dominoes', sub: '2–4 PLAYERS', open: "showToast('Dominoes is coming soon!')", live: false },
     ];
     const SHELVES = [
-      { title: 'NEW & HOT', color: '#F5B041', ids: ['caro', 'thirteen', 'trivia', 'guild', 'tunnel', 'fibber', 'hedge', 'isles', 'manor', 'dominoes', 'bowling', 'chess', 'poker', 'naval', 'daily'] },
+      { title: 'NEW & HOT', color: '#F5B041', ids: ['werewolf', 'caro', 'thirteen', 'trivia', 'funny', 'guild', 'tunnel', 'fibber', 'hedge', 'isles', 'manor', 'dominoes', 'bowling', 'chess', 'poker', 'naval', 'daily'] },
       { title: 'BOARD GAMES', color: '#2DD4BF', ids: ['chess', 'checkers', 'caro', 'tycoon', 'isles', 'manor', 'naval', 'c4', 'dominoes', 'tictactoe', 'hedge', 'guild'] },
       { title: 'CARD GAMES', color: '#FB7185', ids: ['thirteen', 'fibber', 'tunnel', 'guild', 'poker', 'blackjack', 'kittens', 'colorclash'] },
       { title: 'WORD & PUZZLE', color: '#34D399', ids: ['daily', 'wordduel', 'wordconnect', 'impostor', 'trivia'] },
-      { title: 'PARTY GAMES', color: '#F5B041', ids: ['trivia', 'tunnel', 'fibber', 'impostor', 'manor', 'doodle', 'kittens', 'colorclash'] },
+      { title: 'PARTY GAMES', color: '#F5B041', ids: ['werewolf', 'funny', 'trivia', 'tunnel', 'fibber', 'impostor', 'manor', 'doodle', 'kittens', 'colorclash'] },
       { title: 'SPORTS & ARCADE', color: '#2DD4BF', ids: ['pool', 'bowling'] },
     ];
 

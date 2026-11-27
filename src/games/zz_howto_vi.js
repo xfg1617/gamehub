@@ -52,6 +52,23 @@
           ['Xem ai đúng', 'Sau mỗi câu, đáp án đúng sáng lên và bạn thấy mọi người đã chọn gì.'],
           ['Chiến thắng', 'Hết câu cuối, ai nhiều điểm nhất thắng. Chơi một mình? Thử phá kỷ lục của chính bạn.']], online: ONT,
           tip: 'Không chắc? Loại các đáp án sai rõ ràng, rồi tin vào cảm giác. Đoán nhanh vẫn hơn không trả lời.' },
+        funny: { goal: 'Viết câu trả lời hài nhất và giành nhiều phiếu nhất.', steps: [
+          ['Tạo phòng', 'Trò này chơi cùng bạn bè: tạo phòng, gửi link cho mọi người, chọn ngôn ngữ đề và bấm Bắt đầu. Ai cũng chơi trên điện thoại hoặc máy tính của mình.'],
+          ['Viết', 'Mỗi vòng bạn nhận hai đề, như "Tên tệ nhất để đặt cho con cá vàng". Gõ câu trả lời hài nhất bạn nghĩ ra. Một người khác cũng nhận đề giống bạn.'],
+          ['Bình chọn', 'Hai câu trả lời của mỗi đề hiện cạnh nhau, giấu tên. Những người còn lại chạm vào câu hài hơn.'],
+          ['Tính điểm', 'Mỗi phiếu được 100 điểm (vòng 2 nhân đôi), ai thắng đề được thưởng thêm. Giành hết mọi phiếu là <b class="text-coral">THẮNG TUYỆT ĐỐI</b>!'],
+          ['Vòng chung kết', 'Mọi người cùng trả lời một đề, rồi chọn vàng, bạc, đồng (không chọn câu của mình). Cuối cùng ai nhiều điểm nhất thắng.']],
+          tip: 'Ngắn và bất ngờ thắng dài và lắt léo. Làm cả phòng tưởng tượng ra cảnh đó!', online: 'Trò này cần ít nhất 3 người và không có người chơi máy (máy không đủ hài). Tạo phòng và gửi link mời bạn bè.' },
+        werewolf: { goal: 'Dân làng: tìm và vote loại hết sói. Sói: lần lượt bắt dân làng mà không bị lộ.', steps: [
+          ['Tạo phòng', 'Ma Sói chơi cùng bạn bè: 5 đến 12 người, mỗi người một điện thoại hoặc máy tính. Tạo phòng, gửi link, chọn các vai trong cài đặt phòng và bấm Bắt đầu.'],
+          ['Vai bí mật', 'Lúc đầu mỗi người xem thẻ vai của mình. Giữ bí mật nhé! Phần lớn là Dân Làng. Vài người là Ma Sói, và các sói biết ai là đồng bọn.'],
+          ['Ban đêm', 'Mọi người đều chạm vào một người. Nếu bạn là <b>Ma Sói</b>, lựa chọn của cả bầy quyết định ai bị cắn đêm nay (bạn thấy đồng bọn chọn ai). <b>Tiên Tri</b> chạm vào ai sẽ biết người đó có phải sói không. <b>Bác Sĩ</b> chạm vào ai là bảo vệ người đó. Dân Làng chạm vào người mình nghi: không có tác dụng gì, nhưng nhờ vậy không ai biết ai có chức năng.'],
+          ['Buổi sáng', 'Mọi người biết ai đã bị cắn trong đêm (và vai của họ, nếu cài đặt đó bật). Nếu Bác Sĩ bảo vệ đúng người thì không ai ra!'],
+          ['Ban ngày: bàn bạc', 'Nói chuyện trong khung chat của bàn: ai đang cư xử lạ? Sói sẽ cố trà trộn. Bấm <b>Sẵn sàng bỏ phiếu</b> khi bàn xong.'],
+          ['Ban ngày: bỏ phiếu', 'Chạm vào người bạn nghĩ là sói. Ai nhiều phiếu nhất sẽ ra. Hòa phiếu thì hôm đó không ai ra.'],
+          ['Vai thêm', 'Bật trong cài đặt phòng. <b>Thợ Săn</b>: khi bị loại được kéo theo một người. <b>Phù Thủy</b>: một lần cứu người bị sói cắn, một lần đầu độc ai đó.'],
+          ['Chiến thắng', 'Dân làng thắng khi hết sói. Sói thắng khi số sói bằng số người còn lại. Người đã ra vẫn được xem tiếp, và thấy vai của mọi người.']], online: 'Ma Sói cần ít nhất 5 người và không có người chơi máy. Tạo phòng và gửi link mời bạn bè. Vừa chơi vừa gọi thoại càng vui!',
+          tip: 'Sói: đừng im lặng quá, cũng đừng nói nhiều quá. Dân làng: để ý ai hay đổi lời, và ai hay bỏ phiếu cùng nhau.' },
         tictactoe: { goal: 'Xếp ba quân của bạn thẳng hàng.', steps: [
           ['Đánh quân', 'Chạm vào một ô trống. X đi trước ở ván đầu.'],
           ['Lần lượt', 'Hai người lần lượt mỗi người đánh một quân.'],

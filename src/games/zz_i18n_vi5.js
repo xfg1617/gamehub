@@ -30,6 +30,25 @@
       'History': 'Lịch sử', 'Food': 'Ẩm thực', 'Animals': 'Động vật', 'Games': 'Trò chơi', 'Vietnam': 'Việt Nam', 'USA': 'Nước Mỹ', 'Weird Facts': 'Chuyện lạ',
       'QUESTIONS': 'SỐ CÂU HỎI', 'TIME TO ANSWER': 'THỜI GIAN TRẢ LỜI', 'DIFFICULTY': 'ĐỘ KHÓ', 'Mixed': 'Trộn', 'Hard': 'Khó', 'Just me': 'Chỉ mình tôi', 'Genius': 'Thiên tài',
       'Right answers': 'Câu trả lời đúng', 'Score': 'Điểm', 'Best streak': 'Chuỗi dài nhất', 'RIGHT ANSWERS': 'CÂU ĐÚNG', 'BEST STREAK': 'CHUỖI DÀI NHẤT',
+      // Funny Answers
+      'Answer silly prompts, then vote for the funniest. Two players get the same prompt, and the room decides who wins!': 'Trả lời những đề bá đạo, rồi bình chọn câu hài nhất. Hai người cùng một đề, cả phòng quyết định ai thắng!',
+      'Everyone answers silly prompts, then votes for the funniest answer. Played with friends: create a room and send them the link.': 'Mọi người trả lời những đề bá đạo, rồi bình chọn câu hài nhất. Chơi cùng bạn bè: tạo phòng và gửi link cho họ.',
+      'PROMPTS IN': 'NGÔN NGỮ ĐỀ', 'Which language the prompts are in.': 'Đề bằng ngôn ngữ nào.', 'TIME TO WRITE': 'THỜI GIAN VIẾT', '2 min': '2 phút', 'PROMPTS': 'LOẠI ĐỀ',
+      'Crazy': 'Bá đạo', 'Family friendly': 'Cho cả nhà', 'The last round is always the final round, where everyone answers the same prompt.': 'Vòng cuối luôn là vòng chung kết, mọi người cùng trả lời một đề.',
+      'Funny Answers is played with friends online: create a room and invite them.': 'Trò này chơi cùng bạn bè online: tạo phòng và mời họ nhé.',
+      "You're the funniest!": 'Bạn hài nhất!', 'Prompts won': 'Đề thắng', 'Clean sweeps': 'Thắng tuyệt đối', 'PROMPTS WON': 'ĐỀ THẮNG', 'CLEAN SWEEPS': 'THẮNG TUYỆT ĐỐI', 'SWEEP': 'TUYỆT ĐỐI',
+      // Werewolf
+      'Secret roles: wolves hide among the villagers. Each night they strike; each day the village talks and votes someone out.': 'Vai bí mật: sói trà trộn giữa dân làng. Đêm nào sói cũng ra tay; ngày nào dân làng cũng bàn bạc và vote loại một người.',
+      'Secret roles, a village, and wolves hiding among you. Played with friends: create a room and send them the link.': 'Vai bí mật, một ngôi làng, và những con sói trà trộn giữa các bạn. Chơi cùng bạn bè: tạo phòng và gửi link cho họ.',
+      'WEREWOLVES': 'SỐ SÓI', 'Auto': 'Tự động', 'Auto: 1 wolf for up to 6 players, 2 for 7-10, 3 for 11-12.': 'Tự động: 1 sói đến 6 người, 2 sói 7-10 người, 3 sói 11-12 người.',
+      'NIGHT TIME': 'THỜI GIAN BAN ĐÊM', 'DAY TALK': 'THỜI GIAN BÀN BẠC', '1 min': '1 phút', '3 min': '3 phút',
+      'Time to talk in the chat before the vote. Everyone can press "Ready to vote" to start it sooner.': 'Thời gian bàn bạc trong chat trước khi bỏ phiếu. Mọi người có thể bấm "Sẵn sàng bỏ phiếu" để bắt đầu sớm hơn.',
+      'Seer': 'Tiên Tri', 'Doctor': 'Bác Sĩ', 'Hunter': 'Thợ Săn', 'Witch': 'Phù Thủy', 'Villager': 'Dân Làng',
+      'Each night, sees if one player is a wolf.': 'Mỗi đêm, xem một người có phải sói không.', 'Each night, protects one player.': 'Mỗi đêm, bảo vệ một người.',
+      'Takes someone with them when they go out.': 'Khi bị loại được kéo theo một người.', 'One save potion and one poison.': 'Một bình cứu và một bình độc.',
+      'Show the role of players who go out': 'Lộ vai của người bị loại', 'Your side wins!': 'Phe bạn thắng!', 'Your side lost': 'Phe bạn thua', 'Your role': 'Vai của bạn',
+      'Winners': 'Phe thắng', 'The wolves': 'Bầy sói', 'The village': 'Dân làng', 'You survived': 'Bạn sống sót', 'Yes': 'Có', 'No': 'Không',
+      'WOLF WINS': 'THẮNG KHI LÀM SÓI', 'SURVIVED': 'SỐNG SÓT', 'CAUGHT': 'BẮT ĐƯỢC',
     };
     window.VI_PAT5 = [
       [/^(\d+) \/ (\d+) right!$/, 'Đúng $1 / $2 câu!'], [/^([\d,]+) points$/, '$1 điểm'], [/^(\d+)\/(\d+) right$/, 'đúng $1/$2'],

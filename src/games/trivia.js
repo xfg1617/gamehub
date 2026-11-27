@@ -88,7 +88,7 @@
         run().catch((e) => { if (e !== ABORT) throw e; });
       }
       async function W(ms) { const t = G && G.tok; await gSleep(window.__fast ? Math.min(ms, 30) : ms); if (!G || G.tok !== t) throw ABORT; }
-      const T = (en, v) => (G && G.L ? v : en);
+      const T = (en, v) => (typeof LANG !== 'undefined' && LANG.code === 'vi' ? v : en);   // the player's own language for buttons and messages
       function scores() {
         const el = $('tv-scores'); if (!el) return;
         const rank = G.players.slice().sort((a, b) => b.pts - a.pts);
@@ -181,7 +181,8 @@
 
       const K = '#050E18', rr = (x, y, w, h, f) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${f}"/>`;
       // tile icon: four answer blocks and a big question mark
-      GICONS.trivia = `<svg viewBox="0 0 24 24" shape-rendering="crispEdges" aria-hidden="true">${rr(1, 1, 22, 22, K)}${rr(2, 2, 9, 9, '#2DD4BF')}${rr(13, 2, 9, 9, '#F5B041')}${rr(2, 13, 9, 9, '#FB7185')}${rr(13, 13, 9, 9, '#34D399')}${rr(8, 5, 8, 3, K)}${rr(9, 6, 6, 1, '#F7F4EC')}${rr(14, 7, 3, 5, K)}${rr(15, 8, 1, 3, '#F7F4EC')}${rr(10, 11, 6, 3, K)}${rr(11, 12, 4, 1, '#F7F4EC')}${rr(10, 13, 3, 4, K)}${rr(11, 14, 1, 2, '#F7F4EC')}${rr(10, 18, 3, 3, K)}${rr(11, 19, 1, 1, '#F7F4EC')}</svg>`;
+      const QM = ['.KKKKKK.', 'KKwwwwKK', 'KwwKKwwK', 'KKKKKwwK', '...KwwKK', '..KwwKK.', '..KwwK..', '..KKKK..', '..KwwK..', '..KKKK..'];
+      GICONS.trivia = `<svg viewBox="0 0 24 24" shape-rendering="crispEdges" aria-hidden="true">${rr(1, 1, 22, 22, K)}${rr(2, 2, 9, 9, '#2DD4BF')}${rr(13, 2, 9, 9, '#F5B041')}${rr(2, 13, 9, 9, '#FB7185')}${rr(13, 13, 9, 9, '#34D399')}${QM.map((row, y) => [...row].map((c, x) => (c === 'K' ? rr(8 + x, 7 + y, 1, 1, K) : c === 'w' ? rr(8 + x, 7 + y, 1, 1, '#F7F4EC') : '')).join('')).join('')}</svg>`;
       const mod = {
         id: 'trivia', name: 'Trivia Rush', icon: 'trivia', cats: ['word', 'party'], sub: '1-8 PLAYERS · ~5 MIN', color: '#2DD4BF', tone: 'teal', btn: 'teal', flag: 'NEW',
         blurb: 'Quick-fire quiz: everyone gets the same question, fastest right answer scores most. 12 categories, English or Vietnamese.',

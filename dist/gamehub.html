@@ -12772,7 +12772,7 @@
       }
       function start(body, sel, S) {
         const L = sel.lang === 'vi', P = (window.FUNNY_PROMPTS || {})[L ? 'vi' : 'en'] || { clean: ['???'] };
-        const deck = S.rng.shuffle(sel.kind === 'clean' ? P.clean.slice() : P.clean.concat(P.crazy));
+        const deck = sel.kind === 'clean' ? S.rng.shuffle(P.clean.slice()) : S.rng.shuffle(P.crazy.slice()).concat(S.rng.shuffle(P.clean.slice()));   // crazy mode: the crazy prompts first, family ones only if a long game runs out
         const players = S.seats.map((x, i) => ({ seat: i, name: x.name, av: x.avatar, pts: 0, sweeps: 0, wins: 0 }));
         G = { S, sel, L, me: S.online ? S.me : 0, players, deck, dk: 0, rounds: +sel.rounds === 2 ? 2 : 3, wtime: +sel.wtime || 90, over: false, tok: ++GT.cur, done: {} };
         GT.started = true; GT.over = false;
@@ -13043,6 +13043,41 @@
         ],
       },
     };
+    /* Nov 27 2026 (Inna): more grown-up "crazy" prompts, "three things" lists and bold questions. Our own, cheeky, never explicit. */
+    window.FUNNY_PROMPTS.en.crazy.push(
+      'Three things you should never say on a first date', 'The three worst things to hear from your dentist while you\'re numb',
+      'Three things your ex is definitely doing right now', 'Three red flags that are secretly green flags',
+      'Three things that should be illegal at a family reunion', 'Three things you\'d find in a villain\'s fridge',
+      'Three secret rules of the group chat nobody says out loud', 'Three jobs that would ruin anyone\'s love life',
+      'Three things you should never bring to a job interview', 'Three things you\'d whisper to a houseplant at 3 a.m.',
+      'Three famous people you would NOT want as roommates', 'Three apps that should exist but never will',
+      'The three words you never want to hear from a pilot', 'Three things the hotel cleaner definitely knows about you',
+      'A celebrity you\'d secretly date, and why it would be a disaster', 'Your weirdest "hear me out" crush (cartoons count)',
+      'A headline that would end your career in one day', 'A wish so unhinged the genie quits on the spot',
+      'The real name of your love life, if it were a TV show', 'What your bank account would say if it could leave a review',
+      'The worst thing to say right after a first kiss', 'A brand-new holiday nobody asked for',
+      'The worst job title to put on a dating profile', 'The most suspicious thing to buy all at once at the supermarket',
+      'A terrible name for a perfume', 'An honest slogan for a night club',
+      'The worst song to play at a funeral', 'The worst thing to shout when you finally win an argument',
+      'What your cat says about you behind your back', 'A rule you\'d make if you were president for one day',
+    );
+    window.FUNNY_PROMPTS.vi.crazy.push(
+      'Ba câu tuyệt đối không được nói trong buổi hẹn đầu', 'Ba thứ người yêu cũ chắc chắn đang làm lúc này',
+      'Ba dấu hiệu "cờ đỏ" mà thật ra là "cờ xanh"', 'Ba thứ lẽ ra phải bị cấm trong đám giỗ cả họ',
+      'Ba luật ngầm của nhóm chat mà không ai nói ra', 'Ba nghề chắc chắn làm hỏng chuyện tình cảm',
+      'Ba thứ không bao giờ được mang theo khi đi phỏng vấn', 'Ba người nổi tiếng bạn KHÔNG muốn ở chung phòng trọ',
+      'Ba câu bạn không bao giờ muốn nghe từ phi công', 'Ba thứ cô dọn phòng khách sạn chắc chắn biết về bạn',
+      'Ba ứng dụng nên có nhưng sẽ không bao giờ có', 'Ba thứ bạn sẽ thì thầm với cây cảnh lúc 3 giờ sáng',
+      'Ba món nhậu kinh dị nhất có thể gọi khi đi với người yêu', 'Ba lý do để không đi đám cưới người yêu cũ',
+      'Người nổi tiếng bạn lén "crush", và vì sao sẽ là thảm họa', 'Crush kỳ lạ nhất của bạn, "nghe tui giải thích đã"',
+      'Tiêu đề báo khiến bạn mất việc chỉ trong một ngày', 'Điều ước điên rồ đến mức ông Bụt xin nghỉ việc',
+      'Tên chuyện tình của bạn nếu nó là phim truyền hình giờ vàng', 'Tài khoản ngân hàng của bạn sẽ đánh giá bạn mấy sao?',
+      'Câu tệ nhất để nói ngay sau nụ hôn đầu', 'Một ngày lễ mới mà không ai yêu cầu',
+      'Chức danh tệ nhất để ghi trên hồ sơ hẹn hò', 'Món đồ đáng ngờ nhất khi mua cùng lúc ở siêu thị',
+      'Tên nước hoa tệ nhất', 'Khẩu hiệu thật thà nhất cho một quán bar',
+      'Bài hát tệ nhất để mở trong đám tang', 'Câu tệ nhất để hét lên khi cãi nhau thắng người yêu',
+      'Con mèo nói gì về bạn sau lưng bạn?', 'Luật đầu tiên bạn ban hành nếu được làm chủ tịch phường một ngày',
+    );
     /* =========================================================================
        CASTLES & KINGS (original game, Nov 2026): build the finest town. 3-6 players.
        Each round everyone secretly picks a character (the crown holder picks first; one character is set aside face

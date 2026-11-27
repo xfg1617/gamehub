@@ -1199,4 +1199,7 @@ folder that was handed over, so they do not exist here.)
   **Lycan** (village; `seerW()`: the Seer sees WOLF; the Seer only ever sees WOLF / NOT A WOLF, never the role name).
   `deal` always leaves at least one Villager, so with few players not every extra fits. Guide + video lines for every role
   (video shots 11-16). `test/t_ww_roles.py` (scripted seats on one screen; `G.dawns` records each night's victims).
+* **Say What!? crazy prompts** (Nov 27 2026, Inna): +30 grown-up prompts per language in the "Three things..." / hear-me-out /
+  headline style (our own; cheeky, never explicit, site is 13+). Crazy mode now deals the crazy prompts first (72 per
+  language) and only falls back to family ones if a game runs out; Family friendly = clean only.
 

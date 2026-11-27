@@ -27,7 +27,7 @@
       }
       function start(body, sel, S) {
         const L = sel.lang === 'vi', P = (window.FUNNY_PROMPTS || {})[L ? 'vi' : 'en'] || { clean: ['???'] };
-        const deck = S.rng.shuffle(sel.kind === 'clean' ? P.clean.slice() : P.clean.concat(P.crazy));
+        const deck = sel.kind === 'clean' ? S.rng.shuffle(P.clean.slice()) : S.rng.shuffle(P.crazy.slice()).concat(S.rng.shuffle(P.clean.slice()));   // crazy mode: the crazy prompts first, family ones only if a long game runs out
         const players = S.seats.map((x, i) => ({ seat: i, name: x.name, av: x.avatar, pts: 0, sweeps: 0, wins: 0 }));
         G = { S, sel, L, me: S.online ? S.me : 0, players, deck, dk: 0, rounds: +sel.rounds === 2 ? 2 : 3, wtime: +sel.wtime || 90, over: false, tok: ++GT.cur, done: {} };
         GT.started = true; GT.over = false;

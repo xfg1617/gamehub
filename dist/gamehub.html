@@ -2613,6 +2613,94 @@
     .cf-doc .tbl td { background: transparent; color: #2A2116; }
     .cf-doc .cf-row.mk td { background: #FDE68A; }
     .cf-roomsvg { max-height: calc(100vh - 300px); width: auto; max-width: 100%; margin: 0 auto; }
+    /* v3: pin anything, a real filing cabinet, documents that look like the real paper */
+    .cf-pin .rm { display: block; font-size: 10px; font-weight: 800; color: #0E7C6F; text-transform: uppercase; letter-spacing: .04em; }
+    .cf-pin .pn { display: block; margin: 3px 0; padding: 2px 4px; background: #FFF2A6; color: #6B4A00; font-style: italic; font-size: 11px; border-left: 3px solid #F5B041; }
+    .cf-notebox { margin-top: 10px; background: #FFF2A6; border: 3px solid #050E18; box-shadow: 3px 4px 0 #050E18; padding: 6px 8px; transform: rotate(-0.6deg); }
+    .cf-notebox label { display: block; font-size: 11px; font-weight: 800; color: #6B4A00; text-transform: uppercase; }
+    .cf-notebox label small { text-transform: none; font-weight: 600; }
+    .cf-notebox textarea { width: 100%; min-height: 44px; resize: vertical; background: transparent; border: 0; border-bottom: 1px dashed #B08A2A; color: #3A2A00; font-style: italic; font-size: 14px; outline: none; }
+    .cf-clue .acts, .cf-deskbar .acts { margin-top: 10px; }
+    /* the cabinet */
+    .cf-cab { position: relative; background: #7D8C9E; border: 4px solid #050E18; padding: 10px 10px 4px; box-shadow: inset -8px 0 0 #66758A, inset 8px 0 0 #93A2B3, 0 6px 0 #050E18; }
+    .cf-cab .top { background: #5E6C7E; border: 3px solid #050E18; margin: -10px -10px 10px; padding: 6px; text-align: center; }
+    .cf-cab .top span { display: inline-block; background: #F7F4EC; color: #050E18; border: 2px solid #050E18; padding: 1px 12px; font-family: 'Arcade Pixel', monospace; font-size: 15px; letter-spacing: .1em; }
+    .cf-drw { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; margin-bottom: 6px; padding: 7px 8px 9px;
+      background: #A8B6C6; border: 3px solid #050E18; box-shadow: inset 0 -5px 0 #8796A8, inset 0 3px 0 #C3CFDB; transition: transform .2s; }
+    .cf-drw:hover { background: #B4C1CF; }
+    .cf-drw .lbl { min-width: 60%; background: #F7F4EC; color: #050E18; border: 2px solid #050E18; outline: 3px solid #5E6C7E; padding: 2px 10px; font-weight: 800; font-size: 13px; }
+    .cf-drw .hd { width: 40%; height: 12px; background: #3F4752; border: 2px solid #050E18; box-shadow: inset 0 3px 0 #6B7685; }
+    .cf-drw.open { background: #C3CFDB; margin-bottom: 0; transform: scale(1.03); z-index: 2; }
+    .cf-drin { position: relative; margin: 0 -2px 10px; padding: 12px 10px 8px; background: #3A4553; border: 3px solid #050E18; border-top: 0; box-shadow: inset 0 8px 0 #2A3340;
+      display: flex; flex-direction: column; gap: 0; }
+    .cf-fold { position: relative; display: block; width: 100%; height: 40px; margin-top: -6px; background: transparent; border: 0; padding: 0; text-align: left; }
+    .cf-fold::before { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 26px; background: #D9B46A; border: 3px solid #050E18; border-bottom-width: 0; }
+    .cf-fold .tab { position: absolute; top: 0; left: var(--off); max-width: 70%; background: #E9C985; color: #2A2116; border: 3px solid #050E18; border-bottom: 0; padding: 2px 8px 4px;
+      font-weight: 800; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cf-fold:hover .tab, .cf-fold:hover::before { filter: brightness(1.08); }
+    .cf-fold.read .tab { background: #CDB27A; }
+    .cf-fold.on .tab { background: #F7F4EC; transform: translateY(-4px); }
+    .cf-fold.on::before { background: #F7F4EC; }
+    .cf-cab .feet { display: flex; justify-content: space-between; margin: 0 6px -12px; } .cf-cab .feet i { width: 26px; height: 8px; background: #050E18; }
+    /* the desk */
+    .cf-desk { background: #6B4A2E; background-image: repeating-linear-gradient(0deg, transparent 0 22px, rgba(0,0,0,.12) 22px 24px); padding: 16px; min-height: 360px; }
+    .cf-empty-desk { background: #F7F4EC; color: #2A2116; border: 3px solid #050E18; padding: 14px; max-width: 420px; margin: 30px auto; transform: rotate(-1.5deg); box-shadow: 6px 6px 0 rgba(5,14,24,.5); font-size: 14px; line-height: 1.5; }
+    .cf-deskbar { max-width: 560px; margin: 12px auto 0; background: #0F2338; border: 3px solid #050E18; padding: 8px 10px 10px; }
+    .cf-deskbar .cf-tip { color: #C9D8E8; margin: 0; }
+    .cf-sheet { position: relative; max-width: 560px; margin: 4px auto 0; background: #FBF8EF; color: #1F1A12; border: 3px solid #050E18; box-shadow: 6px 7px 0 rgba(5,14,24,.55);
+      padding: 18px 18px 14px; font-size: 14px; line-height: 1.45; transform: rotate(.4deg); }
+    .cf-sheet .clip { position: absolute; top: -12px; left: 34px; width: 16px; height: 34px; border: 3px solid #8A96A6; border-bottom: 0; box-shadow: 0 0 0 2px #050E18; background: transparent; }
+    .cf-sheet h4 { margin: 0 0 6px; font-size: 16px; font-weight: 800; }
+    .cf-sheet .intro { font-size: 12px; color: #6B5D45; margin: 0 0 8px; font-style: italic; }
+    .cf-sheet .ph { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; border-bottom: 2px solid #1F1A12; padding-bottom: 4px; margin-bottom: 8px; font-size: 11px; letter-spacing: .05em; }
+    .cf-sheet .ph b { font-size: 13px; }
+    .cf-sheet .tbl { width: 100%; border-collapse: collapse; } .cf-sheet .tbl td { padding: 5px 6px; border-bottom: 1px solid #D8CFBA; vertical-align: top; color: inherit; background: transparent; }
+    .cf-sheet .lines .cf-row { padding: 5px 6px; }
+    .cf-sheet .cf-row { cursor: pointer; } .cf-sheet .cf-row:hover td, .cf-sheet div.cf-row:hover { background: rgba(253,230,138,.45); }
+    .cf-sheet .cf-row.mk td, .cf-sheet div.cf-row.mk { background: linear-gradient(transparent 12%, #FDE047 12%, #FDE047 88%, transparent 88%); box-shadow: none; }
+    .cf-sheet .pg { margin-top: 10px; font-size: 10px; color: #7A6E58; letter-spacing: .08em; text-align: right; }
+    /* log sheet: printed form, typewriter rows, grey ruled table */
+    .cf-sheet.log { font-family: 'Courier New', monospace; } .cf-sheet.log h4 { font-family: 'Outfit', sans-serif; }
+    .cf-sheet.log .tbl tr:nth-child(odd) td { background: #EFEBE0; } .cf-sheet.log .tbl td { border: 1px solid #BDB49F; }
+    /* till receipt: narrow thermal paper with a torn edge */
+    .cf-sheet.receipt { max-width: 320px; font-family: 'Courier New', monospace; font-size: 13px; background: #FFFFFF; transform: rotate(-1deg); border-bottom: 0;
+      -webkit-mask: linear-gradient(#000 0 0) top / 100% calc(100% - 10px) no-repeat, conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 16px 10px repeat-x;
+      mask: linear-gradient(#000 0 0) top / 100% calc(100% - 10px) no-repeat, conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 16px 10px repeat-x; padding-bottom: 24px; }
+    .cf-sheet.receipt .ph { flex-direction: column; align-items: center; border: 0; text-align: center; }
+    .cf-sheet.receipt .cut { text-align: center; color: #8A8A8A; overflow: hidden; white-space: nowrap; }
+    .cf-sheet.receipt .ty { text-align: center; font-size: 11px; margin-top: 4px; }
+    .cf-sheet.receipt .tbl td { border: 0; padding: 3px 2px; }
+    .cf-sheet.receipt .clip { display: none; }
+    /* phone printout: green-bar computer paper */
+    .cf-sheet.phone { font-family: 'Courier New', monospace; font-size: 13px; background: repeating-linear-gradient(#FBF8EF 0 30px, #E1EEDD 30px 60px); }
+    .cf-sheet.phone .lines .cf-row { border: 0; }
+    /* notebook: lined paper, red margin, handwriting in blue ink */
+    .cf-sheet.notebook { background: #FFFDF5; background-image: linear-gradient(90deg, transparent 38px, #F28B82 38px 40px, transparent 40px), repeating-linear-gradient(transparent 0 27px, #B9CDE6 27px 28px);
+      padding-left: 50px; color: #1F3A8A; font-style: italic; transform: rotate(-.6deg); }
+    .cf-sheet.notebook h4 { color: #1F3A8A; text-decoration: underline; } .cf-sheet.notebook .tbl td { border: 0; padding: 4px 6px 3px; }
+    /* witness statement: typed, signed */
+    .cf-sheet.statement { font-family: Georgia, 'Times New Roman', serif; }
+    .cf-sheet.statement .lines .cf-row { padding: 6px; text-indent: 1em; }
+    .cf-sheet .sig { display: flex; align-items: flex-end; gap: 8px; margin-top: 12px; font-size: 12px; } .cf-sheet .sig svg { width: 120px; height: 24px; border-bottom: 1px solid #1F1A12; }
+    /* letter: cream writing paper */
+    .cf-sheet.letter { background: #F6EEDC; font-family: Georgia, 'Times New Roman', serif; font-style: italic; transform: rotate(1deg); }
+    .cf-sheet.letter h4 { font-style: normal; font-size: 13px; color: #7A6E58; text-transform: uppercase; letter-spacing: .06em; }
+    /* official notice with a stamp */
+    .cf-sheet.notice { background: #EEF2F7; }
+    .cf-sheet.notice .ph { border-bottom: 4px double #1F1A12; }
+    .cf-sheet .stamp { position: absolute; right: 18px; bottom: 14px; border: 3px solid #C0392B; color: #C0392B; padding: 2px 8px; font-weight: 900; font-size: 12px; letter-spacing: .1em; transform: rotate(-8deg); opacity: .75; }
+    .cf-sheet.notice .lines { padding-bottom: 26px; }
+    /* repair form: columns and boxes */
+    .cf-sheet.form .cols { display: grid; grid-template-columns: 18% 1fr 22%; font-size: 10px; font-weight: 800; letter-spacing: .08em; border-bottom: 1px solid #1F1A12; padding: 0 6px 2px; }
+    .cf-sheet.form .tbl td:first-child { width: 18%; } .cf-sheet.form .tbl td:last-child { width: 22%; font-weight: 800; text-transform: uppercase; font-size: 12px; }
+    .cf-sheet.form .tbl td { border: 1px solid #9C8C6A; }
+    /* menu card */
+    .cf-sheet.menu { text-align: center; font-family: Georgia, 'Times New Roman', serif; background: #FFFBF0; border-width: 3px; outline: 2px solid #B08A2A; outline-offset: -10px; padding: 22px 26px; }
+    .cf-sheet.menu .ph { flex-direction: column; align-items: center; border: 0; } .cf-sheet.menu .ph b { font-size: 18px; font-style: italic; } .cf-sheet.menu .ph span { color: #B08A2A; }
+    @media (max-width: 640px) { .cf-desk { padding: 10px 6px; } .cf-sheet { padding: 14px 10px 12px; font-size: 13px; transform: none; } .cf-sheet.notebook { padding-left: 46px; } }
+    .cf-sheet div.cf-row { display: block; background: transparent; border: 0; box-shadow: none; color: inherit; gap: 0; }
+    .cf-sheet tr.cf-row { display: table-row; color: inherit; background: transparent; border: 0; box-shadow: none; padding: 0; }
+    .cf-sheet .tbl tr.cf-row.mk td { background: linear-gradient(transparent 12%, #FDE047 12%, #FDE047 88%, transparent 88%); }
     /* ===== Funny Answers (funny.js) ===== */
     body.in-game[data-game="funny"] { background-color: #0B1B2B; background-image: repeating-linear-gradient(45deg, rgba(245, 176, 65, .05) 0 18px, transparent 18px 36px); }
     .fa-wrap { display: flex; flex-direction: column; align-items: center; gap: 22px; }
@@ -11054,8 +11142,8 @@
    maker (face) and returns everything the game needs. Solution + how it is meant to be solved:
    prototypes/round9/case-files-solution.html. Add more cases by pushing more functions onto CASE_DEFS.
    v2 (Inna: "rooms with items you click; many items, some with nothing; records you have to dig through"):
-   ROOMS hold drawn objects (kind + box on a 600x340 room picture); most objects hold nothing. RECORDS is a filing cabinet:
-   drawers of documents, many of them unimportant; players mark the lines that matter themselves. */
+   ROOMS hold drawn objects (every one can be pinned) (kind + box on a 600x340 room picture); most objects hold nothing. RECORDS is a filing cabinet:
+   drawers of folders; each document has a 'look' (log, receipt, phone, notebook, statement, letter, notice, form, menu) that sets how its paper is drawn; players mark the lines that matter themselves. */
 window.CASE_DEFS = window.CASE_DEFS || [];
 window.CASE_DEFS.push((face) => {
   const PEOPLE = {
@@ -11083,28 +11171,28 @@ window.CASE_DEFS.push((face) => {
     a_gen: { who: 'A', icon: 'gen', title: 'The generator', text: 'Fresh greasy handprints on the start lever. A flashlight with "V. HALE" written on it lies on top.' },
     a_pills: { who: 'A', icon: 'pen', title: 'Headache pills', text: 'A box of headache pills on the nightstand. Still sealed: never opened.' },
     // documents (B). rows = the lines a detective can mark
-    b_doors: { who: 'B', icon: 'log', title: 'Floor 2 door log', intro: 'Smart locks on floor 2 (battery powered, they kept working in the power cut).', table: true,
+    b_doors: { who: 'B', look: 'log', icon: 'log', title: 'Floor 2 door log', intro: 'Smart locks on floor 2 (battery powered, they kept working in the power cut).', table: true,
       rows: [['7:52 pm', 'Room 201', 'guest card · D. Moreau'], ['8:44 pm', 'Room 204', 'guest card · M. Bell'], ['9:05 pm', 'Room 206', 'guest card · E. Cross'], ['9:11 pm', 'Linen room', 'staff card · L. Tran'], ['9:18 pm', 'Room 204', 'opened from INSIDE'], ['9:43 pm', 'Room 204', 'guest card · M. Bell'], ['9:52 pm', 'Room 206', 'guest card · E. Cross'], ['10:03 pm', 'Room 201', 'guest card · D. Moreau']] },
-    b_guests: { who: 'B', icon: 'log', title: 'Guest list', table: true, rows: [['201', 'Daisy Moreau', 'performer, 1 night'], ['204', 'Marcus Bell', 'family, 2 nights (paid by E. Bell)'], ['206', 'Ethan Cross', 'guest, 3 nights'], ['208', 'empty', ''], ['210', 'Mr & Mrs Okafor', 'guests, 1 night']] },
-    b_lost: { who: 'B', icon: 'pen', title: 'Lost & found book', table: true, rows: [['Thu', 'umbrella, black', 'lobby'], ['Fri 6 pm', 'reading glasses', 'library armchair'], ['Fri 8 pm', 'one earring, gold', 'dining hall']] },
-    b_power: { who: 'B', icon: 'bolt', title: 'Power company notice', rows: ['Seabright Power · storm outage report', 'Harbor Road: power off from 9:20 pm.', 'Power back on Harbor Road at 9:47 pm.', 'Buildings with their own generators may have light sooner.'] },
-    b_gen: { who: 'B', icon: 'log', title: 'Generator log', table: true, rows: [['Mon 10:00', 'Monthly test · V.H.'], ['Fri 9:20 pm', 'Main power lost'], ['Fri 9:34 pm', 'Manual start · signed V.H.'], ['Fri 9:47 pm', 'Main power back · generator off']] },
-    b_repair: { who: 'B', icon: 'pen', title: 'Repair requests', table: true, rows: [['Mar', 'Library garden door sticks, won\'t shut', 'not fixed'], ['Jul', 'Library garden door still sticks', 'not fixed'], ['Oct', 'Room 206 shower drips', 'fixed'], ['Nov', 'Jukebox skips', 'not fixed']] },
-    b_weather: { who: 'B', icon: 'bolt', title: 'Weather report', rows: ['Friday: heavy storm from 8 pm.', 'Harbor Road flooded from 9:30 pm.', 'Saturday: clear by morning.'] },
-    b_bar: { who: 'B', icon: 'glassdrink', title: 'Bar receipts', intro: 'The card reader runs on a battery.', table: true,
+    b_guests: { who: 'B', look: 'log', icon: 'log', title: 'Guest list', table: true, rows: [['201', 'Daisy Moreau', 'performer, 1 night'], ['204', 'Marcus Bell', 'family, 2 nights (paid by E. Bell)'], ['206', 'Ethan Cross', 'guest, 3 nights'], ['208', 'empty', ''], ['210', 'Mr & Mrs Okafor', 'guests, 1 night']] },
+    b_lost: { who: 'B', look: 'notebook', icon: 'pen', title: 'Lost & found book', table: true, rows: [['Thu', 'umbrella, black', 'lobby'], ['Fri 6 pm', 'reading glasses', 'library armchair'], ['Fri 8 pm', 'one earring, gold', 'dining hall']] },
+    b_power: { who: 'B', look: 'notice', icon: 'bolt', title: 'Power company notice', rows: ['Seabright Power · storm outage report', 'Harbor Road: power off from 9:20 pm.', 'Power back on Harbor Road at 9:47 pm.', 'Buildings with their own generators may have light sooner.'] },
+    b_gen: { who: 'B', look: 'log', icon: 'log', title: 'Generator log', table: true, rows: [['Mon 10:00', 'Monthly test · V.H.'], ['Fri 9:20 pm', 'Main power lost'], ['Fri 9:34 pm', 'Manual start · signed V.H.'], ['Fri 9:47 pm', 'Main power back · generator off']] },
+    b_repair: { who: 'B', look: 'form', icon: 'pen', title: 'Repair requests', table: true, rows: [['Mar', 'Library garden door sticks, won\'t shut', 'not fixed'], ['Jul', 'Library garden door still sticks', 'not fixed'], ['Oct', 'Room 206 shower drips', 'fixed'], ['Nov', 'Jukebox skips', 'not fixed']] },
+    b_weather: { who: 'B', look: 'notice', icon: 'bolt', title: 'Weather report', rows: ['Friday: heavy storm from 8 pm.', 'Harbor Road flooded from 9:30 pm.', 'Saturday: clear by morning.'] },
+    b_bar: { who: 'B', look: 'receipt', icon: 'glassdrink', title: 'Bar receipts', intro: 'The card reader runs on a battery.', table: true,
       rows: [['8:40 pm', 'card ****2210 (Okafor)', 'two lemonades'], ['9:15 pm', 'card ****4471 (E. Cross)', 'whisky'], ['9:22 pm', 'cash', 'beer'], ['9:28 pm', 'card ****4471 (E. Cross)', 'whisky'], ['9:41 pm', 'card ****4471 (E. Cross)', 'tab closed'], ['9:55 pm', 'card ****2210 (Okafor)', 'tea']] },
-    b_menu: { who: 'B', icon: 'pen', title: 'Anniversary dinner menu', rows: ['Crab soup', 'Grilled sea bass, lemon butter', 'Anniversary cake: 50 candles', 'Music by Daisy Moreau, 8:30 to 9:20'] },
-    b_orders: { who: 'B', icon: 'log', title: 'Kitchen order sheet', table: true, rows: [['8:50 pm', 'Table 3', 'extra bread'], ['9:05 pm', 'Table 1', 'cake served'], ['9:20 pm', 'ALL', 'stove off (power cut)']] },
-    b_house: { who: 'B', icon: 'pen', title: 'Housekeeping log', intro: 'Written by Lily Tran.', table: true,
+    b_menu: { who: 'B', look: 'menu', icon: 'pen', title: 'Anniversary dinner menu', rows: ['Crab soup', 'Grilled sea bass, lemon butter', 'Anniversary cake: 50 candles', 'Music by Daisy Moreau, 8:30 to 9:20'] },
+    b_orders: { who: 'B', look: 'notebook', icon: 'log', title: 'Kitchen order sheet', table: true, rows: [['8:50 pm', 'Table 3', 'extra bread'], ['9:05 pm', 'Table 1', 'cake served'], ['9:20 pm', 'ALL', 'stove off (power cut)']] },
+    b_house: { who: 'B', look: 'notebook', icon: 'pen', title: 'Housekeeping log', intro: 'Written by Lily Tran.', table: true,
       rows: [['8:30 pm', 'Turned down beds, rooms 201-210'], ['9:10 pm', 'Left cart on floor 2 outside 204, went down to laundry'], ['9:48 pm', 'Back to cart'], ['9:50 pm', 'SPARE KEY LIB-C MISSING!! Told Mr. Hale']] },
-    b_porter: { who: 'B', icon: 'log', title: "Night porter's log", intro: 'Sam Okafor, night porter.', table: true, rows: [['8:00 pm', 'Started shift, front door'], ['9:12-9:47 pm', 'Basement laundry with L. Tran, folding linen by flashlight'], ['9:55 pm', 'Back at front door']] },
-    b_keys: { who: 'B', icon: 'key', title: 'Spare key list', table: true, rows: [['LAUNDRY', 'laundry room'], ['LINEN', 'linen room, floor 2'], ['BAR-2', 'bar store room'], ['LIB-C', 'library display case (for cleaning the glass)'], ['GATE', 'garden gate']] },
-    b_laundry: { who: 'B', icon: 'pen', title: 'Laundry list', rows: ['40 towels', '22 sheets', '2 tablecloths (wine stain)'] },
-    b_bell: { who: 'B', icon: 'pen', title: "Mrs. Bell's statement", rows: ['"I locked the Harbor Pearl in its case myself at six o\'clock."', '"Mr. Cross offered me $20,000 for it last month. I told him never."', '"My grandson Marcus has been asking me for money again. I said no. He was very upset."', '"Victor has worked here for 30 years. I trust him completely."'] },
-    b_phone: { who: 'B', icon: 'phone', title: "Marcus's phone records", intro: 'From the phone company (with permission).',
+    b_porter: { who: 'B', look: 'notebook', icon: 'log', title: "Night porter's log", intro: 'Sam Okafor, night porter.', table: true, rows: [['8:00 pm', 'Started shift, front door'], ['9:12-9:47 pm', 'Basement laundry with L. Tran, folding linen by flashlight'], ['9:55 pm', 'Back at front door']] },
+    b_keys: { who: 'B', look: 'log', icon: 'key', title: 'Spare key list', table: true, rows: [['LAUNDRY', 'laundry room'], ['LINEN', 'linen room, floor 2'], ['BAR-2', 'bar store room'], ['LIB-C', 'library display case (for cleaning the glass)'], ['GATE', 'garden gate']] },
+    b_laundry: { who: 'B', look: 'notebook', icon: 'pen', title: 'Laundry list', rows: ['40 towels', '22 sheets', '2 tablecloths (wine stain)'] },
+    b_bell: { who: 'B', look: 'statement', icon: 'pen', title: "Mrs. Bell's statement", rows: ['"I locked the Harbor Pearl in its case myself at six o\'clock."', '"Mr. Cross offered me $20,000 for it last month. I told him never."', '"My grandson Marcus has been asking me for money again. I said no. He was very upset."', '"Victor has worked here for 30 years. I trust him completely."'] },
+    b_phone: { who: 'B', look: 'phone', icon: 'phone', title: "Marcus's phone records", intro: 'From the phone company (with permission).',
       rows: ['6:02 pm · from MOM: Be nice to Grandma tonight!', '7:30 pm · to PIZZA PALACE: call, 2 min', '8:47 pm · from RICKY $$: 12k by Monday. Last warning.', '9:44 pm · to RICKY $$: Relax. You\'ll have it tomorrow.', '10:15 pm · from MOM: How was the party?'] },
-    b_daisy: { who: 'B', icon: 'pen', title: "Daisy's contract", rows: ['Daisy Moreau will sing 8:30 pm to 9:20 pm.', 'Fee: $400, paid in advance.', 'Room 201 for the night is included.'] },
-    b_letter: { who: 'B', icon: 'pen', title: "Ethan's letter", rows: ['"Dear Mrs. Bell, my offer of $20,000 for the Harbor Pearl still stands."', '"If you ever change your mind, I am in room 206 all weekend."', '"With respect, Ethan Cross"'] },
+    b_daisy: { who: 'B', look: 'letter', icon: 'pen', title: "Daisy's contract", rows: ['Daisy Moreau will sing 8:30 pm to 9:20 pm.', 'Fee: $400, paid in advance.', 'Room 201 for the night is included.'] },
+    b_letter: { who: 'B', look: 'letter', icon: 'pen', title: "Ethan's letter", rows: ['"Dear Mrs. Bell, my offer of $20,000 for the Harbor Pearl still stands."', '"If you ever change your mind, I am in room 206 all weekend."', '"With respect, Ethan Cross"'] },
   };
 
   // ---------- the rooms (Detective A). x, y on the hotel map; items on a 600x340 picture ----------
@@ -11214,7 +11302,7 @@ window.CASE_DEFS.push((face) => {
   const WHY = [['collect', 'Wanted it for a collection'], ['debt', 'Needed money fast to pay a debt'], ['revenge', 'Revenge on Mrs. Bell'], ['job', 'To get someone else fired']];
 
   return {
-    id: 'harbor', num: '001', title: 'The Harbor Pearl', titleVi: 'Viên Ngọc Bến Cảng', mins: '20-30',
+    id: 'harbor', num: '001', org: 'Grand Harbor Hotel', title: 'The Harbor Pearl', titleVi: 'Viên Ngọc Bến Cảng', mins: '20-30',
     brief: `<p><b>Grand Harbor Hotel, Seabright. A stormy Friday night.</b></p>
       <p>Mrs. Eleanor Bell, 70, is celebrating fifty years of her family's hotel. Her most precious thing, a pearl and gold brooch called <b>the Harbor Pearl</b>, sits in a locked glass case in the library for guests to admire.</p>
       <p>At 9:20 pm a storm knocks out the power. The hotel goes dark. At <b>9:58 pm</b>, Mrs. Bell walks into the library and finds the case open and empty.</p>
@@ -11358,7 +11446,7 @@ window.CASE_DEFS.push((face) => {
         const C = cases().find((c) => c.id === sel.case) || cases()[0];
         const solo = S.n === 1;
         G = { S, C, solo, me: S.online ? S.me : 0, view: 'A', tab: 'brief', room: Object.keys(C.ROOMS)[0], open: null, sus: C.SUSPECTS[0],
-          found: {}, looked: {}, marks: {}, drawer: 0, doc: null, item: null, log: {}, pins: [], strings: [], asked: {}, feed: [], hints: 0, tries: 0, acc: { who: null, how: null, why: null, ev: [] }, prop: null, solved: false, selPin: null, noteN: 0, over: false, tok: ++GT.cur, t0: Date.now() };
+          found: {}, looked: {}, marks: {}, notes: {}, drawer: -1, doc: null, item: null, log: {}, pins: [], strings: [], asked: {}, feed: [], hints: 0, tries: 0, acc: { who: null, how: null, why: null, ev: [] }, prop: null, solved: false, selPin: null, noteN: 0, over: false, tok: ++GT.cur, t0: Date.now() };
         G.role = solo ? 'both' : G.me === 0 ? 'A' : 'B';
         if (G.role === 'B') G.view = 'B';
         GT.started = true; GT.over = false;
@@ -11377,12 +11465,13 @@ window.CASE_DEFS.push((face) => {
       // ---------- every change, in the same order on both screens ----------
       function apply(a) {
         if (!G) return 0;
-        const C = G.C, title = (id) => (C.CLUES[id] ? C.CLUES[id].title : T('a note', 'một ghi chú'));
+        const C = G.C, title = (id) => (card(id) ? card(id).title : T('a note', 'một ghi chú'));
+        if ((a.t === 'pin' || a.t === 'mark') && a.s === G.me) delete G.notes[a.id];
         if (a.t === 'find') { if (!G.found[a.id]) { G.found[a.id] = 1; if (a.s !== G.me) feed(a.s, `${T('found', 'tìm thấy')} <b>${esc(title(a.id))}</b>`); } }
         else if (a.t === 'look') { G.looked[a.room + ':' + a.i] = 1; const it = C.ROOMS[a.room] && C.ROOMS[a.room].items[a.i]; if (it && it.c && !G.found[it.c]) { G.found[it.c] = 1; if (a.s !== G.me) feed(a.s, `${T('found', 'tìm thấy')} <b>${esc(title(it.c))}</b>`); } }
-        else if (a.t === 'mark') { const p = G.pins.find((q) => q.id === a.id); if (p) { p.rows = (a.rows || []).slice(0, 20); feed(a.s, `${T('marked lines in', 'đánh dấu dòng trong')} <b>${esc(title(a.id))}</b>`); } }
+        else if (a.t === 'mark') { const p = G.pins.find((q) => q.id === a.id); if (p) { if (a.rows) p.rows = a.rows.slice(0, 20); if (a.note != null) p.note = String(a.note).slice(0, 160); feed(a.s, `${T('updated the card', 'cập nhật thẻ')} <b>${esc(title(a.id))}</b>`); } }
         else if (a.t === 'show') { const tk = C.TALK[a.sus]; if (tk) { (G.log[a.sus] = G.log[a.sus] || []).push({ q: `${T('Shows', 'Đưa ra')}: ${title(a.id)}`, a: tk.show[a.id] || tk.shrug, hot: !!tk.show[a.id], ev: 1 }); feed(a.s, `${T('showed', 'đưa')} <b>${esc(title(a.id))}</b> ${T('to', 'cho')} <b>${esc(C.PEOPLE[a.sus].name)}</b>`); } }
-        else if (a.t === 'pin') { if (!G.pins.some((p) => p.id === a.id)) { G.pins.push({ id: a.id, by: a.s, x: a.x, y: a.y, text: a.text, rows: a.rows }); feed(a.s, `${T('pinned', 'đã ghim')} <b>${esc(a.text ? T('a sticky note', 'một ghi chú') : title(a.id))}</b>`); if (a.s !== G.me) toast(`📌 ${esc(G.S.name(a.s))} ${T('pinned', 'đã ghim')} "${esc(a.text ? T('a note', 'ghi chú') : title(a.id))}"`); } }
+        else if (a.t === 'pin') { if (!G.pins.some((p) => p.id === a.id)) { G.pins.push({ id: a.id, by: a.s, x: a.x, y: a.y, text: a.text, rows: a.rows, note: a.note ? String(a.note).slice(0, 160) : '' }); feed(a.s, `${T('pinned', 'đã ghim')} <b>${esc(a.text ? T('a sticky note', 'một ghi chú') : title(a.id))}</b>`); if (a.s !== G.me) toast(`📌 ${esc(G.S.name(a.s))} ${T('pinned', 'đã ghim')} "${esc(a.text ? T('a note', 'ghi chú') : title(a.id))}"`); } }
         else if (a.t === 'unpin') { G.pins = G.pins.filter((p) => p.id !== a.id); G.strings = G.strings.filter((s) => !s.includes(a.id)); G.acc.ev = G.acc.ev.filter((x) => x !== a.id); feed(a.s, T('took a card off the board', 'gỡ một thẻ khỏi bảng')); }
         else if (a.t === 'move') { const p = G.pins.find((q) => q.id === a.id); if (p) { p.x = a.x; p.y = a.y; } }
         else if (a.t === 'tie') { const i = G.strings.findIndex((s) => s.includes(a.a) && s.includes(a.b)); if (i >= 0) G.strings.splice(i, 1); else { G.strings.push([a.a, a.b]); feed(a.s, `${T('tied', 'nối')} <b>${esc(title(a.a))}</b> ${T('to', 'với')} <b>${esc(title(a.b))}</b>`); } }
@@ -11415,13 +11504,25 @@ window.CASE_DEFS.push((face) => {
         G.mins = mins;
       }
       const plain = (h) => String(h || '').replace(/<[^>]+>/g, '');
+      // any card: a document, or any object in a room (clue or not, they look the same on the board)
+      function itemOf(id) {
+        const C = G.C; if (!G._itemOf) { G._itemOf = {}; Object.entries(C.ROOMS).forEach(([rk, r]) => r.items.forEach((it, i) => { const o = { it, rk, room: r }; G._itemOf['it:' + rk + ':' + i] = o; if (it.c) G._itemOf[it.c] = o; })); }
+        return G._itemOf[id];
+      }
+      function card(id) {
+        const C = G.C, c = C.CLUES[id], o = itemOf(id);
+        if (o) return { who: 'A', icon: 'glass', title: o.it.n, text: c ? c.text : o.it.t, room: o.room.name };
+        return c || null;
+      }
+      const objId = (room, i) => { const it = G.C.ROOMS[room].items[i]; return it.c || 'it:' + room + ':' + i; };
       const rowText = (r) => (Array.isArray(r) ? r.filter(Boolean).join(' · ') : r);
       // what a card on the board says: only what was found or marked, never the conclusion
       function cardSummary(p) {
-        const c = G.C.CLUES[p.id]; if (!c) return esc(p.text || '');
-        if (c.who === 'A') { const t = plain(c.text); return esc(t.length > 110 ? t.slice(0, 107) + '...' : t); }
+        const c = card(p.id); if (!c) return esc(p.text || '');
+        const nt = p.note ? `<span class="pn">✎ ${esc(p.note)}</span>` : '';
+        if (c.who === 'A') { const t = plain(c.text); return `<span class="rm">${esc(c.room || '')}</span>` + esc(t.length > 110 ? t.slice(0, 107) + '...' : t) + nt; }
         const rows = (p.rows || []).map((i) => c.rows[i]).filter((r) => r != null);
-        return rows.length ? rows.map((r) => `<span class="mk">${esc(rowText(r))}</span>`).join('') : `<i class="nomk">${T('No lines marked yet', 'Chưa đánh dấu dòng nào')}</i>`;
+        return nt + (rows.length ? rows.map((r) => `<span class="mk">${esc(rowText(r))}</span>`).join('') : `<i class="nomk">${T('No lines marked yet', 'Chưa đánh dấu dòng nào')}</i>`);
       }
       const act = (a) => G.S.act(Object.assign({ s: G.me }, a));
       let toastT = null;
@@ -11455,45 +11556,76 @@ window.CASE_DEFS.push((face) => {
               ${T('Stuck?', 'Bí?')} <button class="btn-game btn-amber py-1 px-3 text-xs" data-hint ${G.hints >= G.C.HINTS.length ? 'disabled' : ''}>${T('Get a hint', 'Xem gợi ý')}</button> <span class="text-muted">${T('(each hint costs a star)', '(mỗi gợi ý trừ một sao)')}</span>
               ${G.C.HINTS.slice(0, G.hints).map((h, i) => `<div class="cf-hint"><b>${T('Hint', 'Gợi ý')} ${i + 1}:</b> ${h}</div>`).join('')}</div></div></div></div>`;
       }
-      function clueCard(id, name) {
-        const c = G.C.CLUES[id], pinned = G.pins.some((p) => p.id === id);
-        return `<div class="cf-clue"><h4><span class="ic">${icon(c.icon)}</span>${esc(name || c.title)}</h4><div>${c.text}</div>
-          <div class="acts">${pinned ? `<span class="cf-pinned">📌 ${T('On the board', 'Đã ở trên bảng')}</span>` : `<button class="btn-game btn-teal py-1.5 px-3 text-xs" data-pin="${id}">📌 ${T('Pin to the board', 'Ghim lên bảng')}</button>`}</div></div>`;
+      // the note box + pin button under anything you can pin (an object or a document)
+      function pinBar(id, extra) {
+        const pin = G.pins.find((p) => p.id === id), note = G.notes[id] != null ? G.notes[id] : (pin ? pin.note || '' : '');
+        return `<div class="cf-notebox"><label>${T('Your note', 'Ghi chú của bạn')} <small>${T('(goes on the card)', '(ghi lên thẻ)')}</small></label>
+            <textarea data-note="${id}" maxlength="160" placeholder="${T('e.g. Why is this here?', 'vd: Sao cái này lại ở đây?')}">${esc(note)}</textarea></div>
+          <div class="acts" data-acts="${id}">${pinActs(id, extra)}</div>`;
       }
+      function pinActs(id, extra) {
+        const pin = G.pins.find((p) => p.id === id), note = G.notes[id] != null ? G.notes[id] : (pin ? pin.note || '' : '');
+        const changed = pin && ((pin.note || '') !== note || extra), n = (G.marks[id] || []).length, isDoc = G.C.CLUES[id] && G.C.CLUES[id].who === 'B';
+        return `${pin ? (changed ? `<button class="btn-game btn-teal py-1.5 px-3 text-xs" data-remark="${id}">📌 ${T('Update the card on the board', 'Cập nhật thẻ trên bảng')}</button>` : `<span class="cf-pinned">📌 ${T('On the board', 'Đã ở trên bảng')}</span>`)
+            : `<button class="btn-game btn-teal py-1.5 px-3 text-xs" data-pin="${id}">📌 ${T('Pin to the board', 'Ghim lên bảng')}${isDoc && n ? ` (${n} ${T('marked', 'dòng')})` : ''}</button>`}`;
+      }
+      function clueCard(id) {
+        const c = card(id);
+        return `<div class="cf-clue"><h4><span class="ic">${icon(c.icon)}</span>${esc(c.title)}</h4><div>${c.text}</div>${pinBar(id)}</div>`;
+      }
+      function docChanged(id) { const pin = G.pins.find((p) => p.id === id); return !!(pin && G.marks[id] && JSON.stringify((pin.rows || []).slice().sort()) !== JSON.stringify(G.marks[id].slice().sort())); }
       function sceneHTML() {
         const C = G.C, room = C.ROOMS[G.room];
         const looked = {}; room.items.forEach((_, i) => { if (G.looked[G.room + ':' + i]) looked[i] = 1; });
         const nav = `<div class="cf-rooms">${Object.entries(C.ROOMS).map(([k, o]) => `<button class="cf-rbtn ${G.room === k ? 'on' : ''}" data-room="${k}" style="--rc:${o.col}">${esc(o.name)}</button>`).join('')}</div>`;
         const it = G.item != null ? room.items[G.item] : null;
-        let side = `<p class="cf-scene">${room.scene}</p><p class="cf-tip">${T('Tap anything in the room to take a closer look. Not everything is useful, and nobody tells you when you have found it all.', 'Chạm vào bất cứ thứ gì trong phòng để xem kỹ. Không phải thứ gì cũng có ích, và không ai báo khi bạn đã tìm hết.')}</p>`;
-        if (it) side += it.c ? clueCard(it.c, it.n) : `<div class="cf-look"><b>${esc(it.n)}</b><p>${it.t}</p><span class="nothing">${T('Nothing useful here.', 'Không có gì hữu ích.')}</span></div>`;
+        let side = `<p class="cf-scene">${room.scene}</p><p class="cf-tip">${T('Tap anything in the room to take a closer look. You can pin anything to the board, but not everything matters, and nobody tells you when you have found it all.', 'Chạm vào bất cứ thứ gì trong phòng để xem kỹ. Bạn có thể ghim mọi thứ lên bảng, nhưng không phải thứ gì cũng quan trọng, và không ai báo khi bạn đã tìm hết.')}</p>`;
+        if (it) side += clueCard(objId(G.room, G.item));
         return `${nav}<div class="cf-inv"><div class="cf-panel"><div class="cf-ph">${esc(room.name).toUpperCase()}</div><div class="cf-pb cf-roombox">${roomSVG(room, looked)}</div></div>
           <div class="cf-panel"><div class="cf-ph">${T('CLOSE LOOK', 'XEM KỸ')}</div><div class="cf-pb">${side}</div></div></div>`;
       }
+      // one document as a real piece of paper: the look (log sheet, till receipt, phone printout, notebook...) sets the paper
+      function paperHTML(id, c, marks) {
+        const org = G.C.org || '', lk = c.look || 'log', code = (id.charCodeAt(2) * 37 + id.length * 11) % 900 + 100;
+        const row = (r, i) => `<${c.table ? 'tr' : 'div'} class="cf-row ${marks.includes(i) ? 'mk' : ''}" data-row="${i}">${c.table ? r.map((x) => `<td>${esc(x)}</td>`).join('') : esc(r)}</${c.table ? 'tr' : 'div'}>`;
+        const body = c.table ? `<table class="tbl">${c.rows.map(row).join('')}</table>` : `<div class="lines">${c.rows.map(row).join('')}</div>`;
+        const intro = c.intro ? `<p class="intro">${esc(c.intro)}</p>` : '';
+        const head = {
+          log: `<div class="ph"><b>${esc(org).toUpperCase()}</b><span>FORM ${code}</span></div><h4>${esc(c.title)}</h4>${intro}`,
+          receipt: `<div class="ph"><b>${esc(org).toUpperCase()}</b><span>HARBOR BAR · TILL 2</span><span>FRI · REPRINT</span></div><div class="cut">- - - - - - - - - - - - - -</div>${intro}`,
+          phone: `<div class="ph"><b>SEAPHONE MOBILE</b><span>CALL &amp; MESSAGE DETAIL</span></div><h4>${esc(c.title)}</h4>${intro}`,
+          notebook: `<h4>${esc(c.title)}</h4>${intro}`,
+          statement: `<div class="ph"><b>SEABRIGHT POLICE</b><span>WITNESS STATEMENT</span></div><h4>${esc(c.title)}</h4>${intro}`,
+          letter: `<h4>${esc(c.title)}</h4>${intro}`,
+          notice: `<div class="ph"><b>${esc(c.title).toUpperCase()}</b><span>No. ${code}-${(code * 7) % 100}</span></div>${intro}`,
+          form: `<div class="ph"><b>${esc(org).toUpperCase()}</b><span>MAINTENANCE · ${esc(c.title).toUpperCase()}</span></div>${intro}<div class="cols"><span>DATE</span><span>PROBLEM</span><span>STATUS</span></div>`,
+          menu: `<div class="ph"><span>~ ${esc(org)} ~</span><b>${esc(c.title)}</b></div>${intro}`,
+        }[lk] || `<h4>${esc(c.title)}</h4>${intro}`;
+        const foot = { receipt: '<div class="cut">- - - - - - - - - - - - - -</div><div class="ty">THANK YOU · COME AGAIN</div>', statement: '<div class="sig"><span>Signed</span><svg viewBox="0 0 120 24"><path d="M4 18 C14 2 20 22 30 10 S44 4 50 16 S66 20 74 8 S96 14 116 10" stroke="#24408F" stroke-width="2" fill="none"/></svg></div>',
+          notice: '<div class="stamp">OFFICIAL COPY</div>', phone: '<div class="pg">PAGE 1 OF 1 · END OF REPORT</div>', log: '<div class="pg">FILED BY FRONT DESK</div>' }[lk] || '';
+        return `<div class="cf-sheet ${lk}"><span class="clip"></span>${head}${body}${foot}</div>`;
+      }
       function recordsHTML() {
-        const C = G.C, dr = C.DRAWERS[G.drawer] || C.DRAWERS[0];
-        const cab = `<div class="cf-cabinet">${C.DRAWERS.map((d, i) => `<button class="cf-drawerbtn ${G.drawer === i ? 'on' : ''}" data-drawer="${i}"><span class="handle"></span>${esc(d.name)}</button>`).join('')}</div>`;
-        const docs = `<div class="cf-docs">${dr.docs.map((id) => `<button class="cf-doctab ${G.doc === id ? 'on' : ''} ${G.found[id] ? 'read' : ''}" data-doc="${id}"><span class="ic">${icon(C.CLUES[id].icon)}</span>${esc(C.CLUES[id].title)}</button>`).join('')}</div>`;
-        let read = `<p class="cf-scene">${T('Open a drawer, pick a document and read it. Tap the lines that matter to mark them; only the lines you mark go on the board.', 'Mở ngăn kéo, chọn tài liệu và đọc. Chạm vào những dòng quan trọng để đánh dấu; chỉ những dòng đã đánh dấu mới lên bảng.')}</p>`;
+        const C = G.C;
+        const cab = `<div class="cf-cab"><div class="top"><span>${T('RECORDS', 'HỒ SƠ')}</span></div>${C.DRAWERS.map((d, i) => {
+          const open = G.drawer === i;
+          return `<button class="cf-drw ${open ? 'open' : ''}" data-drawer="${i}"><span class="lbl">${esc(d.name)}</span><span class="hd"></span></button>${open ? `<div class="cf-drin">${d.docs.map((id, j) =>
+            `<button class="cf-fold ${G.doc === id ? 'on' : ''} ${G.found[id] ? 'read' : ''}" data-doc="${id}" style="--off:${(j % 3) * 26}%"><span class="tab">${esc(C.CLUES[id].title)}</span></button>`).join('')}</div>` : ''}`; }).join('')}<div class="feet"><i></i><i></i></div></div>`;
+        let desk = `<div class="cf-empty-desk">${T('Open a drawer and pull out a folder. Read it like the real thing: tap the lines that matter to highlight them, write yourself a note, and pin it. Only the lines you highlight go on the board.', 'Mở một ngăn kéo và rút một tập hồ sơ ra. Đọc như thật: chạm vào những dòng quan trọng để tô sáng, viết ghi chú cho mình rồi ghim lên bảng. Chỉ những dòng bạn tô sáng mới lên bảng.')}</div>`;
         if (G.doc && C.CLUES[G.doc]) {
           const c = C.CLUES[G.doc], pin = G.pins.find((p) => p.id === G.doc), marks = G.marks[G.doc] || (pin && pin.rows) || [];
-          const row = (r, i) => `<${c.table ? 'tr' : 'div'} class="cf-row ${marks.includes(i) ? 'mk' : ''}" data-row="${i}">${c.table ? r.map((x) => `<td>${esc(x)}</td>`).join('') : esc(r)}</${c.table ? 'tr' : 'div'}>`;
-          const changed = pin && JSON.stringify((pin.rows || []).slice().sort()) !== JSON.stringify(marks.slice().sort());
-          read = `<div class="cf-clue cf-doc"><h4><span class="ic">${icon(c.icon)}</span>${esc(c.title)}</h4>${c.intro ? `<p class="intro">${esc(c.intro)}</p>` : ''}
-            ${c.table ? `<table class="tbl">${c.rows.map(row).join('')}</table>` : `<div class="lines">${c.rows.map(row).join('')}</div>`}
-            <div class="acts">${pin ? (changed ? `<button class="btn-game btn-teal py-1.5 px-3 text-xs" data-remark="${G.doc}">📌 ${T('Update the card on the board', 'Cập nhật thẻ trên bảng')}</button>` : `<span class="cf-pinned">📌 ${T('On the board', 'Đã ở trên bảng')}</span>`)
-              : `<button class="btn-game btn-teal py-1.5 px-3 text-xs" data-pin="${G.doc}">📌 ${T('Pin to the board', 'Ghim lên bảng')}${marks.length ? ` (${marks.length} ${T('marked', 'dòng')})` : ''}</button>`}</div></div>`;
+          desk = `${paperHTML(G.doc, c, marks)}<div class="cf-deskbar"><p class="cf-tip">${T('Tap a line to highlight it (tap again to clear).', 'Chạm vào một dòng để tô sáng (chạm lần nữa để bỏ).')}</p>${pinBar(G.doc, docChanged(G.doc))}</div>`;
         }
-        return `<div class="cf-inv cf-recs"><div class="cf-panel"><div class="cf-ph">${T('RECORDS CABINET', 'TỦ HỒ SƠ')}</div><div class="cf-pb">${cab}${docs}</div></div>
-          <div class="cf-panel"><div class="cf-ph">${T('READING', 'ĐANG ĐỌC')}</div><div class="cf-pb">${read}</div></div></div>`;
+        return `<div class="cf-inv cf-recs"><div class="cf-panel"><div class="cf-ph">${T('RECORDS CABINET', 'TỦ HỒ SƠ')}</div><div class="cf-pb">${cab}</div></div>
+          <div class="cf-panel"><div class="cf-ph">${T('ON THE DESK', 'TRÊN BÀN')}</div><div class="cf-pb cf-desk">${desk}</div></div></div>`;
       }
       function susHTML() {
         const C = G.C, list = Object.keys(C.PEOPLE), p = C.PEOPLE[G.sus], tk = C.TALK[G.sus] || { q: [], show: {} };
-        const canAsk = G.role !== 'B', log = G.log[G.sus] || [], board = G.pins.filter((x) => C.CLUES[x.id]);
+        const canAsk = G.role !== 'B', log = G.log[G.sus] || [], board = G.pins.filter((x) => card(x.id));
         const talk = `<div class="cf-talk"><div class="big">${p.art}<b>${p.name}</b><small>${p.role}</small></div><div>
           ${canAsk ? `<div class="cf-qs2">${tk.q.map((q, i) => `<button class="cf-q ${G.asked[G.sus + i] ? 'asked' : ''}" data-ask="${i}">💬 ${q[0]}</button>`).join('')}
               <button class="cf-q conf" data-showmenu>🔎 ${T('Show them something from the board...', 'Đưa cho họ xem thứ gì đó trên bảng...')}</button>
-              ${G.showing ? `<div class="cf-showlist">${board.length ? board.map((x) => `<button class="cf-opt" data-show="${x.id}"><span class="ic">${icon(C.CLUES[x.id].icon)}</span>${esc(C.CLUES[x.id].title)}</button>`).join('') : `<span class="text-muted text-sm">${T('Nothing on the board yet.', 'Trên bảng chưa có gì.')}</span>`}</div>` : ''}</div>`
+              ${G.showing ? `<div class="cf-showlist">${board.length ? board.map((x) => `<button class="cf-opt" data-show="${x.id}"><span class="ic">${icon(card(x.id).icon)}</span>${esc(card(x.id).title)}</button>`).join('') : `<span class="text-muted text-sm">${T('Nothing on the board yet.', 'Trên bảng chưa có gì.')}</span>`}</div>` : ''}</div>`
             : `<div class="cf-ans"><span class="q">${T('DETECTIVE B', 'THÁM TỬ B')}</span>${T(`${esc(partner() || '')} (the scene) does the talking. You see everything that is said here. Find records that prove someone is lying and pin them, so they can show them.`, `${esc(partner() || '')} (hiện trường) là người hỏi. Bạn thấy mọi điều được nói ở đây. Hãy tìm hồ sơ chứng minh ai đó nói dối và ghim lên bảng để họ đưa ra.`)}</div>`}
           <div class="cf-convo">${log.length ? log.map((l) => `<div class="cf-q asked">${l.ev ? '🔎' : '💬'} ${esc(l.q)}</div><div class="cf-ans ${l.hot ? 'hot' : ''}">${l.a}</div>`).join('') : `<p class="text-muted text-sm">${T('Nothing asked yet.', 'Chưa hỏi gì.')}</p>`}</div></div></div>`;
         return `<div class="cf-panel"><div class="cf-ph">${T('INTERVIEWS', 'THẨM VẤN')} <small>${C.SUSPECTS.length} ${T('suspects', 'nghi phạm')} · ${list.length - C.SUSPECTS.length} ${T('witnesses', 'nhân chứng')}</small></div><div class="cf-pb">
@@ -11502,7 +11634,7 @@ window.CASE_DEFS.push((face) => {
       function boardHTML() {
         const C = G.C;
         return `<div class="cf-boardwrap"><div class="cf-cork" id="cf-cork"><svg class="strings" id="cf-strings"></svg>
-          ${G.pins.map((p) => { const c = C.CLUES[p.id]; return c ? `<div class="cf-pin ${c.who.toLowerCase()} ${G.selPin === p.id ? 'sel' : ''}" data-p="${p.id}" style="left:${p.x}px;top:${p.y}px"><span class="x" data-unpin="${p.id}">✕</span><b>${c.title}</b>${cardSummary(p)}</div>`
+          ${G.pins.map((p) => { const c = card(p.id); return c ? `<div class="cf-pin ${c.who.toLowerCase()} ${G.selPin === p.id ? 'sel' : ''}" data-p="${p.id}" style="left:${p.x}px;top:${p.y}px"><span class="x" data-unpin="${p.id}">✕</span><b>${c.title}</b>${cardSummary(p)}</div>`
             : `<div class="cf-pin note ${G.selPin === p.id ? 'sel' : ''}" data-p="${p.id}" style="left:${p.x}px;top:${p.y}px"><span class="x" data-unpin="${p.id}">✕</span>${esc(p.text || '')}<i>${esc(myName(p.by))}</i></div>`; }).join('')}
           ${G.pins.length ? '' : `<div class="cf-empty">${T('Nothing pinned yet.<br>Find clues and press 📌 Pin to the board.', 'Chưa ghim gì.<br>Tìm manh mối và bấm 📌 Ghim lên bảng.')}</div>`}</div>
           <div class="cf-panel"><div class="cf-ph">${T('SHARED BOARD', 'BẢNG CHUNG')}</div><div class="cf-pb">
@@ -11520,13 +11652,13 @@ window.CASE_DEFS.push((face) => {
           return `<path d="M${p[0]},${p[1]} Q${mx},${my} ${q[0]},${q[1]}" stroke="#050E18" stroke-width="5" fill="none"/><path d="M${p[0]},${p[1]} Q${mx},${my} ${q[0]},${q[1]}" stroke="#D2382C" stroke-width="3" fill="none"/>`; }).join('');
       }
       function accHTML() {
-        const C = G.C, a = G.acc, pinned = G.pins.filter((p) => C.CLUES[p.id]);
+        const C = G.C, a = G.acc, pinned = G.pins.filter((p) => card(p.id));
         if (G.solved) return revealHTML();
         if (G.prop) {
           const p = G.prop, mine = p.s === G.me;
           return `<div class="cf-panel"><div class="cf-ph">${T('ACCUSATION', 'BUỘC TỘI')}</div><div class="cf-pb cf-prop">
             <p>${mine ? T(`Waiting for <b>${esc(partner())}</b> to agree...`, `Đang chờ <b>${esc(partner())}</b> đồng ý...`) : T(`<b>${esc(G.S.name(p.s))}</b> wants to accuse:`, `<b>${esc(G.S.name(p.s))}</b> muốn buộc tội:`)}</p>
-            <div class="cf-propbox"><div>${C.PEOPLE[p.who].art}</div><div><b>${C.PEOPLE[p.who].name}</b><br>${T('How', 'Cách')}: ${esc((C.HOW.find((h) => h[0] === p.how) || ['', ''])[1])}<br>${T('Why', 'Vì sao')}: ${esc((C.WHY.find((h) => h[0] === p.why) || ['', ''])[1])}<br>${T('Evidence', 'Bằng chứng')}: ${p.ev.map((x) => esc(C.CLUES[x] ? C.CLUES[x].title : '')).join(' · ')}</div></div>
+            <div class="cf-propbox"><div>${C.PEOPLE[p.who].art}</div><div><b>${C.PEOPLE[p.who].name}</b><br>${T('How', 'Cách')}: ${esc((C.HOW.find((h) => h[0] === p.how) || ['', ''])[1])}<br>${T('Why', 'Vì sao')}: ${esc((C.WHY.find((h) => h[0] === p.why) || ['', ''])[1])}<br>${T('Evidence', 'Bằng chứng')}: ${p.ev.map((x) => esc(card(x) ? card(x).title : '')).join(' · ')}</div></div>
             <div class="flex gap-3 flex-wrap mt-3">${mine ? `<button class="btn-game btn-graphite py-2 px-4 text-sm" data-cancel>${T('Take it back', 'Rút lại')}</button>` : `<button class="btn-game btn-coral py-2 px-5 text-sm" data-answer="1">⚖ ${T('Agree, accuse!', 'Đồng ý, buộc tội!')}</button><button class="btn-game btn-graphite py-2 px-4 text-sm" data-answer="0">${T('Not yet', 'Chưa')}</button>`}</div></div></div>`;
         }
         const ready = a.who && a.how && a.why && a.ev.length === 3;
@@ -11535,7 +11667,7 @@ window.CASE_DEFS.push((face) => {
           <div class="cf-accq"><b>2 · ${T('HOW?', 'BẰNG CÁCH NÀO?')}</b><div class="cf-opts">${C.HOW.map(([k, t]) => `<button class="cf-opt ${a.how === k ? 'on' : ''}" data-acc="how" data-v="${k}">${t}</button>`).join('')}</div></div>
           <div class="cf-accq"><b>3 · ${T('WHY?', 'VÌ SAO?')}</b><div class="cf-opts">${C.WHY.map(([k, t]) => `<button class="cf-opt ${a.why === k ? 'on' : ''}" data-acc="why" data-v="${k}">${t}</button>`).join('')}</div></div>
           <div class="cf-accq"><b>4 · ${T('YOUR 3 BEST PIECES OF EVIDENCE', '3 BẰNG CHỨNG TỐT NHẤT')}</b><p class="cf-sub">${T('Picked from the board', 'Chọn từ trên bảng')} (${a.ev.length}/3)</p>
-            <div class="cf-opts">${pinned.length ? pinned.map((p) => `<button class="cf-opt ${a.ev.includes(p.id) ? 'on' : ''}" data-ev="${p.id}"><span class="ic">${icon(C.CLUES[p.id].icon)}</span>${C.CLUES[p.id].title}</button>`).join('') : `<span class="text-muted">${T('Pin clues to the board first.', 'Hãy ghim manh mối lên bảng trước.')}</span>`}</div></div>
+            <div class="cf-opts">${pinned.length ? pinned.map((p) => `<button class="cf-opt ${a.ev.includes(p.id) ? 'on' : ''}" data-ev="${p.id}"><span class="ic">${icon(card(p.id).icon)}</span>${esc(card(p.id).title)}</button>`).join('') : `<span class="text-muted">${T('Pin clues to the board first.', 'Hãy ghim manh mối lên bảng trước.')}</span>`}</div></div>
           <div class="flex gap-3 items-center flex-wrap"><button class="btn-game btn-coral py-2.5 px-5 text-sm" data-propose ${ready ? '' : 'disabled'}>⚖ ${G.solo ? T('Make the accusation', 'Buộc tội') : T('Propose this accusation', 'Đề xuất buộc tội')}</button>
             <span class="text-muted text-sm">${G.solo ? '' : T('Your partner has to agree. ', 'Cộng sự phải đồng ý. ')}${T('A wrong accusation costs a star.', 'Buộc tội sai bị trừ một sao.')}${G.tries ? ` ${T('Wrong so far', 'Sai')}: ${G.tries}.` : ''}</span></div></div>`;
       }
@@ -11549,7 +11681,7 @@ window.CASE_DEFS.push((face) => {
           <div class="cf-tl">${C.timeline.map(([t, x]) => `<div><b>${t}</b>${x}</div>`).join('')}</div>
           <b class="pix cf-h">${T('THE RED HERRINGS', 'NHỮNG MANH MỐI GÂY NHIỄU')}</b>
           <p class="cf-story">${C.herrings.map(([n, x]) => `<b>${n}</b> ${x}`).join('<br>')}</p>
-          <div class="cf-found"><div><b class="got">${T('Key evidence found', 'Bằng chứng chính tìm được')}: ${got.length} / ${all.length}</b><br>${got.map((k) => C.CLUES[k].title).join(' · ') || '-'}</div><div><b class="miss">${T('Missed', 'Bỏ sót')}</b><br>${miss.map((k) => C.CLUES[k].title).join(' · ') || T('Nothing. Perfect detective work!', 'Không gì cả. Thám tử hoàn hảo!')}</div></div>
+          <div class="cf-found"><div><b class="got">${T('Key evidence found', 'Bằng chứng chính tìm được')}: ${got.length} / ${all.length}</b><br>${got.map((k) => card(k).title).join(' · ') || '-'}</div><div><b class="miss">${T('Missed', 'Bỏ sót')}</b><br>${miss.map((k) => card(k).title).join(' · ') || T('Nothing. Perfect detective work!', 'Không gì cả. Thám tử hoàn hảo!')}</div></div>
           <div class="mt-4 flex gap-3 flex-wrap"><button class="btn-game btn-amber py-2 px-5 text-sm" data-again>${T('Back to the cases', 'Về danh sách vụ án')}</button></div></div></div>`;
       }
 
@@ -11560,17 +11692,17 @@ window.CASE_DEFS.push((face) => {
           if (!t || !G) return;
           const C = G.C;
           if (t.dataset.item !== undefined) { const i = +t.dataset.item; G.item = i; SFX.play('click'); if (!G.looked[G.room + ':' + i]) { act({ t: 'look', room: G.room, i }); return; } }
-          else if (t.dataset.drawer !== undefined) { G.drawer = +t.dataset.drawer; G.doc = null; SFX.play('click'); }
+          else if (t.dataset.drawer !== undefined) { const d = +t.dataset.drawer; G.drawer = d; G.doc = null; SFX.play('click'); }
           else if (t.dataset.doc) { G.doc = t.dataset.doc; SFX.play('card'); if (!G.found[G.doc]) { act({ t: 'find', id: G.doc }); return; } }
           else if (t.dataset.row !== undefined) { const i = +t.dataset.row, pin = G.pins.find((p) => p.id === G.doc), cur = (G.marks[G.doc] || (pin && pin.rows) || []).slice(); const k = cur.indexOf(i); if (k >= 0) cur.splice(k, 1); else cur.push(i); G.marks[G.doc] = cur; }
-          else if (t.dataset.remark) { act({ t: 'mark', id: t.dataset.remark, rows: (G.marks[t.dataset.remark] || []).slice() }); return; }
+          else if (t.dataset.remark) { const id = t.dataset.remark, pin = G.pins.find((p) => p.id === id); act({ t: 'mark', id, rows: G.marks[id] ? G.marks[id].slice() : undefined, note: G.notes[id] != null ? G.notes[id] : (pin && pin.note) }); return; }
           else if (t.dataset.showmenu !== undefined) G.showing = !G.showing;
           else if (t.dataset.show) { G.showing = false; act({ t: 'show', sus: G.sus, id: t.dataset.show }); return; }
           else if (t.dataset.tab) { G.tab = t.dataset.tab; G.selPin = null; }
           else if (t.dataset.view) { G.view = t.dataset.view; G.item = null; }
           else if (t.dataset.room) { G.room = t.dataset.room; G.item = null; }
           else if (t.dataset.search) { const id = t.dataset.search; G.open = id; if (!G.found[id]) { act({ t: 'find', id }); SFX.play('reveal'); return; } }
-          else if (t.dataset.pin) { const n = G.pins.length, id = t.dataset.pin; act({ t: 'pin', id, rows: G.C.CLUES[id] && G.C.CLUES[id].who === 'B' ? (G.marks[id] || []).slice() : undefined, x: 16 + (n % 4) * 182 + rnd(12), y: 18 + Math.floor(n / 4) * 130 + rnd(12) }); SFX.play('click'); return; }
+          else if (t.dataset.pin) { const n = G.pins.length, id = t.dataset.pin; act({ t: 'pin', id, note: G.notes[id] || '', rows: G.C.CLUES[id] && G.C.CLUES[id].who === 'B' ? (G.marks[id] || []).slice() : undefined, x: 16 + (n % 4) * 182 + rnd(12), y: 18 + Math.floor(n / 4) * 130 + rnd(12) }); SFX.play('click'); return; }
           else if (t.dataset.unpin) { e.stopPropagation(); act({ t: 'unpin', id: t.dataset.unpin }); return; }
           else if (t.dataset.sus) { G.sus = t.dataset.sus; G.showing = false; }
           else if (t.dataset.ask !== undefined) { if (!G.asked[G.sus + t.dataset.ask]) { act({ t: 'ask', sus: G.sus, i: +t.dataset.ask }); return; } }
@@ -11583,6 +11715,12 @@ window.CASE_DEFS.push((face) => {
           else if (t.dataset.hint !== undefined) { act({ t: 'hint' }); return; }
           else if (t.dataset.again !== undefined) { G = null; open($('#game-root') || document.getElementById('game-root')); return; }
           render();
+        });
+        gOn(body, 'input', (e) => {
+          const t = e.target; if (!G || !t.dataset || t.dataset.note === undefined) return;
+          const id = t.dataset.note; G.notes[id] = t.value;
+          const box = body.querySelector(`[data-acts="${id}"]`), pin = G.pins.find((p) => p.id === id);
+          if (box) box.innerHTML = pinActs(id, docChanged(id));
         });
         // dragging + tying cards on the board (the move is shared when you let go)
         let drag = null;
@@ -23461,8 +23599,8 @@ window.GEO_PLACES = [{"id":"nyc_times","name":"Times Square, New York","country"
           items: () => row([['🐺', 'Werewolf', 'takes someone each night'], ['🔮', 'Seer', 'checks one player each night'], ['💉', 'Doctor', 'protects one player each night'], ['🏹', 'Hunter', 'takes someone when out'], ['🧪', 'Witch', 'one save, one poison'], ['💘', 'Cupid', 'makes two lovers'], ['👴', 'Elder', 'survives one bite'], ['🤪', 'Village Fool', 'survives the vote once'], ['🃏', 'Jester', 'wins if voted out'], ['🐾', 'Wolf Cub', 'revenge: two taken'], ['🌗', 'Lycan', 'looks like a wolf'], ['🙂', 'Villager', 'talks and votes']]),
           tip: 'Wolves: don\'t be too quiet, and don\'t be too loud. Villagers: watch who keeps changing their story, and who votes together.', online: 'Werewolf needs at least 5 people and has no computer players. Create a room and invite your friends with the link. A voice call makes it even more fun!' },
         casefiles: { tag: 'CO-OP · 1-2 PLAYERS · DETECTIVE', goal: 'Work out who did it, how and why, together, using the evidence.', steps: [
-          ['Two halves', 'Detective A has the crime scene: walk the map, search spots and interview the suspects. Detective B has the records: door logs, receipts, phone records and written statements. You each see only your own half.'],
-          ['Share on the board', 'Press 📌 Pin to put a clue on the shared evidence board, so your partner can see it. Drag cards around, tap two cards to tie them with red string, and add sticky notes.'],
+          ['Two halves', 'Detective A has the crime scene: tap anything in the rooms to take a closer look, and interview the suspects. Detective B has the records: a filing cabinet full of folders (door logs, till receipts, phone printouts, notebooks, statements). Read them like the real thing and highlight the lines that matter. You each see only your own half.'],
+          ['Share on the board', 'You can pin anything you find, with your own note, to the shared evidence board so your partner sees it. Careful: not everything matters, and an ordinary object looks just like a clue on the board. Drag cards around, tap two cards to tie them with red string, and add sticky notes.'],
           ['Catch the lies', 'Some interview questions only unlock when the right clue is on the board. Show a suspect a record that proves they lied!'],
           ['Accuse', 'Pick who did it, how and why, plus your 3 best pieces of evidence. Your partner has to agree. A wrong accusation costs a star, and so does each hint.'],
           ['Case closed', 'See what really happened, step by step, why the innocent suspects looked guilty, and which clues you missed.']],
@@ -24029,8 +24167,8 @@ window.GEO_PLACES = [{"id":"nyc_times","name":"Times Square, New York","country"
           ['Chiến thắng', 'Dân làng thắng khi hết sói. Sói thắng khi số sói bằng số người còn lại. Người đã ra vẫn được xem tiếp, và thấy vai của mọi người.']], online: 'Ma Sói cần ít nhất 5 người và không có người chơi máy. Tạo phòng và gửi link mời bạn bè. Vừa chơi vừa gọi thoại càng vui!',
           tip: 'Sói: đừng im lặng quá, cũng đừng nói nhiều quá. Dân làng: để ý ai hay đổi lời, và ai hay bỏ phiếu cùng nhau.' },
         casefiles: { goal: 'Cùng nhau tìm ra ai đã làm, bằng cách nào và vì sao, dựa trên bằng chứng.', steps: [
-          ['Hai nửa', 'Thám tử A giữ hiện trường: đi khắp bản đồ, lục soát và thẩm vấn nghi phạm. Thám tử B giữ hồ sơ: nhật ký cửa, hóa đơn, dữ liệu điện thoại và lời khai. Mỗi người chỉ thấy nửa của mình.'],
-          ['Chia sẻ lên bảng', 'Bấm 📌 Ghim để đưa manh mối lên bảng chứng cứ chung cho cộng sự thấy. Kéo thẻ, chạm hai thẻ để nối dây đỏ, và thêm ghi chú.'],
+          ['Hai nửa', 'Thám tử A giữ hiện trường: chạm vào bất cứ thứ gì trong các phòng để xem kỹ, và thẩm vấn nghi phạm. Thám tử B giữ hồ sơ: một tủ đầy tập hồ sơ (nhật ký cửa, hóa đơn, bản in điện thoại, sổ tay, lời khai). Đọc như thật và tô sáng những dòng quan trọng. Mỗi người chỉ thấy nửa của mình.'],
+          ['Chia sẻ lên bảng', 'Bạn có thể ghim mọi thứ tìm được, kèm ghi chú của mình, lên bảng chứng cứ chung cho cộng sự thấy. Cẩn thận: không phải thứ gì cũng quan trọng, và một món đồ bình thường trông y như manh mối trên bảng. Kéo thẻ, chạm hai thẻ để nối dây đỏ, và thêm ghi chú.'],
           ['Bắt lời nói dối', 'Một số câu hỏi chỉ mở khi đúng manh mối đã ở trên bảng. Hãy đưa cho nghi phạm xem hồ sơ chứng minh họ nói dối!'],
           ['Buộc tội', 'Chọn ai đã làm, bằng cách nào, vì sao, kèm 3 bằng chứng tốt nhất. Cộng sự phải đồng ý. Buộc tội sai bị trừ một sao, mỗi gợi ý cũng vậy.'],
           ['Phá án', 'Xem chuyện gì đã thật sự xảy ra, vì sao những người vô tội trông có vẻ đáng ngờ, và bạn đã bỏ sót manh mối nào.']],
@@ -25866,12 +26004,12 @@ window.GEO_PLACES = [{"id":"nyc_times","name":"Times Square, New York","country"
           'A detective case for two: one of you searches the crime scene and questions the suspects, the other digs through the records. You each see only your half!',
           'Pin clues to a shared evidence board, tie them with red string, catch the liars, then agree on who did it, how and why.',
           'Case #001: The Harbor Pearl. Play with a friend in a private room (voice chat helps!) or alone.',
-          'Search drawn rooms object by object (not everything holds a clue!), dig through a records cabinet, mark the lines that matter, and show suspects the evidence yourself.'],
+          'Search drawn rooms object by object and pin anything you like (not everything is a clue!), pull real-looking papers out of a filing cabinet, highlight lines, add your own notes, and show suspects the evidence yourself.'],
         vi: ['Trò mới: Hồ Sơ Vụ Án',
           'Vụ án cho hai người: một người lục soát hiện trường và thẩm vấn nghi phạm, người kia lật hồ sơ. Mỗi người chỉ thấy nửa của mình!',
           'Ghim manh mối lên bảng chứng cứ chung, nối bằng dây đỏ, vạch trần kẻ nói dối, rồi cùng thống nhất ai đã làm, bằng cách nào và vì sao.',
           'Vụ #001: Viên Ngọc Bến Cảng. Chơi với bạn trong phòng riêng (trò chuyện thoại rất hữu ích!) hoặc một mình.',
-          'Lục soát từng món đồ trong các căn phòng (không phải thứ gì cũng có manh mối!), lật tủ hồ sơ, tự đánh dấu dòng quan trọng và tự đưa bằng chứng cho nghi phạm xem.'] },
+          'Lục soát từng món đồ trong các căn phòng và ghim bất cứ thứ gì (không phải thứ gì cũng là manh mối!), rút giấy tờ trông như thật từ tủ hồ sơ, tô sáng dòng, thêm ghi chú riêng và tự đưa bằng chứng cho nghi phạm xem.'] },
       { date: '2026-11-28', id: '2026-11-28d',
         en: ['New game: Where Am I?',
           'A real photo from somewhere on Earth: drop a pin on the world map where you think it was taken. The closer you are, the more points!',

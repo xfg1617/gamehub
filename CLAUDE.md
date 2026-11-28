@@ -1353,3 +1353,11 @@ folder that was handed over, so they do not exist here.)
   + "Show them something from the board..." (any pinned card; `TALK[p].show[id]` = a real reaction, else `shrug`), shown as
   a conversation. Reveal counts only key evidence (A clues + STRONG + `USEFUL`). Solo is on the first screen (Solo / Online
   match / Private room) and holds both halves. Tests updated: `t_casefiles.py`, `t_np_casefiles.py`.
+* **Case Files v3 (Nov 28 2026, Inna: "pin anything you see; records like a big cabinet of real documents you note and pin")**:
+  every room object can be pinned (`card(id)`: clue objects keep their clue id, others are `it:<room>:<i>`; on the board all
+  scene cards use the object's name + the same icon, so decoys look like clues; "Nothing useful here" is gone). Every pin
+  can carry the player's own note (`note`, sent with `pin` / `mark`, shown on the card; `pinBar` / `pinActs`). Records =
+  a drawn steel cabinet (`.cf-cab`): a drawer opens to folders with staggered tabs (`.cf-fold`), the document lies on a
+  wooden desk as real paper (`paperHTML`, doc `look` in the case data: log, receipt, phone, notebook, statement, letter,
+  notice, form, menu; `C.org` = hotel name on letterheads); tapped lines get a highlighter stroke. Watch out: the chat's
+  `.cf-row` rule in 21-core-chat.css is dark, `.cf-sheet` resets it.

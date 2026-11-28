@@ -2,8 +2,8 @@
    maker (face) and returns everything the game needs. Solution + how it is meant to be solved:
    prototypes/round9/case-files-solution.html. Add more cases by pushing more functions onto CASE_DEFS.
    v2 (Inna: "rooms with items you click; many items, some with nothing; records you have to dig through"):
-   ROOMS hold drawn objects (kind + box on a 600x340 room picture); most objects hold nothing. RECORDS is a filing cabinet:
-   drawers of documents, many of them unimportant; players mark the lines that matter themselves. */
+   ROOMS hold drawn objects (every one can be pinned) (kind + box on a 600x340 room picture); most objects hold nothing. RECORDS is a filing cabinet:
+   drawers of folders; each document has a 'look' (log, receipt, phone, notebook, statement, letter, notice, form, menu) that sets how its paper is drawn; players mark the lines that matter themselves. */
 window.CASE_DEFS = window.CASE_DEFS || [];
 window.CASE_DEFS.push((face) => {
   const PEOPLE = {
@@ -31,28 +31,28 @@ window.CASE_DEFS.push((face) => {
     a_gen: { who: 'A', icon: 'gen', title: 'The generator', text: 'Fresh greasy handprints on the start lever. A flashlight with "V. HALE" written on it lies on top.' },
     a_pills: { who: 'A', icon: 'pen', title: 'Headache pills', text: 'A box of headache pills on the nightstand. Still sealed: never opened.' },
     // documents (B). rows = the lines a detective can mark
-    b_doors: { who: 'B', icon: 'log', title: 'Floor 2 door log', intro: 'Smart locks on floor 2 (battery powered, they kept working in the power cut).', table: true,
+    b_doors: { who: 'B', look: 'log', icon: 'log', title: 'Floor 2 door log', intro: 'Smart locks on floor 2 (battery powered, they kept working in the power cut).', table: true,
       rows: [['7:52 pm', 'Room 201', 'guest card · D. Moreau'], ['8:44 pm', 'Room 204', 'guest card · M. Bell'], ['9:05 pm', 'Room 206', 'guest card · E. Cross'], ['9:11 pm', 'Linen room', 'staff card · L. Tran'], ['9:18 pm', 'Room 204', 'opened from INSIDE'], ['9:43 pm', 'Room 204', 'guest card · M. Bell'], ['9:52 pm', 'Room 206', 'guest card · E. Cross'], ['10:03 pm', 'Room 201', 'guest card · D. Moreau']] },
-    b_guests: { who: 'B', icon: 'log', title: 'Guest list', table: true, rows: [['201', 'Daisy Moreau', 'performer, 1 night'], ['204', 'Marcus Bell', 'family, 2 nights (paid by E. Bell)'], ['206', 'Ethan Cross', 'guest, 3 nights'], ['208', 'empty', ''], ['210', 'Mr & Mrs Okafor', 'guests, 1 night']] },
-    b_lost: { who: 'B', icon: 'pen', title: 'Lost & found book', table: true, rows: [['Thu', 'umbrella, black', 'lobby'], ['Fri 6 pm', 'reading glasses', 'library armchair'], ['Fri 8 pm', 'one earring, gold', 'dining hall']] },
-    b_power: { who: 'B', icon: 'bolt', title: 'Power company notice', rows: ['Seabright Power · storm outage report', 'Harbor Road: power off from 9:20 pm.', 'Power back on Harbor Road at 9:47 pm.', 'Buildings with their own generators may have light sooner.'] },
-    b_gen: { who: 'B', icon: 'log', title: 'Generator log', table: true, rows: [['Mon 10:00', 'Monthly test · V.H.'], ['Fri 9:20 pm', 'Main power lost'], ['Fri 9:34 pm', 'Manual start · signed V.H.'], ['Fri 9:47 pm', 'Main power back · generator off']] },
-    b_repair: { who: 'B', icon: 'pen', title: 'Repair requests', table: true, rows: [['Mar', 'Library garden door sticks, won\'t shut', 'not fixed'], ['Jul', 'Library garden door still sticks', 'not fixed'], ['Oct', 'Room 206 shower drips', 'fixed'], ['Nov', 'Jukebox skips', 'not fixed']] },
-    b_weather: { who: 'B', icon: 'bolt', title: 'Weather report', rows: ['Friday: heavy storm from 8 pm.', 'Harbor Road flooded from 9:30 pm.', 'Saturday: clear by morning.'] },
-    b_bar: { who: 'B', icon: 'glassdrink', title: 'Bar receipts', intro: 'The card reader runs on a battery.', table: true,
+    b_guests: { who: 'B', look: 'log', icon: 'log', title: 'Guest list', table: true, rows: [['201', 'Daisy Moreau', 'performer, 1 night'], ['204', 'Marcus Bell', 'family, 2 nights (paid by E. Bell)'], ['206', 'Ethan Cross', 'guest, 3 nights'], ['208', 'empty', ''], ['210', 'Mr & Mrs Okafor', 'guests, 1 night']] },
+    b_lost: { who: 'B', look: 'notebook', icon: 'pen', title: 'Lost & found book', table: true, rows: [['Thu', 'umbrella, black', 'lobby'], ['Fri 6 pm', 'reading glasses', 'library armchair'], ['Fri 8 pm', 'one earring, gold', 'dining hall']] },
+    b_power: { who: 'B', look: 'notice', icon: 'bolt', title: 'Power company notice', rows: ['Seabright Power · storm outage report', 'Harbor Road: power off from 9:20 pm.', 'Power back on Harbor Road at 9:47 pm.', 'Buildings with their own generators may have light sooner.'] },
+    b_gen: { who: 'B', look: 'log', icon: 'log', title: 'Generator log', table: true, rows: [['Mon 10:00', 'Monthly test · V.H.'], ['Fri 9:20 pm', 'Main power lost'], ['Fri 9:34 pm', 'Manual start · signed V.H.'], ['Fri 9:47 pm', 'Main power back · generator off']] },
+    b_repair: { who: 'B', look: 'form', icon: 'pen', title: 'Repair requests', table: true, rows: [['Mar', 'Library garden door sticks, won\'t shut', 'not fixed'], ['Jul', 'Library garden door still sticks', 'not fixed'], ['Oct', 'Room 206 shower drips', 'fixed'], ['Nov', 'Jukebox skips', 'not fixed']] },
+    b_weather: { who: 'B', look: 'notice', icon: 'bolt', title: 'Weather report', rows: ['Friday: heavy storm from 8 pm.', 'Harbor Road flooded from 9:30 pm.', 'Saturday: clear by morning.'] },
+    b_bar: { who: 'B', look: 'receipt', icon: 'glassdrink', title: 'Bar receipts', intro: 'The card reader runs on a battery.', table: true,
       rows: [['8:40 pm', 'card ****2210 (Okafor)', 'two lemonades'], ['9:15 pm', 'card ****4471 (E. Cross)', 'whisky'], ['9:22 pm', 'cash', 'beer'], ['9:28 pm', 'card ****4471 (E. Cross)', 'whisky'], ['9:41 pm', 'card ****4471 (E. Cross)', 'tab closed'], ['9:55 pm', 'card ****2210 (Okafor)', 'tea']] },
-    b_menu: { who: 'B', icon: 'pen', title: 'Anniversary dinner menu', rows: ['Crab soup', 'Grilled sea bass, lemon butter', 'Anniversary cake: 50 candles', 'Music by Daisy Moreau, 8:30 to 9:20'] },
-    b_orders: { who: 'B', icon: 'log', title: 'Kitchen order sheet', table: true, rows: [['8:50 pm', 'Table 3', 'extra bread'], ['9:05 pm', 'Table 1', 'cake served'], ['9:20 pm', 'ALL', 'stove off (power cut)']] },
-    b_house: { who: 'B', icon: 'pen', title: 'Housekeeping log', intro: 'Written by Lily Tran.', table: true,
+    b_menu: { who: 'B', look: 'menu', icon: 'pen', title: 'Anniversary dinner menu', rows: ['Crab soup', 'Grilled sea bass, lemon butter', 'Anniversary cake: 50 candles', 'Music by Daisy Moreau, 8:30 to 9:20'] },
+    b_orders: { who: 'B', look: 'notebook', icon: 'log', title: 'Kitchen order sheet', table: true, rows: [['8:50 pm', 'Table 3', 'extra bread'], ['9:05 pm', 'Table 1', 'cake served'], ['9:20 pm', 'ALL', 'stove off (power cut)']] },
+    b_house: { who: 'B', look: 'notebook', icon: 'pen', title: 'Housekeeping log', intro: 'Written by Lily Tran.', table: true,
       rows: [['8:30 pm', 'Turned down beds, rooms 201-210'], ['9:10 pm', 'Left cart on floor 2 outside 204, went down to laundry'], ['9:48 pm', 'Back to cart'], ['9:50 pm', 'SPARE KEY LIB-C MISSING!! Told Mr. Hale']] },
-    b_porter: { who: 'B', icon: 'log', title: "Night porter's log", intro: 'Sam Okafor, night porter.', table: true, rows: [['8:00 pm', 'Started shift, front door'], ['9:12-9:47 pm', 'Basement laundry with L. Tran, folding linen by flashlight'], ['9:55 pm', 'Back at front door']] },
-    b_keys: { who: 'B', icon: 'key', title: 'Spare key list', table: true, rows: [['LAUNDRY', 'laundry room'], ['LINEN', 'linen room, floor 2'], ['BAR-2', 'bar store room'], ['LIB-C', 'library display case (for cleaning the glass)'], ['GATE', 'garden gate']] },
-    b_laundry: { who: 'B', icon: 'pen', title: 'Laundry list', rows: ['40 towels', '22 sheets', '2 tablecloths (wine stain)'] },
-    b_bell: { who: 'B', icon: 'pen', title: "Mrs. Bell's statement", rows: ['"I locked the Harbor Pearl in its case myself at six o\'clock."', '"Mr. Cross offered me $20,000 for it last month. I told him never."', '"My grandson Marcus has been asking me for money again. I said no. He was very upset."', '"Victor has worked here for 30 years. I trust him completely."'] },
-    b_phone: { who: 'B', icon: 'phone', title: "Marcus's phone records", intro: 'From the phone company (with permission).',
+    b_porter: { who: 'B', look: 'notebook', icon: 'log', title: "Night porter's log", intro: 'Sam Okafor, night porter.', table: true, rows: [['8:00 pm', 'Started shift, front door'], ['9:12-9:47 pm', 'Basement laundry with L. Tran, folding linen by flashlight'], ['9:55 pm', 'Back at front door']] },
+    b_keys: { who: 'B', look: 'log', icon: 'key', title: 'Spare key list', table: true, rows: [['LAUNDRY', 'laundry room'], ['LINEN', 'linen room, floor 2'], ['BAR-2', 'bar store room'], ['LIB-C', 'library display case (for cleaning the glass)'], ['GATE', 'garden gate']] },
+    b_laundry: { who: 'B', look: 'notebook', icon: 'pen', title: 'Laundry list', rows: ['40 towels', '22 sheets', '2 tablecloths (wine stain)'] },
+    b_bell: { who: 'B', look: 'statement', icon: 'pen', title: "Mrs. Bell's statement", rows: ['"I locked the Harbor Pearl in its case myself at six o\'clock."', '"Mr. Cross offered me $20,000 for it last month. I told him never."', '"My grandson Marcus has been asking me for money again. I said no. He was very upset."', '"Victor has worked here for 30 years. I trust him completely."'] },
+    b_phone: { who: 'B', look: 'phone', icon: 'phone', title: "Marcus's phone records", intro: 'From the phone company (with permission).',
       rows: ['6:02 pm · from MOM: Be nice to Grandma tonight!', '7:30 pm · to PIZZA PALACE: call, 2 min', '8:47 pm · from RICKY $$: 12k by Monday. Last warning.', '9:44 pm · to RICKY $$: Relax. You\'ll have it tomorrow.', '10:15 pm · from MOM: How was the party?'] },
-    b_daisy: { who: 'B', icon: 'pen', title: "Daisy's contract", rows: ['Daisy Moreau will sing 8:30 pm to 9:20 pm.', 'Fee: $400, paid in advance.', 'Room 201 for the night is included.'] },
-    b_letter: { who: 'B', icon: 'pen', title: "Ethan's letter", rows: ['"Dear Mrs. Bell, my offer of $20,000 for the Harbor Pearl still stands."', '"If you ever change your mind, I am in room 206 all weekend."', '"With respect, Ethan Cross"'] },
+    b_daisy: { who: 'B', look: 'letter', icon: 'pen', title: "Daisy's contract", rows: ['Daisy Moreau will sing 8:30 pm to 9:20 pm.', 'Fee: $400, paid in advance.', 'Room 201 for the night is included.'] },
+    b_letter: { who: 'B', look: 'letter', icon: 'pen', title: "Ethan's letter", rows: ['"Dear Mrs. Bell, my offer of $20,000 for the Harbor Pearl still stands."', '"If you ever change your mind, I am in room 206 all weekend."', '"With respect, Ethan Cross"'] },
   };
 
   // ---------- the rooms (Detective A). x, y on the hotel map; items on a 600x340 picture ----------
@@ -162,7 +162,7 @@ window.CASE_DEFS.push((face) => {
   const WHY = [['collect', 'Wanted it for a collection'], ['debt', 'Needed money fast to pay a debt'], ['revenge', 'Revenge on Mrs. Bell'], ['job', 'To get someone else fired']];
 
   return {
-    id: 'harbor', num: '001', title: 'The Harbor Pearl', titleVi: 'Viên Ngọc Bến Cảng', mins: '20-30',
+    id: 'harbor', num: '001', org: 'Grand Harbor Hotel', title: 'The Harbor Pearl', titleVi: 'Viên Ngọc Bến Cảng', mins: '20-30',
     brief: `<p><b>Grand Harbor Hotel, Seabright. A stormy Friday night.</b></p>
       <p>Mrs. Eleanor Bell, 70, is celebrating fifty years of her family's hotel. Her most precious thing, a pearl and gold brooch called <b>the Harbor Pearl</b>, sits in a locked glass case in the library for guests to admire.</p>
       <p>At 9:20 pm a storm knocks out the power. The hotel goes dark. At <b>9:58 pm</b>, Mrs. Bell walks into the library and finds the case open and empty.</p>

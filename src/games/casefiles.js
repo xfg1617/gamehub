@@ -118,7 +118,7 @@
         const C = cases().find((c) => c.id === sel.case) || cases()[0];
         const solo = S.n === 1;
         G = { S, C, solo, me: S.online ? S.me : 0, view: 'A', tab: 'brief', room: Object.keys(C.ROOMS)[0], open: null, sus: C.SUSPECTS[0],
-          found: {}, looked: {}, marks: {}, drawer: 0, doc: null, item: null, log: {}, pins: [], strings: [], asked: {}, feed: [], hints: 0, tries: 0, acc: { who: null, how: null, why: null, ev: [] }, prop: null, solved: false, selPin: null, noteN: 0, over: false, tok: ++GT.cur, t0: Date.now() };
+          found: {}, looked: {}, marks: {}, notes: {}, drawer: -1, doc: null, item: null, log: {}, pins: [], strings: [], asked: {}, feed: [], hints: 0, tries: 0, acc: { who: null, how: null, why: null, ev: [] }, prop: null, solved: false, selPin: null, noteN: 0, over: false, tok: ++GT.cur, t0: Date.now() };
         G.role = solo ? 'both' : G.me === 0 ? 'A' : 'B';
         if (G.role === 'B') G.view = 'B';
         GT.started = true; GT.over = false;
@@ -137,12 +137,13 @@
       // ---------- every change, in the same order on both screens ----------
       function apply(a) {
         if (!G) return 0;
-        const C = G.C, title = (id) => (C.CLUES[id] ? C.CLUES[id].title : T('a note', 'một ghi chú'));
+        const C = G.C, title = (id) => (card(id) ? card(id).title : T('a note', 'một ghi chú'));
+        if ((a.t === 'pin' || a.t === 'mark') && a.s === G.me) delete G.notes[a.id];
         if (a.t === 'find') { if (!G.found[a.id]) { G.found[a.id] = 1; if (a.s !== G.me) feed(a.s, `${T('found', 'tìm thấy')} <b>${esc(title(a.id))}</b>`); } }
         else if (a.t === 'look') { G.looked[a.room + ':' + a.i] = 1; const it = C.ROOMS[a.room] && C.ROOMS[a.room].items[a.i]; if (it && it.c && !G.found[it.c]) { G.found[it.c] = 1; if (a.s !== G.me) feed(a.s, `${T('found', 'tìm thấy')} <b>${esc(title(it.c))}</b>`); } }
-        else if (a.t === 'mark') { const p = G.pins.find((q) => q.id === a.id); if (p) { p.rows = (a.rows || []).slice(0, 20); feed(a.s, `${T('marked lines in', 'đánh dấu dòng trong')} <b>${esc(title(a.id))}</b>`); } }
+        else if (a.t === 'mark') { const p = G.pins.find((q) => q.id === a.id); if (p) { if (a.rows) p.rows = a.rows.slice(0, 20); if (a.note != null) p.note = String(a.note).slice(0, 160); feed(a.s, `${T('updated the card', 'cập nhật thẻ')} <b>${esc(title(a.id))}</b>`); } }
         else if (a.t === 'show') { const tk = C.TALK[a.sus]; if (tk) { (G.log[a.sus] = G.log[a.sus] || []).push({ q: `${T('Shows', 'Đưa ra')}: ${title(a.id)}`, a: tk.show[a.id] || tk.shrug, hot: !!tk.show[a.id], ev: 1 }); feed(a.s, `${T('showed', 'đưa')} <b>${esc(title(a.id))}</b> ${T('to', 'cho')} <b>${esc(C.PEOPLE[a.sus].name)}</b>`); } }
-        else if (a.t === 'pin') { if (!G.pins.some((p) => p.id === a.id)) { G.pins.push({ id: a.id, by: a.s, x: a.x, y: a.y, text: a.text, rows: a.rows }); feed(a.s, `${T('pinned', 'đã ghim')} <b>${esc(a.text ? T('a sticky note', 'một ghi chú') : title(a.id))}</b>`); if (a.s !== G.me) toast(`📌 ${esc(G.S.name(a.s))} ${T('pinned', 'đã ghim')} "${esc(a.text ? T('a note', 'ghi chú') : title(a.id))}"`); } }
+        else if (a.t === 'pin') { if (!G.pins.some((p) => p.id === a.id)) { G.pins.push({ id: a.id, by: a.s, x: a.x, y: a.y, text: a.text, rows: a.rows, note: a.note ? String(a.note).slice(0, 160) : '' }); feed(a.s, `${T('pinned', 'đã ghim')} <b>${esc(a.text ? T('a sticky note', 'một ghi chú') : title(a.id))}</b>`); if (a.s !== G.me) toast(`📌 ${esc(G.S.name(a.s))} ${T('pinned', 'đã ghim')} "${esc(a.text ? T('a note', 'ghi chú') : title(a.id))}"`); } }
         else if (a.t === 'unpin') { G.pins = G.pins.filter((p) => p.id !== a.id); G.strings = G.strings.filter((s) => !s.includes(a.id)); G.acc.ev = G.acc.ev.filter((x) => x !== a.id); feed(a.s, T('took a card off the board', 'gỡ một thẻ khỏi bảng')); }
         else if (a.t === 'move') { const p = G.pins.find((q) => q.id === a.id); if (p) { p.x = a.x; p.y = a.y; } }
         else if (a.t === 'tie') { const i = G.strings.findIndex((s) => s.includes(a.a) && s.includes(a.b)); if (i >= 0) G.strings.splice(i, 1); else { G.strings.push([a.a, a.b]); feed(a.s, `${T('tied', 'nối')} <b>${esc(title(a.a))}</b> ${T('to', 'với')} <b>${esc(title(a.b))}</b>`); } }
@@ -175,13 +176,25 @@
         G.mins = mins;
       }
       const plain = (h) => String(h || '').replace(/<[^>]+>/g, '');
+      // any card: a document, or any object in a room (clue or not, they look the same on the board)
+      function itemOf(id) {
+        const C = G.C; if (!G._itemOf) { G._itemOf = {}; Object.entries(C.ROOMS).forEach(([rk, r]) => r.items.forEach((it, i) => { const o = { it, rk, room: r }; G._itemOf['it:' + rk + ':' + i] = o; if (it.c) G._itemOf[it.c] = o; })); }
+        return G._itemOf[id];
+      }
+      function card(id) {
+        const C = G.C, c = C.CLUES[id], o = itemOf(id);
+        if (o) return { who: 'A', icon: 'glass', title: o.it.n, text: c ? c.text : o.it.t, room: o.room.name };
+        return c || null;
+      }
+      const objId = (room, i) => { const it = G.C.ROOMS[room].items[i]; return it.c || 'it:' + room + ':' + i; };
       const rowText = (r) => (Array.isArray(r) ? r.filter(Boolean).join(' · ') : r);
       // what a card on the board says: only what was found or marked, never the conclusion
       function cardSummary(p) {
-        const c = G.C.CLUES[p.id]; if (!c) return esc(p.text || '');
-        if (c.who === 'A') { const t = plain(c.text); return esc(t.length > 110 ? t.slice(0, 107) + '...' : t); }
+        const c = card(p.id); if (!c) return esc(p.text || '');
+        const nt = p.note ? `<span class="pn">✎ ${esc(p.note)}</span>` : '';
+        if (c.who === 'A') { const t = plain(c.text); return `<span class="rm">${esc(c.room || '')}</span>` + esc(t.length > 110 ? t.slice(0, 107) + '...' : t) + nt; }
         const rows = (p.rows || []).map((i) => c.rows[i]).filter((r) => r != null);
-        return rows.length ? rows.map((r) => `<span class="mk">${esc(rowText(r))}</span>`).join('') : `<i class="nomk">${T('No lines marked yet', 'Chưa đánh dấu dòng nào')}</i>`;
+        return nt + (rows.length ? rows.map((r) => `<span class="mk">${esc(rowText(r))}</span>`).join('') : `<i class="nomk">${T('No lines marked yet', 'Chưa đánh dấu dòng nào')}</i>`);
       }
       const act = (a) => G.S.act(Object.assign({ s: G.me }, a));
       let toastT = null;
@@ -215,45 +228,76 @@
               ${T('Stuck?', 'Bí?')} <button class="btn-game btn-amber py-1 px-3 text-xs" data-hint ${G.hints >= G.C.HINTS.length ? 'disabled' : ''}>${T('Get a hint', 'Xem gợi ý')}</button> <span class="text-muted">${T('(each hint costs a star)', '(mỗi gợi ý trừ một sao)')}</span>
               ${G.C.HINTS.slice(0, G.hints).map((h, i) => `<div class="cf-hint"><b>${T('Hint', 'Gợi ý')} ${i + 1}:</b> ${h}</div>`).join('')}</div></div></div></div>`;
       }
-      function clueCard(id, name) {
-        const c = G.C.CLUES[id], pinned = G.pins.some((p) => p.id === id);
-        return `<div class="cf-clue"><h4><span class="ic">${icon(c.icon)}</span>${esc(name || c.title)}</h4><div>${c.text}</div>
-          <div class="acts">${pinned ? `<span class="cf-pinned">📌 ${T('On the board', 'Đã ở trên bảng')}</span>` : `<button class="btn-game btn-teal py-1.5 px-3 text-xs" data-pin="${id}">📌 ${T('Pin to the board', 'Ghim lên bảng')}</button>`}</div></div>`;
+      // the note box + pin button under anything you can pin (an object or a document)
+      function pinBar(id, extra) {
+        const pin = G.pins.find((p) => p.id === id), note = G.notes[id] != null ? G.notes[id] : (pin ? pin.note || '' : '');
+        return `<div class="cf-notebox"><label>${T('Your note', 'Ghi chú của bạn')} <small>${T('(goes on the card)', '(ghi lên thẻ)')}</small></label>
+            <textarea data-note="${id}" maxlength="160" placeholder="${T('e.g. Why is this here?', 'vd: Sao cái này lại ở đây?')}">${esc(note)}</textarea></div>
+          <div class="acts" data-acts="${id}">${pinActs(id, extra)}</div>`;
       }
+      function pinActs(id, extra) {
+        const pin = G.pins.find((p) => p.id === id), note = G.notes[id] != null ? G.notes[id] : (pin ? pin.note || '' : '');
+        const changed = pin && ((pin.note || '') !== note || extra), n = (G.marks[id] || []).length, isDoc = G.C.CLUES[id] && G.C.CLUES[id].who === 'B';
+        return `${pin ? (changed ? `<button class="btn-game btn-teal py-1.5 px-3 text-xs" data-remark="${id}">📌 ${T('Update the card on the board', 'Cập nhật thẻ trên bảng')}</button>` : `<span class="cf-pinned">📌 ${T('On the board', 'Đã ở trên bảng')}</span>`)
+            : `<button class="btn-game btn-teal py-1.5 px-3 text-xs" data-pin="${id}">📌 ${T('Pin to the board', 'Ghim lên bảng')}${isDoc && n ? ` (${n} ${T('marked', 'dòng')})` : ''}</button>`}`;
+      }
+      function clueCard(id) {
+        const c = card(id);
+        return `<div class="cf-clue"><h4><span class="ic">${icon(c.icon)}</span>${esc(c.title)}</h4><div>${c.text}</div>${pinBar(id)}</div>`;
+      }
+      function docChanged(id) { const pin = G.pins.find((p) => p.id === id); return !!(pin && G.marks[id] && JSON.stringify((pin.rows || []).slice().sort()) !== JSON.stringify(G.marks[id].slice().sort())); }
       function sceneHTML() {
         const C = G.C, room = C.ROOMS[G.room];
         const looked = {}; room.items.forEach((_, i) => { if (G.looked[G.room + ':' + i]) looked[i] = 1; });
         const nav = `<div class="cf-rooms">${Object.entries(C.ROOMS).map(([k, o]) => `<button class="cf-rbtn ${G.room === k ? 'on' : ''}" data-room="${k}" style="--rc:${o.col}">${esc(o.name)}</button>`).join('')}</div>`;
         const it = G.item != null ? room.items[G.item] : null;
-        let side = `<p class="cf-scene">${room.scene}</p><p class="cf-tip">${T('Tap anything in the room to take a closer look. Not everything is useful, and nobody tells you when you have found it all.', 'Chạm vào bất cứ thứ gì trong phòng để xem kỹ. Không phải thứ gì cũng có ích, và không ai báo khi bạn đã tìm hết.')}</p>`;
-        if (it) side += it.c ? clueCard(it.c, it.n) : `<div class="cf-look"><b>${esc(it.n)}</b><p>${it.t}</p><span class="nothing">${T('Nothing useful here.', 'Không có gì hữu ích.')}</span></div>`;
+        let side = `<p class="cf-scene">${room.scene}</p><p class="cf-tip">${T('Tap anything in the room to take a closer look. You can pin anything to the board, but not everything matters, and nobody tells you when you have found it all.', 'Chạm vào bất cứ thứ gì trong phòng để xem kỹ. Bạn có thể ghim mọi thứ lên bảng, nhưng không phải thứ gì cũng quan trọng, và không ai báo khi bạn đã tìm hết.')}</p>`;
+        if (it) side += clueCard(objId(G.room, G.item));
         return `${nav}<div class="cf-inv"><div class="cf-panel"><div class="cf-ph">${esc(room.name).toUpperCase()}</div><div class="cf-pb cf-roombox">${roomSVG(room, looked)}</div></div>
           <div class="cf-panel"><div class="cf-ph">${T('CLOSE LOOK', 'XEM KỸ')}</div><div class="cf-pb">${side}</div></div></div>`;
       }
+      // one document as a real piece of paper: the look (log sheet, till receipt, phone printout, notebook...) sets the paper
+      function paperHTML(id, c, marks) {
+        const org = G.C.org || '', lk = c.look || 'log', code = (id.charCodeAt(2) * 37 + id.length * 11) % 900 + 100;
+        const row = (r, i) => `<${c.table ? 'tr' : 'div'} class="cf-row ${marks.includes(i) ? 'mk' : ''}" data-row="${i}">${c.table ? r.map((x) => `<td>${esc(x)}</td>`).join('') : esc(r)}</${c.table ? 'tr' : 'div'}>`;
+        const body = c.table ? `<table class="tbl">${c.rows.map(row).join('')}</table>` : `<div class="lines">${c.rows.map(row).join('')}</div>`;
+        const intro = c.intro ? `<p class="intro">${esc(c.intro)}</p>` : '';
+        const head = {
+          log: `<div class="ph"><b>${esc(org).toUpperCase()}</b><span>FORM ${code}</span></div><h4>${esc(c.title)}</h4>${intro}`,
+          receipt: `<div class="ph"><b>${esc(org).toUpperCase()}</b><span>HARBOR BAR · TILL 2</span><span>FRI · REPRINT</span></div><div class="cut">- - - - - - - - - - - - - -</div>${intro}`,
+          phone: `<div class="ph"><b>SEAPHONE MOBILE</b><span>CALL &amp; MESSAGE DETAIL</span></div><h4>${esc(c.title)}</h4>${intro}`,
+          notebook: `<h4>${esc(c.title)}</h4>${intro}`,
+          statement: `<div class="ph"><b>SEABRIGHT POLICE</b><span>WITNESS STATEMENT</span></div><h4>${esc(c.title)}</h4>${intro}`,
+          letter: `<h4>${esc(c.title)}</h4>${intro}`,
+          notice: `<div class="ph"><b>${esc(c.title).toUpperCase()}</b><span>No. ${code}-${(code * 7) % 100}</span></div>${intro}`,
+          form: `<div class="ph"><b>${esc(org).toUpperCase()}</b><span>MAINTENANCE · ${esc(c.title).toUpperCase()}</span></div>${intro}<div class="cols"><span>DATE</span><span>PROBLEM</span><span>STATUS</span></div>`,
+          menu: `<div class="ph"><span>~ ${esc(org)} ~</span><b>${esc(c.title)}</b></div>${intro}`,
+        }[lk] || `<h4>${esc(c.title)}</h4>${intro}`;
+        const foot = { receipt: '<div class="cut">- - - - - - - - - - - - - -</div><div class="ty">THANK YOU · COME AGAIN</div>', statement: '<div class="sig"><span>Signed</span><svg viewBox="0 0 120 24"><path d="M4 18 C14 2 20 22 30 10 S44 4 50 16 S66 20 74 8 S96 14 116 10" stroke="#24408F" stroke-width="2" fill="none"/></svg></div>',
+          notice: '<div class="stamp">OFFICIAL COPY</div>', phone: '<div class="pg">PAGE 1 OF 1 · END OF REPORT</div>', log: '<div class="pg">FILED BY FRONT DESK</div>' }[lk] || '';
+        return `<div class="cf-sheet ${lk}"><span class="clip"></span>${head}${body}${foot}</div>`;
+      }
       function recordsHTML() {
-        const C = G.C, dr = C.DRAWERS[G.drawer] || C.DRAWERS[0];
-        const cab = `<div class="cf-cabinet">${C.DRAWERS.map((d, i) => `<button class="cf-drawerbtn ${G.drawer === i ? 'on' : ''}" data-drawer="${i}"><span class="handle"></span>${esc(d.name)}</button>`).join('')}</div>`;
-        const docs = `<div class="cf-docs">${dr.docs.map((id) => `<button class="cf-doctab ${G.doc === id ? 'on' : ''} ${G.found[id] ? 'read' : ''}" data-doc="${id}"><span class="ic">${icon(C.CLUES[id].icon)}</span>${esc(C.CLUES[id].title)}</button>`).join('')}</div>`;
-        let read = `<p class="cf-scene">${T('Open a drawer, pick a document and read it. Tap the lines that matter to mark them; only the lines you mark go on the board.', 'Mở ngăn kéo, chọn tài liệu và đọc. Chạm vào những dòng quan trọng để đánh dấu; chỉ những dòng đã đánh dấu mới lên bảng.')}</p>`;
+        const C = G.C;
+        const cab = `<div class="cf-cab"><div class="top"><span>${T('RECORDS', 'HỒ SƠ')}</span></div>${C.DRAWERS.map((d, i) => {
+          const open = G.drawer === i;
+          return `<button class="cf-drw ${open ? 'open' : ''}" data-drawer="${i}"><span class="lbl">${esc(d.name)}</span><span class="hd"></span></button>${open ? `<div class="cf-drin">${d.docs.map((id, j) =>
+            `<button class="cf-fold ${G.doc === id ? 'on' : ''} ${G.found[id] ? 'read' : ''}" data-doc="${id}" style="--off:${(j % 3) * 26}%"><span class="tab">${esc(C.CLUES[id].title)}</span></button>`).join('')}</div>` : ''}`; }).join('')}<div class="feet"><i></i><i></i></div></div>`;
+        let desk = `<div class="cf-empty-desk">${T('Open a drawer and pull out a folder. Read it like the real thing: tap the lines that matter to highlight them, write yourself a note, and pin it. Only the lines you highlight go on the board.', 'Mở một ngăn kéo và rút một tập hồ sơ ra. Đọc như thật: chạm vào những dòng quan trọng để tô sáng, viết ghi chú cho mình rồi ghim lên bảng. Chỉ những dòng bạn tô sáng mới lên bảng.')}</div>`;
         if (G.doc && C.CLUES[G.doc]) {
           const c = C.CLUES[G.doc], pin = G.pins.find((p) => p.id === G.doc), marks = G.marks[G.doc] || (pin && pin.rows) || [];
-          const row = (r, i) => `<${c.table ? 'tr' : 'div'} class="cf-row ${marks.includes(i) ? 'mk' : ''}" data-row="${i}">${c.table ? r.map((x) => `<td>${esc(x)}</td>`).join('') : esc(r)}</${c.table ? 'tr' : 'div'}>`;
-          const changed = pin && JSON.stringify((pin.rows || []).slice().sort()) !== JSON.stringify(marks.slice().sort());
-          read = `<div class="cf-clue cf-doc"><h4><span class="ic">${icon(c.icon)}</span>${esc(c.title)}</h4>${c.intro ? `<p class="intro">${esc(c.intro)}</p>` : ''}
-            ${c.table ? `<table class="tbl">${c.rows.map(row).join('')}</table>` : `<div class="lines">${c.rows.map(row).join('')}</div>`}
-            <div class="acts">${pin ? (changed ? `<button class="btn-game btn-teal py-1.5 px-3 text-xs" data-remark="${G.doc}">📌 ${T('Update the card on the board', 'Cập nhật thẻ trên bảng')}</button>` : `<span class="cf-pinned">📌 ${T('On the board', 'Đã ở trên bảng')}</span>`)
-              : `<button class="btn-game btn-teal py-1.5 px-3 text-xs" data-pin="${G.doc}">📌 ${T('Pin to the board', 'Ghim lên bảng')}${marks.length ? ` (${marks.length} ${T('marked', 'dòng')})` : ''}</button>`}</div></div>`;
+          desk = `${paperHTML(G.doc, c, marks)}<div class="cf-deskbar"><p class="cf-tip">${T('Tap a line to highlight it (tap again to clear).', 'Chạm vào một dòng để tô sáng (chạm lần nữa để bỏ).')}</p>${pinBar(G.doc, docChanged(G.doc))}</div>`;
         }
-        return `<div class="cf-inv cf-recs"><div class="cf-panel"><div class="cf-ph">${T('RECORDS CABINET', 'TỦ HỒ SƠ')}</div><div class="cf-pb">${cab}${docs}</div></div>
-          <div class="cf-panel"><div class="cf-ph">${T('READING', 'ĐANG ĐỌC')}</div><div class="cf-pb">${read}</div></div></div>`;
+        return `<div class="cf-inv cf-recs"><div class="cf-panel"><div class="cf-ph">${T('RECORDS CABINET', 'TỦ HỒ SƠ')}</div><div class="cf-pb">${cab}</div></div>
+          <div class="cf-panel"><div class="cf-ph">${T('ON THE DESK', 'TRÊN BÀN')}</div><div class="cf-pb cf-desk">${desk}</div></div></div>`;
       }
       function susHTML() {
         const C = G.C, list = Object.keys(C.PEOPLE), p = C.PEOPLE[G.sus], tk = C.TALK[G.sus] || { q: [], show: {} };
-        const canAsk = G.role !== 'B', log = G.log[G.sus] || [], board = G.pins.filter((x) => C.CLUES[x.id]);
+        const canAsk = G.role !== 'B', log = G.log[G.sus] || [], board = G.pins.filter((x) => card(x.id));
         const talk = `<div class="cf-talk"><div class="big">${p.art}<b>${p.name}</b><small>${p.role}</small></div><div>
           ${canAsk ? `<div class="cf-qs2">${tk.q.map((q, i) => `<button class="cf-q ${G.asked[G.sus + i] ? 'asked' : ''}" data-ask="${i}">💬 ${q[0]}</button>`).join('')}
               <button class="cf-q conf" data-showmenu>🔎 ${T('Show them something from the board...', 'Đưa cho họ xem thứ gì đó trên bảng...')}</button>
-              ${G.showing ? `<div class="cf-showlist">${board.length ? board.map((x) => `<button class="cf-opt" data-show="${x.id}"><span class="ic">${icon(C.CLUES[x.id].icon)}</span>${esc(C.CLUES[x.id].title)}</button>`).join('') : `<span class="text-muted text-sm">${T('Nothing on the board yet.', 'Trên bảng chưa có gì.')}</span>`}</div>` : ''}</div>`
+              ${G.showing ? `<div class="cf-showlist">${board.length ? board.map((x) => `<button class="cf-opt" data-show="${x.id}"><span class="ic">${icon(card(x.id).icon)}</span>${esc(card(x.id).title)}</button>`).join('') : `<span class="text-muted text-sm">${T('Nothing on the board yet.', 'Trên bảng chưa có gì.')}</span>`}</div>` : ''}</div>`
             : `<div class="cf-ans"><span class="q">${T('DETECTIVE B', 'THÁM TỬ B')}</span>${T(`${esc(partner() || '')} (the scene) does the talking. You see everything that is said here. Find records that prove someone is lying and pin them, so they can show them.`, `${esc(partner() || '')} (hiện trường) là người hỏi. Bạn thấy mọi điều được nói ở đây. Hãy tìm hồ sơ chứng minh ai đó nói dối và ghim lên bảng để họ đưa ra.`)}</div>`}
           <div class="cf-convo">${log.length ? log.map((l) => `<div class="cf-q asked">${l.ev ? '🔎' : '💬'} ${esc(l.q)}</div><div class="cf-ans ${l.hot ? 'hot' : ''}">${l.a}</div>`).join('') : `<p class="text-muted text-sm">${T('Nothing asked yet.', 'Chưa hỏi gì.')}</p>`}</div></div></div>`;
         return `<div class="cf-panel"><div class="cf-ph">${T('INTERVIEWS', 'THẨM VẤN')} <small>${C.SUSPECTS.length} ${T('suspects', 'nghi phạm')} · ${list.length - C.SUSPECTS.length} ${T('witnesses', 'nhân chứng')}</small></div><div class="cf-pb">
@@ -262,7 +306,7 @@
       function boardHTML() {
         const C = G.C;
         return `<div class="cf-boardwrap"><div class="cf-cork" id="cf-cork"><svg class="strings" id="cf-strings"></svg>
-          ${G.pins.map((p) => { const c = C.CLUES[p.id]; return c ? `<div class="cf-pin ${c.who.toLowerCase()} ${G.selPin === p.id ? 'sel' : ''}" data-p="${p.id}" style="left:${p.x}px;top:${p.y}px"><span class="x" data-unpin="${p.id}">✕</span><b>${c.title}</b>${cardSummary(p)}</div>`
+          ${G.pins.map((p) => { const c = card(p.id); return c ? `<div class="cf-pin ${c.who.toLowerCase()} ${G.selPin === p.id ? 'sel' : ''}" data-p="${p.id}" style="left:${p.x}px;top:${p.y}px"><span class="x" data-unpin="${p.id}">✕</span><b>${c.title}</b>${cardSummary(p)}</div>`
             : `<div class="cf-pin note ${G.selPin === p.id ? 'sel' : ''}" data-p="${p.id}" style="left:${p.x}px;top:${p.y}px"><span class="x" data-unpin="${p.id}">✕</span>${esc(p.text || '')}<i>${esc(myName(p.by))}</i></div>`; }).join('')}
           ${G.pins.length ? '' : `<div class="cf-empty">${T('Nothing pinned yet.<br>Find clues and press 📌 Pin to the board.', 'Chưa ghim gì.<br>Tìm manh mối và bấm 📌 Ghim lên bảng.')}</div>`}</div>
           <div class="cf-panel"><div class="cf-ph">${T('SHARED BOARD', 'BẢNG CHUNG')}</div><div class="cf-pb">
@@ -280,13 +324,13 @@
           return `<path d="M${p[0]},${p[1]} Q${mx},${my} ${q[0]},${q[1]}" stroke="#050E18" stroke-width="5" fill="none"/><path d="M${p[0]},${p[1]} Q${mx},${my} ${q[0]},${q[1]}" stroke="#D2382C" stroke-width="3" fill="none"/>`; }).join('');
       }
       function accHTML() {
-        const C = G.C, a = G.acc, pinned = G.pins.filter((p) => C.CLUES[p.id]);
+        const C = G.C, a = G.acc, pinned = G.pins.filter((p) => card(p.id));
         if (G.solved) return revealHTML();
         if (G.prop) {
           const p = G.prop, mine = p.s === G.me;
           return `<div class="cf-panel"><div class="cf-ph">${T('ACCUSATION', 'BUỘC TỘI')}</div><div class="cf-pb cf-prop">
             <p>${mine ? T(`Waiting for <b>${esc(partner())}</b> to agree...`, `Đang chờ <b>${esc(partner())}</b> đồng ý...`) : T(`<b>${esc(G.S.name(p.s))}</b> wants to accuse:`, `<b>${esc(G.S.name(p.s))}</b> muốn buộc tội:`)}</p>
-            <div class="cf-propbox"><div>${C.PEOPLE[p.who].art}</div><div><b>${C.PEOPLE[p.who].name}</b><br>${T('How', 'Cách')}: ${esc((C.HOW.find((h) => h[0] === p.how) || ['', ''])[1])}<br>${T('Why', 'Vì sao')}: ${esc((C.WHY.find((h) => h[0] === p.why) || ['', ''])[1])}<br>${T('Evidence', 'Bằng chứng')}: ${p.ev.map((x) => esc(C.CLUES[x] ? C.CLUES[x].title : '')).join(' · ')}</div></div>
+            <div class="cf-propbox"><div>${C.PEOPLE[p.who].art}</div><div><b>${C.PEOPLE[p.who].name}</b><br>${T('How', 'Cách')}: ${esc((C.HOW.find((h) => h[0] === p.how) || ['', ''])[1])}<br>${T('Why', 'Vì sao')}: ${esc((C.WHY.find((h) => h[0] === p.why) || ['', ''])[1])}<br>${T('Evidence', 'Bằng chứng')}: ${p.ev.map((x) => esc(card(x) ? card(x).title : '')).join(' · ')}</div></div>
             <div class="flex gap-3 flex-wrap mt-3">${mine ? `<button class="btn-game btn-graphite py-2 px-4 text-sm" data-cancel>${T('Take it back', 'Rút lại')}</button>` : `<button class="btn-game btn-coral py-2 px-5 text-sm" data-answer="1">⚖ ${T('Agree, accuse!', 'Đồng ý, buộc tội!')}</button><button class="btn-game btn-graphite py-2 px-4 text-sm" data-answer="0">${T('Not yet', 'Chưa')}</button>`}</div></div></div>`;
         }
         const ready = a.who && a.how && a.why && a.ev.length === 3;
@@ -295,7 +339,7 @@
           <div class="cf-accq"><b>2 · ${T('HOW?', 'BẰNG CÁCH NÀO?')}</b><div class="cf-opts">${C.HOW.map(([k, t]) => `<button class="cf-opt ${a.how === k ? 'on' : ''}" data-acc="how" data-v="${k}">${t}</button>`).join('')}</div></div>
           <div class="cf-accq"><b>3 · ${T('WHY?', 'VÌ SAO?')}</b><div class="cf-opts">${C.WHY.map(([k, t]) => `<button class="cf-opt ${a.why === k ? 'on' : ''}" data-acc="why" data-v="${k}">${t}</button>`).join('')}</div></div>
           <div class="cf-accq"><b>4 · ${T('YOUR 3 BEST PIECES OF EVIDENCE', '3 BẰNG CHỨNG TỐT NHẤT')}</b><p class="cf-sub">${T('Picked from the board', 'Chọn từ trên bảng')} (${a.ev.length}/3)</p>
-            <div class="cf-opts">${pinned.length ? pinned.map((p) => `<button class="cf-opt ${a.ev.includes(p.id) ? 'on' : ''}" data-ev="${p.id}"><span class="ic">${icon(C.CLUES[p.id].icon)}</span>${C.CLUES[p.id].title}</button>`).join('') : `<span class="text-muted">${T('Pin clues to the board first.', 'Hãy ghim manh mối lên bảng trước.')}</span>`}</div></div>
+            <div class="cf-opts">${pinned.length ? pinned.map((p) => `<button class="cf-opt ${a.ev.includes(p.id) ? 'on' : ''}" data-ev="${p.id}"><span class="ic">${icon(card(p.id).icon)}</span>${esc(card(p.id).title)}</button>`).join('') : `<span class="text-muted">${T('Pin clues to the board first.', 'Hãy ghim manh mối lên bảng trước.')}</span>`}</div></div>
           <div class="flex gap-3 items-center flex-wrap"><button class="btn-game btn-coral py-2.5 px-5 text-sm" data-propose ${ready ? '' : 'disabled'}>⚖ ${G.solo ? T('Make the accusation', 'Buộc tội') : T('Propose this accusation', 'Đề xuất buộc tội')}</button>
             <span class="text-muted text-sm">${G.solo ? '' : T('Your partner has to agree. ', 'Cộng sự phải đồng ý. ')}${T('A wrong accusation costs a star.', 'Buộc tội sai bị trừ một sao.')}${G.tries ? ` ${T('Wrong so far', 'Sai')}: ${G.tries}.` : ''}</span></div></div>`;
       }
@@ -309,7 +353,7 @@
           <div class="cf-tl">${C.timeline.map(([t, x]) => `<div><b>${t}</b>${x}</div>`).join('')}</div>
           <b class="pix cf-h">${T('THE RED HERRINGS', 'NHỮNG MANH MỐI GÂY NHIỄU')}</b>
           <p class="cf-story">${C.herrings.map(([n, x]) => `<b>${n}</b> ${x}`).join('<br>')}</p>
-          <div class="cf-found"><div><b class="got">${T('Key evidence found', 'Bằng chứng chính tìm được')}: ${got.length} / ${all.length}</b><br>${got.map((k) => C.CLUES[k].title).join(' · ') || '-'}</div><div><b class="miss">${T('Missed', 'Bỏ sót')}</b><br>${miss.map((k) => C.CLUES[k].title).join(' · ') || T('Nothing. Perfect detective work!', 'Không gì cả. Thám tử hoàn hảo!')}</div></div>
+          <div class="cf-found"><div><b class="got">${T('Key evidence found', 'Bằng chứng chính tìm được')}: ${got.length} / ${all.length}</b><br>${got.map((k) => card(k).title).join(' · ') || '-'}</div><div><b class="miss">${T('Missed', 'Bỏ sót')}</b><br>${miss.map((k) => card(k).title).join(' · ') || T('Nothing. Perfect detective work!', 'Không gì cả. Thám tử hoàn hảo!')}</div></div>
           <div class="mt-4 flex gap-3 flex-wrap"><button class="btn-game btn-amber py-2 px-5 text-sm" data-again>${T('Back to the cases', 'Về danh sách vụ án')}</button></div></div></div>`;
       }
 
@@ -320,17 +364,17 @@
           if (!t || !G) return;
           const C = G.C;
           if (t.dataset.item !== undefined) { const i = +t.dataset.item; G.item = i; SFX.play('click'); if (!G.looked[G.room + ':' + i]) { act({ t: 'look', room: G.room, i }); return; } }
-          else if (t.dataset.drawer !== undefined) { G.drawer = +t.dataset.drawer; G.doc = null; SFX.play('click'); }
+          else if (t.dataset.drawer !== undefined) { const d = +t.dataset.drawer; G.drawer = d; G.doc = null; SFX.play('click'); }
           else if (t.dataset.doc) { G.doc = t.dataset.doc; SFX.play('card'); if (!G.found[G.doc]) { act({ t: 'find', id: G.doc }); return; } }
           else if (t.dataset.row !== undefined) { const i = +t.dataset.row, pin = G.pins.find((p) => p.id === G.doc), cur = (G.marks[G.doc] || (pin && pin.rows) || []).slice(); const k = cur.indexOf(i); if (k >= 0) cur.splice(k, 1); else cur.push(i); G.marks[G.doc] = cur; }
-          else if (t.dataset.remark) { act({ t: 'mark', id: t.dataset.remark, rows: (G.marks[t.dataset.remark] || []).slice() }); return; }
+          else if (t.dataset.remark) { const id = t.dataset.remark, pin = G.pins.find((p) => p.id === id); act({ t: 'mark', id, rows: G.marks[id] ? G.marks[id].slice() : undefined, note: G.notes[id] != null ? G.notes[id] : (pin && pin.note) }); return; }
           else if (t.dataset.showmenu !== undefined) G.showing = !G.showing;
           else if (t.dataset.show) { G.showing = false; act({ t: 'show', sus: G.sus, id: t.dataset.show }); return; }
           else if (t.dataset.tab) { G.tab = t.dataset.tab; G.selPin = null; }
           else if (t.dataset.view) { G.view = t.dataset.view; G.item = null; }
           else if (t.dataset.room) { G.room = t.dataset.room; G.item = null; }
           else if (t.dataset.search) { const id = t.dataset.search; G.open = id; if (!G.found[id]) { act({ t: 'find', id }); SFX.play('reveal'); return; } }
-          else if (t.dataset.pin) { const n = G.pins.length, id = t.dataset.pin; act({ t: 'pin', id, rows: G.C.CLUES[id] && G.C.CLUES[id].who === 'B' ? (G.marks[id] || []).slice() : undefined, x: 16 + (n % 4) * 182 + rnd(12), y: 18 + Math.floor(n / 4) * 130 + rnd(12) }); SFX.play('click'); return; }
+          else if (t.dataset.pin) { const n = G.pins.length, id = t.dataset.pin; act({ t: 'pin', id, note: G.notes[id] || '', rows: G.C.CLUES[id] && G.C.CLUES[id].who === 'B' ? (G.marks[id] || []).slice() : undefined, x: 16 + (n % 4) * 182 + rnd(12), y: 18 + Math.floor(n / 4) * 130 + rnd(12) }); SFX.play('click'); return; }
           else if (t.dataset.unpin) { e.stopPropagation(); act({ t: 'unpin', id: t.dataset.unpin }); return; }
           else if (t.dataset.sus) { G.sus = t.dataset.sus; G.showing = false; }
           else if (t.dataset.ask !== undefined) { if (!G.asked[G.sus + t.dataset.ask]) { act({ t: 'ask', sus: G.sus, i: +t.dataset.ask }); return; } }
@@ -343,6 +387,12 @@
           else if (t.dataset.hint !== undefined) { act({ t: 'hint' }); return; }
           else if (t.dataset.again !== undefined) { G = null; open($('#game-root') || document.getElementById('game-root')); return; }
           render();
+        });
+        gOn(body, 'input', (e) => {
+          const t = e.target; if (!G || !t.dataset || t.dataset.note === undefined) return;
+          const id = t.dataset.note; G.notes[id] = t.value;
+          const box = body.querySelector(`[data-acts="${id}"]`), pin = G.pins.find((p) => p.id === id);
+          if (box) box.innerHTML = pinActs(id, docChanged(id));
         });
         // dragging + tying cards on the board (the move is shared when you let go)
         let drag = null;

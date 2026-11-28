@@ -16,9 +16,12 @@ with sync_playwright() as p:
     # where each clue sits: (room, object index)
     where = pg.evaluate(f"(() => {{ const C = {E}.G.C, out = {{}}; Object.entries(C.ROOMS).forEach(([r, o]) => o.items.forEach((it, i) => {{ if (it.c) out[it.c] = [r, i]; }})); return out; }})()")
     pg.click('[data-tab="inv"]')
-    # tap an object with nothing in it
+    # tap an ordinary object: it can be pinned too, with your own note, and looks just like a clue on the board
     pg.click('[data-room="library"]'); pg.click('.cf-it[data-item="0"]'); pg.wait_for_timeout(100)
-    check('Nothing useful here' in pg.inner_text('#cf-view') and not pg.query_selector('[data-pin]'), 'an ordinary object holds nothing to pin')
+    check('Nothing useful here' not in pg.inner_text('#cf-view') and pg.query_selector('[data-pin="it:library:0"]'), 'an ordinary object can be pinned (no "nothing useful" give-away)')
+    pg.fill('[data-note="it:library:0"]', 'odd?'); pg.click('[data-pin="it:library:0"]'); pg.wait_for_timeout(60)
+    check(pg.evaluate(f"{E}.G.pins.some(p => p.id === 'it:library:0' && p.note === 'odd?')"), 'the decoy goes on the board with its note')
+    pg.evaluate(f"{E}.G.S.act({{ s: 0, t: 'unpin', id: 'it:library:0' }})")
     check('searched' not in pg.inner_text('#cf-view').lower(), 'no "x of y searched" counters')
     for cid in ['a_prints', 'a_path', 'a_cart', 'a_shoes', 'a_card', 'a_pills']:
         r, i = where[cid]; pg.click(f'[data-room="{r}"]'); pg.click(f'.cf-it[data-item="{i}"]'); pg.wait_for_timeout(60)
@@ -31,14 +34,17 @@ with sync_playwright() as p:
     def read(doc, rows):
         pg.click(f'[data-drawer="{drawer[doc]}"]'); pg.click(f'[data-doc="{doc}"]')
         for rw in rows: pg.click(f'.cf-row[data-row="{rw}"]')
+        if doc == 'b_doors': pg.fill('[data-note="b_doors"]', 'who opened 204 from inside?')
         pg.click(f'[data-pin="{doc}"]'); pg.wait_for_timeout(60)
     read('b_doors', [4, 5]); read('b_house', [1, 3]); read('b_phone', [2, 3])
     pg.click('[data-drawer="0"]'); pg.click('[data-doc="b_guests"]')
     check(pg.evaluate("document.querySelectorAll('.cf-row.mk').length") == 0, 'nothing is highlighted for you: you mark lines yourself')
-    pg.screenshot(path='test/shots/cf_records.png')
+    pg.click('[data-drawer="4"]'); pg.click('[data-doc="b_bell"]'); pg.screenshot(path='test/shots/cf_records.png')
+    for d, doc in [(2, 'b_bar'), (4, 'b_phone'), (3, 'b_house'), (0, 'b_doors')]:
+        pg.click(f'[data-drawer="{d}"]'); pg.click(f'[data-doc="{doc}"]'); pg.locator('.cf-sheet').screenshot(path=f'test/shots/cf_paper_{doc}.png')
     pg.click('[data-tab="board"]')
     btxt = pg.inner_text('#cf-cork'); print('   board door log card:', pg.inner_text('.cf-pin[data-p="b_doors"]').replace('\n', ' | '))
-    check('opened from INSIDE' in btxt and 'guest card · E. Cross' not in btxt, 'the board card shows only the lines you marked')
+    check('who opened 204' in btxt and 'opened from INSIDE' in btxt and 'guest card · E. Cross' not in btxt, 'the board card shows only the lines you marked')
     # interviews: ask questions, then show cards from the board
     pg.click('[data-view="A"]'); pg.click('[data-tab="sus"]'); pg.click('[data-sus="marcus"]')
     pg.click('[data-ask="0"]')

@@ -16,12 +16,15 @@ with sync_playwright() as p:
     def read(doc, rows):
         d = B.evaluate(f"{E}.G.C.DRAWERS.findIndex(x => x.docs.includes('{doc}'))"); B.click(f'[data-drawer="{d}"]'); B.click(f'[data-doc="{doc}"]')
         for rw in rows: B.click(f'.cf-row[data-row="{rw}"]')
+        B.fill(f'[data-note="{doc}"]', 'inside at 9:18?')
         B.click(f'[data-pin="{doc}"]')
     A.click('[data-tab="inv"]'); search('a_shoes')
     B.click('[data-tab="inv"]'); read('b_doors', [4, 5])
     A.wait_for_timeout(1500)
     pa = A.evaluate(f"{E}.G.pins.map(p => p.id).sort().join()"); pb = B.evaluate(f"{E}.G.pins.map(p => p.id).sort().join()")
     check(pa == pb == 'a_shoes,b_doors', f'both pins on both boards ({pa} / {pb})')
+    A.click('[data-room="library"]'); A.click('.cf-it[data-item="0"]'); A.click('[data-pin="it:library:0"]'); A.wait_for_timeout(1500)
+    check(B.evaluate(f"{E}.G.pins.some(p => p.id === 'it:library:0')") and A.evaluate(f"{E}.G.pins.find(p => p.id === 'b_doors').note") == 'inside at 9:18?', 'any object can be pinned, and notes reach the partner')
     check(not B.evaluate(f"{E}.G.found.a_shoes") or True, 'B is told what A pinned (board), not shown the scene')
     A.click('[data-tab="sus"]'); A.click('[data-sus="marcus"]')
     A.click('[data-showmenu]')
@@ -34,7 +37,7 @@ with sync_playwright() as p:
     A.click('.cf-pin[data-p="a_shoes"]', position={'x': 60, 'y': 34}); A.click('.cf-pin[data-p="b_doors"]', position={'x': 60, 'y': 34})
     B.click('[data-tab="board"]'); B.fill('#cf-notetxt', 'He lied about his room!'); B.click('[data-addnote]'); B.wait_for_timeout(1500)
     sa = [A.evaluate(f"{E}.G.strings.length"), A.evaluate(f"{E}.G.pins.length")]; sb = [B.evaluate(f"{E}.G.strings.length"), B.evaluate(f"{E}.G.pins.length")]
-    check(sa == sb == [1, 3], f'string and note on both boards ({sa} / {sb})')
+    check(sa == sb == [1, 4], f'string and note on both boards ({sa} / {sb})')
     B.screenshot(path='test/shots/np_cf_board_B.png')
     # more pins so the accusation has 3 pieces of evidence
     B.click('[data-tab="inv"]'); read('b_phone', [2, 3]); A.wait_for_timeout(1200)

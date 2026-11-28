@@ -70,8 +70,8 @@
           ['Chiến thắng', 'Dân làng thắng khi hết sói. Sói thắng khi số sói bằng số người còn lại. Người đã ra vẫn được xem tiếp, và thấy vai của mọi người.']], online: 'Ma Sói cần ít nhất 5 người và không có người chơi máy. Tạo phòng và gửi link mời bạn bè. Vừa chơi vừa gọi thoại càng vui!',
           tip: 'Sói: đừng im lặng quá, cũng đừng nói nhiều quá. Dân làng: để ý ai hay đổi lời, và ai hay bỏ phiếu cùng nhau.' },
         casefiles: { goal: 'Cùng nhau tìm ra ai đã làm, bằng cách nào và vì sao, dựa trên bằng chứng.', steps: [
-          ['Hai nửa', 'Thám tử A giữ hiện trường: đi khắp bản đồ, lục soát và thẩm vấn nghi phạm. Thám tử B giữ hồ sơ: nhật ký cửa, hóa đơn, dữ liệu điện thoại và lời khai. Mỗi người chỉ thấy nửa của mình.'],
-          ['Chia sẻ lên bảng', 'Bấm 📌 Ghim để đưa manh mối lên bảng chứng cứ chung cho cộng sự thấy. Kéo thẻ, chạm hai thẻ để nối dây đỏ, và thêm ghi chú.'],
+          ['Hai nửa', 'Thám tử A giữ hiện trường: chạm vào bất cứ thứ gì trong các phòng để xem kỹ, và thẩm vấn nghi phạm. Thám tử B giữ hồ sơ: một tủ đầy tập hồ sơ (nhật ký cửa, hóa đơn, bản in điện thoại, sổ tay, lời khai). Đọc như thật và tô sáng những dòng quan trọng. Mỗi người chỉ thấy nửa của mình.'],
+          ['Chia sẻ lên bảng', 'Bạn có thể ghim mọi thứ tìm được, kèm ghi chú của mình, lên bảng chứng cứ chung cho cộng sự thấy. Cẩn thận: không phải thứ gì cũng quan trọng, và một món đồ bình thường trông y như manh mối trên bảng. Kéo thẻ, chạm hai thẻ để nối dây đỏ, và thêm ghi chú.'],
           ['Bắt lời nói dối', 'Một số câu hỏi chỉ mở khi đúng manh mối đã ở trên bảng. Hãy đưa cho nghi phạm xem hồ sơ chứng minh họ nói dối!'],
           ['Buộc tội', 'Chọn ai đã làm, bằng cách nào, vì sao, kèm 3 bằng chứng tốt nhất. Cộng sự phải đồng ý. Buộc tội sai bị trừ một sao, mỗi gợi ý cũng vậy.'],
           ['Phá án', 'Xem chuyện gì đã thật sự xảy ra, vì sao những người vô tội trông có vẻ đáng ngờ, và bạn đã bỏ sót manh mối nào.']],

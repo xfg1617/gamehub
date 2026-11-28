@@ -130,3 +130,91 @@
     .cf-doc .tbl td { background: transparent; color: #2A2116; }
     .cf-doc .cf-row.mk td { background: #FDE68A; }
     .cf-roomsvg { max-height: calc(100vh - 300px); width: auto; max-width: 100%; margin: 0 auto; }
+    /* v3: pin anything, a real filing cabinet, documents that look like the real paper */
+    .cf-pin .rm { display: block; font-size: 10px; font-weight: 800; color: #0E7C6F; text-transform: uppercase; letter-spacing: .04em; }
+    .cf-pin .pn { display: block; margin: 3px 0; padding: 2px 4px; background: #FFF2A6; color: #6B4A00; font-style: italic; font-size: 11px; border-left: 3px solid #F5B041; }
+    .cf-notebox { margin-top: 10px; background: #FFF2A6; border: 3px solid #050E18; box-shadow: 3px 4px 0 #050E18; padding: 6px 8px; transform: rotate(-0.6deg); }
+    .cf-notebox label { display: block; font-size: 11px; font-weight: 800; color: #6B4A00; text-transform: uppercase; }
+    .cf-notebox label small { text-transform: none; font-weight: 600; }
+    .cf-notebox textarea { width: 100%; min-height: 44px; resize: vertical; background: transparent; border: 0; border-bottom: 1px dashed #B08A2A; color: #3A2A00; font-style: italic; font-size: 14px; outline: none; }
+    .cf-clue .acts, .cf-deskbar .acts { margin-top: 10px; }
+    /* the cabinet */
+    .cf-cab { position: relative; background: #7D8C9E; border: 4px solid #050E18; padding: 10px 10px 4px; box-shadow: inset -8px 0 0 #66758A, inset 8px 0 0 #93A2B3, 0 6px 0 #050E18; }
+    .cf-cab .top { background: #5E6C7E; border: 3px solid #050E18; margin: -10px -10px 10px; padding: 6px; text-align: center; }
+    .cf-cab .top span { display: inline-block; background: #F7F4EC; color: #050E18; border: 2px solid #050E18; padding: 1px 12px; font-family: 'Arcade Pixel', monospace; font-size: 15px; letter-spacing: .1em; }
+    .cf-drw { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; margin-bottom: 6px; padding: 7px 8px 9px;
+      background: #A8B6C6; border: 3px solid #050E18; box-shadow: inset 0 -5px 0 #8796A8, inset 0 3px 0 #C3CFDB; transition: transform .2s; }
+    .cf-drw:hover { background: #B4C1CF; }
+    .cf-drw .lbl { min-width: 60%; background: #F7F4EC; color: #050E18; border: 2px solid #050E18; outline: 3px solid #5E6C7E; padding: 2px 10px; font-weight: 800; font-size: 13px; }
+    .cf-drw .hd { width: 40%; height: 12px; background: #3F4752; border: 2px solid #050E18; box-shadow: inset 0 3px 0 #6B7685; }
+    .cf-drw.open { background: #C3CFDB; margin-bottom: 0; transform: scale(1.03); z-index: 2; }
+    .cf-drin { position: relative; margin: 0 -2px 10px; padding: 12px 10px 8px; background: #3A4553; border: 3px solid #050E18; border-top: 0; box-shadow: inset 0 8px 0 #2A3340;
+      display: flex; flex-direction: column; gap: 0; }
+    .cf-fold { position: relative; display: block; width: 100%; height: 40px; margin-top: -6px; background: transparent; border: 0; padding: 0; text-align: left; }
+    .cf-fold::before { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 26px; background: #D9B46A; border: 3px solid #050E18; border-bottom-width: 0; }
+    .cf-fold .tab { position: absolute; top: 0; left: var(--off); max-width: 70%; background: #E9C985; color: #2A2116; border: 3px solid #050E18; border-bottom: 0; padding: 2px 8px 4px;
+      font-weight: 800; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cf-fold:hover .tab, .cf-fold:hover::before { filter: brightness(1.08); }
+    .cf-fold.read .tab { background: #CDB27A; }
+    .cf-fold.on .tab { background: #F7F4EC; transform: translateY(-4px); }
+    .cf-fold.on::before { background: #F7F4EC; }
+    .cf-cab .feet { display: flex; justify-content: space-between; margin: 0 6px -12px; } .cf-cab .feet i { width: 26px; height: 8px; background: #050E18; }
+    /* the desk */
+    .cf-desk { background: #6B4A2E; background-image: repeating-linear-gradient(0deg, transparent 0 22px, rgba(0,0,0,.12) 22px 24px); padding: 16px; min-height: 360px; }
+    .cf-empty-desk { background: #F7F4EC; color: #2A2116; border: 3px solid #050E18; padding: 14px; max-width: 420px; margin: 30px auto; transform: rotate(-1.5deg); box-shadow: 6px 6px 0 rgba(5,14,24,.5); font-size: 14px; line-height: 1.5; }
+    .cf-deskbar { max-width: 560px; margin: 12px auto 0; background: #0F2338; border: 3px solid #050E18; padding: 8px 10px 10px; }
+    .cf-deskbar .cf-tip { color: #C9D8E8; margin: 0; }
+    .cf-sheet { position: relative; max-width: 560px; margin: 4px auto 0; background: #FBF8EF; color: #1F1A12; border: 3px solid #050E18; box-shadow: 6px 7px 0 rgba(5,14,24,.55);
+      padding: 18px 18px 14px; font-size: 14px; line-height: 1.45; transform: rotate(.4deg); }
+    .cf-sheet .clip { position: absolute; top: -12px; left: 34px; width: 16px; height: 34px; border: 3px solid #8A96A6; border-bottom: 0; box-shadow: 0 0 0 2px #050E18; background: transparent; }
+    .cf-sheet h4 { margin: 0 0 6px; font-size: 16px; font-weight: 800; }
+    .cf-sheet .intro { font-size: 12px; color: #6B5D45; margin: 0 0 8px; font-style: italic; }
+    .cf-sheet .ph { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; border-bottom: 2px solid #1F1A12; padding-bottom: 4px; margin-bottom: 8px; font-size: 11px; letter-spacing: .05em; }
+    .cf-sheet .ph b { font-size: 13px; }
+    .cf-sheet .tbl { width: 100%; border-collapse: collapse; } .cf-sheet .tbl td { padding: 5px 6px; border-bottom: 1px solid #D8CFBA; vertical-align: top; color: inherit; background: transparent; }
+    .cf-sheet .lines .cf-row { padding: 5px 6px; }
+    .cf-sheet .cf-row { cursor: pointer; } .cf-sheet .cf-row:hover td, .cf-sheet div.cf-row:hover { background: rgba(253,230,138,.45); }
+    .cf-sheet .cf-row.mk td, .cf-sheet div.cf-row.mk { background: linear-gradient(transparent 12%, #FDE047 12%, #FDE047 88%, transparent 88%); box-shadow: none; }
+    .cf-sheet .pg { margin-top: 10px; font-size: 10px; color: #7A6E58; letter-spacing: .08em; text-align: right; }
+    /* log sheet: printed form, typewriter rows, grey ruled table */
+    .cf-sheet.log { font-family: 'Courier New', monospace; } .cf-sheet.log h4 { font-family: 'Outfit', sans-serif; }
+    .cf-sheet.log .tbl tr:nth-child(odd) td { background: #EFEBE0; } .cf-sheet.log .tbl td { border: 1px solid #BDB49F; }
+    /* till receipt: narrow thermal paper with a torn edge */
+    .cf-sheet.receipt { max-width: 320px; font-family: 'Courier New', monospace; font-size: 13px; background: #FFFFFF; transform: rotate(-1deg); border-bottom: 0;
+      -webkit-mask: linear-gradient(#000 0 0) top / 100% calc(100% - 10px) no-repeat, conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 16px 10px repeat-x;
+      mask: linear-gradient(#000 0 0) top / 100% calc(100% - 10px) no-repeat, conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 16px 10px repeat-x; padding-bottom: 24px; }
+    .cf-sheet.receipt .ph { flex-direction: column; align-items: center; border: 0; text-align: center; }
+    .cf-sheet.receipt .cut { text-align: center; color: #8A8A8A; overflow: hidden; white-space: nowrap; }
+    .cf-sheet.receipt .ty { text-align: center; font-size: 11px; margin-top: 4px; }
+    .cf-sheet.receipt .tbl td { border: 0; padding: 3px 2px; }
+    .cf-sheet.receipt .clip { display: none; }
+    /* phone printout: green-bar computer paper */
+    .cf-sheet.phone { font-family: 'Courier New', monospace; font-size: 13px; background: repeating-linear-gradient(#FBF8EF 0 30px, #E1EEDD 30px 60px); }
+    .cf-sheet.phone .lines .cf-row { border: 0; }
+    /* notebook: lined paper, red margin, handwriting in blue ink */
+    .cf-sheet.notebook { background: #FFFDF5; background-image: linear-gradient(90deg, transparent 38px, #F28B82 38px 40px, transparent 40px), repeating-linear-gradient(transparent 0 27px, #B9CDE6 27px 28px);
+      padding-left: 50px; color: #1F3A8A; font-style: italic; transform: rotate(-.6deg); }
+    .cf-sheet.notebook h4 { color: #1F3A8A; text-decoration: underline; } .cf-sheet.notebook .tbl td { border: 0; padding: 4px 6px 3px; }
+    /* witness statement: typed, signed */
+    .cf-sheet.statement { font-family: Georgia, 'Times New Roman', serif; }
+    .cf-sheet.statement .lines .cf-row { padding: 6px; text-indent: 1em; }
+    .cf-sheet .sig { display: flex; align-items: flex-end; gap: 8px; margin-top: 12px; font-size: 12px; } .cf-sheet .sig svg { width: 120px; height: 24px; border-bottom: 1px solid #1F1A12; }
+    /* letter: cream writing paper */
+    .cf-sheet.letter { background: #F6EEDC; font-family: Georgia, 'Times New Roman', serif; font-style: italic; transform: rotate(1deg); }
+    .cf-sheet.letter h4 { font-style: normal; font-size: 13px; color: #7A6E58; text-transform: uppercase; letter-spacing: .06em; }
+    /* official notice with a stamp */
+    .cf-sheet.notice { background: #EEF2F7; }
+    .cf-sheet.notice .ph { border-bottom: 4px double #1F1A12; }
+    .cf-sheet .stamp { position: absolute; right: 18px; bottom: 14px; border: 3px solid #C0392B; color: #C0392B; padding: 2px 8px; font-weight: 900; font-size: 12px; letter-spacing: .1em; transform: rotate(-8deg); opacity: .75; }
+    .cf-sheet.notice .lines { padding-bottom: 26px; }
+    /* repair form: columns and boxes */
+    .cf-sheet.form .cols { display: grid; grid-template-columns: 18% 1fr 22%; font-size: 10px; font-weight: 800; letter-spacing: .08em; border-bottom: 1px solid #1F1A12; padding: 0 6px 2px; }
+    .cf-sheet.form .tbl td:first-child { width: 18%; } .cf-sheet.form .tbl td:last-child { width: 22%; font-weight: 800; text-transform: uppercase; font-size: 12px; }
+    .cf-sheet.form .tbl td { border: 1px solid #9C8C6A; }
+    /* menu card */
+    .cf-sheet.menu { text-align: center; font-family: Georgia, 'Times New Roman', serif; background: #FFFBF0; border-width: 3px; outline: 2px solid #B08A2A; outline-offset: -10px; padding: 22px 26px; }
+    .cf-sheet.menu .ph { flex-direction: column; align-items: center; border: 0; } .cf-sheet.menu .ph b { font-size: 18px; font-style: italic; } .cf-sheet.menu .ph span { color: #B08A2A; }
+    @media (max-width: 640px) { .cf-desk { padding: 10px 6px; } .cf-sheet { padding: 14px 10px 12px; font-size: 13px; transform: none; } .cf-sheet.notebook { padding-left: 46px; } }
+    .cf-sheet div.cf-row { display: block; background: transparent; border: 0; box-shadow: none; color: inherit; gap: 0; }
+    .cf-sheet tr.cf-row { display: table-row; color: inherit; background: transparent; border: 0; box-shadow: none; padding: 0; }
+    .cf-sheet .tbl tr.cf-row.mk td { background: linear-gradient(transparent 12%, #FDE047 12%, #FDE047 88%, transparent 88%); }

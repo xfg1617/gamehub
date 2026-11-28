@@ -1292,3 +1292,17 @@ folder that was handed over, so they do not exist here.)
 * **Trivia Rush: change your answer** (Inna): tap another answer until the question closes. `S.collect(..., {change: ms})`
   in netplay accepts a newer answer from the same (human) seat; once everyone has answered it still waits `ms` (2.5 s)
   after the last change, or until time runs out. Speed points count from your last tap. `t_trivia.py` checks it.
+
+## 5an. Case Files prototype (Nov 28 2026, Inna: "detective cases, solve together with evidence"; saved, not on the site)
+
+* `prototypes/round9/case-files.html` (playable, one page) + `case-files-solution.html` (spoiler walkthrough) + screenshots.
+  Co-op detective game for two: **Detective A = the scene** (hotel map, search spots, interviews), **Detective B = the
+  records** (door log, generator log, receipts, housekeeping/porter logs, phone records, statements). Each holds half the
+  answer; a shared **evidence board** (pin, drag, red strings, sticky notes, activity feed). Confront questions unlock
+  only when the right clue is pinned. Accuse = who / how / why + 3 evidence; stars (−1 per hint / wrong accusation /
+  weak evidence); reveal = timeline + red herrings + found/missed clues.
+* Case #001 "The Harbor Pearl" (our own story): Marcus Bell took the brooch with the housekeeping cart's spare key LIB-C,
+  through the library garden door during the 9:20-9:34 blackout, to pay a $12k debt. Red herrings: Ethan (bar receipt
+  9:28), Victor (chef + generator log 9:34), Daisy (heel prints; she is the witness), Lily (porter log 9:12-9:47).
+* To make it a real game: netplay room for 2 (each screen sees only its side; board synced over the table channel),
+  Vietnamese, save progress for multi-night cases, scene art, more cases (writing + fairness check is the main work).

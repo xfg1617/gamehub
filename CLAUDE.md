@@ -1343,3 +1343,13 @@ folder that was handed over, so they do not exist here.)
   = −1 star with a reason; −1 per hint, −1 for weak evidence. If the partner leaves, you get both halves.
 * Case text is English for now (UI, guide and What's new are in Vietnamese too). No how-to video (Inna: none needed).
   `test/t_casefiles.py` (solo, full case), `test/t_np_casefiles.py` (two partners, shared board, agree/not yet).
+* **Case Files v2 (Nov 28 2026, Inna: "rooms with items to click, many with nothing; do things by hand")**: the scene is 8
+  drawn rooms (room buttons on top; `ART` kinds in casefiles.js draw every object from shapes; `FLAT` items like rugs are drawn
+  first). Tap an object → CLOSE LOOK: most say something but hold "Nothing useful here"; only clue objects (`c:`) can be
+  pinned; a small tick marks objects you already looked at; NO "x of y searched" counters anywhere. Records = a cabinet with
+  5 drawers of documents (`DRAWERS`), many unimportant; documents are rows the detective taps to mark (yellow); pinning
+  puts only the marked lines on the board card ("No lines marked yet" otherwise), "Update the card" re-sends new marks
+  (`mark` action). Board cards never show a conclusion (scene cards: the found text, cut short). Interviews: plain questions
+  + "Show them something from the board..." (any pinned card; `TALK[p].show[id]` = a real reaction, else `shrug`), shown as
+  a conversation. Reveal counts only key evidence (A clues + STRONG + `USEFUL`). Solo is on the first screen (Solo / Online
+  match / Private room) and holds both halves. Tests updated: `t_casefiles.py`, `t_np_casefiles.py`.

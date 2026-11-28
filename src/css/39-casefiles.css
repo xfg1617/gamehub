@@ -98,3 +98,35 @@
     .cf-toast.on { display: block; }
     @media (max-width: 900px) { .cf-brief, .cf-inv, .cf-boardwrap, .cf-talk { grid-template-columns: 1fr; } .cf-talk .big svg { width: 100px; height: 100px; } .cf-cork { height: 540px; } .cf-found { grid-template-columns: 1fr; } }
     @media (max-width: 480px) { .cf-pin { width: 138px; font-size: 11px; } .cf-tab { padding: 5px 8px; font-size: 13px; } }
+    /* v2: rooms you search by tapping objects, a records cabinet, marking lines, showing evidence */
+    .cf-rooms { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .cf-rbtn { border: 3px solid #050E18; border-left: 8px solid var(--rc); background: #0F2338; color: #C9D8E8; padding: 6px 10px; font-weight: 800; font-size: 13px; box-shadow: 0 3px 0 #050E18; }
+    .cf-rbtn.on { background: #F7F4EC; color: #050E18; }
+    .cf-roombox { padding: 8px; }
+    .cf-roomsvg { width: 100%; height: auto; display: block; border: 3px solid #050E18; background: #0B2236; }
+    .cf-it { cursor: pointer; } .cf-it .hit { fill: transparent; stroke: transparent; stroke-width: 3; }
+    .cf-it:hover .hit { stroke: #F5B041; stroke-dasharray: 8 5; }
+    .cf-it:hover > :not(.hit) { filter: brightness(1.15); }
+    .cf-tip { font-size: 12px; color: #7B93AC; margin: 0 0 8px; }
+    .cf-look { background: #F1E7CF; color: #2A2116; border: 3px solid #050E18; box-shadow: 0 5px 0 #050E18; padding: 12px 14px; margin-top: 10px; font-size: 14px; line-height: 1.5; }
+    .cf-look b { font-size: 15px; } .cf-look p { margin: 4px 0 8px; } .cf-look .nothing { font-size: 12px; font-weight: 800; color: #8A7A5A; }
+    .cf-recs { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); }
+    .cf-cabinet { display: grid; gap: 6px; background: #6B7A8C; border: 4px solid #050E18; padding: 8px; box-shadow: 0 6px 0 #050E18; }
+    .cf-drawerbtn { display: flex; align-items: center; gap: 10px; background: #9DB4CC; color: #050E18; border: 3px solid #050E18; padding: 10px 12px; font-weight: 800; font-size: 14px; text-align: left; }
+    .cf-drawerbtn .handle { width: 34px; height: 10px; background: #4A4A52; border: 2px solid #050E18; }
+    .cf-drawerbtn.on { background: #F5B041; transform: translateX(8px); }
+    .cf-docs { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+    .cf-doctab { display: flex; align-items: center; gap: 8px; background: #E9C46A; color: #2A2116; border: 3px solid #050E18; padding: 6px 10px; font-weight: 700; font-size: 13px; text-align: left; box-shadow: 0 3px 0 #050E18; }
+    .cf-doctab .ic { width: 22px; height: 22px; flex: none; } .cf-doctab.read { background: #CDB27A; } .cf-doctab.on { outline: 3px solid #2DD4BF; outline-offset: -3px; }
+    .cf-doc .intro { font-size: 12px; color: #6B5D45; margin: 0 0 6px; }
+    .cf-row { cursor: pointer; } .cf-row:hover td, div.cf-row:hover { background: #FFF5CC; }
+    .cf-row.mk td, div.cf-row.mk { background: #FDE68A; box-shadow: inset 4px 0 0 #F5B041; }
+    .cf-doc .lines div.cf-row { padding: 5px 6px; border-bottom: 1px dashed #9C8C6A; font-size: 14px; }
+    .cf-pin .mk { display: block; background: #FDE68A; margin-top: 2px; padding: 1px 3px; font-size: 11px; } .cf-pin .nomk { color: #8A7A5A; font-size: 11px; }
+    .cf-qs2 { display: grid; gap: 0; }
+    .cf-showlist { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; padding: 8px; background: #0B1B2B; border: 3px solid #050E18; }
+    .cf-convo { margin-top: 12px; border-top: 2px solid #1D3954; padding-top: 6px; }
+    @media (max-width: 900px) { .cf-recs { grid-template-columns: 1fr; } }
+    .cf-doc .tbl td { background: transparent; color: #2A2116; }
+    .cf-doc .cf-row.mk td { background: #FDE68A; }
+    .cf-roomsvg { max-height: calc(100vh - 300px); width: auto; max-width: 100%; margin: 0 auto; }

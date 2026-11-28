@@ -5,6 +5,15 @@
        Written for players: what changed for them, no technical words.
        ========================================================================= */
     window.UPDATES = [
+      { date: '2026-11-28', id: '2026-11-28d',
+        en: ['New game: Where Am I?',
+          'A real photo from somewhere on Earth: drop a pin on the world map where you think it was taken. The closer you are, the more points!',
+          'Over 120 places: the whole world, or just the USA, Vietnam, Asia or Europe.',
+          'Play alone, against computer players, or with friends in a private room: everyone guesses the same photo at the same time.'],
+        vi: ['Trò mới: Tôi Ở Đâu?',
+          'Một bức ảnh thật ở đâu đó trên Trái Đất: cắm ghim trên bản đồ thế giới vào chỗ bạn nghĩ nó được chụp. Càng gần càng nhiều điểm!',
+          'Hơn 120 địa điểm: cả thế giới, hoặc chỉ Mỹ, Việt Nam, châu Á hay châu Âu.',
+          'Chơi một mình, với người chơi máy, hoặc cùng bạn bè trong phòng riêng: mọi người đoán cùng một bức ảnh cùng lúc.'] },
       { date: '2026-11-28', id: '2026-11-28c',
         en: ['Voice chat in private rooms',
           'Press the 🎤 button next to CHAT in a private room or at its table to talk with your friends. Hold to talk, or switch to open mic.',

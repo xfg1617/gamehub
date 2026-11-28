@@ -1306,3 +1306,26 @@ folder that was handed over, so they do not exist here.)
   9:28), Victor (chef + generator log 9:34), Daisy (heel prints; she is the witness), Lily (porter log 9:12-9:47).
 * To make it a real game: netplay room for 2 (each screen sees only its side; board synced over the table channel),
   Vietnamese, save progress for multi-night cases, scene art, more cases (writing + fairness check is the main work).
+
+## 5ao. Where Am I? (Nov 28 2026, Inna: "add a guess-the-place game"; our own name, not the brand)
+
+* `src/games/geo.js` + `src/css/39-geo.css`; Vietnamese name "Tôi Ở Đâu?". A real photo; tap the photo to zoom in / drag to
+  look around; drop a pin on our own world map (SVG, x = lon + 180, y = 90 - lat; zoom with + / − / wheel / pinch, drag to
+  pan, tap to pin), press GUESS (can move the pin and guess again until the round closes: `S.collect(..., {change})`;
+  time up = the pin on the map counts). Score = 5000 × e^(−km / region scale) (world 2000 km, USA 700, Vietnam 220,
+  Asia 1400, Europe 550). Reveal: every pin + a dashed line to the real spot (green flag), the map zooms to fit them.
+  Settings: WHERE IN THE WORLD (hero: world / USA / Vietnam / Asia / Europe), ROUNDS 5/8/10, TIME 30/60/90 s, players 1-8,
+  computer level Tourist / Traveller / Explorer (`botGuess`: real spot + random error). Solo (SOLO_MODE) or online.
+  Fun moment 🎯 SPOT ON (< 25 km). `test/t_geo.py`, `test/t_np_geo.py` (nplib serves gamehub.test/geo/* from assets).
+* **Photos**: 122 places (`tools/geo/places.py`), free-licence photos from Wikimedia Commons (CC0 / PD / CC BY / CC BY-SA
+  only). `tools/geo/find.py` asks Commons for photos taken near each spot (needs commons.wikimedia.org +
+  upload.wikimedia.org allowed in the environment; thumbnails are fetched from upload.wikimedia.org, not thumb.) and makes
+  contact sheets in /tmp/geo; the chosen one per place is in `tools/geo/pick.json` (number, or "skip"); `make_geo.py`
+  downloads them at 1100 px (~150 KB each, ~18 MB, assets/site/geo/<id>.jpg = /geo/ on the live site) and writes
+  `src/games/geo_places.js` + `assets/site/geo/CREDITS.txt`. The photographer + licence + Commons link show under every
+  photo (required by the licences). To add places: add to places.py, run find.py, look at the sheets, add picks, run
+  make_geo.py, rebuild.
+* **Map**: Natural Earth (public domain) via world-atlas 2.0.2 + topojson-client 3.1.0, `tools/geo/make_map.js` (run with
+  those npm packages): 1:110m in `src/games/geo_map.js` (in the page) and 1:50m in `assets/site/geo/map50.json`, which the
+  live site loads (sharper when zoomed). Rings that cross the date line are unwrapped and drawn twice (a straight cut
+  made a streak across the map).

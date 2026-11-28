@@ -26,6 +26,8 @@ def _ctx(br, real, account=True):
     else:
         ctx.route('https://*.supabase.co/**', lambda r: r.abort())
         ctx.route('http://gamehub.test/**', lambda r: r.fulfill(path=FILE, content_type='text/html'))
+        # the live site's picture files (Where Am I? photos and map)
+        ctx.route('http://gamehub.test/geo/**', lambda r: r.fulfill(path=os.path.join(ROOT, 'assets', 'site', 'geo', r.request.url.split('/geo/')[1].split('?')[0])))
         ctx.add_init_script("try { localStorage.setItem('ps_net_local', '1'); } catch (e) {}")
         # chat and friends are for accounts only (Nov 2026): test players have an account unless a test is about guests
         if account: ctx.add_init_script("try { if (!sessionStorage.getItem('psnet_email')) sessionStorage.setItem('psnet_email', 'tester@gamehub.test'); } catch (e) {}")

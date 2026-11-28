@@ -3,6 +3,13 @@
        VI_MORE5 = exact lines, VI_PAT5 = lines with numbers or names in them.
        ========================================================================= */
     window.VI_MORE5 = {
+      // Where Am I? (Nov 2026)
+      'WHERE IN THE WORLD': 'Ở ĐÂU TRÊN THẾ GIỚI', 'Which part of the world the photos come from. The whole world is hardest!': 'Ảnh được lấy từ vùng nào trên thế giới. Cả thế giới là khó nhất!',
+      '🌍 Whole world': '🌍 Cả thế giới', '🇺🇸 USA': '🇺🇸 Mỹ', '🇻🇳 Vietnam': '🇻🇳 Việt Nam', '🌏 Asia': '🌏 Châu Á', '🏰 Europe': '🏰 Châu Âu',
+      'ROUNDS': 'SỐ ẢNH', 'TIME PER PHOTO': 'THỜI GIAN MỖI ẢNH', 'Tourist': 'Khách du lịch', 'Traveller': 'Lữ khách', 'Explorer': 'Nhà thám hiểm',
+      'A photo from somewhere on Earth. Drop a pin where you think it was taken. The closer you are, the more points!': 'Một bức ảnh ở đâu đó trên Trái Đất. Cắm ghim vào chỗ bạn nghĩ nó được chụp. Càng gần càng nhiều điểm!',
+      'A real photo from somewhere on Earth. Drop a pin where you think it was taken: the closer, the more points!': 'Một bức ảnh thật ở đâu đó trên Trái Đất. Cắm ghim vào chỗ bạn nghĩ nó được chụp: càng gần càng nhiều điểm!',
+      'BEST SCORE': 'ĐIỂM CAO NHẤT', 'CLOSEST': 'GẦN NHẤT', 'Your score': 'Điểm của bạn', 'Closest guess': 'Đoán gần nhất',
       // Voice chat (Nov 2026)
       'HOLD': 'GIỮ', 'ON AIR': 'ĐANG NÓI',
       'Voice chat': 'Trò chuyện thoại', "Your friends' voices in private rooms": 'Giọng bạn bè trong phòng riêng', 'OFF': 'TẮT',

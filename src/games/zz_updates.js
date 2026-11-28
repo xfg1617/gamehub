@@ -5,6 +5,13 @@
        Written for players: what changed for them, no technical words.
        ========================================================================= */
     window.UPDATES = [
+      { date: '2026-11-28', id: '2026-11-28h',
+        en: ['Where Am I?: street views',
+          'New setting PHOTOS: Street views puts you on a real street somewhere in the world. Drag to look all the way around and walk along the street with the arrows.',
+          'Over 140 places: big cities, small towns and Vietnamese cities from Ha Giang to Phu Quoc. Landmark photos are still there as the other choice.'],
+        vi: ['Tôi Ở Đâu?: cảnh đường phố',
+          'Cài đặt mới LOẠI ẢNH: Cảnh đường phố đưa bạn đến một con đường thật ở đâu đó trên thế giới. Kéo để nhìn khắp xung quanh và đi dọc con đường bằng các mũi tên.',
+          'Hơn 140 địa điểm: thành phố lớn, thị trấn nhỏ và các thành phố Việt Nam từ Hà Giang tới Phú Quốc. Ảnh địa danh vẫn còn để bạn chọn.'] },
       { date: '2026-11-28', id: '2026-11-28g',
         en: ['Trivia Rush and Where Am I? improvements',
           'Trivia Rush: Hard now gives only truly hard questions, and there is a new Medium level. 33 new hard questions.',

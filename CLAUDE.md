@@ -1407,18 +1407,29 @@ folder that was handed over, so they do not exist here.)
   Vietnamese names for common countries / seas (`GEO_VI`). In-page map `geo_map.js` (1:110m, ~236 KB), live site `map50.json`
   (1:50m, ~1.7 MB).
 
-## 5as. NEXT: Mapillary street views for Where Am I? (Nov 28 2026, Inna chose Mapillary over Google Street View)
+## 5as. Street views for Where Am I? (Nov 28 2026, Inna chose Mapillary over Google Street View)
 
-* Inna made a Mapillary app and saved the **Client Token** (MLY|...) in two places (never ask for it in chat, never put it
-  in a file): Cloudflare Pages secret **MAPILLARY_TOKEN** (for the live site) and this environment's network secret for
-  **graph.mapillary.com** (Bearer token; if Mapillary refuses Bearer, Inna switches it to header `Authorization: OAuth MLY|...`).
-  Only sessions started after Nov 28 2026 have the network secret.
-* Plan (agreed with Inna): a Cloudflare Pages Function (`functions/api/mly.js`, like `functions/api/turn.js`) that calls
-  graph.mapillary.com with the secret, so the token is never in the page; the game asks it for image URLs at run time
-  (Mapillary image links expire). Street rounds = a view you drag to look around (360° panos) + arrows to step along the
-  sequence; a new setting PHOTOS: Street views / Landmark photos (the current Wikimedia set stays). Hand-checked spots
-  (a few hundred: world, USA, Vietnam), chosen with a tool in tools/geo using the network secret (filter by is_pano and
-  quality). Credit line "© Mapillary contributors" (CC BY-SA) on every view. Image CDN hosts (fbcdn) are probably not
-  reachable from the cloud environment, so test the viewer with stand-in images.
+* Inna's Mapillary **Client Token** (MLY|...) is saved as the Cloudflare Pages secret **MAPILLARY_TOKEN** and as this
+  environment's network secret for **graph.mapillary.com** (never ask for it in chat, never put it in a file).
+  **Mapillary only accepts `Authorization: OAuth MLY|...`**: with the Bearer form every search comes back empty (`{"data":[]}`,
+  `call_volume 0`). The network secret was still Bearer on Nov 28 (Inna has to change its value to `OAuth MLY|...` in the
+  environment settings; the secret form can't save an OAuth prefix). The server function adds `OAuth ` itself, so the live
+  site does not depend on that.
+* `functions/api/mly.js` (Cloudflare Pages Function, like turn.js; only our own pages may call it): `/api/mly?lat&lon&seed[&img]`
+  searches Mapillary around the spot (±0.003°, then ±0.008°, ±0.02°), prefers 360° pictures, nearest first (`seed` 0-3 picks
+  a different one so games differ), and returns `{ok, pano, by, walk: [{id, u, h}], at}` (up to 5 pictures each way along
+  the same sequence, ≥10 m apart; `h` = compass angle). Cached 30 min (`caches.default`). Nothing found → `{ok: 0}`.
+* Game (`geo.js`): setting **PHOTOS** (`kind`: street (default) / photo). Spots = `GEO_STREETS` (`src/games/geo_streets.js`,
+  142 spots: USA 34, Vietnam 27, Asia 27, Europe 28, + Americas / Africa / Oceania for Whole world; source
+  `tools/geo/streets.py`). Each round **only the table's host** asks the function (`fetchSV`, the next round is asked ahead)
+  and shares the answer as a table decision (`S.ask(-1, ..., 'sv')`), so every screen shows the same view and rejoin replays
+  it. No answer / file:// / no key → that round uses a landmark photo picked at the start with the shared dice (`G.alt`).
+  Viewer: a 360° picture is a wrapping band (`#geo-sv`, background-image; drag = turn, + / − / wheel / double-click = zoom,
+  `G.look {yaw, pitch, z}`, the picture's middle faces `h`); flat pictures use the photo zoom; ◀ ▶ walk (`#geo-walk`,
+  `G.svAt`). Credit "© Mapillary contributors, CC BY-SA 4.0" always; the photographer and the Mapillary link only after the
+  answer (they'd give the place away). Tests: `window.__mlyAPI` stand-in (Mapillary's picture host is blocked here):
+  `test/t_geo_street.py`, `test/t_np_geo_street.py`.
+* Still to do: once the network secret sends `OAuth`, run `python3 tools/geo/check_streets.py` (keeps spots with a view,
+  stores the best picture id `img`, so the live site shows that one), rebuild, look at a few on the live site.
 * Also pending: 74 new landmark places are in tools/geo/places.py; candidates were found (/tmp/geo/cands.json + sheets in
   /tmp/geo, lost when the container resets: re-run tools/geo/find.py), picks not yet made (pick.json), make_geo.py not run.

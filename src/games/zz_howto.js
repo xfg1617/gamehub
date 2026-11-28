@@ -95,6 +95,7 @@
           tip: 'Check every suspect\'s story against a record. The person whose story a record proves false is your best lead.', online: 'Play with a friend in a private room (each on your own screen; voice chat helps a lot!), or alone holding both halves.' },
         geo: { tag: '1-8 PLAYERS · GEOGRAPHY', goal: 'Work out where in the world each photo was taken. The closer your pin, the more points.', steps: [
           ['The photo', 'You see a real photo from somewhere on Earth. Tap it to zoom in, drag to look around. Look for clues: the writing on signs, which side of the road cars drive on, the plants, the buildings, the weather.'],
+          ['Street views', 'With PHOTOS: Street views you stand on a real street. Drag to look all the way around, and press ◀ ▶ to walk along the street. If a street can\'t be found, you get a landmark photo instead.'],
           ['Drop your pin', 'Tap the world map where you think the photo was taken. Zoom in with + / − (or pinch / the mouse wheel) for a closer guess, then press GUESS.'],
           ['Changed your mind?', 'Move your pin and press GUESS again. Your latest guess counts until time runs out. If time runs out with a pin on the map, that pin is used.'],
           ['Points', 'Up to 5,000 points a photo: the closer you are, the more you get. In the USA, Vietnam or Europe sets you need to be closer for the same points.'],

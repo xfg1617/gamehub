@@ -18,7 +18,7 @@
         asia: { v: [212, 12, 150, 110], km: 1400 }, europe: { v: [158, 18, 70, 46], km: 550 },
       };
       const T = (en, vi) => (typeof LANG !== 'undefined' && LANG.code === 'vi' ? vi : en);
-      const COUNTRY_VI = { USA: 'Mỹ', Vietnam: 'Việt Nam', Japan: 'Nhật Bản', 'South Korea': 'Hàn Quốc', Thailand: 'Thái Lan', Singapore: 'Singapore', Malaysia: 'Malaysia', Indonesia: 'Indonesia', Philippines: 'Philippines', China: 'Trung Quốc', Taiwan: 'Đài Loan', Cambodia: 'Campuchia', Laos: 'Lào', Nepal: 'Nepal', India: 'Ấn Độ', UAE: 'UAE', Turkey: 'Thổ Nhĩ Kỳ', Mongolia: 'Mông Cổ', Myanmar: 'Myanmar', France: 'Pháp', Italy: 'Ý', UK: 'Anh', Netherlands: 'Hà Lan', Spain: 'Tây Ban Nha', Portugal: 'Bồ Đào Nha', Greece: 'Hy Lạp', Czechia: 'Séc', Austria: 'Áo', Hungary: 'Hungary', Germany: 'Đức', Denmark: 'Đan Mạch', Sweden: 'Thụy Điển', Iceland: 'Iceland', Ireland: 'Ireland', Croatia: 'Croatia', Switzerland: 'Thụy Sĩ', Russia: 'Nga', Poland: 'Ba Lan', Belgium: 'Bỉ', Norway: 'Na Uy', Brazil: 'Brazil', Argentina: 'Argentina', Peru: 'Peru', Mexico: 'Mexico', Cuba: 'Cuba', Colombia: 'Colombia', Canada: 'Canada', Chile: 'Chile', Ecuador: 'Ecuador', Bolivia: 'Bolivia', Egypt: 'Ai Cập', Morocco: 'Ma-rốc', 'South Africa': 'Nam Phi', Kenya: 'Kenya', Tanzania: 'Tanzania', Zimbabwe: 'Zimbabwe', Jordan: 'Jordan', Israel: 'Israel', Ghana: 'Ghana', Senegal: 'Senegal', Ethiopia: 'Ethiopia', Australia: 'Úc', 'New Zealand': 'New Zealand', Fiji: 'Fiji', 'French Polynesia': 'Polynesia thuộc Pháp' };
+      const COUNTRY_VI = { USA: 'Mỹ', Vietnam: 'Việt Nam', Japan: 'Nhật Bản', 'South Korea': 'Hàn Quốc', Thailand: 'Thái Lan', Singapore: 'Singapore', Malaysia: 'Malaysia', Indonesia: 'Indonesia', Philippines: 'Philippines', China: 'Trung Quốc', Taiwan: 'Đài Loan', Cambodia: 'Campuchia', Laos: 'Lào', Nepal: 'Nepal', India: 'Ấn Độ', UAE: 'UAE', Turkey: 'Thổ Nhĩ Kỳ', Mongolia: 'Mông Cổ', Myanmar: 'Myanmar', France: 'Pháp', Italy: 'Ý', UK: 'Anh', Netherlands: 'Hà Lan', Spain: 'Tây Ban Nha', Portugal: 'Bồ Đào Nha', Greece: 'Hy Lạp', Czechia: 'Séc', Austria: 'Áo', Hungary: 'Hungary', Germany: 'Đức', Denmark: 'Đan Mạch', Sweden: 'Thụy Điển', Iceland: 'Iceland', Ireland: 'Ireland', Croatia: 'Croatia', Switzerland: 'Thụy Sĩ', Russia: 'Nga', Poland: 'Ba Lan', Belgium: 'Bỉ', Norway: 'Na Uy', Brazil: 'Brazil', Argentina: 'Argentina', Peru: 'Peru', Mexico: 'Mexico', Cuba: 'Cuba', Colombia: 'Colombia', Canada: 'Canada', Chile: 'Chile', Ecuador: 'Ecuador', Bolivia: 'Bolivia', Egypt: 'Ai Cập', Morocco: 'Ma-rốc', 'South Africa': 'Nam Phi', Kenya: 'Kenya', Tanzania: 'Tanzania', Zimbabwe: 'Zimbabwe', Jordan: 'Jordan', Israel: 'Israel', Ghana: 'Ghana', Senegal: 'Senegal', Ethiopia: 'Ethiopia', Rwanda: 'Rwanda', Finland: 'Phần Lan', Australia: 'Úc', 'New Zealand': 'New Zealand', Fiji: 'Fiji', 'French Polynesia': 'Polynesia thuộc Pháp' };
       const $ = (id) => document.getElementById(id);
       let G = null;
 
@@ -36,6 +36,24 @@
         const p = region === 'world' || !region ? all : all.filter((x) => x.region === region);
         return p.length >= 3 ? p : all;
       }
+      function spool(region) {   // street-view spots (geo_streets.js)
+        const all = window.GEO_STREETS || [];
+        const p = region === 'world' || !region ? all : all.filter((x) => x.region === region);
+        return p.length >= 3 ? p : all;
+      }
+      // a street view for this spot: the server function (functions/api/mly.js) holds the Mapillary key and answers
+      // { ok, pano, by, walk: [{ id, u, h }], at }. Only the table's host asks; the answer is shared with every screen.
+      async function fetchSV(p, seed) {
+        try {
+          if (window.__mlyAPI) { const j = await window.__mlyAPI(p, seed); return j && j.ok && j.walk && j.walk.length ? j : null; }
+          if (!/^https?:$/.test(location.protocol)) return null;
+          const ctl = new AbortController(), t = gTimeout(() => ctl.abort(), 8000);
+          const r = await fetch(`/api/mly?lat=${p.lat}&lon=${p.lon}&seed=${seed}${p.img ? '&img=' + p.img : ''}`, { signal: ctl.signal });
+          gClear(t); const j = await r.json();
+          return j && j.ok && j.walk && j.walk.length ? { ok: 1, pano: !!j.pano, by: String(j.by || '').slice(0, 40), at: Math.max(0, Math.min(j.walk.length - 1, +j.at || 0)),
+            walk: j.walk.slice(0, 11).map((w) => ({ id: String(w.id), u: String(w.u), h: +w.h || 0 })) } : null;
+        } catch (e) { return null; }
+      }
       // a computer player's guess: the real spot plus an error that depends on its level
       function botGuess(place, lvl, region) {
         const spread = [0, 2600, 900, 260][lvl] * ((REG[region] || REG.world).km / 2000) ** 0.6;
@@ -51,6 +69,7 @@
         const body = gameShell(root, mod, '', 'max-w-[1500px] mx-auto');
         setupScreen(body, mod, [
           { key: 'region', label: 'WHERE IN THE WORLD', def: 'world', hero: true, hint: 'Which part of the world the photos come from. The whole world is hardest!', choices: [['world', '🌍 Whole world'], ['usa', '🇺🇸 USA'], ['vietnam', '🇻🇳 Vietnam'], ['asia', '🌏 Asia'], ['europe', '🏰 Europe']] },
+          { key: 'kind', label: 'PHOTOS', def: 'street', hint: 'Street views: look all around a real street and walk along it. Landmark photos: one picture of a famous place.', choices: [['street', '🛣️ Street views'], ['photo', '📷 Landmark photos']] },
           { key: 'rounds', label: 'ROUNDS', def: 5, choices: [[5, '5'], [8, '8'], [10, '10']] },
           { key: 'secs', label: 'TIME PER PHOTO', def: 60, choices: [[30, '30 sec'], [60, '60 sec'], [90, '90 sec']] },
           { key: 'n', label: 'PLAYERS', def: 1, choices: [[1, 'Just me'], [2, '2'], [3, '3'], [4, '4'], [6, '6'], [8, '8']] },
@@ -64,12 +83,20 @@
         const region = REG[sel.region] ? sel.region : 'world';
         const rounds = Math.min(+sel.rounds || 5, 15);
         const players = S.seats.map((x, i) => ({ seat: i, name: x.name, av: x.avatar, col: COLS[i % COLS.length], pts: 0, best: null }));
-        G = { S, sel, region, me: S.online ? S.me : 0, players, places: S.rng.shuffle(pool(region).slice()).slice(0, rounds), ri: -1, secs: +sel.secs || 60, lvl: +sel.lvl || 2,
+        const kind = sel.kind === 'photo' ? 'photo' : 'street';
+        const places = S.rng.shuffle((kind === 'street' ? spool(region) : pool(region)).slice()).slice(0, rounds);
+        // landmark photos stand in for a street view that can't be found (same on every screen: shared dice)
+        const alt = kind === 'street' ? S.rng.shuffle(pool(region).slice()).slice(0, rounds) : [];
+        const seeds = places.map(() => S.rng.rnd(4));
+        G = { S, sel, region, kind, alt, seeds, svp: {}, sv: null, me: S.online ? S.me : 0, players, places, ri: -1, secs: +sel.secs || 60, lvl: +sel.lvl || 2,
           view: REG[region].v.slice(), pin: null, sent: false, got: {}, reveal: null, over: false, tok: ++GT.cur };
         GT.started = true; GT.over = false;
         body.innerHTML = `<div class="geo-wrap">
           <div class="geo-photo" id="geo-photo"><div class="geo-top"><span class="geo-pill pix" id="geo-round"></span><span class="geo-pill pix" id="geo-clock"></span></div>
-            <div class="geo-img" id="geo-img"><img id="geo-pic" alt="Where is this?" draggable="false"></div>
+            <div class="geo-img" id="geo-img"><img id="geo-pic" alt="Where is this?" draggable="false"><div id="geo-sv" class="geo-sv" hidden></div>
+              <div class="geo-walk" id="geo-walk" hidden><button id="geo-back" aria-label="Walk back">◀</button><span id="geo-step" class="pix"></span><button id="geo-fwd" aria-label="Walk forward">▶</button></div>
+              <div class="geo-svz" id="geo-svz" hidden><button id="geo-svin" aria-label="Zoom in">+</button><button id="geo-svout" aria-label="Zoom out">−</button></div>
+              <div class="geo-wait pix" id="geo-wait" hidden>${T('FINDING A STREET...', 'ĐANG TÌM ĐƯỜNG PHỐ...')}</div></div>
             <div class="geo-zoomhint" id="geo-zh">${T('Tap the photo to zoom in · drag to look around', 'Chạm vào ảnh để phóng to · kéo để xem xung quanh')}</div>
             <div class="geo-credit" id="geo-credit"></div></div>
           <div class="geo-side"><div class="geo-mapbox" id="geo-mapbox"><svg id="geo-map" class="geo-map" xmlns="http://www.w3.org/2000/svg"></svg>
@@ -81,7 +108,7 @@
         S.onLeft = (a) => { if (!G) return; const p = G.players[a.s]; if (p) { p.name += ' (CPU)'; p.av = '🤖'; } tags(); };
         S.onCollect = (key, got) => { if (!G || key !== 'r' + G.ri) return; G.got = got; tags(); };
         npBar('');
-        drawMap(); bindMap(); bindPhoto(); hiRes();
+        drawMap(); bindMap(); bindPhoto(); bindStreet(); hiRes();
         run().catch((e) => { if (e !== ABORT) throw e; });
       }
       async function W(ms) { const t = G && G.tok; await gSleep(window.__fast ? Math.min(ms, 40) : ms); if (!G || G.tok !== t) throw ABORT; }
@@ -201,7 +228,7 @@
       function bindPhoto() {
         const box = $('geo-img'), img = $('geo-pic'); let z = null, drag = null;
         const apply = () => { img.style.transform = z ? `translate(${z.x}px, ${z.y}px) scale(${z.s})` : ''; box.classList.toggle('zoomed', !!z); };
-        gOn(box, 'pointerdown', (e) => { drag = { x: e.clientX, y: e.clientY, moved: false, z0: z && { ...z } }; box.setPointerCapture(e.pointerId); });
+        gOn(box, 'pointerdown', (e) => { if (G && G.sv && G.sv.pano) return; if (e.target.closest('button')) return; drag = { x: e.clientX, y: e.clientY, moved: false, z0: z && { ...z } }; box.setPointerCapture(e.pointerId); });
         gOn(box, 'pointermove', (e) => { if (!drag || !z) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y; if (Math.abs(dx) + Math.abs(dy) > 5) drag.moved = true;
           const r = box.getBoundingClientRect(), lim = (s, w) => (w * (s - 1)) / 2;
           z.x = Math.max(-lim(z.s, r.width), Math.min(lim(z.s, r.width), drag.z0.x + dx)); z.y = Math.max(-lim(z.s, r.height), Math.min(lim(z.s, r.height), drag.z0.y + dy)); apply(); });
@@ -211,6 +238,51 @@
           z = { s, x: Math.max(-(r.width * (s - 1)) / 2, Math.min((r.width * (s - 1)) / 2, -cx * (s - 1))), y: Math.max(-(r.height * (s - 1)) / 2, Math.min((r.height * (s - 1)) / 2, -cy * (s - 1))) }; apply();
           const zh = $('geo-zh'); if (zh) zh.style.display = 'none'; });
         G.resetPhoto = () => { z = null; apply(); };
+      }
+      // ---------- the street view: drag to look all around (360°), ◀ ▶ walk along the street ----------
+      // A 360° picture is one wide image (all the way round); it is shown as a band that wraps round, so dragging
+      // turns you on the spot. Flat street pictures use the photo zoom above.
+      function bindStreet() {
+        const el = $('geo-sv'); let drag = null;
+        gOn(el, 'pointerdown', (e) => { if (!G || !G.sv) return; el.setPointerCapture(e.pointerId); drag = { x: e.clientX, y: e.clientY, yaw: G.look.yaw, pitch: G.look.pitch }; el.classList.add('drag'); });
+        gOn(el, 'pointermove', (e) => { if (!drag || !G || !G.sv) return; const r = el.getBoundingClientRect(), bh = r.height * 2.2 * G.look.z, bw = bh * 2;
+          G.look.yaw = drag.yaw - ((e.clientX - drag.x) / bw) * 360; G.look.pitch = drag.pitch - (e.clientY - drag.y) / bh; paintSV(); });
+        const up = () => { drag = null; el.classList.remove('drag'); };
+        gOn(el, 'pointerup', up); gOn(el, 'pointercancel', up);
+        gOn(el, 'wheel', (e) => { e.preventDefault(); zoomSV(e.deltaY > 0 ? 1 / 1.2 : 1.2); }, { passive: false });
+        gOn(el, 'dblclick', () => zoomSV(G.look.z > 1.4 ? 0.1 : 2));
+        gOn($('geo-svin'), 'click', () => zoomSV(1.3)); gOn($('geo-svout'), 'click', () => zoomSV(1 / 1.3));
+        gOn($('geo-back'), 'click', () => step(-1)); gOn($('geo-fwd'), 'click', () => step(1));
+        gOn(window, 'resize', () => paintSV());
+      }
+      function zoomSV(f) { if (!G || !G.sv) return; G.look.z = Math.max(1, Math.min(3.2, G.look.z * f)); paintSV(); }
+      function step(d) {
+        if (!G || !G.sv) return; const n = G.svAt + d; if (n < 0 || n >= G.sv.walk.length) return;
+        G.svAt = n; SFX.play('click'); showSV();
+      }
+      function showSV() {
+        const sv = G.sv, w = sv.walk[G.svAt], img = $('geo-pic'), el = $('geo-sv');
+        if (sv.pano) { img.style.display = 'none'; el.hidden = false; el.style.backgroundImage = `url("${w.u.replace(/"/g, '%22')}")`; paintSV(); }
+        else { el.hidden = true; img.style.display = ''; img.classList.remove('bad'); img.src = w.u; }
+        $('geo-walk').hidden = sv.walk.length < 2; $('geo-svz').hidden = !sv.pano;
+        $('geo-back').disabled = G.svAt <= 0; $('geo-fwd').disabled = G.svAt >= sv.walk.length - 1;
+        $('geo-step').textContent = `${G.svAt + 1} / ${sv.walk.length}`;
+        [G.svAt - 1, G.svAt + 1].forEach((i) => { const x = sv.walk[i]; if (x) new Image().src = x.u; });   // the next steps load while you look
+      }
+      function paintSV() {
+        const el = $('geo-sv'); if (!G || !G.sv || !G.sv.pano || !el || el.hidden) return;
+        const r = el.getBoundingClientRect(); if (!r.height) return;
+        const w = G.sv.walk[G.svAt], bh = r.height * 2.2 * G.look.z, bw = bh * 2;
+        const lim = 0.5 - r.height / bh / 2; G.look.pitch = Math.max(-lim, Math.min(lim, G.look.pitch));   // never past the top / bottom of the picture
+        const u = ((((G.look.yaw - w.h) / 360 + 0.5) % 1) + 1) % 1;   // the middle of the picture faces the way the camera faced
+        el.style.backgroundSize = `${bw}px ${bh}px`;
+        el.style.backgroundPosition = `${r.width / 2 - u * bw}px ${r.height / 2 - (0.5 + G.look.pitch) * bh}px`;
+      }
+      function creditHTML(p, after) {
+        if (!G.sv) return `📷 ${esc(p.by)} · ${esc(p.lic)} · <a href="${esc(p.src)}" target="_blank" rel="noopener">Wikimedia Commons</a>`;
+        // the link (and the photographer's name) would give the place away, so they only show once the round is over
+        const w = G.sv.walk[G.svAt];
+        return `🛣️ ${T('Street view', 'Ảnh đường phố')}${after && G.sv.by ? ' ' + T('by', 'của') + ' ' + esc(G.sv.by) : ''} · © Mapillary contributors, CC BY-SA 4.0${after ? ` · <a href="https://www.mapillary.com/app/?pKey=${encodeURIComponent(w.id)}" target="_blank" rel="noopener">Mapillary</a>` : ''}`;
       }
       function tags() {
         const el = $('geo-tags'); if (!el || !G) return;
@@ -228,11 +300,30 @@
       }
       async function round(p) {
         const S = G.S, t = G.tok, key = 'r' + G.ri;
-        G.got = {}; G.reveal = null; G.pin = null; G.sent = false; G.open = true; G.view = fit(REG[G.region].v.slice());
-        $('geo-round').textContent = `${T('PHOTO', 'ẢNH')} ${G.ri + 1} / ${G.places.length}`;
+        G.got = {}; G.reveal = null; G.pin = null; G.sent = false; G.open = false; G.view = fit(REG[G.region].v.slice()); G.sv = null;
         const img = $('geo-pic'); if (G.resetPhoto) G.resetPhoto();
-        img.classList.remove('bad'); img.onerror = () => img.classList.add('bad'); img.src = photoURL(p.id);
-        $('geo-credit').innerHTML = `📷 ${esc(p.by)} · ${esc(p.lic)} · <a href="${esc(p.src)}" target="_blank" rel="noopener">Wikimedia Commons</a>`;
+        $('geo-round').textContent = `${G.kind === 'street' ? T('VIEW', 'CẢNH') : T('PHOTO', 'ẢNH')} ${G.ri + 1} / ${G.places.length}`;
+        if (G.kind === 'street') {
+          // the host finds the street view (asked one round ahead, so it is usually ready) and shares it with the table
+          $('geo-wait').hidden = false; $('geo-sv').hidden = true; img.style.display = 'none'; $('geo-walk').hidden = true; $('geo-svz').hidden = true;
+          $('geo-msg').textContent = T('Finding a street...', 'Đang tìm đường phố...'); $('geo-credit').textContent = '';
+          const ask = (i) => { if (i < G.places.length && !(i in G.svp)) G.svp[i] = fetchSV(G.places[i], G.seeds[i]); return G.svp[i]; };
+          const v = S.isHost && !NP.catchup ? await ask(G.ri) : null;
+          if (!G || G.tok !== t) throw ABORT;
+          if (S.isHost && !NP.catchup) ask(G.ri + 1);
+          const a = await S.ask(-1, () => ({ t: 'sv', key, v: v || null }), 5, (x) => x.t === 'sv' && x.key === key);
+          if (!G || G.tok !== t) throw ABORT;
+          $('geo-wait').hidden = true;
+          if (a.v && a.v.walk && a.v.walk.length) { G.sv = a.v; G.svAt = a.v.at || 0; G.look = { yaw: a.v.walk[G.svAt].h || 0, pitch: 0, z: 1 }; }
+          else { p = G.places[G.ri] = G.alt[G.ri] || pool(G.region)[0]; }   // no street view here: a landmark photo instead
+        }
+        G.open = true;
+        img.classList.remove('bad'); img.onerror = () => img.classList.add('bad');
+        if (G.sv) showSV(); else { $('geo-sv').hidden = true; $('geo-walk').hidden = true; $('geo-svz').hidden = true; img.style.display = ''; img.src = photoURL(p.id); }
+        $('geo-zh').textContent = G.sv ? (G.sv.pano ? T('Drag to look all around · ◀ ▶ walk along the street', 'Kéo để nhìn xung quanh · ◀ ▶ đi dọc con đường')
+          : T('Tap to zoom in · ◀ ▶ walk along the street', 'Chạm để phóng to · ◀ ▶ đi dọc con đường')) : T('Tap the photo to zoom in · drag to look around', 'Chạm vào ảnh để phóng to · kéo để xem xung quanh');
+        $('geo-zh').style.display = '';
+        $('geo-credit').innerHTML = creditHTML(p, false);
         const go = $('geo-go'); go.disabled = true; go.textContent = T('GUESS', 'ĐOÁN');
         $('geo-msg').textContent = T('Tap the map to drop your pin. Zoom in for a closer guess!', 'Chạm vào bản đồ để cắm ghim. Phóng to để đoán chính xác hơn!');
         $('geo-mapbox').classList.remove('reveal'); drawMap(); tags();
@@ -259,7 +350,7 @@
         const minx = Math.min(...xs), maxx = Math.max(...xs), miny = Math.min(...ys), maxy = Math.max(...ys), pad = Math.max(4, (maxx - minx) * 0.18, (maxy - miny) * 0.18);
         let w = Math.max(maxx - minx + pad * 2, (maxy - miny + pad * 2) / G.aspect, 10);
         G.view = fit([(minx + maxx) / 2 - w / 2, (miny + maxy) / 2 - (w * G.aspect) / 2, w, w * G.aspect]);
-        $('geo-mapbox').classList.add('reveal'); drawMap();
+        $('geo-mapbox').classList.add('reveal'); drawMap(); $('geo-credit').innerHTML = creditHTML(p, true);
         const mine = res[G.me], name = `<b>${esc(p.name)}</b>, ${esc(T(p.country, COUNTRY_VI[p.country] || p.country))}`;
         $('geo-msg').innerHTML = mine.d == null ? `${T("Time's up! It was", 'Hết giờ! Đây là')} ${name}.` : `${T('It was', 'Đây là')} ${name}. ${T('You were', 'Bạn cách')} <b>${fmtKm(mine.d)}</b> ${T('away', '')}: <b class="text-amber">+${mine.pts.toLocaleString('en-US')}</b>`;
         go.disabled = true; go.textContent = T('NEXT PHOTO...', 'ẢNH TIẾP...');
@@ -300,7 +391,7 @@
           '<strong class="text-bone">Win:</strong> the most points after all the photos wins.',
         ], tip: 'Look at the writing on signs, which side of the road cars drive on, and the plants and hills. They give away a lot!' },
         profileTiles: (s) => [['WINS', s.wins, 'text-amber'], ['BEST SCORE', (s.bestScore || 0).toLocaleString('en-US'), 'text-emerald'], ['CLOSEST', s.closest != null ? s.closest + ' km' : '—', 'text-teal']],
-        engine: { km, score, botGuess, pool, toXY, toLL, get G() { return G; }, send: () => send(), place: (lat, lon) => { const [x, y] = toXY(lat, lon); place([x, y]); } },
+        engine: { km, score, botGuess, pool, spool, fetchSV, step: (d) => step(d), paintSV: () => paintSV(), toXY, toLL, get G() { return G; }, send: () => send(), place: (lat, lon) => { const [x, y] = toXY(lat, lon); place([x, y]); } },
         open, close() { G = null; },
         online: { seats: (sel) => Math.max(2, +sel.n || 4), min: 2, ranked: false, start: (body, sel, S) => start(body, sel, S) },
       };

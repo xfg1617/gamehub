@@ -11,6 +11,8 @@
       // Where Am I? (Nov 2026)
       'WHERE IN THE WORLD': 'Ở ĐÂU TRÊN THẾ GIỚI', 'Which part of the world the photos come from. The whole world is hardest!': 'Ảnh được lấy từ vùng nào trên thế giới. Cả thế giới là khó nhất!',
       '🌍 Whole world': '🌍 Cả thế giới', '🇺🇸 USA': '🇺🇸 Mỹ', '🇻🇳 Vietnam': '🇻🇳 Việt Nam', '🌏 Asia': '🌏 Châu Á', '🏰 Europe': '🏰 Châu Âu',
+      'PHOTOS': 'LOẠI ẢNH', '🛣️ Street views': '🛣️ Cảnh đường phố', '📷 Landmark photos': '📷 Ảnh địa danh',
+      'Street views: look all around a real street and walk along it. Landmark photos: one picture of a famous place.': 'Cảnh đường phố: nhìn quanh một con đường thật và đi dọc theo nó. Ảnh địa danh: một bức ảnh của một nơi nổi tiếng.',
       'ROUNDS': 'SỐ ẢNH', 'TIME PER PHOTO': 'THỜI GIAN MỖI ẢNH', 'Tourist': 'Khách du lịch', 'Traveller': 'Lữ khách', 'Explorer': 'Nhà thám hiểm',
       'A photo from somewhere on Earth. Drop a pin where you think it was taken. The closer you are, the more points!': 'Một bức ảnh ở đâu đó trên Trái Đất. Cắm ghim vào chỗ bạn nghĩ nó được chụp. Càng gần càng nhiều điểm!',
       'A real photo from somewhere on Earth. Drop a pin where you think it was taken: the closer, the more points!': 'Một bức ảnh thật ở đâu đó trên Trái Đất. Cắm ghim vào chỗ bạn nghĩ nó được chụp: càng gần càng nhiều điểm!',

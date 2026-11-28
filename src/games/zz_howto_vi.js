@@ -79,6 +79,7 @@
           tip: 'Đối chiếu lời khai của từng nghi phạm với hồ sơ. Người có lời khai bị hồ sơ chứng minh là sai chính là đầu mối tốt nhất.', online: 'Chơi với một người bạn trong phòng riêng (mỗi người một màn hình; trò chuyện thoại giúp rất nhiều!), hoặc chơi một mình giữ cả hai nửa.' },
         geo: { goal: 'Đoán xem mỗi bức ảnh được chụp ở đâu trên thế giới. Ghim càng gần, điểm càng cao.', steps: [
           ['Bức ảnh', 'Bạn thấy một bức ảnh thật ở đâu đó trên Trái Đất. Chạm để phóng to, kéo để xem xung quanh. Tìm manh mối: chữ trên biển hiệu, xe chạy bên trái hay bên phải, cây cối, nhà cửa, thời tiết.'],
+          ['Cảnh đường phố', 'Khi chọn LOẠI ẢNH: Cảnh đường phố, bạn đứng giữa một con đường thật. Kéo để nhìn khắp xung quanh, bấm ◀ ▶ để đi dọc con đường. Nếu không tìm được đường phố, bạn sẽ thấy một ảnh địa danh thay vào.'],
           ['Cắm ghim', 'Chạm vào bản đồ thế giới ở chỗ bạn nghĩ bức ảnh được chụp. Phóng to bằng + / − (hoặc hai ngón tay / con lăn chuột) để đoán chính xác hơn, rồi bấm ĐOÁN.'],
           ['Đổi ý?', 'Dời ghim và bấm ĐOÁN lại. Lần đoán cuối cùng được tính cho tới khi hết giờ. Hết giờ mà đã có ghim trên bản đồ thì ghim đó được tính.'],
           ['Điểm', 'Tối đa 5.000 điểm mỗi ảnh: càng gần càng nhiều điểm. Với bộ ảnh Mỹ, Việt Nam hay châu Âu, bạn phải đoán gần hơn mới được cùng số điểm.'],

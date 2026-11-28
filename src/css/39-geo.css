@@ -37,3 +37,15 @@
     .gl.s { font-style: italic; font-weight: 600; fill: #D7ECFF; stroke: #1D5C8C; }
     .gl.st { font-style: italic; font-weight: 600; fill: #6B5A38; }
     .gl.ct { fill: #050E18; }
+/* street views (Mapillary): a 360° band you drag round, ◀ ▶ to walk along the street */
+.geo-sv { position: absolute; inset: 0; background-color: #0B1B2B; background-repeat: repeat-x; cursor: grab; touch-action: none; user-select: none; }
+.geo-sv[hidden], .geo-walk[hidden], .geo-svz[hidden], .geo-wait[hidden] { display: none; }
+.geo-sv.drag { cursor: grabbing; }
+.geo-walk { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; z-index: 2; }
+.geo-walk button, .geo-svz button { width: 42px; height: 38px; background: #F7F4EC; color: #050E18; border: 3px solid #050E18; box-shadow: 0 4px 0 #050E18; font-weight: 900; font-size: 18px; line-height: 1; }
+.geo-walk button:active:not(:disabled), .geo-svz button:active { transform: translateY(3px); box-shadow: 0 1px 0 #050E18; }
+.geo-walk button:disabled { opacity: .4; cursor: default; }
+.geo-walk span { background: #050E18; color: #F5B041; font-size: 18px; padding: 0 10px 2px; min-width: 64px; text-align: center; }
+.geo-svz { position: absolute; right: 10px; top: 10px; display: flex; flex-direction: column; gap: 6px; z-index: 2; }
+.geo-svz button { width: 34px; height: 34px; font-size: 18px; box-shadow: 0 3px 0 #050E18; }
+.geo-wait { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #F5B041; font-size: 26px; background: #0B1B2B; }

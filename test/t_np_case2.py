@@ -6,7 +6,7 @@ from nplib import *
 E = "GAME_MODS.casefiles.engine"
 with sync_playwright() as p:
     A, B = players(p, 2)
-    code = open_table(A, 'casefiles', 'room', {'case': 'gallery', 'ver': 'shuffle'})
+    code = open_table(A, 'casefiles', 'room', {'cat': 'standard', 'c_standard': 'gallery', 'ver': 'shuffle'})
     join(B, code); A.wait_for_timeout(3000)
     same = A.evaluate(f"[{E}.G.C.id, {E}.G.C.W, {E}.G.C.code, {E}.G.C.culprit].join('|')") == B.evaluate(f"[{E}.G.C.id, {E}.G.C.W, {E}.G.C.code, {E}.G.C.culprit].join('|')")
     check(A.evaluate(f"{E}.G.C.id") == 'gallery' and same, 'both partners get the same version of Case #002')

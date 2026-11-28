@@ -270,7 +270,7 @@ window.CASE_DEFS.push((face) => {
       nora: ['Nora Quinn', 'had a painted copy in her studio, but the fake is a print, and she was seen in the hall at the time.'], hollis: ['Arthur Hollis', 'wanted the painting badly, but the cloakroom book and photos show he was gone or in plain sight.'],
       theo: ['Theo Lambert', 'had the strongest reason of all, but he was serving in the hall at the time.'] })[k];
     return {
-      id: 'gallery', num: '002', title: 'The Night Gallery', titleVi: 'Phòng Tranh Lúc Nửa Đêm', mins: '40-50', variant: V, W, code,
+      id: 'gallery', num: '002', cat: 'standard', title: 'The Night Gallery', titleVi: 'Phòng Tranh Lúc Nửa Đêm', mins: '40-50', variant: V, W, code,
       org: 'Seabright Art Museum', desk: 'control', TOOLS: ['hand', 'light', 'uv', 'mag', 'bag'], BAG: 6,
       brief: `<p><b>Seabright Art Museum. A charity gala, Saturday night, 7 to 11 pm.</b></p>
         <p>The museum's most famous painting, <b>"Lighthouse at Dawn"</b>, hangs alone in the East Gallery. At 8:05 the next morning the restorer, Nora Quinn, looks at it in daylight and says: <b>"That is not our painting."</b></p>
@@ -286,5 +286,5 @@ window.CASE_DEFS.push((face) => {
       fmt, ALIBI: { iris: 'b_phone', hollis: 'b_cloak' },
     };
   }
-  return { id: 'gallery', num: '002', title: 'The Night Gallery', titleVi: 'Phòng Tranh Lúc Nửa Đêm', mins: '40-50', make, variants: VARIANTS.length };
+  return { id: 'gallery', num: '002', cat: 'standard', title: 'The Night Gallery', titleVi: 'Phòng Tranh Lúc Nửa Đêm', mins: '40-50', make, variants: VARIANTS.length };
 });

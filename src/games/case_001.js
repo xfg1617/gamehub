@@ -162,7 +162,7 @@ window.CASE_DEFS.push((face) => {
   const WHY = [['collect', 'Wanted it for a collection'], ['debt', 'Needed money fast to pay a debt'], ['revenge', 'Revenge on Mrs. Bell'], ['job', 'To get someone else fired']];
 
   return {
-    id: 'harbor', num: '001', org: 'Grand Harbor Hotel', title: 'The Harbor Pearl', titleVi: 'Viên Ngọc Bến Cảng', mins: '20-30',
+    id: 'harbor', num: '001', cat: 'quick', org: 'Grand Harbor Hotel', title: 'The Harbor Pearl', titleVi: 'Viên Ngọc Bến Cảng', mins: '20-30',
     brief: `<p><b>Grand Harbor Hotel, Seabright. A stormy Friday night.</b></p>
       <p>Mrs. Eleanor Bell, 70, is celebrating fifty years of her family's hotel. Her most precious thing, a pearl and gold brooch called <b>the Harbor Pearl</b>, sits in a locked glass case in the library for guests to admire.</p>
       <p>At 9:20 pm a storm knocks out the power. The hotel goes dark. At <b>9:58 pm</b>, Mrs. Bell walks into the library and finds the case open and empty.</p>

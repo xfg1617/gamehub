@@ -12,6 +12,7 @@ def opengame(pg, ver='shuffle'):
     if pg.query_selector('[data-mode="solo"]'): pg.click('[data-mode="solo"]')
     pg.wait_for_timeout(200)
     pg.evaluate("(() => { const b = [...document.querySelectorAll('[data-k=\"case\"][data-v=\"gallery\"],[data-key=\"case\"] [data-val=\"gallery\"]')]; b.forEach(x => x.click()); })()")
+    pg.evaluate("(() => { [...document.querySelectorAll('#gs-body button')].filter(x => /^\\s*Standard/.test(x.textContent)).forEach(x => x.click()); })()"); pg.wait_for_timeout(150)
     pg.evaluate("(() => { const els = [...document.querySelectorAll('#gs-body button')].filter(x => /Night Gallery/.test(x.textContent)); els.forEach(x => x.click()); })()")
     pg.wait_for_timeout(200)
     pg.evaluate("(() => { const b = [...document.querySelectorAll('#gs-body button')].find(x => /^\\s*(start|play)/i.test(x.textContent)); b && b.click(); })()")

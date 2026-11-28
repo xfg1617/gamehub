@@ -8,6 +8,7 @@ bad = []
 def opengame(pg):
     pg.evaluate("openGame('casefiles')"); pg.wait_for_timeout(400)
     if pg.query_selector('[data-mode="solo"]'): pg.click('[data-mode="solo"]')
+    pg.evaluate("(() => { [...document.querySelectorAll('#gs-body button')].filter(x => /^\\s*Standard/.test(x.textContent)).forEach(x => x.click()); })()"); pg.wait_for_timeout(150)
     pg.evaluate("(() => { [...document.querySelectorAll('#gs-body button')].filter(x => /Night Gallery/.test(x.textContent)).forEach(x => x.click()); })()")
     pg.evaluate("(() => { const b = [...document.querySelectorAll('#gs-body button')].find(x => /^\\s*(start|play)/i.test(x.textContent)); b && b.click(); })()")
     pg.wait_for_timeout(700)

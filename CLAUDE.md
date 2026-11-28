@@ -1388,3 +1388,6 @@ folder that was handed over, so they do not exist here.)
   one. Rejoin replays the same `hist` actions, so it rebuilds the same version. `test/t_case2_repeat.py`.
 * Phones: room buttons, tool belt and control-room tabs are one swipeable row; the partner note is hidden; an open
   document shows above the cabinet. `test/shot_case2_sizes.py` checks 7 screen sizes x 13 views (no sideways scroll).
+* **Case types** (Nov 28 2026, Inna): the setup asks CASE TYPE (`cat`: quick / standard / big, only types that have cases;
+  each case has `cat`) and then THE CASE of that type by name (`c_<type>` keys; `caseFor(sel)`). Numbers (#001) are no
+  longer shown anywhere. No-repeat keeps `seen[id]` (this round) and `last[id]` (never twice in a row).

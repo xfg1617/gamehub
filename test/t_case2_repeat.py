@@ -8,9 +8,10 @@ def check(ok, what): print('PASS' if ok else 'FAIL', what); fails.append(what) i
 with sync_playwright() as p:
     br = launch(p); pg = open_page(br, 1200, 800)
     got = []
-    for n in range(9):
+    for n in range(13):
         pg.evaluate("openGame('casefiles')"); pg.wait_for_timeout(300)
         if pg.query_selector('[data-mode="solo"]'): pg.click('[data-mode="solo"]')
+        pg.evaluate("(() => { [...document.querySelectorAll('#gs-body button')].filter(x => /^\\s*Standard/.test(x.textContent)).forEach(x => x.click()); })()"); pg.wait_for_timeout(150)
         pg.evaluate("(() => { [...document.querySelectorAll('#gs-body button')].filter(x => /Night Gallery/.test(x.textContent)).forEach(x => x.click()); })()")
         pg.evaluate("(() => { const b = [...document.querySelectorAll('#gs-body button')].find(x => /^\\s*(start|play)/i.test(x.textContent)); b && b.click(); })()")
         pg.wait_for_timeout(500)
@@ -18,7 +19,7 @@ with sync_playwright() as p:
         pg.evaluate("GT.started = false; navigateTo('play')"); pg.wait_for_timeout(200)
     print('   versions in order:', got)
     check(sorted(got[:4]) == [0, 1, 2, 3], 'the first 4 games are 4 different versions')
-    check(sorted(got[4:8]) == [0, 1, 2, 3], 'the next 4 games are again all different')
+    check(sorted(got[4:8]) == [0, 1, 2, 3] and sorted(got[8:12]) == [0, 1, 2, 3], 'each next round of 4 games is again all different')
     check(all(got[i] != got[i + 1] for i in range(len(got) - 1)), 'never the same version twice in a row')
     saved = pg.evaluate("JSON.stringify(profile.stats.casefiles.seen)")
     check('gallery' in saved, 'the list is kept in the saved profile')

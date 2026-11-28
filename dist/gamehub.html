@@ -2482,7 +2482,7 @@
     }
     @media (max-width: 767px) { .cr-how { display: none; } }
     /* Case Files (Nov 2026): co-op detective */
-    .cf-wrap { --paper: #F1E7CF; }
+    .cf-wrap { --paper: #F1E7CF; padding-bottom: 84px; }
     .cf-top { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
     .cf-case { font-size: 20px; background: #E9C46A; color: #050E18; border: 3px solid #050E18; box-shadow: 0 4px 0 #050E18; padding: 0 12px 2px; }
     .cf-who { display: flex; border: 3px solid #050E18; box-shadow: 0 4px 0 #050E18; }
@@ -2701,6 +2701,76 @@
     .cf-sheet div.cf-row { display: block; background: transparent; border: 0; box-shadow: none; color: inherit; gap: 0; }
     .cf-sheet tr.cf-row { display: table-row; color: inherit; background: transparent; border: 0; box-shadow: none; padding: 0; }
     .cf-sheet .tbl tr.cf-row.mk td { background: linear-gradient(transparent 12%, #FDE047 12%, #FDE047 88%, transparent 88%); }
+    /* Case #002+: tool belt, dark rooms, UV, the control room (cameras, photos, lab), timeline wall */
+    .cf-belt { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: -4px 0 12px; padding: 8px; background: #3E2614; border: 3px solid #050E18; box-shadow: 0 4px 0 #050E18; }
+    .cf-belt > .pix { color: #E9C46A; font-size: 15px; margin-right: 4px; }
+    .cf-tool { display: inline-flex; align-items: center; gap: 6px; background: #8A5A2B; color: #F7F4EC; border: 3px solid #050E18; padding: 5px 10px; font-weight: 800; font-size: 13px; box-shadow: 0 3px 0 #050E18; }
+    .cf-tool i { font-style: normal; font-size: 16px; } .cf-tool b { background: #050E18; color: #F5B041; padding: 0 5px; font-size: 12px; }
+    .cf-tool.on { background: #F5B041; color: #050E18; transform: translateY(2px); box-shadow: 0 1px 0 #050E18; }
+    .cf-tool.t-uv i { color: #A78BFA; } .cf-beforebtn { margin-left: auto; background: #1D3954; }
+    .cf-roomwrap { position: relative; display: block; overflow: hidden; line-height: 0; }
+    .cf-roomwrap .cf-roomsvg { max-height: calc(100vh - 340px); }
+    .cf-roomwrap.tool-mag .cf-it { cursor: zoom-in; } .cf-roomwrap.tool-bag .cf-it { cursor: copy; }
+    .cf-roomwrap.before .cf-roomsvg { filter: sepia(.55) contrast(.95); } .cf-roomwrap.before .cf-it { cursor: default; } .cf-roomwrap.before .cf-it:hover .hit { stroke: transparent; }
+    .cf-dark { position: absolute; inset: 0; pointer-events: none; background: rgba(2, 6, 12, .96); }
+    .cf-dark.lit { --lx: 50%; --ly: 50%; background: radial-gradient(circle 90px at var(--lx) var(--ly), rgba(255, 240, 190, .06) 0 60%, rgba(2, 6, 12, .55) 75%, rgba(2, 6, 12, .97) 100%); }
+    .cf-uvlay { position: absolute; inset: 0; pointer-events: none; background: rgba(20, 10, 70, .55); mix-blend-mode: multiply; }
+    .cf-roomsvg .uvg { fill: #C6FF7A; opacity: .85; filter: drop-shadow(0 0 4px #C6FF7A); }
+    .cf-bagged { margin-top: 12px; padding: 8px; background: #0B1B2B; border: 3px solid #050E18; font-size: 13px; display: flex; flex-wrap: wrap; gap: 6px; }
+    .cf-bagged b { width: 100%; font-size: 11px; color: #9DB4CC; letter-spacing: .06em; } .cf-bagged span { background: #3E2614; border: 2px solid #050E18; padding: 1px 6px; }
+    .cf-ctabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .cf-ctab { background: #0F2338; color: #C9D8E8; border: 3px solid #050E18; padding: 6px 14px; font-weight: 800; font-size: 14px; box-shadow: 0 3px 0 #050E18; }
+    .cf-ctab.on { background: #FB7185; color: #050E18; }
+    .cf-frame { display: block; width: 100%; height: auto; background: #111; image-rendering: pixelated; }
+    .cf-camgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .cf-cam { position: relative; display: block; width: 100%; padding: 0; background: #050E18; border: 3px solid #050E18; box-shadow: 0 3px 0 #050E18; text-align: left; }
+    .cf-cam .lbl { position: absolute; left: 0; bottom: 0; right: 0; background: rgba(5, 14, 24, .8); color: #C9D8E8; font-size: 11px; font-weight: 700; padding: 2px 6px; }
+    .cf-cam .cf-frame { aspect-ratio: 16 / 9; object-fit: contain; }
+    .cf-cam:hover { outline: 3px solid #F5B041; outline-offset: -3px; } .cf-cam.on { outline: 3px solid #FB7185; outline-offset: -3px; }
+    .cf-camsbig { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 1fr); gap: 8px; } .cf-camside { display: grid; gap: 8px; align-content: start; }
+    .cf-scrub { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; position: sticky; top: 0; z-index: 3; background: #0F2338; padding: 4px 0; }
+    .cf-sbtn { background: #1D3954; color: #F7F4EC; border: 3px solid #050E18; padding: 4px 10px; font-weight: 800; font-size: 13px; box-shadow: 0 3px 0 #050E18; min-width: 40px; }
+    .cf-sbtn.play { background: #2DD4BF; color: #050E18; }
+    #cf-slider { flex: 1; min-width: 160px; accent-color: #F5B041; height: 26px; }
+    .cf-clock { font-family: 'Courier New', monospace; font-weight: 900; font-size: 18px; color: #F5B041; background: #050E18; padding: 2px 10px; min-width: 96px; text-align: center; }
+    .cf-camacts { margin-top: 10px; min-height: 34px; }
+    .cf-legend2 { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin-top: 10px; padding: 8px; background: #0B1B2B; border: 3px solid #050E18; font-size: 12px; color: #C9D8E8; }
+    .cf-legend2 b { width: 100%; font-size: 11px; color: #9DB4CC; letter-spacing: .06em; } .cf-legend2 span { display: inline-flex; align-items: center; gap: 4px; }
+    .cf-legend2 .mini { width: 18px; height: 34px; }
+    .cf-photos { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); }
+    .cf-phgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 6px; max-height: calc(100vh - 300px); overflow: auto; padding-right: 4px; }
+    .cf-phthumb { background: #F7F4EC; border: 3px solid #050E18; padding: 3px 3px 0; box-shadow: 0 3px 0 #050E18; color: #050E18; font-size: 10px; font-weight: 800; }
+    .cf-phthumb .cf-frame { aspect-ratio: 1 / 1.1; } .cf-phthumb.on { background: #F5B041; }
+    .cf-phbig { background: #F7F4EC; border: 3px solid #050E18; padding: 8px 8px 0; box-shadow: 0 5px 0 #050E18; overflow: hidden; cursor: zoom-in; }
+    .cf-phbig .cf-frame { max-height: calc(100vh - 360px); transition: transform .2s; transform-origin: 50% 70%; }
+    .cf-phbig.zoom { cursor: zoom-out; } .cf-phbig.zoom .cf-frame { transform: scale(2); }
+    .cf-phcap { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; font-size: 13px; color: #C9D8E8; }
+    .cf-lab { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); }
+    .cf-bags { display: grid; gap: 6px; }
+    .cf-bagbtn { display: grid; grid-template-columns: 26px 1fr; align-items: center; text-align: left; background: #C9B48A; color: #2A2116; border: 3px solid #050E18; padding: 6px 8px; font-weight: 800; font-size: 13px; box-shadow: 0 3px 0 #050E18; }
+    .cf-bagbtn i { font-style: normal; grid-row: span 2; } .cf-bagbtn small { font-weight: 600; color: #6B5D45; } .cf-bagbtn.on { background: #F7F4EC; outline: 3px solid #2DD4BF; outline-offset: -3px; }
+    .cf-tests { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+    .cf-test { background: #E8EEF2; color: #050E18; border: 3px solid #050E18; padding: 10px; font-weight: 800; font-size: 14px; box-shadow: 0 4px 0 #050E18; }
+    .cf-test:active { transform: translateY(3px); box-shadow: 0 1px 0 #050E18; } .cf-test.done { background: #9DB4CC; }
+    .cf-labres { background: #FBF8EF; color: #1F1A12; border: 3px solid #050E18; padding: 8px 10px; margin-top: 8px; font-size: 14px; }
+    .cf-labres b { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: #6B5D45; } .cf-labres p { margin: 2px 0 6px; }
+    .cf-pin .snap { display: block; margin-top: 3px; border: 2px solid #050E18; }
+    .cf-pin .snap .cf-frame { max-height: 90px; }
+    .cf-tlaxis { position: relative; height: 18px; margin: 0 8px 4px 118px; font-size: 10px; color: #9DB4CC; }
+    .cf-tlaxis span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+    .cf-tlrow { display: grid; grid-template-columns: 110px 1fr; gap: 8px; align-items: center; margin-bottom: 6px; }
+    .cf-tlrow .who { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 13px; } .cf-tlrow .who svg { width: 26px; height: 26px; border: 2px solid #050E18; }
+    .cf-tlrow .bar { position: relative; height: 40px; background: #0B1B2B; border: 3px solid #050E18; margin-right: 8px; }
+    .cf-tlrow .tick { position: absolute; top: 0; bottom: 0; width: 1px; background: #1D3954; }
+    .cf-tlrow .dot { position: absolute; top: 3px; transform: translateX(-50%); background: #F5B041; color: #050E18; border: 2px solid #050E18; padding: 0 4px; font-size: 10px; font-weight: 800; white-space: nowrap; line-height: 1.3; }
+    .cf-tlrow .dot em { display: block; font-style: normal; font-weight: 900; } .cf-tlrow .dot b { cursor: pointer; margin-left: 3px; color: #B0362A; }
+    .cf-tlform { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .cf-tlform select { background: #F7F4EC; color: #050E18; border: 3px solid #050E18; padding: 4px 6px; font-weight: 700; font-size: 13px; }
+    @media (max-width: 900px) { .cf-photos, .cf-lab { grid-template-columns: 1fr; } .cf-camsbig { grid-template-columns: 1fr; } .cf-camside { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 640px) { .cf-camgrid { grid-template-columns: 1fr; } .cf-tlrow { grid-template-columns: 70px 1fr; } .cf-tlaxis { margin-left: 78px; } .cf-tlrow .who svg { display: none; } .cf-tests { grid-template-columns: 1fr; } .cf-belt { gap: 4px; } .cf-tool { padding: 4px 6px; font-size: 12px; } }
+    .cf-camsbig .cf-cam.big .cf-frame { max-height: calc(100vh - 470px); min-height: 200px; margin: 0 auto; }
+    .cf-camgrid .cf-frame { max-height: calc((100vh - 440px) / 2); min-height: 120px; margin: 0 auto; }
+    .cf-rbtn small { font-weight: 600; opacity: .75; }
     /* ===== Funny Answers (funny.js) ===== */
     body.in-game[data-game="funny"] { background-color: #0B1B2B; background-image: repeating-linear-gradient(45deg, rgba(245, 176, 65, .05) 0 18px, transparent 18px 36px); }
     .fa-wrap { display: flex; flex-direction: column; align-items: center; gap: 22px; }
@@ -11326,6 +11396,296 @@ window.CASE_DEFS.push((face) => {
     wrong: { who: (name) => `${name} has an alibi that holds up. Check the records again.`, how: 'Right person, but that is not how it was done. Look at the case and the keys again.', why: 'Right person and method, but think about the motive again.' },
   };
 });
+/* Case Files · Case #002 "The Night Gallery" (Nov 2026, our own story). REPLAYABLE: make({v, off, code}) builds one
+   version. v picks which suspect did it (each has their own way and reason), off nudges the times, code is the guard's code.
+   Every clue, camera frame, photo, lab result, statement and the ending are built from the same version, so they agree.
+   New in this case: Detective A has a tool belt (flashlight, UV light, magnifier, evidence bag) and a "7:30 pm photo" of the
+   gallery to compare; Detective B sits in the security control room (4 cameras with a time slider, the photographer's
+   48 photos, the lab for bagged items, and a small cabinet of files). test/t_case2_fair.py checks every version is fair.
+   Please don't write the solutions anywhere else (Inna plays these cases). */
+window.CASE_DEFS = window.CASE_DEFS || [];
+window.CASE_DEFS.push((face) => {
+  const PEOPLE = {
+    felix: { name: 'Felix Ward', role: 'Museum director, 61', col: ['#C9CED6', '#E3A988', '#2B4C7A'], art: face('#C9CED6', '#E3A988', '#2B4C7A', 'short') },
+    iris: { name: 'Iris Moreno', role: 'Security guard, 24', col: ['#1B1B1B', '#C68A62', '#6B7A8C'], art: face('#1B1B1B', '#C68A62', '#6B7A8C', 'bun') },
+    nora: { name: 'Nora Quinn', role: 'Painting restorer, 45', col: ['#B0362A', '#F1C6A0', '#3A7D44'], art: face('#B0362A', '#F1C6A0', '#3A7D44', 'long') },
+    hollis: { name: 'Arthur Hollis', role: 'Art collector, 70', col: ['#EDEDED', '#E8B48C', '#7A2E3A'], art: face('#EDEDED', '#E8B48C', '#7A2E3A', 'bald') },
+    theo: { name: 'Theo Lambert', role: 'Caterer, 31', col: ['#5A3A22', '#D9A07A', '#F7F4EC'], art: face('#5A3A22', '#D9A07A', '#F7F4EC', 'short') },
+    rosa: { name: 'Rosa Diaz', role: 'Cleaner (witness), 58', col: ['#9AA6A0', '#C68A62', '#7DB8E0'], art: face('#9AA6A0', '#C68A62', '#7DB8E0', 'bun') },
+    jun: { name: 'Jun Park', role: 'Gala photographer (witness), 29', col: ['#1B1B1B', '#E8B48C', '#2A2A2A'], art: face('#1B1B1B', '#E8B48C', '#2A2A2A', 'short') },
+  };
+  const SUSPECTS = ['felix', 'iris', 'nora', 'hollis', 'theo'];
+  const VARIANTS = ['theo', 'felix', 'nora', 'hollis'];
+  const HOW = [['crate', 'Hid the paintings in a long catering crate on the dessert trolley'], ['box', 'Carried them in a long cardboard box through the back corridor to an office'],
+    ['sheet', 'Wrapped them in a bedsheet and hid them in a studio behind blank canvases'], ['portfolio', 'Carried them in a big flat portfolio case and walked out through the cloakroom'],
+    ['frame', 'Lifted the whole frame off the wall in front of everyone during the speech']];
+  const WHY = [['family', 'To take back what the artist\'s family was paid almost nothing for'], ['debt', 'To sell it in secret and pay off a big debt'],
+    ['pride', 'To prove they were good enough after being passed over for a job'], ['collect', 'Wanted it for a private collection after being refused twice'], ['insurance', 'To claim the insurance money']];
+
+  function make(cfg) {
+    const V = VARIANTS[cfg.v % 4], off = cfg.off || 0, code = String(cfg.code || 4417);
+    const W = { theo: 161, felix: 202, nora: 110, hollis: 182 }[V] + off;   // minutes after 7:00 pm when the gallery camera went off
+    const on = (k, a, b) => (V === k ? a : b);
+    const fmt = (m) => { const h = 7 + Math.floor(m / 60), mm = m % 60; return `${h > 12 ? h - 12 : h}:${String(mm).padStart(2, '0')} pm`; };
+    const KEY = { theo: { who: 'theo', how: 'crate', why: 'family' }, felix: { who: 'felix', how: 'box', why: 'debt' }, nora: { who: 'nora', how: 'sheet', why: 'pride' }, hollis: { who: 'hollis', how: 'portfolio', why: 'collect' } }[V];
+
+    // ---------- where everyone was, minute by minute (0 = 7:00 pm, 240 = 11:00 pm). [minute, place, x 0-1, carrying] ----------
+    // carrying: T = dessert trolley with a long crate, B = long cardboard box, S = something flat in a bedsheet, P = big flat portfolio case
+    const S = {
+      felix: [[0, 'hall', 0.4], [30, 'hall', 0.55], [60, 'hall', 0.35], [75, 'hall', 0.45], [135, 'hall', 0.6], [158, 'hall', 0.12], [176, 'hall', 0.4], [192, 'hall', 0.55], [228, 'hall', 0.5]],
+      iris: [[0, 'security', 0.5], [59, 'corridor', 0.15], [60, 'corridor', 1], [61, 'staff', 0.5], [74, 'corridor', 1], [75, 'corridor', 0.15], [76, 'security', 0.5],
+        [W - 3, 'corridor', 0.15], [W - 2, 'corridor', 1], [W - 1, 'staff', 0.5], [W + 14, 'corridor', 1], [W + 15, 'corridor', 0.15], [W + 16, 'security', 0.5]],
+      nora: [[0, 'hall', 0.3], [39, 'corridor', 0], [40, 'corridor', 0.55], [41, 'studio', 0.5], [46, 'corridor', 0.55], [47, 'corridor', 0], [48, 'hall', 0.35], [75, 'hall', 0.5], [135, 'hall', 0.66], [158, 'hall', 0.35], [180, 'hall', 0.72], [195, 'hall', 0.3], [230, 'hall', 0.6]],
+      hollis: [[0, 'cloak', 0.8], [3, 'cloak', 0.3, 'P'], [4, 'cloak', 0.3], [5, 'hall', 0.6], [75, 'hall', 0.4], [134, 'cloak', 0.3], [136, 'cloak', 0.8, 'P'], [137, 'out', 0]],
+      theo: [[0, 'kitchen', 0.5], [60, 'corridor', 0.75, 'T'], [61, 'corridor', 1, 'T'], [62, 'dock', 0.15, 'T'], [64, 'dock', 0.7, 'T'], [67, 'dock', 0.15, 'T'], [68, 'corridor', 1, 'T'], [69, 'corridor', 0.75, 'T'], [70, 'kitchen', 0.5],
+        [80, 'hall', 0.7], [95, 'kitchen', 0.5], [100, 'hall', 0.45], [130, 'kitchen', 0.5], [150, 'hall', 0.85], [176, 'hall', 0.75], [230, 'kitchen', 0.5]],
+      rosa: [[0, 'hall', 0.9], [50, 'corridor', 0], [52, 'corridor', 0.6], [56, 'corridor', 0], [57, 'hall', 0.92], [140, 'corridor', 0], [144, 'corridor', 0.5], [148, 'corridor', 0], [149, 'hall', 0.9],
+        [W + 4, 'corridor', 0], [W + 6, 'corridor', 0.45], [W + 8, 'corridor', 0], [W + 9, 'hall', 0.9], [215, 'hall', 0.8]],
+      jun: [[0, 'cloak', 0.5], [12, 'hall', 0.5], [50, 'hall', 0.3], [90, 'hall', 0.65], [130, 'hall', 0.2], [170, 'hall', 0.5], [210, 'hall', 0.4], [235, 'cloak', 0.5]],
+      price: [[0, 'hall', 0.85], [193, 'hall', 0.15], [226, 'hall', 0.7]],
+    };
+    const route = (who, from, to, path) => {   // replace [from, to] with a new path, then carry on where they were
+      const old = S[who], last = old.filter((e) => e[0] <= to).slice(-1)[0];
+      S[who] = old.filter((e) => e[0] < from).concat(path, [[to + 1, last[1], last[2]]], old.filter((e) => e[0] > to + 1));
+    };
+    const HOME = { felix: ['office', 0.35, 'B'], nora: ['studio', 0.55, 'S'] };
+    if (V === 'theo') route('theo', W - 5, W + 22, [[W - 5, 'kitchen', 0.5], [W - 4, 'corridor', 0.75, 'T'], [W - 3, 'corridor', 0.15, 'T'], [W - 2, 'security', 0.5], [W, 'corridor', 0.15, 'T'], [W + 1, 'corridor', 1, 'T'],
+      [W + 2, 'gallery', 0.5, 'T'], [W + 9, 'corridor', 1, 'T'], [W + 10, 'corridor', 0.75, 'T'], [W + 11, 'kitchen', 0.5], [W + 13, 'corridor', 0.75, 'T'], [W + 14, 'corridor', 1, 'T'], [W + 15, 'dock', 0.15, 'T'],
+      [W + 17, 'dock', 0.7, 'T'], [W + 19, 'dock', 0.15, 'T'], [W + 20, 'corridor', 1, 'T'], [W + 21, 'corridor', 0.75, 'T'], [W + 22, 'kitchen', 0.5]]);
+    if (HOME[V]) { const [room, hx, F] = HOME[V]; const back = S[V].filter((e) => e[0] <= W - 6).slice(-1)[0];
+      route(V, W - 6, W + 15, [[W - 6, 'corridor', 0], [W - 5, 'corridor', hx], [W - 4, room, 0.5], [W - 3, 'corridor', hx, F], [W - 2, 'security', 0.5], [W, 'corridor', 0.15, F], [W + 1, 'corridor', 1, F],
+        [W + 2, 'gallery', 0.5, F], [W + 9, 'corridor', 1, F], [W + 10, 'corridor', hx, F], [W + 11, room, 0.5], [W + 13, 'corridor', hx], [W + 14, 'corridor', 0], [W + 15, 'hall', back[2]]]); }
+    if (V === 'hollis') S.hollis = [[0, 'cloak', 0.8], [3, 'cloak', 0.3, 'P'], [4, 'cloak', 0.3], [5, 'hall', 0.6], [75, 'hall', 0.4], [135, 'hall', 0.78], [160, 'hall', 0.7], [176, 'hall', 0.82],
+      [W - 7, 'cloak', 0.3], [W - 6, 'hall', 0.95, 'P'], [W - 5, 'corridor', 0, 'P'], [W - 3, 'corridor', 0.15, 'P'], [W - 2, 'security', 0.5], [W, 'corridor', 0.15, 'P'], [W + 1, 'corridor', 1, 'P'],
+      [W + 2, 'gallery', 0.5, 'P'], [W + 9, 'corridor', 1, 'P'], [W + 10, 'corridor', 0, 'P'], [W + 11, 'hall', 0.95, 'P'], [W + 12, 'cloak', 0.3, 'P'], [W + 13, 'cloak', 0.8, 'P'], [W + 14, 'out', 0]];
+    // guests: walk about the hall, some leave late through the cloakroom
+    const GUESTCOL = ['#C9A227', '#D97757', '#5A3A22', '#E9C46A', '#8A6E4B', '#B07A9E', '#4E8B8B', '#A3A3A3', '#8A2E2E', '#34D399', '#C68A62', '#6B4A2E'];
+    const EXTRA = { price: { name: 'Mr. Price (auctioneer)', col: ['#3A3A3A', '#E3A988', '#C9A227'] } };
+    GUESTCOL.forEach((c, g) => {
+      const t = [[0, 'cloak', 0.8], [2 + g % 6, 'cloak', 0.3], [3 + g % 6, 'hall', 0.62 + (g % 4) * 0.08]];
+      for (let m = 30 + g * 3; m < 236; m += 33) t.push([m, 'hall', 0.05 + ((g * 37 + m * 13) % 90) / 100]);
+      if (g % 3 === 0) { const lv = 205 + g * 2; t.splice(t.findIndex((e) => e[0] > lv) < 0 ? t.length : t.findIndex((e) => e[0] > lv)); t.push([lv, 'cloak', 0.3], [lv + 1, 'cloak', 0.8], [lv + 2, 'out', 0]); }
+      S['g' + g] = t.sort((a, b) => a[0] - b[0]);
+      EXTRA['g' + g] = { name: 'Guest', col: [['#2A2A2A', '#5A3A22', '#C9A227', '#9AA6A0'][g % 4], ['#E8B48C', '#C68A62', '#F1C6A0', '#8D5A3B'][(g + 1) % 4], c] };
+    });
+    Object.keys(S).forEach((k) => S[k].sort((a, b) => a[0] - b[0]));
+    const CAMS = [{ id: 'c1', name: 'Camera 1 · Main hall (stage side)', place: 'hall', from: 0, to: 0.62 }, { id: 'c2', name: 'Camera 2 · East Gallery', place: 'gallery', off: [[W, W + 11]] },
+      { id: 'c3', name: 'Camera 3 · Back corridor', place: 'corridor' }, { id: 'c4', name: 'Camera 4 · Loading dock (night view)', place: 'dock' }];
+
+    // ---------- Detective A: 8 rooms. t = what you see, mag = magnifier, uv = UV light, lab = results per lab test; c/cm/cu = clue ids ----------
+    const FAKE_MAG = on('nora', 'Up close: thick, glossy brush strokes. In the corners the paint is still a little soft.', 'Up close the picture is made of tiny, perfectly regular dots, like a magazine page. There is not a single brush stroke.');
+    const FAKE_UV = on('nora', 'Under UV the whole picture glows evenly and brightly. Old varnish glows yellow-green and patchy; this does not.', 'Under UV the picture stays flat and dull. Old varnish would glow a patchy yellow-green. It does not glow at all.');
+    const OLD = 'Old hand-woven linen threads, brittle and yellowed, with a speck of gold paint like the gilding on an old frame.';
+    const ROOMS = {
+      gallery: { name: 'East Gallery', wall: '#3B4A5A', floor: '#B89A6A', fl: 'wood', scene: 'A long quiet room for the museum\'s best paintings. "Lighthouse at Dawn" hangs alone on the end wall.',
+        before: { 0: { tilt: 0 }, 2: { x: 250 } },
+        items: [
+          { k: 'bigframe', x: 230, y: 18, w: 150, h: 118, tilt: 2, n: '"Lighthouse at Dawn"', t: 'The famous painting in its heavy gold frame. Nora Quinn says it is a fake. To the eye it looks right.', c: 'g_fake', mag: FAKE_MAG, cm: 'g_fake_mag', uv: FAKE_UV, cu: 'g_fake_uv',
+            lab: { mag: FAKE_MAG + ' The canvas under it is new, machine-woven cotton.', uv: FAKE_UV, prints: 'No fingerprints at all on the frame or the back. Wiped clean, or gloves.', threads: 'Bright new machine-woven cotton canvas, the kind sold in art shops.' } },
+          { k: 'screws', x: 224, y: 60, w: 18, h: 30, n: 'Frame hooks', t: 'Two brass screws hold the frame to the wall hooks.', mag: 'Fresh bright scratches on both screw heads, as if a screwdriver slipped. The dust around them is smudged.', cm: 'g_screws' },
+          { k: 'bench', x: 330, y: 230, w: 130, h: 50, n: 'Visitor bench', t: 'A padded bench for visitors.', uv: 'A clear shoe print glows on the seat: someone stood on the bench.', cu: 'g_bench' },
+          { k: 'smallpic', x: 40, y: 34, w: 80, h: 62, col: '#7DB8E0', n: '"Harbor Boats"', t: 'A small painting of fishing boats.', mag: 'Real brush strokes and a fine web of cracks in the old paint. This one is genuine.' },
+          { k: 'smallpic', x: 470, y: 30, w: 70, h: 80, col: '#C9A227', n: '"Portrait of a Lady"', t: 'A lady in a yellow dress.', mag: 'Brush strokes and old cracks. Genuine.' },
+          { k: 'plaque', x: 400, y: 70, w: 50, h: 30, n: 'Wall label', t: '"Lighthouse at Dawn", 1958. M. Lambert. Oil on linen.' },
+          { k: 'cctv', x: 548, y: 4, w: 46, h: 30, n: 'Camera 2', t: 'The gallery camera, high in the corner. Its little light is green again.' },
+          { k: 'floormarks', x: 140, y: 200, w: 180, h: 110, n: 'Floor by the door', t: { theo: 'Two thin parallel lines on the polished floor, like small wheels, from the door to the painting and back.', felix: 'A few grey flakes of cardboard near the door, and a long straight scrape mark.', nora: 'Three tiny drops of white paint near the door, already dry on the surface.', hollis: 'A long curved scuff near the door, like the corner of something big and flat dragged along.' }[V], c: 'g_floor' },
+          { k: 'window', x: 30, y: 150, w: 70, h: 90, n: 'Window', t: 'Locked from the inside. The latch has a thick layer of dust.' },
+          { k: 'bin', x: 520, y: 270, w: 36, h: 50, n: 'Bin', t: 'Empty.', lab: {} },
+        ] },
+      hall: { name: 'Main hall', wall: '#5A3A22', floor: '#7A2E3A', fl: 'carpet', scene: 'Where the gala happened: dinner, the director\'s speech and the charity auction.',
+        items: [
+          { k: 'stage', x: 20, y: 120, w: 150, h: 110, n: 'Stage', t: 'A low stage with a microphone stand. The speech and the auction happened here.' },
+          { k: 'rtable', x: 200, y: 190, w: 110, h: 70, n: 'Table 3', t: 'Napkins, place cards and half a cake.' },
+          { k: 'rtable', x: 330, y: 230, w: 110, h: 70, n: 'Head table', t: 'Place cards: Felix Ward, Nora Quinn, Arthur Hollis, two board members.', lab: { prints: 'Too many fingerprints to read.' } },
+          { k: 'counter', x: 460, y: 160, w: 130, h: 60, n: 'Bar', t: 'Glasses, an ice bucket, a tip jar.' },
+          { k: 'auctionboard', x: 180, y: 40, w: 90, h: 90, n: 'Auction board', t: 'Lot 1: weekend by the sea. Lot 2: dinner with the director. Lot 3: a signed print of "Lighthouse at Dawn".' },
+          { k: 'door', x: 300, y: 40, w: 60, h: 110, label: 'STAFF', n: 'Staff door', t: 'A plain door marked STAFF ONLY. It leads to the back corridor.', uv: 'The push plate is covered in smudged prints: lots of people used this door.' },
+          { k: 'door', x: 380, y: 40, w: 60, h: 110, label: 'KITCHEN', n: 'Kitchen door', t: 'A swing door to the kitchen. Waiters went in and out all night.' },
+          { k: 'cctv', x: 6, y: 4, w: 46, h: 30, n: 'Camera 1', t: 'The hall camera. It points at the stage and the tables on that side, not at the bar.' },
+          { k: 'bin', x: 560, y: 260, w: 34, h: 50, n: 'Bin', t: 'Napkins, a broken glass, a programme with cake on it.', lab: {} },
+        ] },
+      security: { name: 'Security desk', wall: '#2F3F52', floor: '#6B7A8C', fl: 'tile', scene: 'A small room off the back corridor. The camera screens and the computer that runs them.',
+        items: [
+          { k: 'monitors', x: 150, y: 30, w: 220, h: 100, n: 'Camera screens', t: 'Four screens: the hall, the East Gallery, the back corridor and the loading dock.' },
+          { k: 'desk', x: 140, y: 160, w: 260, h: 110, n: 'Desk', t: 'The guard\'s desk. A logbook, a pen, crumbs.' },
+          { k: 'keyboard', x: 210, y: 140, w: 110, h: 18, n: 'Keyboard', t: 'The keyboard for the camera computer.', mag: 'The ENTER key and four number keys are shinier than the rest.', lab: { prints: { theo: 'A clear fresh print on ENTER. It matches no museum staff member on file (staff: Ward, Moreno, Quinn, Diaz).', hollis: 'A clear fresh print on ENTER. It matches no museum staff member on file (staff: Ward, Moreno, Quinn, Diaz).', felix: 'A clear fresh print on ENTER. It matches a museum staff member on file: Felix Ward.', nora: 'A clear fresh print on ENTER. It matches a museum staff member on file: Nora Quinn.' }[V] }, c: 's_keys' },
+          { k: 'sticky', x: 330, y: 150, w: 26, h: 14, n: 'Under the keyboard', t: `A yellow sticky note with four numbers on it: ${code}.`, c: 's_note', lab: { prints: 'Iris Moreno\'s prints only.' } },
+          { k: 'rota', x: 420, y: 40, w: 70, h: 90, n: 'Staff rota', t: `Pinned to the wall by the door, readable from the corridor: "Tonight. Guard breaks: Iris ${fmt(60)}-${fmt(75)} and ${fmt(W - 2)}-${fmt(W + 14)}."`, c: 's_rota' },
+          { k: 'mug', x: 160, y: 136, w: 24, h: 24, n: 'Coffee mug', t: 'Cold coffee. "World\'s Okayest Guard" on the side.', lab: { prints: 'Iris Moreno\'s prints.' } },
+          { k: 'chair', x: 60, y: 170, w: 60, h: 100, n: 'Chair', t: 'An office chair. Iris\'s cardigan hangs on it.' },
+          { k: 'charger', x: 500, y: 190, w: 40, h: 40, n: 'Phone charger', t: 'Plugged into the wall. No phone on it.' },
+          { k: 'door', x: 520, y: 40, w: 60, h: 110, n: 'Door', t: 'The door to the back corridor. No lock, just a handle.', uv: 'Smudged prints all over the handle. Too many to read.' },
+        ] },
+      kitchen: { name: 'Kitchen', wall: '#E8EEF2', floor: '#9DB4CC', fl: 'tile', scene: 'The catering kitchen. A swing door to the hall and a back door to the corridor.',
+        items: [
+          { k: 'stove', x: 30, y: 100, w: 120, h: 120, n: 'Stove', t: 'Cold now. A pot of soup left on it.' },
+          { k: 'fridge', x: 160, y: 50, w: 70, h: 170, n: 'Fridge', t: 'Leftover desserts and cream.' },
+          { k: 'trolley', x: 260, y: 170, w: 110, h: 90, n: 'Dessert trolley', t: { theo: 'The dessert trolley. The bottom shelf is empty and has long fresh scuffs, as if something long and flat rode there.' }[V] || 'The dessert trolley, stacked with dirty plates on both shelves.', c: 'k_trolley', lab: {} },
+          { k: 'crate', x: 390, y: 220, w: 160, h: 50, label: 'TRAYS', n: 'Long crate "TRAYS"', t: 'A long, flat wooden crate stencilled TRAYS. ' + on('theo', 'It is empty.', 'It holds twelve silver trays.'), c: 'k_crate',
+            mag: on('theo', 'A single loose thread is caught on a nail inside, yellowed and brittle.', 'Scratches from the trays. Nothing else.'), cm: 'k_crate_mag',
+            lab: { threads: on('theo', OLD, 'Cotton fibres from tablecloths.'), prints: on('theo', 'Prints that match no museum staff member on file.', 'Prints from the catering team.') } },
+          { k: 'menuboard', x: 420, y: 40, w: 120, h: 80, n: 'Menu board', t: 'Soup · Sea bass · Lemon tart · Coffee 10:45.' },
+          { k: 'apron', x: 560, y: 40, w: 34, h: 100, n: 'Apron hooks', t: 'Four aprons. One hook is empty.' },
+          { k: 'sink', x: 240, y: 100, w: 120, h: 60, n: 'Sink', t: 'Full of soaking pans.' },
+          { k: 'bin', x: 560, y: 270, w: 34, h: 50, n: 'Bin', t: 'Food scraps and a torn delivery note: "Crates in: 6."', lab: {} },
+        ] },
+      dock: { name: 'Loading dock', wall: '#3A4553', floor: '#5A5A5A', fl: 'stone', dark: true, scene: 'Dark. The big door to the street where deliveries arrive. The lights are off: you will need a flashlight.',
+        items: [
+          { k: 'rolldoor', x: 300, y: 20, w: 250, h: 150, n: 'Dock door', t: 'A big roll-up door to the street. Locked now.' },
+          { k: 'ramp', x: 300, y: 200, w: 250, h: 100, n: 'Ramp', t: on('theo', 'Fresh thin wheel marks run up the ramp to where the caterer\'s van was parked.', 'Old tyre marks and a dry puddle. Nothing fresh.'), c: 'd_ramp', uv: on('theo', 'A smear of cake cream on the edge of the ramp glows.', 'Nothing glows here.') },
+          { k: 'scale', x: 60, y: 230, w: 110, h: 50, n: 'Floor scale', t: 'A scale for weighing deliveries. The numbers are dark.' },
+          { k: 'pallet', x: 180, y: 250, w: 100, h: 40, n: 'Pallets', t: 'Empty wooden pallets.' },
+          { k: 'shelfbox', x: 40, y: 60, w: 200, h: 100, n: 'Shelves', t: 'Cleaning supplies and spare light bulbs.' },
+          { k: 'cctv', x: 560, y: 4, w: 36, h: 26, n: 'Camera 4', t: 'A night-vision camera over the dock door.' },
+          { k: 'bin', x: 260, y: 160, w: 34, h: 50, n: 'Bin', t: on('theo', 'Empty. Someone emptied it tonight.', 'Flattened boxes from the caterer.'), lab: {} },
+        ] },
+      studio: { name: 'Restoration studio', wall: '#D9CBB0', floor: '#A07A4A', fl: 'wood', scene: 'Nora Quinn\'s workroom, where old paintings are cleaned and repaired. Smells of paint and turpentine.',
+        items: [
+          { k: 'easel', x: 220, y: 60, w: 130, h: 210, full: V !== 'nora', n: 'Easel', t: on('nora', 'An empty easel. Under it, fresh drips of white paint on the floor.', 'A half-finished copy of "Lighthouse at Dawn" on the easel: the sky is done, the sea and lighthouse are only pencil lines. The paint is dry.'), c: 'st_easel', uv: on('nora', 'The white drips glow brightly: very fresh paint.', 'Nothing glows. All the paint here is old and dry.') },
+          { k: 'painttable', x: 380, y: 170, w: 150, h: 80, n: 'Paint table', t: 'Tubes of paint, brushes, rags.', mag: on('nora', 'A tube of titanium white squeezed almost flat. Its cap is still wet.', 'The tube caps are all crusted and dry.'), cm: 'st_paint' },
+          { k: 'canvasstack', x: 40, y: 120, w: 140, h: 150, n: 'Stack of canvases', t: on('nora', 'Blank canvases leaning on the wall. At the back, a folded bedsheet.', 'Blank canvases, still in their plastic.'), c: 'st_stack', lab: { threads: on('nora', 'From the bedsheet: ' + OLD, 'Plastic wrap. No threads.') } },
+          { k: 'lamp', x: 540, y: 60, w: 40, h: 160, n: 'Magnifying lamp', t: 'A big lamp with a magnifying glass, for close work.' },
+          { k: 'coat', x: 560, y: 160, w: 34, h: 90, col: '#3A7D44', n: 'Nora\'s raincoat', t: 'A green raincoat on a hook. ' + on('nora', 'In the pocket: a shop receipt for one tube of titanium white, bought today at 4:12 pm.', 'In the pocket: a bus ticket and a lipstick.'), c: 'st_coat' },
+          { k: 'sink', x: 400, y: 80, w: 110, h: 60, n: 'Sink', t: 'Brushes soaking in a jar.' },
+          { k: 'window', x: 30, y: 20, w: 90, h: 80, n: 'Window', t: 'Painted shut years ago.' },
+        ] },
+      office: { name: 'Director\'s office', wall: '#2B4C7A', floor: '#5A3A22', fl: 'carpet', scene: 'Felix Ward\'s office, just off the back corridor. Very tidy.',
+        items: [
+          { k: 'desk', x: 200, y: 170, w: 220, h: 100, n: 'Desk', t: 'Very tidy. A pen set and a photo of a sailing boat.' },
+          { k: 'filing', x: 450, y: 60, w: 90, h: 200, n: 'Filing cabinet', t: on('felix', 'A tall filing cabinet, pulled a little away from the wall. Behind it: an empty long cardboard box.', 'A tall filing cabinet, flat against the wall.'), c: 'o_cab',
+            lab: { threads: on('felix', 'From inside the box: ' + OLD, 'Paper dust.'), prints: on('felix', 'Felix Ward\'s prints.', 'Felix Ward\'s prints.') } },
+          { k: 'safe', x: 60, y: 200, w: 90, h: 80, n: 'Safe', t: 'A small safe. A sticker says "Petty cash".' },
+          { k: 'shelf', x: 40, y: 20, w: 140, h: 150, n: 'Bookcase', t: 'Art books and museum reports.' },
+          { k: 'coat', x: 560, y: 40, w: 34, h: 100, col: '#2B4C7A', n: 'Felix\'s overcoat', t: 'A navy overcoat on a hook. ' + on('felix', 'In the pocket: a napkin with a phone number and "Buyer: Monday 8 am, cash".', 'In the pocket: reading glasses and the gala invitation.'), c: 'o_coat' },
+          { k: 'bin', x: 430, y: 270, w: 34, h: 50, n: 'Bin', t: 'Crumpled drafts of tonight\'s speech.', lab: {} },
+          { k: 'window', x: 240, y: 20, w: 120, h: 90, n: 'Window', t: 'Locked. A view of the car park.' },
+        ] },
+      cloak: { name: 'Cloakroom', wall: '#6B4423', floor: '#8A6A44', fl: 'wood', scene: 'By the front door. Guests leave their coats and bags here and get a ticket.',
+        items: [
+          { k: 'counter', x: 20, y: 170, w: 230, h: 60, n: 'Counter', t: 'The attendant hands out tickets here. A bell and a ticket book stand.' },
+          { k: 'coatrack', x: 300, y: 40, w: 110, h: 160, n: 'Coat rail', t: 'Rows of guests\' coats, mostly collected now.' },
+          { k: 'bigrail', x: 430, y: 40, w: 150, h: 120, n: 'Rail for big items', t: on('hollis', 'A rail for big items. One hook is bent, and a long scratch runs down the rail, as if something big and flat was yanked off in a hurry.', 'A rail for umbrellas and big items. Two umbrellas hang here.'), c: 'cl_rail' },
+          { k: 'coat', x: 260, y: 60, w: 34, h: 100, col: '#F7F4EC', n: 'Theo\'s jacket', t: 'A white kitchen jacket on the staff hook. ' + on('theo', 'In the pocket: the van keys and a note in pencil, "crate 6 = 60 x 45".', 'In the pocket: the van keys and chewing gum.'), c: 'cl_jacket' },
+          { k: 'mirror', x: 140, y: 30, w: 80, h: 110, n: 'Mirror', t: 'A tall mirror. Lipstick marks on the glass.' },
+          { k: 'umbrella', x: 520, y: 220, w: 50, h: 80, n: 'Umbrella stand', t: 'Three umbrellas, all dry.' },
+          { k: 'bin', x: 30, y: 270, w: 34, h: 50, n: 'Bin', t: 'Ticket stubs and a lost glove.', lab: {} },
+        ] },
+    };
+
+    // ---------- Detective B: a small cabinet of files (the cameras, photos and lab are drawn by the game) ----------
+    const CLUES = {
+      b_prog: { who: 'B', look: 'menu', icon: 'pen', title: 'Gala programme', rows: ['7:00 pm · Doors open, drinks', '8:15 pm · Dinner', '9:40 pm · Speech by the director, Felix Ward', '10:15 pm · Charity auction with Mr. Price', '10:45 pm · Coffee and dessert', '11:00 pm · Good night'] },
+      b_guests: { who: 'B', look: 'log', icon: 'log', title: 'Guest list', table: true, rows: [['Arthur Hollis', 'collector', 'head table'], ['Felix Ward', 'director', 'head table'], ['Nora Quinn', 'restorer', 'head table'], ['The Okafors', 'donors', 'table 3'], ['Mrs. Bell', 'donor', 'table 3'], ['30 more guests', 'donors', 'tables 1-6']] },
+      b_cloak: { who: 'B', look: 'notebook', icon: 'pen', title: 'Cloakroom ticket book', intro: 'Kept by the cloakroom attendant.', table: true,
+        rows: [['7:03 pm', 'ticket 12', 'Mr. Hollis: coat + big flat portfolio case (light, empty)'], ['7:05 pm', 'ticket 13-30', 'guests\' coats']].concat(V === 'hollis'
+          ? [[fmt(W - 7), 'ticket 12', 'Mr. Hollis took his portfolio out, said he\'d be right back'], [fmt(W + 12), 'ticket 12', 'Mr. Hollis took his coat, in a hurry. Portfolio with him.']]
+          : [['9:14 pm', 'ticket 12', 'Mr. Hollis took coat + portfolio and left']]).concat([['10:27 pm', 'ticket 22', 'Mrs. Bell, coat'], ['10:40 pm', 'ticket 25', 'the Okafors']]) },
+      b_camlog: { who: 'B', look: 'log', icon: 'log', title: 'Camera system log', intro: 'Printed from the camera computer at the security desk.', table: true,
+        rows: [['6:55 pm', 'all cameras', 'ON'], ['7:32 pm', 'Camera 4', 'focus adjusted · code 2290 (Diaz)'], [fmt(W), 'Camera 2', `OFF · code ${code}`], [fmt(W + 11), 'Camera 2', `ON · code ${code}`], ['11:30 pm', 'all cameras', 'night mode']] },
+      b_codes: { who: 'B', look: 'log', icon: 'key', title: 'Staff code list', table: true, rows: [['Felix Ward', '1958'], ['Iris Moreno', code], ['Nora Quinn', '7412'], ['Rosa Diaz', '2290']] },
+      b_phone: { who: 'B', look: 'phone', icon: 'phone', title: 'Iris\'s phone records', intro: 'From the phone company, with Iris\'s permission.', rows: ['6:40 pm · from MUM: Good luck tonight!', `${fmt(61)} · to PIZZA PLACE · call, 2 min`, `${fmt(W - 1)} · to MUM · call, 14 min`, '11:52 pm · to MUM: home safe'] },
+      b_card: { who: 'B', look: 'form', icon: 'pen', title: 'Collection index card', table: true, rows: [['Title', '"Lighthouse at Dawn"'], ['Artist', 'M. Lambert (1921-1990)'], ['Made', '1958, oil on old hand-woven linen'], ['Size', '60 x 45 cm'], ['Bought', '1962, from the artist, for $50']] },
+      b_insure: { who: 'B', look: 'notice', icon: 'bolt', title: 'Insurance certificate', rows: ['Harbor Mutual Insurance', '"Lighthouse at Dawn": insured for $2,000,000.', 'A claim is paid only if the painting is lost and never found.'] },
+      b_notes: { who: 'B', look: 'notebook', icon: 'pen', title: 'Restoration notes', intro: 'Nora Quinn\'s work diary.', table: true, rows: [['Oct 3', 'Started a practice copy of Lighthouse, for teaching students'], ['Nov 2', 'Sky finished on the copy'], ['Nov 20', 'No time this week, gala prep'], ['Nov 27', 'Cleaned frame of "Harbor Boats"']] },
+      b_dock: { who: 'B', look: 'log', icon: 'log', title: 'Loading dock log', table: true, rows: [['5:40 pm', 'Harbor Catering van', '6 crates in'], ['6:20 pm', 'Flower delivery', '2 boxes in']].concat(V === 'theo' ? [[fmt(W + 17), 'Harbor Catering', 'crate 6 out to van (early)']] : []).concat([['11:20 pm', 'Harbor Catering', V === 'theo' ? '5 crates out' : '6 crates out']]) },
+      b_order: { who: 'B', look: 'receipt', icon: 'glassdrink', title: 'Catering order', table: true, rows: [['Soup', '40'], ['Sea bass', '40'], ['Lemon tart', '40'], ['Coffee', '40'], ['Crates', '6 (trays, glasses, plates)']] },
+      b_letter: { who: 'B', look: 'letter', icon: 'pen', title: 'Letter from Theo Lambert', rows: ['"Dear Mr. Ward, my grandfather painted Lighthouse at Dawn."', '"You paid him fifty dollars when he was sick and poor. It is now worth millions."', '"I am not asking for money. I am asking you to give it back to our family."', '"Theo Lambert" · (the museum replied: "We cannot.")'] },
+      b_bank: { who: 'B', look: 'notice', icon: 'bolt', title: 'Bank letter to Felix Ward', rows: ['Seabright Bank · FINAL NOTICE', 'Mr. F. Ward: your loan of $180,000 is overdue.', 'If it is not repaid by Dec 15, we will take your house.'] },
+      b_offer: { who: 'B', look: 'letter', icon: 'pen', title: 'Letter from Arthur Hollis', rows: ['"Dear Mr. Ward, for the second time I offer $3 million for Lighthouse at Dawn."', '"Every great painting finds its way to a collector who truly loves it."', '"I am a patient man. A. Hollis" · (refused, both times)'] },
+      b_email: { who: 'B', look: 'phone', icon: 'phone', title: 'Email to Nora Quinn', intro: 'Printed from the museum\'s email.', rows: ['From: The Museum Board', 'To: Nora Quinn', '"After careful thought, the Head Restorer job will go to an outside candidate."', '"We thank you for your 20 years with us."'] },
+      b_incident: { who: 'B', look: 'statement', icon: 'pen', title: 'Morning report', rows: ['"At 8:05 am Nora Quinn came to the security desk and said the painting in the East Gallery was a fake."', '"Nobody had entered the gallery since the gala closed at 11:00 pm (door alarm log)."', '"The swap must have happened during the gala." · I. Moreno'] },
+    };
+    const DRAWERS = [
+      { name: 'Front office', docs: ['b_prog', 'b_guests', 'b_cloak'] },
+      { name: 'Security', docs: ['b_camlog', 'b_codes', 'b_incident', 'b_phone'] },
+      { name: 'Collection', docs: ['b_card', 'b_insure', 'b_notes'] },
+      { name: 'Deliveries', docs: ['b_order', 'b_dock'] },
+      { name: 'Letters', docs: ['b_letter', 'b_bank', 'b_offer', 'b_email'] },
+    ];
+
+    // ---------- interviews ----------
+    const CAUGHT = {
+      theo: 'He looks at the picture for a long time. "...All right. I went to the back. I had cake to deliver to the staff." His hands are shaking.',
+      felix: '"I... needed some air. The auction runs itself." He loosens his tie.',
+      nora: '"I went to fetch my glasses. Is that a crime now?" She won\'t look at you.',
+      hollis: '"An old man forgets the time." He smiles, but his jaw is tight.',
+    };
+    const TALK = {
+      felix: { q: [['Where were you during the evening?', on('felix', 'In the hall, the whole night. I gave my speech at 9:40 and I watched every lot of the auction.', 'In the hall, the whole night. My speech at 9:40, then I sat with the board for the auction.')],
+          ['Who could read the guard\'s break times?', 'I write the rota. It\'s pinned up in the security room, by the door. Anyone in the back corridor could read it.'],
+          ['Are you in money trouble?', on('felix', '"That is private and has nothing to do with this." He goes red.', '"My loan? I\'m selling my boat to pay it. It\'s embarrassing, not criminal."')]],
+        show: { b_bank: on('felix', '"Where did you get that?" He goes very quiet.', '"Yes, the boat goes on sale next week. Ask the harbour."'), b_insure: '"The insurance only pays if it is never found. Find it and nobody gets a cent."',
+          o_cab: on('felix', '"That box... came with new frames. It\'s nothing."', null), o_coat: on('felix', 'He stares at the napkin. "That\'s... a friend\'s number."', null), s_keys: on('felix', '"I use that computer all the time. Of course my prints are on it."', null) },
+        shrug: '"I don\'t see what that has to do with me."' },
+      iris: { q: [['Where were you when the gallery camera went off?', '"On my break, in the staff room, on the phone to my mum. I never touched the cameras!"'],
+          ['The camera was switched off with your code.', '"I... keep it on a sticky note under the keyboard. I know. I know! Anyone could have read it."'],
+          ['Did you see anyone on your way to your break?', '"I passed someone in the corridor, but I was already dialling Mum. I didn\'t look up. Sorry."']],
+        show: { b_phone: '"See? Fourteen minutes with my mum. She talks a lot."', s_note: '"Yes, that\'s my code. I\'m going to get fired, aren\'t I."', b_camlog: '"That\'s my code, but it wasn\'t me! I was in the staff room."' },
+        shrug: '"I don\'t know anything about that."' },
+      nora: { q: [['Where were you during the evening?', on('nora', '"At the head table for dinner, then in the hall all night. I never left."', '"Dinner at the head table, then the hall. I popped to my studio early on, around 7:40, for my glasses."')],
+          ['How did you know it was a fake?', '"The morning light. The colours were dead, flat. I have cleaned that painting three times. I know it like my own hand."'],
+          ['Tell me about your copy in the studio.', on('nora', '"A teaching copy, half finished. It\'s on the easel. Go and look." She says it a little too fast.', '"A teaching copy. Half done, on the easel. Go and look."')]],
+        show: { b_email: on('nora', '"Twenty years. And they give it to a stranger." Her voice cracks.', '"Yes, I was angry. I\'m still angry. I\'m also not a thief."'), st_easel: on('nora', '"I... moved it. To work on it at home."', null),
+          st_coat: on('nora', '"I paint. I buy paint. Shocking."', null), b_notes: '"My diary. Yes, the copy is for teaching."', s_keys: on('nora', '"I... used that computer last week to check a camera."', null) },
+        shrug: '"That means nothing to me."' },
+      hollis: { q: [['When did you leave the gala?', on('hollis', '"A quarter past nine, I think. My knee was hurting."', '"About a quarter past nine. My knee was hurting."')],
+          ['You wanted to buy the painting.', '"Twice. Refused twice. I am a patient man, detective. Patience is not a crime."'],
+          ['What was in your portfolio case?', on('hollis', '"Nothing. Some papers."', '"Nothing at all. I hoped to buy the signed print in the auction. I left before it started."')]],
+        show: { b_offer: '"My letters, yes. Generous offers, both of them."', b_cloak: on('hollis', 'He reads it twice. "Those times are wrong. The girl was busy."', '"There. 9:14 pm. I was home by ten."'), cl_rail: on('hollis', '"Many people use that rail."', null) },
+        shrug: '"Fascinating. Unrelated."' },
+      theo: { q: [['Where were you during the evening?', on('theo', '"Kitchen and hall, serving all night. I never went near the galleries."', '"Serving. Kitchen to hall and back, all night. Once out to the dock early on, for ice."')],
+          ['Do you know the painting?', '"My grandfather painted it. They paid him fifty dollars. Fifty." He shrugs. "But tonight I\'m here to serve cake."'],
+          ['What\'s in the TRAYS crate?', on('theo', '"Trays. What else would be in it?"', '"Twelve trays. Count them, if you like."')]],
+        show: { b_letter: '"Yes, I wrote it. Asking is allowed."', b_card: '"Fifty dollars, see? Fifty."', b_dock: on('theo', '"I took a crate out early. Empty ones go back early."', '"Normal night. Six in, six out."'),
+          k_crate: on('theo', '"It\'s empty because... I unpacked it."', null), cl_jacket: on('theo', '"Measurements for... a cake box."', null) },
+        shrug: '"No idea, sorry. Want some lemon tart?"' },
+      rosa: { q: [['What did you see tonight?', { theo: '"Late in the evening I saw the dessert trolley going down the back corridor towards the dock. Desserts go to the hall, not the street."', felix: '"Mr. Ward walked out of the hall during the auction. He never misses his own auction."', nora: '"During dinner Nora\'s chair at the head table was empty for a while."', hollis: '"I thought Mr. Hollis had gone home early, but later I saw him by the cloakroom, in a hurry."' }[V]],
+          ['Did you see Iris tonight?', '"She went past me on her phone, to the staff room. Talking to her mother, as always."'],
+          ['Where were you working?', '"The hall mostly, and the back corridor now and then."']],
+        show: {}, shrug: '"I just clean, love."' },
+      jun: { q: [['What did you photograph?', '"Everything in the hall, every few minutes, plus the arrivals at the cloakroom. They\'re all in the control room."'],
+          ['Did anything strike you as odd?', '"People came and went from the staff door all night. I didn\'t pay attention."']], show: {}, shrug: '"I only see things through my lens."' },
+    };
+    Object.values(TALK).forEach((t) => Object.keys(t.show).forEach((k) => { if (t.show[k] == null) delete t.show[k]; }));
+
+    // ---------- the answer, evidence that counts, the ending ----------
+    const strongSet = ['g_fake_mag', 'g_fake_uv', 'g_screws', 'g_bench', 'g_floor', 's_note', 's_rota', 'b_camlog', 'b_codes', 'lab:s_keys:prints',
+      ...{ theo: ['k_trolley', 'k_crate', 'k_crate_mag', 'lab:k_crate:threads', 'd_ramp', 'cl_jacket', 'b_dock', 'b_letter'], felix: ['o_cab', 'lab:o_cab:threads', 'o_coat', 'b_bank'],
+        nora: ['st_easel', 'st_paint', 'st_stack', 'lab:st_stack:threads', 'st_coat', 'b_email', 'lab:g_fake:uv', 'lab:g_fake:mag'], hollis: ['cl_rail', 'b_cloak', 'b_offer'] }[V]];
+    const NAME = PEOPLE[V].name;
+    const story = {
+      theo: `${NAME} brought a printed copy of the painting in the long TRAYS crate on his dessert trolley. During the director's speech, when everyone was in the hall and Iris had just left for her break, he used the code on the sticky note to switch off the gallery camera, swapped the canvas in the frame, and wheeled the real painting out to his van. His family had been paid fifty dollars for it.`,
+      felix: `${NAME} owed the bank $180,000 and had a secret buyer waiting. During his own auction, while Mr. Price ran the lots and Iris was on her break, he switched off the gallery camera with the code from the sticky note, swapped in a printed copy, and hid the real painting in a long box behind his filing cabinet.`,
+      nora: `${NAME} had just been passed over for Head Restorer after twenty years. She finished her "teaching copy" in secret and, during dinner, while Iris was on her break, switched off the gallery camera with the sticky-note code and swapped the paintings. The real one went into her studio wrapped in a bedsheet. Then she "discovered" the fake herself the next morning.`,
+      hollis: `${NAME} pretended to leave early but stayed. Between the speech and the auction, while Iris was on her break, he took his empty portfolio case, slipped down the back corridor, switched off the gallery camera with the code from the sticky note, swapped in a printed copy and walked out through the cloakroom with the real painting.`,
+    }[V];
+    const timeline = [[fmt(W - 3), 'Iris leaves the security room for her break, on the phone to her mother.'], [fmt(W - 2), `${NAME} slips into the security room and reads the sticky note under the keyboard.`],
+      [fmt(W), `Camera 2 (East Gallery) is switched off with the code ${code}.`], [fmt(W + 2), `${NAME} swaps the real painting for the fake.`], [fmt(W + 11), 'Camera 2 is switched back on.'],
+      ...{ theo: [[fmt(W + 17), 'The crate goes out to the caterer\'s van at the loading dock.']], felix: [[fmt(W + 11), 'The real painting goes into a box behind the filing cabinet.']],
+        nora: [[fmt(W + 11), 'The real painting goes into the studio, behind the blank canvases.']], hollis: [[fmt(W + 13), 'He collects his coat and leaves with the portfolio.']] }[V],
+      ['8:05 am', 'Nora Quinn notices the fake.']];
+    const herring = (k) => ({ felix: ['Felix Ward', 'had a big debt, but the hall camera and the photos show where he was when the camera went off.'], iris: ['Iris Moreno', 'had her code used, but she was on a 14-minute phone call in the staff room; her code was on a note anyone could read.'],
+      nora: ['Nora Quinn', 'had a painted copy in her studio, but the fake is a print, and she was seen in the hall at the time.'], hollis: ['Arthur Hollis', 'wanted the painting badly, but the cloakroom book and photos show he was gone or in plain sight.'],
+      theo: ['Theo Lambert', 'had the strongest reason of all, but he was serving in the hall at the time.'] })[k];
+    return {
+      id: 'gallery', num: '002', title: 'The Night Gallery', titleVi: 'Phòng Tranh Lúc Nửa Đêm', mins: '40-50', variant: V, W, code,
+      org: 'Seabright Art Museum', desk: 'control', TOOLS: ['hand', 'light', 'uv', 'mag', 'bag'], BAG: 6,
+      brief: `<p><b>Seabright Art Museum. A charity gala, Saturday night, 7 to 11 pm.</b></p>
+        <p>The museum's most famous painting, <b>"Lighthouse at Dawn"</b>, hangs alone in the East Gallery. At 8:05 the next morning the restorer, Nora Quinn, looks at it in daylight and says: <b>"That is not our painting."</b></p>
+        <p>It is a very good fake. The real painting was swapped during the gala, in a room with a camera, and nobody saw it go.</p>
+        <p>Detective A searches the museum with a tool belt: a flashlight, a UV light, a magnifier and evidence bags for the lab. Detective B sits in the security control room: the cameras, the photographer's pictures, the lab and the files.</p>`,
+      questions: ['When exactly was the painting swapped?', 'Who did it, and how did they get it out?', 'Why?'],
+      PEOPLE, EXTRA, SUSPECTS, CLUES, ROOMS, DRAWERS, TALK, HOW, WHY, KEY, S, CAMS, CAUGHT,
+      HINTS: ['First find out WHEN it happened. A machine wrote it down.', 'At that moment, who can you NOT see anywhere, on any camera or in any photo? And who walked into the security room just before?', 'Whoever did it had to carry the real painting somewhere. Search the rooms for where it went, and send what you find to the lab.'],
+      STRONG: strongSet, KEYLIST: strongSet.filter((k) => !/^b_(prog|guests)$/.test(k)),
+      culprit: V, solved: `${NAME} swapped "Lighthouse at Dawn".`, story, timeline,
+      herrings: SUSPECTS.filter((k) => k !== V).map(herring),
+      wrong: { who: (n) => `${n}? Check where they were when the camera went off: you can find them.`, how: 'Right person, wrong way. Where did the real painting go? Look for traces of it.', why: 'Right person and right way, but think again about why. What did they stand to gain?' },
+      fmt, ALIBI: { iris: 'b_phone', hollis: 'b_cloak' },
+    };
+  }
+  return { id: 'gallery', num: '002', title: 'The Night Gallery', titleVi: 'Phòng Tranh Lúc Nửa Đêm', mins: '40-50', make, variants: VARIANTS.length };
+});
     /* =========================================================================
        CASE FILES (Nov 2026, Inna: "detective cases, solve together with evidence"; prototype prototypes/round9/case-files.html)
        Co-op detective game for two. Detective A has THE SCENE (hotel map, searching, interviews), Detective B has THE
@@ -11367,11 +11727,14 @@ window.CASE_DEFS.push((face) => {
         glassdrink: ['............', '..kkkkkk....', '..koooook...', '..kooooook..', '...kooook...', '....kook....', '.....kk.....', '.....kk.....', '...kkkkkk...', '............', '............', '............'],
         heel: ['............', '.....kk.....', '....kcck....', '...kccck....', '..kccck.....', '..kcck......', '..kkkk..kk..', '........kk..', '............', '............', '............', '............'],
         gen: ['............', '.kkkkkkkkkk.', '.kggggggggk.', '.kgkkgggggk.', '.kgkkggyygk.', '.kggggggggk.', '.kggggggggk.', '.kkkkkkkkkk.', '..kk....kk..', '............', '............', '............'],
+        cam: ['............', '............', '..kkkkkkk...', '..kgggggk.kk', '..kgkkkgkkgk', '..kgkttkgkgk', '..kgkkkgkkgk', '..kgggggk.kk', '..kkkkkkk...', '.....k......', '....kkk.....', '............'],
+        lab: ['....kkkk....', '....kwwk....', '....kwwk....', '....kwwk....', '...kwwwwk...', '..kwwwwwwk..', '..kttttttk..', '.kttttttttk.', '.kttttttttk.', '.kkkkkkkkkk.', '............', '............'],
         pen: ['............', '.kkkkkkkkk..', '.kwwwwwwwk..', '.kwggggwwk..', '.kwwwwwwwk..', '.kwggwwwwk..', '.kwwwwwwkr..', '.kwwwwwkry..', '.kkkkkkkk...', '............', '............', '............'],
       };
       const icon = (n) => pixSVG((ICON[n] || ICON.log).map((r) => r.padEnd(12, '.')));
       // ---------- room pictures: every object is drawn from simple shapes (our own art) ----------
       const INK = '#050E18';
+      const FLAT = ['rug', 'path', 'counter'];   // drawn first, so furniture stands on them
       const R = (x, y, w, h, f, o) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${f}" ${o === 0 ? '' : `stroke="${INK}" stroke-width="${o || 3}"`}/>`;
       const ART = {
         shelf: (x, y, w, h) => R(x, y, w, h, '#6B4423') + [0, 1, 2, 3].map((r) => { const yy = y + 8 + r * (h - 16) / 4; return R(x + 6, yy + (h - 16) / 4 - 6, w - 12, 5, '#3E2614', 0) + Array.from({ length: Math.floor((w - 16) / 10) }, (_, i) => R(x + 9 + i * 10, yy + 4, 8, (h - 16) / 4 - 10, ['#B0362A', '#2B6FA8', '#F5B041', '#3A7D44', '#7A4FA0'][(i + r * 2) % 5], 1)).join(''); }).join(''),
@@ -11406,7 +11769,7 @@ window.CASE_DEFS.push((face) => {
         backdoor: (x, y, w, h) => R(x, y, w, h, '#5A3A22') + R(x + w * 0.2, y + h * 0.45, w * 0.6, 10, '#C0C7D0') + R(x + w - 18, y + h * 0.55, 8, 8, '#F5B041', 1),
         shelfbox: (x, y, w, h) => R(x, y + h - 8, w, 8, '#6B4423') + R(x, y + h * 0.45, w, 8, '#6B4423') + Array.from({ length: 5 }, (_, i) => R(x + 6 + i * (w - 12) / 5, y + (i % 2 ? h * 0.5 + 8 : 6), (w - 12) / 5 - 6, h * 0.35, ['#C9A227', '#9DB4CC', '#B0503A', '#F1E7CF', '#3A7D44'][i], 2)).join(''),
         cart: (x, y, w, h) => R(x, y, w, h * 0.75, '#C0C7D0') + R(x + 6, y + 6, w - 12, h * 0.3, '#F7F4EC', 2) + R(x + 6, y + h * 0.4, w - 12, h * 0.3, '#9DB4CC', 2) + `<circle cx="${x + 16}" cy="${y + h - 8}" r="8" fill="#2A2A2A" stroke="${INK}" stroke-width="2"/><circle cx="${x + w - 16}" cy="${y + h - 8}" r="8" fill="#2A2A2A" stroke="${INK}" stroke-width="2"/>` + R(x + w - 6, y - 26, 6, 30, '#6B7A8C', 1) + Array.from({ length: 4 }, (_, i) => R(x + w - 2 + (i % 2) * 6, y - 22 + i * 6, 5, 9, '#F5B041', 1)).join(''),
-        door: (x, y, w, h, it) => R(x, y, w, h, '#8A5A2B') + R(x + 8, y + 10, w - 16, h * 0.35, '#6B4423', 2) + R(x + 8, y + h * 0.52, w - 16, h * 0.38, '#6B4423', 2) + R(x + w - 18, y + h * 0.45, 8, 8, '#F5B041', 1) + (it.label ? `<rect x="${x + w / 2 - 18}" y="${y - 20}" width="36" height="16" fill="#F1E7CF" stroke="${INK}" stroke-width="2"/><text x="${x + w / 2}" y="${y - 7}" text-anchor="middle" font-family="Outfit" font-weight="800" font-size="12" fill="${INK}">${it.label}</text>` : ''),
+        door: (x, y, w, h, it) => R(x, y, w, h, '#8A5A2B') + R(x + 8, y + 10, w - 16, h * 0.35, '#6B4423', 2) + R(x + 8, y + h * 0.52, w - 16, h * 0.38, '#6B4423', 2) + R(x + w - 18, y + h * 0.45, 8, 8, '#F5B041', 1) + (it.label ? `<rect x="${x + w / 2 - Math.max(18, it.label.length * 4.6)}" y="${y - 20}" width="${Math.max(36, it.label.length * 9.2)}" height="16" fill="#F1E7CF" stroke="${INK}" stroke-width="2"/><text x="${x + w / 2}" y="${y - 7}" text-anchor="middle" font-family="Outfit" font-weight="800" font-size="12" fill="${INK}">${it.label}</text>` : ''),
         outdoor: (x, y, w, h) => R(x, y, w, h, '#6B7A8C') + R(x + 8, y + 8, w - 16, h - 40, '#1D3E5E', 2) + R(x + 4, y + h - 14, w - 8, 14, '#6B4A2A', 2) + R(x + 14, y + h - 10, 10, 6, '#3E2614', 0) + R(x + 40, y + h - 10, 10, 6, '#3E2614', 0),
         extinguisher: (x, y, w, h) => R(x, y + h * 0.2, w, h * 0.8, '#B0362A') + R(x + w * 0.25, y, w * 0.5, h * 0.22, '#2A2A2A'),
         bed: (x, y, w, h) => R(x, y + h * 0.35, w, h * 0.5, '#F1E7CF') + R(x, y, w * 0.12, h, '#6B4423') + R(x + w * 0.14, y + h * 0.4, w * 0.25, h * 0.2, '#F7F4EC', 2) + R(x + w * 0.42, y + h * 0.35, w * 0.58, h * 0.5, '#2B4C7A'),
@@ -11418,6 +11781,42 @@ window.CASE_DEFS.push((face) => {
         baskets: (x, y, w, h) => R(x, y + h * 0.3, w * 0.45, h * 0.7, '#C9A227') + R(x + w * 0.55, y + h * 0.3, w * 0.45, h * 0.7, '#C9A227') + R(x + 6, y + h * 0.15, w * 0.35, h * 0.25, '#F7F4EC', 2) + R(x + w * 0.6, y + h * 0.1, w * 0.35, h * 0.3, '#7DB8E0', 2),
         fusebox: (x, y, w, h) => R(x, y, w, h, '#9DB4CC') + Array.from({ length: 6 }, (_, i) => R(x + 10 + (i % 3) * (w - 20) / 3, y + 14 + Math.floor(i / 3) * h * 0.4, 10, h * 0.25, i === 0 ? '#B0362A' : '#2A2A2A', 1)).join(''),
       };
+      Object.assign(ART, {
+        bigframe: (x, y, w, h) => R(x, y, w, h, '#C9A227') + R(x + 10, y + 10, w - 20, h - 20, '#F2C38A', 2) + R(x + 10, y + h * 0.6, w - 20, h * 0.4 - 10, '#2B6FA8', 0) + R(x + w * 0.46, y + h * 0.26, w * 0.08, h * 0.36, '#F7F4EC', 2) + R(x + w * 0.44, y + h * 0.2, w * 0.12, h * 0.08, '#B0362A', 2),
+        smallpic: (x, y, w, h, it) => R(x, y, w, h, '#8A5A2B') + R(x + 7, y + 7, w - 14, h - 14, it.col || '#7DB8E0', 2) + R(x + w * 0.3, y + h * 0.45, w * 0.4, h * 0.2, '#F1E7CF', 0),
+        plaque: (x, y, w, h) => R(x, y, w, h, '#F1E7CF') + [0, 1, 2].map((i) => R(x + 6, y + 7 + i * 7, w - 12 - i * 8, 3, '#8A7A5A', 0)).join(''),
+        cctv: (x, y, w, h) => R(x, y + h * 0.3, w * 0.7, h * 0.45, '#C0C7D0') + R(x + w * 0.7, y + h * 0.4, w * 0.3, h * 0.25, '#4A4A52') + `<circle cx="${x + w * 0.12}" cy="${y + h * 0.5}" r="3" fill="#34D399"/>` + R(x + w * 0.3, y, 5, h * 0.3, '#4A4A52', 0),
+        screws: (x, y, w, h) => `<circle cx="${x + w / 2}" cy="${y + 6}" r="5" fill="#C9A227" stroke="${INK}" stroke-width="2"/><circle cx="${x + w / 2}" cy="${y + h - 6}" r="5" fill="#C9A227" stroke="${INK}" stroke-width="2"/>`,
+        floormarks: (x, y, w, h) => `<path d="M${x + 10},${y + h - 10} L${x + w - 20},${y + 10} M${x + 24},${y + h - 6} L${x + w - 6},${y + 16}" stroke="rgba(0,0,0,.14)" stroke-width="2" fill="none"/>`,
+        monitors: (x, y, w, h) => R(x, y, w, h, '#2A2A2A') + [0, 1, 2, 3].map((i) => R(x + 8 + (i % 2) * (w / 2 - 4), y + 8 + Math.floor(i / 2) * (h / 2 - 4), w / 2 - 12, h / 2 - 12, ['#1D3E5E', '#24402E', '#3A3A3A', '#1F3A2A'][i], 2)).join(''),
+        keyboard: (x, y, w, h) => R(x, y, w, h, '#2A2A2A') + Array.from({ length: 10 }, (_, i) => R(x + 4 + i * (w - 8) / 10, y + 4, (w - 8) / 10 - 3, h - 8, '#5A5A62', 0)).join(''),
+        sticky: (x, y, w, h) => R(x, y, w, h, '#FDE047', 1),
+        rota: (x, y, w, h) => R(x, y, w, h, '#F7F4EC') + Array.from({ length: 7 }, (_, i) => R(x + 6, y + 10 + i * 10, w - 12 - (i % 3) * 8, 3, '#8A96A6', 0)).join('') + R(x + w / 2 - 4, y - 4, 8, 8, '#B0362A', 1),
+        mug: (x, y, w, h) => R(x, y, w * 0.75, h, '#F7F4EC') + R(x + w * 0.75, y + h * 0.25, w * 0.25, h * 0.4, 'none', 2),
+        chair: (x, y, w, h) => R(x + w * 0.15, y, w * 0.7, h * 0.5, '#2A2A2A') + R(x, y + h * 0.5, w, h * 0.15, '#2A2A2A') + R(x + w * 0.45, y + h * 0.65, w * 0.1, h * 0.3, '#5A5A62', 0) + R(x + w * 0.15, y + h * 0.92, w * 0.7, 6, '#5A5A62') + R(x + w * 0.2, y + h * 0.05, w * 0.6, h * 0.3, '#B07A4A', 0),
+        charger: (x, y, w, h) => R(x + w * 0.3, y, w * 0.4, h * 0.4, '#F7F4EC') + `<path d="M${x + w / 2},${y + h * 0.4} q0,${h * 0.5} ${w * 0.4},${h * 0.55}" stroke="#F7F4EC" stroke-width="3" fill="none"/>`,
+        trolley: (x, y, w, h) => R(x, y, w, 8, '#C0C7D0') + R(x, y + h * 0.55, w, 8, '#C0C7D0') + R(x + 4, y, 6, h * 0.85, '#8A96A6', 0) + R(x + w - 10, y, 6, h * 0.85, '#8A96A6', 0) + [0, 1, 2].map((i) => R(x + 14 + i * 28, y - 10, 22, 10, '#F7F4EC', 1)).join('') + `<circle cx="${x + 10}" cy="${y + h - 6}" r="7" fill="#2A2A2A"/><circle cx="${x + w - 10}" cy="${y + h - 6}" r="7" fill="#2A2A2A"/>`,
+        crate: (x, y, w, h, it) => R(x, y, w, h, '#A0703A') + R(x + 4, y + 4, w - 8, h - 8, '#B88A4E', 2) + `<text x="${x + w / 2}" y="${y + h / 2 + 6}" font-size="18" font-family="monospace" font-weight="900" fill="#3E2614" text-anchor="middle">${it.label || ''}</text>`,
+        menuboard: (x, y, w, h) => R(x, y, w, h, '#1B1B1B') + Array.from({ length: 4 }, (_, i) => R(x + 10, y + 14 + i * 15, w - 30 - (i % 2) * 20, 3, '#F7F4EC', 0)).join(''),
+        apron: (x, y, w, h) => R(x, y, w, 6, '#6B4423') + [0, 1, 2].map((i) => R(x + 2 + i * 10, y + 6, 8, h * 0.6, ['#F7F4EC', '#B0362A', '#F7F4EC'][i], 1)).join(''),
+        ramp: (x, y, w, h) => `<path d="M${x},${y + h} L${x + w},${y + h} L${x + w},${y} Z" fill="#6B6B6B" stroke="${INK}" stroke-width="3"/>`,
+        scale: (x, y, w, h) => R(x, y + h * 0.5, w, h * 0.5, '#6B7A8C') + R(x + w * 0.35, y, w * 0.3, h * 0.45, '#2A2A2A') + R(x + w * 0.4, y + 5, w * 0.2, h * 0.15, '#24402E', 0),
+        pallet: (x, y, w, h) => [0, 1, 2].map((i) => R(x, y + i * h / 3, w, h / 3 - 3, '#B88A4E', 1)).join(''),
+        rolldoor: (x, y, w, h) => R(x, y, w, h, '#8A96A6') + Array.from({ length: 10 }, (_, i) => R(x, y + i * h / 10, w, 2, '#5A6472', 0)).join('') + R(x + w / 2 - 15, y + h - 14, 30, 8, '#3E3E3E', 0),
+        easel: (x, y, w, h, it) => `<path d="M${x + w * 0.2},${y + h} L${x + w / 2},${y} L${x + w * 0.8},${y + h} M${x + w / 2},${y} L${x + w / 2},${y + h}" stroke="#8A5A2B" stroke-width="8"/>` + R(x + w * 0.1, y + h * 0.62, w * 0.8, 8, '#6B4423')
+          + (it.full ? R(x + w * 0.12, y + h * 0.1, w * 0.76, h * 0.52, '#F7F4EC', 2) + R(x + w * 0.15, y + h * 0.13, w * 0.7, h * 0.22, '#F2C38A', 0) + `<path d="M${x + w * 0.2},${y + h * 0.5} l${w * 0.6},0 M${x + w * 0.48},${y + h * 0.3} l0,${h * 0.2}" stroke="#9AA6A0" stroke-width="2"/>` : ''),
+        painttable: (x, y, w, h) => R(x, y, w, h * 0.2, '#8A5A2B') + R(x + 8, y + h * 0.2, 8, h * 0.8, '#6B4423') + R(x + w - 16, y + h * 0.2, 8, h * 0.8, '#6B4423') + ['#F7F4EC', '#2B6FA8', '#B0362A', '#C9A227', '#3A7D44'].map((c, i) => R(x + 10 + i * 24, y - 10, 18, 10, c, 1)).join(''),
+        canvasstack: (x, y, w, h) => [0, 1, 2, 3].map((i) => R(x + i * 12, y + i * 6, w - 36, h - i * 6, i % 2 ? '#EDE6D6' : '#F7F4EC', 2)).join(''),
+        filing: (x, y, w, h) => R(x, y, w, h, '#9DB4CC') + [0, 1, 2, 3].map((i) => R(x + 8, y + 10 + i * (h - 20) / 4, w - 16, (h - 20) / 4 - 8, '#B4C1CF', 2) + R(x + w / 2 - 10, y + 22 + i * (h - 20) / 4, 20, 5, '#4A4A52', 0)).join(''),
+        safe: (x, y, w, h) => R(x, y, w, h, '#4A4A52') + `<circle cx="${x + w / 2}" cy="${y + h / 2}" r="${h * 0.22}" fill="#8A96A6" stroke="${INK}" stroke-width="3"/>`,
+        coat: (x, y, w, h, it) => R(x + w / 2 - 3, y, 6, 8, '#4A4A52') + `<path d="M${x + 4},${y + 10} L${x + w - 4},${y + 10} L${x + w},${y + h} L${x},${y + h} Z" fill="${it.col || '#2B4C7A'}" stroke="${INK}" stroke-width="3"/>` + R(x + w * 0.2, y + h * 0.55, w * 0.25, h * 0.15, 'rgba(0,0,0,.2)', 0),
+        bigrail: (x, y, w, h) => R(x, y, w, 8, '#3E2614') + R(x, y, 8, h, '#3E2614') + R(x + w - 8, y, 8, h, '#3E2614') + [0, 1, 2, 3].map((i) => R(x + 20 + i * (w - 40) / 3, y + 8, 4, 14, '#C0C7D0', 0)).join(''),
+        mirror: (x, y, w, h) => R(x, y, w, h, '#8A5A2B') + R(x + 6, y + 6, w - 12, h - 12, '#BFD7EA', 2) + `<path d="M${x + 16},${y + 20} l14,-10" stroke="#F7F4EC" stroke-width="3"/>`,
+        umbrella: (x, y, w, h) => R(x + w * 0.15, y + h * 0.4, w * 0.7, h * 0.6, '#4A4A52') + [0, 1, 2].map((i) => R(x + w * 0.22 + i * w * 0.2, y + i * 6, 5, h * 0.5, ['#B0362A', '#2B4C7A', '#2A2A2A'][i], 0)).join(''),
+        auctionboard: (x, y, w, h) => R(x, y, w, h * 0.75, '#1D3954') + Array.from({ length: 3 }, (_, i) => R(x + 8, y + 12 + i * 16, w - 16 - (i % 2) * 14, 4, '#F7F4EC', 0)).join('') + `<path d="M${x + w * 0.3},${y + h * 0.75} L${x + w * 0.2},${y + h} M${x + w * 0.7},${y + h * 0.75} L${x + w * 0.8},${y + h}" stroke="#6B4423" stroke-width="5"/>`,
+        rtable: (x, y, w, h) => R(x, y, w, h * 0.5, '#F7F4EC') + R(x + w * 0.1, y + h * 0.5, 8, h * 0.5, '#6B4423') + R(x + w * 0.9 - 8, y + h * 0.5, 8, h * 0.5, '#6B4423') + [0, 1, 2].map((i) => R(x + 10 + i * (w - 30) / 2, y + 6, 12, 8, '#C9A227', 0)).join(''),
+      });
+      FLAT.push('floormarks');
       const FLOOR = {
         wood: (c) => R(0, 150, 600, 190, c, 0) + Array.from({ length: 7 }, (_, i) => `<path d="M0,${170 + i * 26} L600,${170 + i * 26}" stroke="rgba(0,0,0,.25)" stroke-width="2"/>`).join(''),
         tile: (c) => R(0, 150, 600, 190, c, 0) + Array.from({ length: 12 }, (_, i) => `<path d="M${i * 50},150 L${i * 50},340" stroke="rgba(0,0,0,.18)" stroke-width="2"/>`).join('') + Array.from({ length: 4 }, (_, i) => `<path d="M0,${150 + i * 48} L600,${150 + i * 48}" stroke="rgba(0,0,0,.18)" stroke-width="2"/>`).join(''),
@@ -11425,12 +11824,13 @@ window.CASE_DEFS.push((face) => {
         carpet: (c) => R(0, 150, 600, 190, c, 0) + Array.from({ length: 40 }, (_, i) => R((i * 61) % 600, 160 + (i * 37) % 170, 10, 4, 'rgba(255,255,255,.08)', 0)).join(''),
         stone: (c) => R(0, 150, 600, 190, c, 0) + Array.from({ length: 24 }, (_, i) => R((i % 6) * 100 + (Math.floor(i / 6) % 2) * 50, 150 + Math.floor(i / 6) * 48, 100, 48, 'none', 2)).join(''),
       };
-      const FLAT = ['rug', 'path', 'counter'];   // drawn first, so furniture stands on them
-      function roomSVG(room, looked) {
+      function roomSVG(room, looked, opt) {
+        opt = opt || {};
+        if (opt.before && room.before) room = Object.assign({}, room, { items: room.items.map((it, i) => Object.assign({}, it, room.before[i] || {})) });
         const wall = room.fl === 'grass' ? `<rect x="0" y="0" width="600" height="150" fill="${room.wall}"/>` + Array.from({ length: 20 }, (_, i) => `<path d="M${(i * 71) % 600},${(i * 37) % 130} l-4,12" stroke="#7DB8E0" stroke-width="2"/>`).join('')
           : `<rect x="0" y="0" width="600" height="150" fill="${room.wall}"/><rect x="0" y="140" width="600" height="12" fill="rgba(0,0,0,.3)"/>`;
         return `<svg class="cf-roomsvg" viewBox="0 0 600 340" xmlns="http://www.w3.org/2000/svg">${wall}${(FLOOR[room.fl] || FLOOR.wood)(room.floor)}
-          ${room.items.map((it, i) => [it, i]).sort((a, b) => (FLAT.includes(b[0].k) ? 1 : 0) - (FLAT.includes(a[0].k) ? 1 : 0)).map(([it, i]) => `<g class="cf-it ${looked[i] ? 'looked' : ''}" data-item="${i}">${(ART[it.k] || ART.shelfbox)(it.x, it.y, it.w, it.h, it)}<rect class="hit" x="${it.x - 6}" y="${it.y - 6}" width="${it.w + 12}" height="${it.h + 12}"/>${looked[i] ? `<g transform="translate(${it.x + it.w - 4},${it.y - 4})"><rect x="-9" y="-9" width="18" height="18" fill="#F7F4EC" stroke="${INK}" stroke-width="2"/><path d="M-5,0 l3,4 l6,-8" stroke="${INK}" stroke-width="2.5" fill="none"/></g>` : ''}</g>`).join('')}</svg>`;
+          ${room.items.map((it, i) => [it, i]).sort((a, b) => (FLAT.includes(b[0].k) ? 1 : 0) - (FLAT.includes(a[0].k) ? 1 : 0)).map(([it, i]) => `<g class="cf-it ${looked[i] ? 'looked' : ''}" data-item="${i}">${it.tilt ? `<g transform="rotate(${it.tilt} ${it.x + it.w / 2} ${it.y + it.h / 2})">` : ''}${(ART[it.k] || ART.shelfbox)(it.x, it.y, it.w, it.h, it)}${it.tilt ? '</g>' : ''}${opt.uv && it.uv && !/^Nothing/.test(it.uv) ? Array.from({ length: 5 }, (_, j) => `<circle class="uvg" cx="${it.x + it.w * (0.2 + ((j * 37) % 60) / 100)}" cy="${it.y + it.h * (0.25 + ((j * 53) % 50) / 100)}" r="${5 + (j % 3) * 3}"/>`).join('') : ''}<rect class="hit" x="${it.x - 6}" y="${it.y - 6}" width="${it.w + 12}" height="${it.h + 12}"/>${looked[i] && !opt.before ? `<g transform="translate(${it.x + it.w - 4},${it.y - 4})"><rect x="-9" y="-9" width="18" height="18" fill="#F7F4EC" stroke="${INK}" stroke-width="2"/><path d="M-5,0 l3,4 l6,-8" stroke="${INK}" stroke-width="2.5" fill="none"/></g>` : ''}</g>`).join('')}</svg>`;
       }
       const cases = () => { if (!CASES) CASES = (window.CASE_DEFS || []).map((f) => f(face)); return CASES; };
 
@@ -11438,15 +11838,17 @@ window.CASE_DEFS.push((face) => {
       function open(root) {
         const body = gameShell(root, mod, '', 'max-w-[1400px] mx-auto');
         setupScreen(body, mod, [
-          { key: 'case', label: 'THE CASE', def: 'harbor', hero: true, hint: 'More cases are coming. Each one takes about 20-30 minutes.', choices: cases().map((c) => [c.id, `#${c.num} · ${c.title}`]) },
+          { key: 'case', label: 'THE CASE', def: 'harbor', hero: true, hint: 'More cases are coming. Each one takes about 20-50 minutes.', choices: cases().map((c) => [c.id, `#${c.num} · ${c.title} (${c.mins || '20-30'} min)`]) },
+          { key: 'ver', label: 'VERSION', def: 'shuffle', when: (sel) => !!(cases().find((c) => c.id === sel.case) || {}).make, hint: 'Shuffled: a different culprit, different times and clues every time you play.', choices: [['shuffle', 'Shuffled (different every game)'], ['classic', 'Classic (always the same)']] },
         ], (sel) => start(body, sel, npLocal([{ name: profile.username, avatar: profile.avatar }], sel)),
         'A co-op detective case for two. One of you has the crime scene, the other has the records. Work it out together!');
       }
       function start(body, sel, S) {
-        const C = cases().find((c) => c.id === sel.case) || cases()[0];
+        const base = cases().find((c) => c.id === sel.case) || cases()[0];
+        const C = base.make ? base.make(sel.ver === 'classic' ? { v: 0, off: 0, code: '4417' } : { v: S.rng.rnd(base.variants), off: S.rng.rnd(3), code: String(1000 + S.rng.rnd(9000)) }) : base;
         const solo = S.n === 1;
         G = { S, C, solo, me: S.online ? S.me : 0, view: 'A', tab: 'brief', room: Object.keys(C.ROOMS)[0], open: null, sus: C.SUSPECTS[0],
-          found: {}, looked: {}, marks: {}, notes: {}, drawer: -1, doc: null, item: null, log: {}, pins: [], strings: [], asked: {}, feed: [], hints: 0, tries: 0, acc: { who: null, how: null, why: null, ev: [] }, prop: null, solved: false, selPin: null, noteN: 0, over: false, tok: ++GT.cur, t0: Date.now() };
+          found: {}, looked: {}, marks: {}, notes: {}, tool: 'hand', bag: [], labRes: {}, tl: [], btab: 'board', ctab: 'cams', cam: { m: 0, big: null, play: false }, ph: null, zoom: false, before: false, labSel: null, drawer: -1, doc: null, item: null, log: {}, pins: [], strings: [], asked: {}, feed: [], hints: 0, tries: 0, acc: { who: null, how: null, why: null, ev: [] }, prop: null, solved: false, selPin: null, noteN: 0, over: false, tok: ++GT.cur, t0: Date.now() };
         G.role = solo ? 'both' : G.me === 0 ? 'A' : 'B';
         if (G.role === 'B') G.view = 'B';
         GT.started = true; GT.over = false;
@@ -11468,9 +11870,15 @@ window.CASE_DEFS.push((face) => {
         const C = G.C, title = (id) => (card(id) ? card(id).title : T('a note', 'một ghi chú'));
         if ((a.t === 'pin' || a.t === 'mark') && a.s === G.me) delete G.notes[a.id];
         if (a.t === 'find') { if (!G.found[a.id]) { G.found[a.id] = 1; if (a.s !== G.me) feed(a.s, `${T('found', 'tìm thấy')} <b>${esc(title(a.id))}</b>`); } }
-        else if (a.t === 'look') { G.looked[a.room + ':' + a.i] = 1; const it = C.ROOMS[a.room] && C.ROOMS[a.room].items[a.i]; if (it && it.c && !G.found[it.c]) { G.found[it.c] = 1; if (a.s !== G.me) feed(a.s, `${T('found', 'tìm thấy')} <b>${esc(title(it.c))}</b>`); } }
+        else if (a.t === 'look') { G.looked[a.room + ':' + a.i + (a.tool ? ':' + a.tool : '')] = 1; G.looked[a.room + ':' + a.i] = 1; const it = C.ROOMS[a.room] && C.ROOMS[a.room].items[a.i]; const cid = it && (a.tool === 'uv' ? it.cu : a.tool === 'mag' ? it.cm : it.c); if (cid && !G.found[cid]) { G.found[cid] = 1; if (a.s !== G.me) feed(a.s, `${T('found', 'tìm thấy')} <b>${esc(title(cid))}</b>`); } }
+        else if (a.t === 'bag') { const it = C.ROOMS[a.room] && C.ROOMS[a.room].items[a.i]; if (it && it.lab) { const k = labKey(it, a.room, a.i), at = G.bag.findIndex((b) => b.k === k);
+            if (at >= 0) { G.bag.splice(at, 1); feed(a.s, `${T('took out of the evidence bag', 'lấy ra khỏi túi chứng cứ')}: <b>${esc(it.n)}</b>`); }
+            else if (G.bag.length < (C.BAG || 6)) { G.bag.push({ k, room: a.room, i: a.i }); feed(a.s, `${T('sent to the lab', 'gửi đến phòng lab')}: <b>${esc(it.n)}</b>`); if (a.s !== G.me && G.role !== 'A') toast(`🧪 ${T('New in the lab', 'Mới ở phòng lab')}: ${esc(it.n)}`); } } }
+        else if (a.t === 'test') { const id = `lab:${a.k}:${a.test}`; if (!G.labRes[id]) { G.labRes[id] = 1; G.found[id] = 1; feed(a.s, `${T('ran a lab test on', 'làm xét nghiệm')} <b>${esc(title(id))}</b>`); } }
+        else if (a.t === 'tl') { G.tl.push({ who: a.who, m: a.m, place: a.place, s: a.s }); }
+        else if (a.t === 'untl') { G.tl.splice(a.i, 1); }
         else if (a.t === 'mark') { const p = G.pins.find((q) => q.id === a.id); if (p) { if (a.rows) p.rows = a.rows.slice(0, 20); if (a.note != null) p.note = String(a.note).slice(0, 160); feed(a.s, `${T('updated the card', 'cập nhật thẻ')} <b>${esc(title(a.id))}</b>`); } }
-        else if (a.t === 'show') { const tk = C.TALK[a.sus]; if (tk) { (G.log[a.sus] = G.log[a.sus] || []).push({ q: `${T('Shows', 'Đưa ra')}: ${title(a.id)}`, a: tk.show[a.id] || tk.shrug, hot: !!tk.show[a.id], ev: 1 }); feed(a.s, `${T('showed', 'đưa')} <b>${esc(title(a.id))}</b> ${T('to', 'cho')} <b>${esc(C.PEOPLE[a.sus].name)}</b>`); } }
+        else if (a.t === 'show') { const tk = C.TALK[a.sus]; if (tk) { const fr = frameReact(a.sus, a.id); (G.log[a.sus] = G.log[a.sus] || []).push({ q: `${T('Shows', 'Đưa ra')}: ${title(a.id)}`, a: tk.show[a.id] || (fr && fr.a) || tk.shrug, hot: !!(tk.show[a.id] || (fr && fr.hot)), ev: 1 }); feed(a.s, `${T('showed', 'đưa')} <b>${esc(title(a.id))}</b> ${T('to', 'cho')} <b>${esc(C.PEOPLE[a.sus].name)}</b>`); } }
         else if (a.t === 'pin') { if (!G.pins.some((p) => p.id === a.id)) { G.pins.push({ id: a.id, by: a.s, x: a.x, y: a.y, text: a.text, rows: a.rows, note: a.note ? String(a.note).slice(0, 160) : '' }); feed(a.s, `${T('pinned', 'đã ghim')} <b>${esc(a.text ? T('a sticky note', 'một ghi chú') : title(a.id))}</b>`); if (a.s !== G.me) toast(`📌 ${esc(G.S.name(a.s))} ${T('pinned', 'đã ghim')} "${esc(a.text ? T('a note', 'ghi chú') : title(a.id))}"`); } }
         else if (a.t === 'unpin') { G.pins = G.pins.filter((p) => p.id !== a.id); G.strings = G.strings.filter((s) => !s.includes(a.id)); G.acc.ev = G.acc.ev.filter((x) => x !== a.id); feed(a.s, T('took a card off the board', 'gỡ một thẻ khỏi bảng')); }
         else if (a.t === 'move') { const p = G.pins.find((q) => q.id === a.id); if (p) { p.x = a.x; p.y = a.y; } }
@@ -11488,7 +11896,7 @@ window.CASE_DEFS.push((face) => {
         const C = G.C, p = G.prop; G.prop = null;
         if (!ok) { feed(1 - p.s, T('wants to keep looking', 'muốn điều tra thêm')); toast(T('Not yet: your partner wants to keep looking.', 'Chưa: cộng sự muốn điều tra thêm.')); render(); return 0; }
         if (p.who === C.KEY.who && p.how === C.KEY.how && p.why === C.KEY.why) {
-          G.weak = p.ev.filter((x) => C.STRONG.includes(x)).length < 3 ? 1 : 0; G.solved = true; G.tab = 'acc'; G.over = true; GT.over = true;
+          G.weak = p.ev.filter((x) => isStrong(x)).length < 3 ? 1 : 0; G.solved = true; G.tab = 'acc'; G.over = true; GT.over = true;
           SFX.play('win'); render(); finish(); return 0;
         }
         G.tries++; SFX.play('wrong');
@@ -11504,22 +11912,139 @@ window.CASE_DEFS.push((face) => {
         G.mins = mins;
       }
       const plain = (h) => String(h || '').replace(/<[^>]+>/g, '');
-      // any card: a document, or any object in a room (clue or not, they look the same on the board)
+      // any card: a document, any object in a room (as seen, under UV, or up close), a camera frame, a photo or a lab result
       function itemOf(id) {
-        const C = G.C; if (!G._itemOf) { G._itemOf = {}; Object.entries(C.ROOMS).forEach(([rk, r]) => r.items.forEach((it, i) => { const o = { it, rk, room: r }; G._itemOf['it:' + rk + ':' + i] = o; if (it.c) G._itemOf[it.c] = o; })); }
+        const C = G.C; if (!G._itemOf) { G._itemOf = {}; Object.entries(C.ROOMS).forEach(([rk, r]) => r.items.forEach((it, i) => {
+          [['', it.c], ['uv', it.cu], ['mag', it.cm]].forEach(([md, cid]) => { const o = { it, rk, i, room: r, mode: md }; G._itemOf['it:' + rk + ':' + i + (md ? ':' + md : '')] = o; if (cid) G._itemOf[cid] = o; }); })); }
         return G._itemOf[id];
       }
+      const TESTS_ = () => [['mag', T('Microscope', 'Kính hiển vi')], ['uv', T('UV lamp', 'Đèn UV')], ['prints', T('Fingerprint powder', 'Bột vân tay')], ['threads', T('Thread test', 'Soi sợi vải')]];
+      const labKey = (it, rk, i) => it.c || 'it:' + rk + ':' + i;
+      function labText(it, test) { const r = it.lab && it.lab[test]; return r || T('Nothing useful: this test shows nothing here.', 'Không có gì: phép thử này không cho kết quả.'); }
       function card(id) {
-        const C = G.C, c = C.CLUES[id], o = itemOf(id);
-        if (o) return { who: 'A', icon: 'glass', title: o.it.n, text: c ? c.text : o.it.t, room: o.room.name };
+        const C = G.C, c = C.CLUES[id];
+        let m = /^lab:(.+):(\w+)$/.exec(id);
+        if (m) { const o = itemOf(m[1]); if (!o) return null; return { who: 'B', icon: 'lab', title: `${T('Lab', 'Phòng lab')} · ${o.it.n} · ${(TESTS_().find((x) => x[0] === m[2]) || ['', ''])[1]}`, text: labText(o.it, m[2]) }; }
+        m = /^(cam|ph):(\w+):(\d+)$/.exec(id);
+        if (m) { const f = frameOf(id); return f ? { who: 'B', icon: 'cam', title: f.title, text: '', snap: f } : null; }
+        const o = itemOf(id);
+        if (o) { const md = o.mode, it = o.it; return { who: 'A', icon: 'glass', title: it.n + (md === 'uv' ? ' · ' + T('UV light', 'đèn UV') : md === 'mag' ? ' · ' + T('close up', 'nhìn gần') : ''), text: md === 'uv' ? it.uv : md === 'mag' ? it.mag : (c && c.text) || it.t, room: o.room.name }; }
         return c || null;
       }
-      const objId = (room, i) => { const it = G.C.ROOMS[room].items[i]; return it.c || 'it:' + room + ':' + i; };
+      const objId = (room, i, md) => { const it = G.C.ROOMS[room].items[i]; return md === 'uv' ? (it.cu || `it:${room}:${i}:uv`) : md === 'mag' ? (it.cm || `it:${room}:${i}:mag`) : (it.c || 'it:' + room + ':' + i); };
+
+      // ---------- cameras and photos: drawn from where everyone was, minute by minute ----------
+      const fmtM = (m) => (G.C.fmt ? G.C.fmt(m) : m);
+      function whereAt(sch, m) {
+        let i = 0; for (let j = 0; j < sch.length; j++) { if (sch[j][0] <= m) i = j; else break; }
+        const e = sch[i], n = sch[i + 1]; let x = e[2];
+        if (n && n[1] === e[1] && n[0] > e[0]) x = e[2] + (n[2] - e[2]) * Math.min(1, (m - e[0]) / (n[0] - e[0]));
+        return { place: e[1], x, f: e[3] || '' };
+      }
+      const colOf = (k) => (G.C.PEOPLE[k] || G.C.EXTRA[k] || {}).col || ['#333', '#C68A62', '#777'];
+      function peopleAt(place, m) { const out = []; Object.entries(G.C.S).forEach(([k, sch]) => { const w = whereAt(sch, m); if (w.place === place) out.push({ k, x: w.x, f: w.f }); }); return out; }
+      const camOff = (cam, m) => (cam.off || []).some(([a, b]) => m >= a && m < b);
+      function frameOf(id) {
+        const C = G.C, m = /^(cam|ph):(\w+):(\d+)$/.exec(id); if (!m) return null;
+        if (m[1] === 'cam') { const cam = C.CAMS.find((c) => c.id === m[2]); if (!cam) return null; const t = +m[3];
+          return { kind: 'cam', cam, place: cam.place, m: t, a: cam.from || 0, b: cam.to == null ? 1 : cam.to, off: camOff(cam, t), title: `${cam.name.split(' · ')[0]} · ${fmtM(t)}` }; }
+        const p = photos()[+m[3]]; if (!p) return null;
+        return { kind: 'ph', place: p.place, m: p.t, a: p.a, b: p.b, title: `${T('Photo', 'Ảnh')} #${+m[3] + 1} · ${fmtM(p.t)}` };
+      }
+      const visibleIn = (f) => (f.off ? [] : peopleAt(f.place, f.m).filter((p) => p.x >= f.a - 0.02 && p.x <= f.b + 0.02).map((p) => p.k));
+      // the photographer's pictures (the same on every screen: worked out from the case, no dice)
+      function photos() {
+        const C = G.C; if (C._ph) return C._ph;
+        let h = 0; String(C.code + C.W).split('').forEach((ch) => { h = (h * 31 + ch.charCodeAt(0)) >>> 0; });
+        const rnd = () => { h = (h * 1103515245 + 12345) >>> 0; return (h >>> 8) / 16777216; };
+        const out = [], CL = [0, 1, 27, 44, 46];
+        for (let k = 0; k < 48; k++) {
+          const t = 2 + k * 5;
+          if (CL.includes(k)) { out.push({ t, place: 'cloak', a: 0, b: 1 }); continue; }
+          let c;
+          if (t >= C.W && t < C.W + 11) {   // during the swap the photographer happens to catch the people the hall camera can't see
+            const need = C.SUSPECTS.filter((s) => s !== C.culprit).map((s) => ({ s, w: whereAt(C.S[s], t) })).filter((o) => o.w.place === 'hall' && o.w.x >= 0.58);
+            c = need.length ? need[k % need.length].w.x : 0.3 + rnd() * 0.4;
+          } else { const ps = peopleAt('hall', t); c = ps.length ? ps[Math.floor(rnd() * ps.length)].x : 0.5; }
+          c = Math.max(0.24, Math.min(0.76, c + (rnd() - 0.5) * 0.12));
+          out.push({ t, place: 'hall', a: c - 0.24, b: c + 0.24 });
+        }
+        C._ph = out; return out;
+      }
+      const PX = (x) => 10 + x * 300;
+      const R0 = (x, y, w, h, f, s) => `<rect x="${x.toFixed ? x.toFixed(1) : x}" y="${y}" width="${w}" height="${h}" fill="${f}"${s ? ` stroke="${INK}" stroke-width="${s}"` : ''}/>`;
+      function fig(k, x, f) {
+        const [hr, sk, cl] = colOf(k), px = PX(x), d = (k.charCodeAt(0) + k.length * 7) % 3, by = 158 + d * 6;
+        let o = '';
+        if (f.includes('T')) o += R0(px + 8, by - 18, 30, 3, '#C0C7D0', 1) + R0(px + 10, by - 15, 26, 8, '#A0703A', 1) + R0(px + 8, by - 7, 30, 3, '#C0C7D0', 1) + `<circle cx="${px + 12}" cy="${by - 2}" r="2.5" fill="#222"/><circle cx="${px + 34}" cy="${by - 2}" r="2.5" fill="#222"/>`;
+        o += R0(px - 6, by - 9, 5, 9, '#1B1B1B') + R0(px + 1, by - 9, 5, 9, '#1B1B1B') + R0(px - 7, by - 23, 14, 15, cl, 1) + R0(px - 5, by - 32, 10, 10, sk, 1) + R0(px - 5, by - 34, 10, 4, hr);
+        if (f.includes('B')) o += R0(px - 16, by - 24, 32, 7, '#C9A27A', 1);
+        if (f.includes('S')) o += R0(px - 13, by - 28, 24, 19, '#F1E7CF', 1);
+        if (f.includes('P')) o += R0(px + 5, by - 27, 15, 21, '#2A2A2A', 1);
+        return { by, o };
+      }
+      const BG = {
+        hall: () => R0(0, 0, 320, 100, '#5A3A22') + R0(0, 100, 320, 80, '#7A2E3A') + R0(4, 88, 76, 30, '#3E2614', 1) + R0(40, 50, 3, 40, '#2A2A2A') + R0(34, 46, 15, 8, '#C0C7D0', 1)
+          + [100, 150, 200].map((x) => R0(x, 118, 34, 12, '#F1E7CF', 1)).join('') + R0(236, 92, 80, 26, '#8A5A2B', 1) + [0, 1, 2, 3, 4].map((i) => R0(244 + i * 14, 80, 6, 12, '#C9A227')).join('') + R0(140, 26, 26, 50, '#6B4423', 1) + `<text x="153" y="22" font-size="7" fill="#F1E7CF" text-anchor="middle">STAFF</text>`,
+        gallery: () => R0(0, 0, 320, 110, '#3B4A5A') + R0(0, 110, 320, 70, '#B89A6A') + R0(130, 26, 62, 50, '#C9A227', 2) + R0(136, 32, 50, 38, '#F2C38A') + R0(136, 54, 50, 16, '#2B6FA8') + R0(158, 38, 5, 18, '#F7F4EC') + R0(30, 34, 36, 28, '#8A5A2B', 1) + R0(250, 30, 30, 36, '#8A5A2B', 1) + R0(130, 120, 70, 12, '#6B4423', 1),
+        corridor: () => R0(0, 0, 320, 110, '#4A5562') + R0(0, 110, 320, 70, '#6B7A8C') + [['SECURITY', 0.15], ['OFFICE', 0.35], ['STUDIO', 0.55], ['KITCHEN', 0.75]].map(([l, x]) => R0(PX(x) - 14, 46, 28, 66, '#8A5A2B', 1) + `<text x="${PX(x)}" y="42" font-size="7" fill="#F7F4EC" text-anchor="middle">${l}</text>`).join('')
+          + `<text x="6" y="100" font-size="7" fill="#F7F4EC">◀ HALL</text><text x="314" y="100" font-size="7" fill="#F7F4EC" text-anchor="end">GALLERY / DOCK ▶</text>`,
+        dock: () => R0(0, 0, 320, 110, '#2A3340') + R0(0, 110, 320, 70, '#4A4A4A') + R0(200, 20, 110, 90, '#6B7A8C', 1) + [0, 1, 2, 3, 4, 5].map((i) => R0(200, 30 + i * 13, 110, 2, '#4A5562')).join('') + R0(20, 60, 60, 50, '#5A5A5A', 1) + `<text x="10" y="100" font-size="7" fill="#F7F4EC">◀ CORRIDOR</text>`,
+        cloak: () => R0(0, 0, 320, 110, '#6B4423') + R0(0, 110, 320, 70, '#8A6A44') + R0(60, 96, 80, 26, '#5A3A22', 1) + R0(170, 30, 90, 4, '#3E2614') + [0, 1, 2, 3, 4].map((i) => R0(176 + i * 17, 34, 12, 36, ['#2B4C7A', '#7A2E3A', '#3A3A3A', '#C9A227', '#5A3A22'][i], 1)).join('') + R0(276, 30, 34, 80, '#3E2614', 1) + `<text x="293" y="26" font-size="7" fill="#F7F4EC" text-anchor="middle">EXIT</text>`,
+      };
+      function frameSVG(f, opt) {
+        opt = opt || {};
+        const vx = PX(f.a) - 8, vw = (f.b - f.a) * 300 + 16, vy = f.kind === 'ph' ? 56 : 0, vh = 180 - vy;
+        let inner;
+        if (f.off) inner = R0(0, 0, 320, 180, '#111') + Array.from({ length: 160 }, (_, i) => { const r = ((i * 2654435761) >>> 0) % 57600; return R0(r % 320, Math.floor(r / 320), 5 + (i % 4) * 2, 2, i % 3 ? '#333' : '#555'); }).join('') + `<text x="${vx + vw / 2}" y="94" font-size="14" fill="#F7F4EC" text-anchor="middle" font-family="monospace">NO SIGNAL</text>`;
+        else {
+          const figs = peopleAt(f.place, f.m).map((p) => fig(p.k, p.x, p.f)).sort((a, b) => a.by - b.by).map((q) => q.o).join('');
+          inner = BG[f.place]() + figs + (f.place === 'dock' ? R0(0, 0, 320, 180, 'rgba(60,255,120,.16)') : '');
+        }
+        const stamp = f.kind === 'cam' ? `<rect x="${vx + 2}" y="2" width="${Math.min(vw - 4, 96)}" height="12" fill="rgba(0,0,0,.6)"/><text x="${vx + 5}" y="11" font-size="8" fill="#F7F4EC" font-family="monospace">${f.cam.id.toUpperCase()} ${fmtM(f.m)}</text>` : '';
+        return `<svg class="cf-frame ${opt.cls || ''}" viewBox="${vx} ${vy} ${vw} ${vh}" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">${inner}${stamp}</svg>`;
+      }
+      // a suspect shown a camera frame or photo: the guilty one squirms if it's from around the swap
+      function frameReact(sus, id) {
+        const f = frameOf(id); if (!f || !visibleIn(f).includes(sus)) return null;
+        const C = G.C;
+        if (sus === C.culprit && f.m >= C.W - 8 && f.m <= C.W + 22 && C.CAUGHT[sus]) return { a: C.CAUGHT[sus], hot: true };
+        return { a: T(`"Yes, that's me, at ${fmtM(f.m)}. So?"`, `"Đúng, tôi đấy, lúc ${fmtM(f.m)}. Thì sao?"`), hot: false };
+      }
+      function isStrong(id) {
+        const C = G.C; if ((C.STRONG || []).includes(id)) return true;
+        const f = /^(cam|ph):/.test(id) && frameOf(id); if (!f) return false;
+        if (f.off) return true;
+        return f.m >= C.W - 8 && f.m <= C.W + 22 && visibleIn(f).includes(C.culprit) && f.place !== 'hall';
+      }
+      // fairness check for every version of a replayable case (used by test/t_case2_fair.py)
+      function fair(C) {
+        const G0 = G; G = Object.assign({}, G0 || {}, { C, _itemOf: null }); const bad = [];
+        try {
+          const win = []; for (let m = C.W; m < C.W + 11; m++) win.push(m);
+          Object.entries(C.S).forEach(([k, s]) => { if (s[0][0] > 0) bad.push(k + ' has no place at 7 pm'); for (let i = 1; i < s.length; i++) if (s[i][0] < s[i - 1][0]) bad.push(k + ' times out of order'); });
+          const seenBy = (k, m) => C.CAMS.some((cam) => { const f = frameOf(`cam:${cam.id}:${m}`); return visibleIn(f).includes(k); }) || photos().some((p, n) => p.t === m && visibleIn(frameOf(`ph:x:${n}`)).includes(k));
+          if (!win.every((m) => camOff(C.CAMS.find((c) => c.id === 'c2'), m))) bad.push('gallery camera not off for the whole swap');
+          win.forEach((m) => { const w = whereAt(C.S[C.culprit], m); if (['hall', 'cloak', 'kitchen', 'staff', 'out'].includes(w.place)) bad.push('culprit somewhere innocent at ' + m); if (C.CAMS.some((cam) => cam.place !== 'corridor' && visibleIn(frameOf(`cam:${cam.id}:${m}`)).includes(C.culprit)) || photos().some((p, n) => p.t === m && visibleIn(frameOf(`ph:x:${n}`)).includes(C.culprit))) bad.push('culprit has an alibi on camera at ' + m); });
+          C.SUSPECTS.filter((s) => s !== C.culprit).forEach((s) => {
+            const away = win.some((m) => whereAt(C.S[s], m).place !== 'hall');
+            if (away && !(C.ALIBI || {})[s]) bad.push(s + ' left the hall during the swap with no alibi record');
+            if (!away && !win.some((m) => seenBy(s, m))) bad.push(s + ' is never seen during the swap');
+          });
+          if (![-3, -2, -1, 0, 1].some((d) => visibleIn(frameOf(`cam:c3:${C.W + d}`)).includes(C.culprit))) bad.push('culprit never on the corridor camera around the swap');
+          if (!C.HOW.some((h) => h[0] === C.KEY.how) || !C.WHY.some((h) => h[0] === C.KEY.why)) bad.push('answer not among the choices');
+          (C.STRONG || []).forEach((id) => { if (!card(id)) bad.push('strong clue missing: ' + id); });
+          if ((C.STRONG || []).filter((id) => card(id)).length < 6) bad.push('not enough strong clues');
+        } catch (e) { bad.push('error: ' + e.message); }
+        G = G0; return bad;
+      }
       const rowText = (r) => (Array.isArray(r) ? r.filter(Boolean).join(' · ') : r);
       // what a card on the board says: only what was found or marked, never the conclusion
       function cardSummary(p) {
         const c = card(p.id); if (!c) return esc(p.text || '');
         const nt = p.note ? `<span class="pn">✎ ${esc(p.note)}</span>` : '';
+        if (c.snap) return `<span class="snap">${frameSVG(c.snap)}</span>` + nt;
+        if (/^lab:/.test(p.id)) { const t = plain(c.text); return esc(t.length > 120 ? t.slice(0, 117) + '...' : t) + nt; }
         if (c.who === 'A') { const t = plain(c.text); return `<span class="rm">${esc(c.room || '')}</span>` + esc(t.length > 110 ? t.slice(0, 107) + '...' : t) + nt; }
         const rows = (p.rows || []).map((i) => c.rows[i]).filter((r) => r != null);
         return nt + (rows.length ? rows.map((r) => `<span class="mk">${esc(rowText(r))}</span>`).join('') : `<i class="nomk">${T('No lines marked yet', 'Chưa đánh dấu dòng nào')}</i>`);
@@ -11533,13 +12058,13 @@ window.CASE_DEFS.push((face) => {
         if (!G || !$('#cf-view')) return;
         const C = G.C;
         const who = G.role === 'both'
-          ? `<div class="cf-who"><button class="a ${G.view === 'A' ? 'on' : ''}" data-view="A">${T('Scene', 'Hiện trường')}</button><button class="b ${G.view === 'B' ? 'on' : ''}" data-view="B">${T('Records', 'Hồ sơ')}</button></div>`
-          : `<span class="cf-me ${G.role.toLowerCase()}">${G.role === 'A' ? T('YOU: THE SCENE', 'BẠN: HIỆN TRƯỜNG') : T('YOU: THE RECORDS', 'BẠN: HỒ SƠ')}</span>`;
+          ? `<div class="cf-who"><button class="a ${G.view === 'A' ? 'on' : ''}" data-view="A">${T('Scene', 'Hiện trường')}</button><button class="b ${G.view === 'B' ? 'on' : ''}" data-view="B">${C.desk === 'control' ? T('Control room', 'Phòng điều khiển') : T('Records', 'Hồ sơ')}</button></div>`
+          : `<span class="cf-me ${G.role.toLowerCase()}">${G.role === 'A' ? T('YOU: THE SCENE', 'BẠN: HIỆN TRƯỜNG') : C.desk === 'control' ? T('YOU: THE CONTROL ROOM', 'BẠN: PHÒNG ĐIỀU KHIỂN') : T('YOU: THE RECORDS', 'BẠN: HỒ SƠ')}</span>`;
         $('#cf-top').innerHTML = `<span class="cf-case pix">CASE #${C.num} · ${esc(C.title).toUpperCase()}</span>${who}<span class="cf-note">${G.solo ? T('Playing alone: you hold both halves. Switch between the scene and the records.', 'Chơi một mình: bạn giữ cả hai nửa. Chuyển qua lại giữa hiện trường và hồ sơ.')
           : G.partnerLeft ? T('Your partner left: you now hold both halves.', 'Cộng sự đã rời: giờ bạn giữ cả hai nửa.')
-          : `${T('Partner', 'Cộng sự')}: <b>${esc(partner())}</b> · ${G.role === 'A' ? T('the records', 'hồ sơ') : T('the scene', 'hiện trường')}. ${T('Pin clues so they can see them, and talk!', 'Ghim manh mối để họ thấy, và trao đổi nhé!')}`}</span>`;
+          : `${T('Partner', 'Cộng sự')}: <b>${esc(partner())}</b> · ${G.role === 'A' ? (C.desk === 'control' ? T('the control room', 'phòng điều khiển') : T('the records', 'hồ sơ')) : T('the scene', 'hiện trường')}. ${T('Pin clues so they can see them, and talk!', 'Ghim manh mối để họ thấy, và trao đổi nhé!')}`}</span>`;
         const v = G.view;
-        const list = [['brief', T('Briefing', 'Tóm tắt')], ['inv', v === 'A' ? T('Crime scene', 'Hiện trường') : T('Records', 'Hồ sơ')], ['sus', T('Interviews', 'Thẩm vấn')], ['board', T('Evidence board', 'Bảng chứng cứ'), G.pins.length], ['acc', T('Accuse', 'Buộc tội'), G.prop ? '!' : 0]];
+        const list = [['brief', T('Briefing', 'Tóm tắt')], ['inv', v === 'A' ? T('Crime scene', 'Hiện trường') : C.desk === 'control' ? T('Control room', 'Phòng điều khiển') : T('Records', 'Hồ sơ')], ['sus', T('Interviews', 'Thẩm vấn')], ['board', T('Evidence board', 'Bảng chứng cứ'), G.pins.length], ['acc', T('Accuse', 'Buộc tội'), G.prop ? '!' : 0]];
         $('#cf-tabs').innerHTML = list.map(([k, l, n]) => `<button class="cf-tab ${G.tab === k ? 'on' : ''}" data-tab="${k}">${l}${n ? `<span class="n">${n}</span>` : ''}</button>`).join('');
         const el = $('#cf-view');
         el.innerHTML = G.tab === 'brief' ? briefHTML() : G.tab === 'inv' ? (v === 'A' ? sceneHTML() : recordsHTML()) : G.tab === 'sus' ? susHTML() : G.tab === 'board' ? boardHTML() : accHTML();
@@ -11575,14 +12100,86 @@ window.CASE_DEFS.push((face) => {
       }
       function docChanged(id) { const pin = G.pins.find((p) => p.id === id); return !!(pin && G.marks[id] && JSON.stringify((pin.rows || []).slice().sort()) !== JSON.stringify(G.marks[id].slice().sort())); }
       function sceneHTML() {
-        const C = G.C, room = C.ROOMS[G.room];
+        const C = G.C, room = C.ROOMS[G.room], tools = C.TOOLS;
         const looked = {}; room.items.forEach((_, i) => { if (G.looked[G.room + ':' + i]) looked[i] = 1; });
-        const nav = `<div class="cf-rooms">${Object.entries(C.ROOMS).map(([k, o]) => `<button class="cf-rbtn ${G.room === k ? 'on' : ''}" data-room="${k}" style="--rc:${o.col}">${esc(o.name)}</button>`).join('')}</div>`;
-        const it = G.item != null ? room.items[G.item] : null;
-        let side = `<p class="cf-scene">${room.scene}</p><p class="cf-tip">${T('Tap anything in the room to take a closer look. You can pin anything to the board, but not everything matters, and nobody tells you when you have found it all.', 'Chạm vào bất cứ thứ gì trong phòng để xem kỹ. Bạn có thể ghim mọi thứ lên bảng, nhưng không phải thứ gì cũng quan trọng, và không ai báo khi bạn đã tìm hết.')}</p>`;
-        if (it) side += clueCard(objId(G.room, G.item));
-        return `${nav}<div class="cf-inv"><div class="cf-panel"><div class="cf-ph">${esc(room.name).toUpperCase()}</div><div class="cf-pb cf-roombox">${roomSVG(room, looked)}</div></div>
+        const nav = `<div class="cf-rooms">${Object.entries(C.ROOMS).map(([k, o]) => `<button class="cf-rbtn ${G.room === k ? 'on' : ''}" data-room="${k}" style="--rc:${o.col || '#9DB4CC'}">${esc(o.name)}${o.dark ? ' <small>(' + T('dark', 'tối') + ')</small>' : ''}</button>`).join('')}</div>`;
+        const it = G.item != null ? room.items[G.item] : null, md = G.itemMode || '';
+        const TL = { hand: ['✋', T('Look', 'Nhìn')], light: ['🔦', T('Flashlight', 'Đèn pin')], uv: ['◉', T('UV light', 'Đèn UV')], mag: ['🔍', T('Magnifier', 'Kính lúp')], bag: ['👜', T('Evidence bag', 'Túi chứng cứ')] };
+        const belt = tools ? `<div class="cf-belt"><span class="pix">${T('TOOL BELT', 'DỤNG CỤ')}</span>${tools.map((t) => `<button class="cf-tool ${G.tool === t ? 'on' : ''} t-${t}" data-tool="${t}"><i>${TL[t][0]}</i>${TL[t][1]}${t === 'bag' ? ` <b>${G.bag.length}/${C.BAG || 6}</b>` : ''}</button>`).join('')}
+          ${room.before ? `<button class="cf-tool cf-beforebtn ${G.before ? 'on' : ''}" data-before>📷 ${G.before ? T('Back to now', 'Về hiện tại') : T('Compare: 7:30 pm photo', 'So sánh: ảnh lúc 7:30')}</button>` : ''}</div>` : '';
+        const tipT = { hand: T('Tap anything in the room to take a closer look.', 'Chạm vào bất cứ thứ gì để xem kỹ.'), light: T('Move the light around the dark room, then tap things.', 'Di chuyển đèn pin quanh phòng tối rồi chạm vào đồ vật.'),
+          uv: T('UV light shows what the eye can\'t: prints, wiped marks, fresh paint. Tap anything to check it.', 'Đèn UV cho thấy điều mắt thường không thấy: dấu tay, vết lau, sơn mới. Chạm để kiểm tra.'), mag: T('Tap anything to look at it up close.', 'Chạm vào đồ vật để nhìn thật gần.'),
+          bag: T(`Tap something to put it in an evidence bag for the lab (${C.BAG || 6} bags). Tap it again to take it out.`, `Chạm vào đồ vật để cho vào túi chứng cứ gửi phòng lab (${C.BAG || 6} túi). Chạm lần nữa để lấy ra.`) }[G.tool];
+        let side = `<p class="cf-scene">${room.scene}</p><p class="cf-tip">${tools ? tipT + ' ' : ''}${T('You can pin anything to the board, but not everything matters, and nobody tells you when you have found it all.', 'Bạn có thể ghim mọi thứ lên bảng, nhưng không phải thứ gì cũng quan trọng, và không ai báo khi bạn đã tìm hết.')}</p>`;
+        if (G.before) side = `<p class="cf-scene">${T('The photographer took this picture of the gallery at 7:30 pm, before anything happened. Compare it with the room now.', 'Nhiếp ảnh gia chụp phòng tranh lúc 7:30 tối, trước khi có chuyện gì. Hãy so sánh với căn phòng bây giờ.')}</p>`;
+        else if (it && room.dark && G.tool !== 'light' && !G.lit) side += `<div class="cf-look"><b>${esc(it.n)}</b><p>${T('It\'s too dark to see. Use the flashlight.', 'Tối quá, không thấy gì. Hãy dùng đèn pin.')}</p></div>`;
+        else if (it && md === 'uv') side += it.uv ? clueCard(objId(G.room, G.item, 'uv')) : `<div class="cf-look"><b>${esc(it.n)} · ${T('UV light', 'đèn UV')}</b><p>${T('Nothing glows here.', 'Không có gì phát sáng.')}</p></div>`;
+        else if (it && md === 'mag') side += it.mag ? clueCard(objId(G.room, G.item, 'mag')) : `<div class="cf-look"><b>${esc(it.n)} · ${T('close up', 'nhìn gần')}</b><p>${T('Nothing more to see up close.', 'Nhìn gần cũng không thấy gì thêm.')}</p></div>`;
+        else if (it) side += clueCard(objId(G.room, G.item));
+        if (tools && G.bag.length) side += `<div class="cf-bagged"><b>${T('IN THE EVIDENCE BAG', 'TRONG TÚI CHỨNG CỨ')}</b>${G.bag.map((b) => `<span>👜 ${esc(C.ROOMS[b.room].items[b.i].n)}</span>`).join('')}</div>`;
+        const dark = room.dark && !G.before ? `<div class="cf-dark ${G.tool === 'light' ? 'lit' : ''}" id="cf-dark"></div>` : '';
+        return `${nav}${belt}<div class="cf-inv"><div class="cf-panel"><div class="cf-ph">${esc(room.name).toUpperCase()}${G.before ? ' · 7:30 PM' : ''}</div><div class="cf-pb cf-roombox"><div class="cf-roomwrap tool-${G.tool} ${G.before ? 'before' : ''}" id="cf-roomwrap">${roomSVG(room, looked, { uv: G.tool === 'uv', before: G.before })}${dark}${G.tool === 'uv' && !G.before ? '<div class="cf-uvlay"></div>' : ''}</div></div></div>
           <div class="cf-panel"><div class="cf-ph">${T('CLOSE LOOK', 'XEM KỸ')}</div><div class="cf-pb">${side}</div></div></div>`;
+      }
+      // ---------- Detective B in Case #002+: the security control room ----------
+      function controlHTML() {
+        const tabs = [['cams', T('Cameras', 'Camera')], ['photos', T('Photos', 'Ảnh')], ['lab', T('Lab', 'Phòng lab') + (G.bag.length ? ` (${G.bag.length})` : '')], ['files', T('Files', 'Hồ sơ')]];
+        const bar = `<div class="cf-ctabs">${tabs.map(([k, l]) => `<button class="cf-ctab ${G.ctab === k ? 'on' : ''}" data-ctab="${k}">${l}</button>`).join('')}</div>`;
+        const body = G.ctab === 'cams' ? camsHTML() : G.ctab === 'photos' ? photosHTML() : G.ctab === 'lab' ? labHTML() : filesHTML();
+        return bar + body;
+      }
+      function legendHTML() {
+        const C = G.C;
+        return `<div class="cf-legend2"><b>${T('WHO\'S WHO (by their clothes)', 'AI LÀ AI (theo quần áo)')}</b>${Object.keys(C.PEOPLE).concat(['price']).map((k) => { const q = fig(k, -1 / 30, ''); return `<span><svg viewBox="-10 ${q.by - 36} 20 38" class="mini">${q.o}</svg>${k === 'price' ? T('Auctioneer', 'Người đấu giá') : esc(C.PEOPLE[k].name.split(' ')[0])}</span>`; }).join('')}</div>`;
+      }
+      function camsInner() {
+        const C = G.C, m = G.cam.m, big = G.cam.big;
+        const one = (cam, cls) => `<button class="cf-cam ${cls || ''} ${big === cam.id ? 'on' : ''}" data-cam="${cam.id}"><span class="lbl">${esc(cam.name)}</span>${frameSVG(frameOf(`cam:${cam.id}:${m}`))}</button>`;
+        if (big) { const cam = C.CAMS.find((c) => c.id === big);
+          return `<div class="cf-camsbig">${one(cam, 'big')}<div class="cf-camside">${C.CAMS.filter((c) => c.id !== big).map((c) => one(c)).join('')}</div></div>`; }
+        return `<div class="cf-camgrid">${C.CAMS.map((c) => one(c)).join('')}</div>`;
+      }
+      function camsHTML() {
+        const m = G.cam.m, big = G.cam.big;
+        return `<div class="cf-panel"><div class="cf-ph">${T('SECURITY CAMERAS', 'CAMERA AN NINH')} <small>${T('7:00 pm to 11:00 pm · tap a screen to make it big', '7:00 đến 11:00 tối · chạm màn hình để phóng to')}</small></div><div class="cf-pb">
+          <div class="cf-scrub"><button class="cf-sbtn" data-step="-10">−10</button><button class="cf-sbtn" data-step="-1">◀</button><button class="cf-sbtn play" data-play>${G.cam.play ? '❚❚' : '▶'}</button><button class="cf-sbtn" data-step="1">▶</button><button class="cf-sbtn" data-step="10">+10</button>
+            <input type="range" id="cf-slider" min="0" max="240" step="1" value="${m}"><span class="cf-clock" id="cf-clock">${fmtM(m)}</span></div>
+          <div id="cf-cams">${camsInner()}</div>
+          <div class="cf-camacts">${big ? (G.pins.some((p) => p.id === `cam:${big}:${m}`) ? `<span class="cf-pinned">📌 ${T('This frame is on the board', 'Khung hình này đã ở trên bảng')}</span>` : `<button class="btn-game btn-teal py-1.5 px-3 text-xs" data-pinframe>📌 ${T('Pin this frame to the board', 'Ghim khung hình này lên bảng')}</button>`) : `<span class="text-muted text-sm">${T('Make a camera big to pin a frame.', 'Phóng to một camera để ghim khung hình.')}</span>`}</div>
+          ${legendHTML()}</div></div>`;
+      }
+      function photosHTML() {
+        const P = photos(), sel = G.ph;
+        const view = sel != null ? (() => { const id = `ph:x:${sel}`, f = frameOf(id), pinned = G.pins.some((p) => p.id === id);
+          return `<div class="cf-phview"><div class="cf-phbig ${G.zoom ? 'zoom' : ''}" data-zoom>${frameSVG(f)}</div><div class="cf-phcap"><b>${f.title}</b> · ${P[sel].place === 'cloak' ? T('Cloakroom', 'Phòng gửi đồ') : T('Main hall', 'Sảnh chính')}
+            <span class="text-muted">${T('Tap the photo to zoom in.', 'Chạm vào ảnh để phóng to.')}</span>
+            ${pinned ? `<span class="cf-pinned">📌 ${T('On the board', 'Đã ở trên bảng')}</span>` : `<button class="btn-game btn-teal py-1.5 px-3 text-xs" data-pin="${id}">📌 ${T('Pin to the board', 'Ghim lên bảng')}</button>`}</div></div>`; })() : `<p class="cf-scene">${T('Jun Park photographed the gala all night, every five minutes. Pick a photo.', 'Jun Park chụp buổi tiệc cả đêm, cứ năm phút một tấm. Chọn một tấm ảnh.')}</p>`;
+        return `<div class="cf-inv cf-photos"><div class="cf-panel"><div class="cf-ph">${T('CAMERA ROLL', 'CUỘN PHIM')} <small>${P.length} ${T('photos', 'ảnh')}</small></div><div class="cf-pb"><div class="cf-phgrid">${P.map((p, n) => `<button class="cf-phthumb ${sel === n ? 'on' : ''}" data-ph="${n}">${frameSVG(frameOf(`ph:x:${n}`))}<span>${fmtM(p.t)}</span></button>`).join('')}</div></div></div>
+          <div class="cf-panel"><div class="cf-ph">${T('PHOTO', 'ẢNH')}</div><div class="cf-pb">${view}</div></div></div>`;
+      }
+      function labHTML() {
+        const C = G.C;
+        if (!G.bag.length) return `<div class="cf-panel"><div class="cf-ph">${T('THE LAB', 'PHÒNG LAB')}</div><div class="cf-pb"><p class="cf-scene">${G.role === 'B' ? T('Nothing to test yet. Your partner at the scene puts things in evidence bags, and they arrive here.', 'Chưa có gì để xét nghiệm. Cộng sự ở hiện trường cho đồ vào túi chứng cứ, và chúng sẽ đến đây.') : T('Nothing to test yet. Use the evidence bag on the tool belt at the scene.', 'Chưa có gì để xét nghiệm. Dùng túi chứng cứ trên thắt lưng dụng cụ ở hiện trường.')}</p></div></div>`;
+        const sel = G.bag.find((b) => b.k === G.labSel) || G.bag[0];
+        const it = C.ROOMS[sel.room].items[sel.i];
+        const res = TESTS_().filter(([t]) => G.labRes[`lab:${sel.k}:${t}`]).map(([t, l]) => { const id = `lab:${sel.k}:${t}`;
+          return `<div class="cf-labres"><b>${l}</b><p>${esc(labText(it, t))}</p>${G.pins.some((p) => p.id === id) ? `<span class="cf-pinned">📌 ${T('On the board', 'Đã ở trên bảng')}</span>` : `<button class="btn-game btn-teal py-1 px-3 text-xs" data-pin="${id}">📌 ${T('Pin', 'Ghim')}</button>`}</div>`; }).join('');
+        return `<div class="cf-inv cf-lab"><div class="cf-panel"><div class="cf-ph">${T('EVIDENCE BAGS', 'TÚI CHỨNG CỨ')} <small>${G.bag.length}/${C.BAG || 6}</small></div><div class="cf-pb"><div class="cf-bags">${G.bag.map((b) => `<button class="cf-bagbtn ${b.k === sel.k ? 'on' : ''}" data-labsel="${b.k}"><i>👜</i>${esc(C.ROOMS[b.room].items[b.i].n)}<small>${esc(C.ROOMS[b.room].name)}</small></button>`).join('')}</div></div></div>
+          <div class="cf-panel"><div class="cf-ph">${T('TEST', 'XÉT NGHIỆM')}: ${esc(it.n).toUpperCase()}</div><div class="cf-pb"><p class="cf-tip">${T('Pick a test. The wrong test just shows nothing, so think about what this thing could tell you.', 'Chọn phép thử. Chọn sai thì không ra gì, nên hãy nghĩ xem món đồ này có thể cho biết điều gì.')}</p>
+            <div class="cf-tests">${TESTS_().map(([t, l]) => `<button class="cf-test ${G.labRes[`lab:${sel.k}:${t}`] ? 'done' : ''}" data-test="${t}" data-k="${sel.k}">${{ mag: '🔬', uv: '◉', prints: '☝', threads: '🧵' }[t]} ${l}</button>`).join('')}</div>${res}</div></div></div>`;
+      }
+      function timelineHTML() {
+        const C = G.C, PL = { hall: T('Main hall', 'Sảnh chính'), gallery: T('East Gallery', 'Phòng tranh Đông'), corridor: T('Back corridor', 'Hành lang sau'), security: T('Security room', 'Phòng bảo vệ'), kitchen: T('Kitchen', 'Bếp'), dock: T('Loading dock', 'Khu bốc hàng'), studio: T('Studio', 'Xưởng'), office: T('Office', 'Văn phòng'), cloak: T('Cloakroom', 'Phòng gửi đồ'), staff: T('Staff room', 'Phòng nhân viên'), out: T('Gone home', 'Đã về') };
+        const times = []; for (let m = 0; m <= 240; m += 1) times.push(m);
+        const rows = C.SUSPECTS.map((k) => `<div class="cf-tlrow"><span class="who">${C.PEOPLE[k].art}${esc(C.PEOPLE[k].name.split(' ')[0])}</span><div class="bar">${[0, 60, 120, 180, 240].map((m) => `<i class="tick" style="left:${m / 2.4}%"></i>`).join('')}
+          ${G.tl.map((e, i) => e.who === k ? `<span class="dot" style="left:${e.m / 2.4}%" title="${esc(PL[e.place] || e.place)}"><em>${fmtM(e.m).replace(' pm', '')}</em>${esc(PL[e.place] || e.place)}<b data-untl="${i}">✕</b></span>` : '').join('')}</div></div>`).join('');
+        return `<div class="cf-panel"><div class="cf-ph">${T('TIMELINE WALL', 'BẢNG DÒNG THỜI GIAN')} <small>${T('shared with your partner', 'dùng chung với cộng sự')}</small></div><div class="cf-pb">
+          <p class="cf-tip">${T('Put down where each suspect was and when, from what you have seen. Gaps are interesting.', 'Ghi lại mỗi nghi phạm ở đâu, lúc nào, từ những gì bạn đã thấy. Những khoảng trống rất đáng chú ý.')}</p>
+          <div class="cf-tlaxis">${[0, 60, 120, 180, 240].map((m) => `<span style="left:${m / 2.4}%">${fmtM(m)}</span>`).join('')}</div>${rows}
+          <div class="cf-tlform"><select id="cf-tlwho">${C.SUSPECTS.map((k) => `<option value="${k}">${esc(C.PEOPLE[k].name)}</option>`).join('')}</select>
+            <select id="cf-tlm">${times.filter((m) => m % 1 === 0).map((m) => `<option value="${m}" ${m === G.cam.m ? 'selected' : ''}>${fmtM(m)}</option>`).join('')}</select>
+            <select id="cf-tlp">${Object.entries(PL).map(([k, l]) => `<option value="${k}">${l}</option>`).join('')}</select>
+            <button class="btn-game btn-amber py-1.5 px-3 text-xs" data-tladd>${T('Add', 'Thêm')}</button></div></div></div>`;
       }
       // one document as a real piece of paper: the look (log sheet, till receipt, phone printout, notebook...) sets the paper
       function paperHTML(id, c, marks) {
@@ -11605,7 +12202,8 @@ window.CASE_DEFS.push((face) => {
           notice: '<div class="stamp">OFFICIAL COPY</div>', phone: '<div class="pg">PAGE 1 OF 1 · END OF REPORT</div>', log: '<div class="pg">FILED BY FRONT DESK</div>' }[lk] || '';
         return `<div class="cf-sheet ${lk}"><span class="clip"></span>${head}${body}${foot}</div>`;
       }
-      function recordsHTML() {
+      function recordsHTML() { return G.C.desk === 'control' ? controlHTML() : filesHTML(); }
+      function filesHTML() {
         const C = G.C;
         const cab = `<div class="cf-cab"><div class="top"><span>${T('RECORDS', 'HỒ SƠ')}</span></div>${C.DRAWERS.map((d, i) => {
           const open = G.drawer === i;
@@ -11633,7 +12231,9 @@ window.CASE_DEFS.push((face) => {
       }
       function boardHTML() {
         const C = G.C;
-        return `<div class="cf-boardwrap"><div class="cf-cork" id="cf-cork"><svg class="strings" id="cf-strings"></svg>
+        const sw = C.desk === 'control' ? `<div class="cf-ctabs"><button class="cf-ctab ${G.btab === 'board' ? 'on' : ''}" data-btab="board">${T('Evidence board', 'Bảng chứng cứ')}</button><button class="cf-ctab ${G.btab === 'tl' ? 'on' : ''}" data-btab="tl">${T('Timeline wall', 'Dòng thời gian')}${G.tl.length ? ` (${G.tl.length})` : ''}</button></div>` : '';
+        if (sw && G.btab === 'tl') return sw + timelineHTML();
+        return sw + `<div class="cf-boardwrap"><div class="cf-cork" id="cf-cork"><svg class="strings" id="cf-strings"></svg>
           ${G.pins.map((p) => { const c = card(p.id); return c ? `<div class="cf-pin ${c.who.toLowerCase()} ${G.selPin === p.id ? 'sel' : ''}" data-p="${p.id}" style="left:${p.x}px;top:${p.y}px"><span class="x" data-unpin="${p.id}">✕</span><b>${c.title}</b>${cardSummary(p)}</div>`
             : `<div class="cf-pin note ${G.selPin === p.id ? 'sel' : ''}" data-p="${p.id}" style="left:${p.x}px;top:${p.y}px"><span class="x" data-unpin="${p.id}">✕</span>${esc(p.text || '')}<i>${esc(myName(p.by))}</i></div>`; }).join('')}
           ${G.pins.length ? '' : `<div class="cf-empty">${T('Nothing pinned yet.<br>Find clues and press 📌 Pin to the board.', 'Chưa ghim gì.<br>Tìm manh mối và bấm 📌 Ghim lên bảng.')}</div>`}</div>
@@ -11672,7 +12272,7 @@ window.CASE_DEFS.push((face) => {
             <span class="text-muted text-sm">${G.solo ? '' : T('Your partner has to agree. ', 'Cộng sự phải đồng ý. ')}${T('A wrong accusation costs a star.', 'Buộc tội sai bị trừ một sao.')}${G.tries ? ` ${T('Wrong so far', 'Sai')}: ${G.tries}.` : ''}</span></div></div>`;
       }
       function revealHTML() {
-        const C = G.C, s = stars(), all = Object.keys(C.CLUES).filter((k) => C.CLUES[k].who === 'A' || C.STRONG.includes(k) || (C.USEFUL || []).includes(k)), got = all.filter((k) => G.found[k]), miss = all.filter((k) => !G.found[k]);
+        const C = G.C, s = stars(), all = C.KEYLIST || Object.keys(C.CLUES).filter((k) => C.CLUES[k].who === 'A' || C.STRONG.includes(k) || (C.USEFUL || []).includes(k)), got = all.filter((k) => G.found[k]), miss = all.filter((k) => !G.found[k]);
         return `<div class="cf-panel"><div class="cf-ph">${T('CASE CLOSED', 'ĐÃ PHÁ ÁN')} <small>Case #${C.num} · ${esc(C.title)}</small></div><div class="cf-pb">
           <div class="cf-verdict"><div class="pic">${C.PEOPLE[C.culprit].art}</div><div><div class="big">${T('SOLVED!', 'PHÁ ÁN!')}</div><div class="who">${C.solved}</div>
             <div class="cf-stars">${'★'.repeat(s)}<i>${'★'.repeat(5 - s)}</i></div><div class="text-muted text-sm">${G.hints} ${T('hints', 'gợi ý')} · ${G.tries} ${T('wrong accusations', 'lần buộc tội sai')}${G.weak ? ' · ' + T('weaker evidence picked', 'bằng chứng chưa mạnh') : ''}${G.mins ? ` · ${G.mins} min` : ''}</div></div></div>
@@ -11685,13 +12285,40 @@ window.CASE_DEFS.push((face) => {
           <div class="mt-4 flex gap-3 flex-wrap"><button class="btn-game btn-amber py-2 px-5 text-sm" data-again>${T('Back to the cases', 'Về danh sách vụ án')}</button></div></div></div>`;
       }
 
+      // cameras repaint on their own (no full redraw), so the slider keeps working smoothly
+      function paintCams() { const el = $('#cf-cams'); if (!el) return; el.innerHTML = camsInner(); const s = $('#cf-slider'); if (s && +s.value !== G.cam.m) s.value = G.cam.m; const c = $('#cf-clock'); if (c) c.textContent = fmtM(G.cam.m);
+        const a = $('.cf-camacts'); if (a && G.cam.big) { const id = `cam:${G.cam.big}:${G.cam.m}`; a.innerHTML = G.pins.some((p) => p.id === id) ? `<span class="cf-pinned">📌 ${T('This frame is on the board', 'Khung hình này đã ở trên bảng')}</span>` : `<button class="btn-game btn-teal py-1.5 px-3 text-xs" data-pinframe>📌 ${T('Pin this frame to the board', 'Ghim khung hình này lên bảng')}</button>`; } }
+      function stopPlay(keep) { if (G && G.cam.play) { G.cam.play = false; if (G.camT) gClearInt(G.camT); const b = $('[data-play]'); if (b) b.textContent = '▶'; } }
       // ---------- input ----------
       function bind(body) {
         gOn(body, 'click', (e) => {
-          const t = e.target.closest('[data-item],[data-drawer],[data-doc],[data-row],[data-remark],[data-showmenu],[data-show],[data-tab],[data-view],[data-room],[data-search],[data-pin],[data-sus],[data-ask],[data-unpin],[data-addnote],[data-acc],[data-ev],[data-propose],[data-answer],[data-cancel],[data-hint],[data-again]');
+          const t = e.target.closest('[data-tool],[data-before],[data-ctab],[data-btab],[data-cam],[data-step],[data-play],[data-pinframe],[data-ph],[data-zoom],[data-labsel],[data-test],[data-tladd],[data-untl],[data-item],[data-drawer],[data-doc],[data-row],[data-remark],[data-showmenu],[data-show],[data-tab],[data-view],[data-room],[data-search],[data-pin],[data-sus],[data-ask],[data-unpin],[data-addnote],[data-acc],[data-ev],[data-propose],[data-answer],[data-cancel],[data-hint],[data-again]');
           if (!t || !G) return;
           const C = G.C;
-          if (t.dataset.item !== undefined) { const i = +t.dataset.item; G.item = i; SFX.play('click'); if (!G.looked[G.room + ':' + i]) { act({ t: 'look', room: G.room, i }); return; } }
+          if (t.dataset.tool) { G.tool = t.dataset.tool; G.itemMode = ''; G.before = false; SFX.play('click'); }
+          else if (t.dataset.before !== undefined) { G.before = !G.before; G.item = null; SFX.play('card'); }
+          else if (t.dataset.ctab) { G.ctab = t.dataset.ctab; stopPlay(); }
+          else if (t.dataset.btab) G.btab = t.dataset.btab;
+          else if (t.dataset.cam) { G.cam.big = G.cam.big === t.dataset.cam ? null : t.dataset.cam; }
+          else if (t.dataset.step) { G.cam.m = Math.max(0, Math.min(240, G.cam.m + +t.dataset.step)); paintCams(); return; }
+          else if (t.dataset.play !== undefined) { if (G.cam.play) stopPlay(); else { G.cam.play = true; if (G.cam.m >= 240) G.cam.m = 0; G.camT = gInterval(() => { if (!G || !G.cam.play) return; G.cam.m++; if (G.cam.m >= 240) stopPlay(); paintCams(); }, 260); } }
+          else if (t.dataset.pinframe !== undefined) { const id = `cam:${G.cam.big}:${G.cam.m}`, n = G.pins.length; act({ t: 'pin', id, x: 16 + (n % 4) * 182 + rnd(12), y: 18 + Math.floor(n / 4) * 130 + rnd(12) }); SFX.play('click'); return; }
+          else if (t.dataset.ph !== undefined) { G.ph = +t.dataset.ph; G.zoom = false; SFX.play('card'); }
+          else if (t.dataset.zoom !== undefined) { G.zoom = !G.zoom; }
+          else if (t.dataset.labsel) G.labSel = t.dataset.labsel;
+          else if (t.dataset.test) { act({ t: 'test', k: t.dataset.k, test: t.dataset.test }); SFX.play('reveal'); return; }
+          else if (t.dataset.tladd !== undefined) { const v = (id) => (body.querySelector(id) || {}).value; act({ t: 'tl', who: v('#cf-tlwho'), m: +v('#cf-tlm'), place: v('#cf-tlp') }); return; }
+          else if (t.dataset.untl !== undefined) { act({ t: 'untl', i: +t.dataset.untl }); return; }
+          else if (t.dataset.item !== undefined) {
+            const i = +t.dataset.item, room = G.C.ROOMS[G.room], tool = G.tool || 'hand';
+            if (G.before) return;
+            if (tool === 'bag') { const it = room.items[i]; if (!it.lab) { toast(T('That won\'t fit in an evidence bag.', 'Thứ này không cho vào túi chứng cứ được.')); return; }
+              if (!G.bag.some((b) => b.room === G.room && b.i === i) && G.bag.length >= (G.C.BAG || 6)) { toast(T('All evidence bags are full. Take something out first.', 'Hết túi chứng cứ rồi. Hãy lấy bớt ra trước.')); return; }
+              act({ t: 'bag', room: G.room, i }); SFX.play('card'); return; }
+            G.item = i; G.itemMode = tool === 'uv' || tool === 'mag' ? tool : ''; SFX.play('click');
+            const md = G.itemMode, lk = G.room + ':' + i + (md ? ':' + md : '');
+            if (room.dark && tool !== 'light' && !md) { render(); return; }
+            if (!G.looked[lk]) { act({ t: 'look', room: G.room, i, tool: md || undefined }); return; } }
           else if (t.dataset.drawer !== undefined) { const d = +t.dataset.drawer; G.drawer = d; G.doc = null; SFX.play('click'); }
           else if (t.dataset.doc) { G.doc = t.dataset.doc; SFX.play('card'); if (!G.found[G.doc]) { act({ t: 'find', id: G.doc }); return; } }
           else if (t.dataset.row !== undefined) { const i = +t.dataset.row, pin = G.pins.find((p) => p.id === G.doc), cur = (G.marks[G.doc] || (pin && pin.rows) || []).slice(); const k = cur.indexOf(i); if (k >= 0) cur.splice(k, 1); else cur.push(i); G.marks[G.doc] = cur; }
@@ -11717,11 +12344,15 @@ window.CASE_DEFS.push((face) => {
           render();
         });
         gOn(body, 'input', (e) => {
+          if (e.target.id === 'cf-slider') { G.cam.m = +e.target.value; stopPlay(true); paintCams(); return; }
           const t = e.target; if (!G || !t.dataset || t.dataset.note === undefined) return;
           const id = t.dataset.note; G.notes[id] = t.value;
           const box = body.querySelector(`[data-acts="${id}"]`), pin = G.pins.find((p) => p.id === id);
           if (box) box.innerHTML = pinActs(id, docChanged(id));
         });
+        // flashlight: the circle of light follows the pointer
+        gOn(body, 'pointermove', (e) => { const w = e.target.closest && e.target.closest('#cf-roomwrap'); const d = $('#cf-dark'); if (!w || !d) return; const r = w.getBoundingClientRect(); d.style.setProperty('--lx', (e.clientX - r.left) + 'px'); d.style.setProperty('--ly', (e.clientY - r.top) + 'px'); });
+        gOn(body, 'pointerdown', (e) => { const w = e.target.closest && e.target.closest('#cf-roomwrap'); const d = $('#cf-dark'); if (!w || !d) return; const r = w.getBoundingClientRect(); d.style.setProperty('--lx', (e.clientX - r.left) + 'px'); d.style.setProperty('--ly', (e.clientY - r.top) + 'px'); });
         // dragging + tying cards on the board (the move is shared when you let go)
         let drag = null;
         gOn(body, 'pointerdown', (e) => {
@@ -11751,7 +12382,7 @@ window.CASE_DEFS.push((face) => {
       GICONS.casefiles = `<svg viewBox="0 0 24 24" shape-rendering="crispEdges" aria-hidden="true">${rr(0, 0, 24, 24, '#0F2338')}${rr(2, 5, 8, 3, K)}${rr(2, 7, 17, 14, K)}${rr(3, 6, 6, 2, '#E9C46A')}${rr(3, 8, 15, 12, '#E9C46A')}${rr(5, 11, 8, 1, '#8A6A2A')}${rr(5, 13, 6, 1, '#8A6A2A')}${rr(5, 15, 7, 1, '#8A6A2A')}
         ${rr(13, 9, 8, 8, K)}${rr(14, 10, 6, 6, '#7DD3FC')}${rr(15, 11, 2, 2, '#F7F4EC')}${rr(19, 16, 2, 2, K)}${rr(20, 17, 3, 3, K)}${rr(21, 18, 1, 1, '#B0362A')}</svg>`;
       const mod = {
-        id: 'casefiles', name: 'Case Files', icon: 'casefiles', cats: ['party', 'word'], sub: '1-2 PLAYERS · ~25 MIN', color: '#E9C46A', tone: 'amber', btn: 'amber', flag: 'NEW',
+        id: 'casefiles', name: 'Case Files', icon: 'casefiles', cats: ['party', 'word'], sub: '1-2 PLAYERS · 25-50 MIN', color: '#E9C46A', tone: 'amber', btn: 'amber', flag: 'NEW',
         blurb: 'A co-op detective case: one of you has the crime scene, the other has the records. Pin the evidence and catch the culprit together.',
         rules: { tag: 'DETECTIVE · CO-OP FOR 2', steps: [
           '<strong class="text-bone">Two halves:</strong> Detective A searches the scene and interviews suspects; Detective B reads the records.',
@@ -11760,7 +12391,7 @@ window.CASE_DEFS.push((face) => {
           '<strong class="text-bone">Accuse:</strong> who, how and why, with your 3 best pieces of evidence. Your partner has to agree.',
         ], tip: 'Check every alibi against a record. Whose story does a record prove false?' },
         profileTiles: (s) => [['CASES SOLVED', s.cases || 0, 'text-amber'], ['BEST STARS', (s.stars || 0) + '★', 'text-teal']],
-        engine: { get G() { return G; }, cases, act: (a) => act(a), apply: (a) => apply(a) },
+        engine: { get G() { return G; }, cases, act: (a) => act(a), apply: (a) => apply(a), fair: (C) => fair(C), frameOf: (id) => frameOf(id), visibleIn: (f) => visibleIn(f), photos: () => photos(), isStrong: (id) => isStrong(id) },
         open, close() { G = null; },
         online: { seats: () => 2, min: 2, bots: false, ranked: false, start: (body, sel, S) => start(body, sel, S) },
       };
@@ -23603,6 +24234,7 @@ window.GEO_PLACES = [{"id":"nyc_times","name":"Times Square, New York","country"
           ['Share on the board', 'You can pin anything you find, with your own note, to the shared evidence board so your partner sees it. Careful: not everything matters, and an ordinary object looks just like a clue on the board. Drag cards around, tap two cards to tie them with red string, and add sticky notes.'],
           ['Catch the lies', 'Some interview questions only unlock when the right clue is on the board. Show a suspect a record that proves they lied!'],
           ['Accuse', 'Pick who did it, how and why, plus your 3 best pieces of evidence. Your partner has to agree. A wrong accusation costs a star, and so does each hint.'],
+          ['Case #002 and later', 'Some cases give you new tools. At the scene: a flashlight for dark rooms, a UV light, a magnifier and evidence bags to send things to the lab. In the control room: security cameras with a time slider, the photographer\'s photos, the lab tests, and a timeline wall to work out who was where. Shuffled cases have a different culprit every time you play.'],
           ['Case closed', 'See what really happened, step by step, why the innocent suspects looked guilty, and which clues you missed.']],
           tip: 'Check every suspect\'s story against a record. The person whose story a record proves false is your best lead.', online: 'Play with a friend in a private room (each on your own screen; voice chat helps a lot!), or alone holding both halves.' },
         geo: { tag: '1-8 PLAYERS · GEOGRAPHY', goal: 'Work out where in the world each photo was taken. The closer your pin, the more points.', steps: [
@@ -24171,6 +24803,7 @@ window.GEO_PLACES = [{"id":"nyc_times","name":"Times Square, New York","country"
           ['Chia sẻ lên bảng', 'Bạn có thể ghim mọi thứ tìm được, kèm ghi chú của mình, lên bảng chứng cứ chung cho cộng sự thấy. Cẩn thận: không phải thứ gì cũng quan trọng, và một món đồ bình thường trông y như manh mối trên bảng. Kéo thẻ, chạm hai thẻ để nối dây đỏ, và thêm ghi chú.'],
           ['Bắt lời nói dối', 'Một số câu hỏi chỉ mở khi đúng manh mối đã ở trên bảng. Hãy đưa cho nghi phạm xem hồ sơ chứng minh họ nói dối!'],
           ['Buộc tội', 'Chọn ai đã làm, bằng cách nào, vì sao, kèm 3 bằng chứng tốt nhất. Cộng sự phải đồng ý. Buộc tội sai bị trừ một sao, mỗi gợi ý cũng vậy.'],
+          ['Vụ #002 trở đi', 'Một số vụ có dụng cụ mới. Ở hiện trường: đèn pin cho phòng tối, đèn UV, kính lúp và túi chứng cứ để gửi đồ đến phòng lab. Ở phòng điều khiển: camera an ninh với thanh kéo thời gian, ảnh của nhiếp ảnh gia, xét nghiệm ở phòng lab và bảng dòng thời gian để tìm xem ai ở đâu. Vụ xáo trộn có thủ phạm khác nhau mỗi lần chơi.'],
           ['Phá án', 'Xem chuyện gì đã thật sự xảy ra, vì sao những người vô tội trông có vẻ đáng ngờ, và bạn đã bỏ sót manh mối nào.']],
           tip: 'Đối chiếu lời khai của từng nghi phạm với hồ sơ. Người có lời khai bị hồ sơ chứng minh là sai chính là đầu mối tốt nhất.', online: 'Chơi với một người bạn trong phòng riêng (mỗi người một màn hình; trò chuyện thoại giúp rất nhiều!), hoặc chơi một mình giữ cả hai nửa.' },
         geo: { goal: 'Đoán xem mỗi bức ảnh được chụp ở đâu trên thế giới. Ghim càng gần, điểm càng cao.', steps: [
@@ -25999,6 +26632,17 @@ window.GEO_PLACES = [{"id":"nyc_times","name":"Times Square, New York","country"
        Written for players: what changed for them, no technical words.
        ========================================================================= */
     window.UPDATES = [
+      { date: '2026-11-28', id: '2026-11-28f',
+        en: ['Case Files: Case #002, The Night Gallery',
+          'A famous painting was swapped for a fake during a museum gala. Find out when, who, how and why.',
+          'New tools at the scene: a flashlight for dark rooms, a UV light, a magnifier and evidence bags for the lab.',
+          'New for the second detective: a security control room with cameras you scroll through, 48 party photos, lab tests and a shared timeline wall.',
+          'Every game is different: the culprit, the times and the clues change each time you play (or pick Classic).'],
+        vi: ['Hồ Sơ Vụ Án: Vụ #002, Phòng Tranh Lúc Nửa Đêm',
+          'Một bức tranh nổi tiếng bị tráo bằng tranh giả trong buổi tiệc ở bảo tàng. Hãy tìm ra lúc nào, ai, bằng cách nào và vì sao.',
+          'Dụng cụ mới ở hiện trường: đèn pin cho phòng tối, đèn UV, kính lúp và túi chứng cứ gửi phòng lab.',
+          'Mới cho thám tử thứ hai: phòng điều khiển an ninh với camera kéo theo thời gian, 48 tấm ảnh buổi tiệc, xét nghiệm và bảng dòng thời gian chung.',
+          'Mỗi ván một khác: thủ phạm, thời gian và manh mối thay đổi mỗi lần chơi (hoặc chọn Cổ điển).'] },
       { date: '2026-11-28', id: '2026-11-28e',
         en: ['New game: Case Files',
           'A detective case for two: one of you searches the crime scene and questions the suspects, the other digs through the records. You each see only your half!',

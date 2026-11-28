@@ -74,6 +74,7 @@
           ['Chia sẻ lên bảng', 'Bạn có thể ghim mọi thứ tìm được, kèm ghi chú của mình, lên bảng chứng cứ chung cho cộng sự thấy. Cẩn thận: không phải thứ gì cũng quan trọng, và một món đồ bình thường trông y như manh mối trên bảng. Kéo thẻ, chạm hai thẻ để nối dây đỏ, và thêm ghi chú.'],
           ['Bắt lời nói dối', 'Một số câu hỏi chỉ mở khi đúng manh mối đã ở trên bảng. Hãy đưa cho nghi phạm xem hồ sơ chứng minh họ nói dối!'],
           ['Buộc tội', 'Chọn ai đã làm, bằng cách nào, vì sao, kèm 3 bằng chứng tốt nhất. Cộng sự phải đồng ý. Buộc tội sai bị trừ một sao, mỗi gợi ý cũng vậy.'],
+          ['Vụ #002 trở đi', 'Một số vụ có dụng cụ mới. Ở hiện trường: đèn pin cho phòng tối, đèn UV, kính lúp và túi chứng cứ để gửi đồ đến phòng lab. Ở phòng điều khiển: camera an ninh với thanh kéo thời gian, ảnh của nhiếp ảnh gia, xét nghiệm ở phòng lab và bảng dòng thời gian để tìm xem ai ở đâu. Vụ xáo trộn có thủ phạm khác nhau mỗi lần chơi.'],
           ['Phá án', 'Xem chuyện gì đã thật sự xảy ra, vì sao những người vô tội trông có vẻ đáng ngờ, và bạn đã bỏ sót manh mối nào.']],
           tip: 'Đối chiếu lời khai của từng nghi phạm với hồ sơ. Người có lời khai bị hồ sơ chứng minh là sai chính là đầu mối tốt nhất.', online: 'Chơi với một người bạn trong phòng riêng (mỗi người một màn hình; trò chuyện thoại giúp rất nhiều!), hoặc chơi một mình giữ cả hai nửa.' },
         geo: { goal: 'Đoán xem mỗi bức ảnh được chụp ở đâu trên thế giới. Ghim càng gần, điểm càng cao.', steps: [

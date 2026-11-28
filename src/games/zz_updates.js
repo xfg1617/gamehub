@@ -5,6 +5,17 @@
        Written for players: what changed for them, no technical words.
        ========================================================================= */
     window.UPDATES = [
+      { date: '2026-11-28', id: '2026-11-28f',
+        en: ['Case Files: Case #002, The Night Gallery',
+          'A famous painting was swapped for a fake during a museum gala. Find out when, who, how and why.',
+          'New tools at the scene: a flashlight for dark rooms, a UV light, a magnifier and evidence bags for the lab.',
+          'New for the second detective: a security control room with cameras you scroll through, 48 party photos, lab tests and a shared timeline wall.',
+          'Every game is different: the culprit, the times and the clues change each time you play (or pick Classic).'],
+        vi: ['Hồ Sơ Vụ Án: Vụ #002, Phòng Tranh Lúc Nửa Đêm',
+          'Một bức tranh nổi tiếng bị tráo bằng tranh giả trong buổi tiệc ở bảo tàng. Hãy tìm ra lúc nào, ai, bằng cách nào và vì sao.',
+          'Dụng cụ mới ở hiện trường: đèn pin cho phòng tối, đèn UV, kính lúp và túi chứng cứ gửi phòng lab.',
+          'Mới cho thám tử thứ hai: phòng điều khiển an ninh với camera kéo theo thời gian, 48 tấm ảnh buổi tiệc, xét nghiệm và bảng dòng thời gian chung.',
+          'Mỗi ván một khác: thủ phạm, thời gian và manh mối thay đổi mỗi lần chơi (hoặc chọn Cổ điển).'] },
       { date: '2026-11-28', id: '2026-11-28e',
         en: ['New game: Case Files',
           'A detective case for two: one of you searches the crime scene and questions the suspects, the other digs through the records. You each see only your half!',

@@ -1361,3 +1361,23 @@ folder that was handed over, so they do not exist here.)
   wooden desk as real paper (`paperHTML`, doc `look` in the case data: log, receipt, phone, notebook, statement, letter,
   notice, form, menu; `C.org` = hotel name on letterheads); tapped lines get a highlighter stroke. Watch out: the chat's
   `.cf-row` rule in 21-core-chat.css is dark, `.cf-sheet` resets it.
+
+## 5aq. Case Files #002 "The Night Gallery" (Nov 28 2026, Inna: different evidence types + a different answer every game)
+
+* **Inna plays these cases: never write the solutions in chat, commit messages or notes.** They live only in
+  `src/games/case_002.js` and show on the in-game reveal screen.
+* `case_002.js` returns `{ make(cfg), variants }`; `start()` calls `make({v, off, code})` with the table's shared dice
+  (`S.rng`, same on every screen and after a rejoin), or a fixed version for VERSION: Classic (setup option `ver`, only for
+  cases with `make`). Everything (who was where minute by minute `S`, clues, lab results, statements, reveal) is built from
+  that one version.
+* New engine parts in casefiles.js (used when a case sets them): `TOOLS` = tool belt (Look / Flashlight for `dark` rooms,
+  pointer-following light / UV with glowing marks / Magnifier / Evidence bag, `BAG` slots); item fields `uv` `mag` `lab`
+  (per test: mag, uv, prints, threads) and clue ids `c` `cu` `cm`; `room.before` = the 7:30 pm photo to compare.
+  `desk: 'control'` = B's control room: Cameras (`CAMS`, time slider 7-11 pm, play, pin a frame `cam:<cam>:<min>`), Photos
+  (48, worked out from the case, `ph:x:<n>`), Lab (bagged items, tests → `lab:<key>:<test>` cards), Files (the cabinet).
+  Frames are drawn from the minute-by-minute schedule (`whereAt`, `peopleAt`, `frameSVG`, sprites by clothes colours, a
+  WHO'S WHO legend). Board: Evidence board / Timeline wall (shared `tl` entries). Showing a frame in an interview: the
+  person in it reacts (`frameReact`). `isStrong` counts frames around the swap. Actions: bag, test, tl, untl, look+tool.
+* `engine.fair(C)` checks one version; `test/t_case2_fair.py` runs it on every culprit x 3 time nudges x 3 codes (no
+  solutions printed). `test/t_case2.py` (solo, every tool, accuse), `test/t_np_case2.py` (two partners, same version).
+* `.cf-wrap` has 84 px bottom padding so CHAT / emote never cover the accuse button.

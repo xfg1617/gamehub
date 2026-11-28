@@ -8,12 +8,15 @@ UA = {'User-Agent': 'GameHubGeoPhotos/1.0 (educational game; image credits shown
 API = 'https://commons.wikimedia.org/w/api.php'
 OK_LIC = re.compile(r'^(cc0|public domain|pd|cc by(-sa)? ?[1-4]\.0|cc by(-sa)? ?2\.5|cc by(-sa)? ?3\.0)', re.I)
 BAD = re.compile(r'map|logo|flag|coat.of.arms|diagram|painting|portrait|interior|museum|plan|stamp|drawing|altar|grave|tomb|menu|sign|plaque|selfie|food|dish|insect|bird|flower|close|detail|night|aerial|satellite|panorama|pano|statue|sculpture|text|screenshot|poster|ticket|bus|train|car_|vehicle|people|woman|man_|girl|boy', re.I)
-def get(params):
-    for k in range(4):
+def get(params):   # slow and patient: Wikimedia asks bots to keep to a few requests a second and back off when told to
+    for k in range(8):
         try:
+            time.sleep(1.2)
             r = urllib.request.urlopen(urllib.request.Request(API + '?' + urllib.parse.urlencode(params), headers=UA), timeout=30)
-            return json.load(r)
-        except Exception as e: time.sleep(2 + k * 3)
+            txt = r.read().decode('utf-8', 'replace')
+            if txt.lstrip().startswith('{'): return json.loads(txt)
+            time.sleep(20 + k * 20)
+        except Exception as e: time.sleep(10 + k * 15)
     return {}
 cands = json.load(open(OUT + '/cands.json')) if os.path.exists(OUT + '/cands.json') else {}
 import threading
@@ -40,7 +43,7 @@ def one(pl):
     with lock:
         cands[pid] = found[:6]; print(pid, len(found), flush=True)
         json.dump(cands, open(OUT + '/cands.json', 'w'), indent=1)
-with ThreadPoolExecutor(6) as ex: list(ex.map(one, PLACES))
+with ThreadPoolExecutor(2) as ex: list(ex.map(one, PLACES))
 # thumbnails + contact sheets (one row per place, up to 6 candidates)
 def thumb(url, path):
     if os.path.exists(path): return Image.open(path)
@@ -53,7 +56,7 @@ def thumb(url, path):
     return Image.new('RGB', (240, 160), (60, 0, 0))
 def th_all(pid):
     for c, cd in enumerate(cands.get(pid, [])[:6]): thumb(cd['thumb'], f'{OUT}/th/{pid}_{c}.jpg')
-with ThreadPoolExecutor(8) as ex: list(ex.map(th_all, [p[0] for p in PLACES]))
+with ThreadPoolExecutor(3) as ex: list(ex.map(th_all, [p[0] for p in PLACES]))
 ids = [p[0] for p in PLACES]
 for s in range(0, len(ids), 12):
     rows = ids[s:s + 12]; sheet = Image.new('RGB', (180 + 6 * 250, len(rows) * 170), (10, 20, 30)); d = ImageDraw.Draw(sheet)

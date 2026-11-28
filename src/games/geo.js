@@ -89,15 +89,44 @@
       const fmtKm = (d) => (d == null ? '—' : d < 1 ? Math.round(d * 1000) + ' m' : d < 100 ? d.toFixed(1) + ' km' : Math.round(d).toLocaleString('en-US') + ' km');
 
       // ---------- the map: our own SVG, zoom + pan + tap to pin ----------
-      let LAND = '', BORD = '';   // filled from geo_map.js (loads after this file) or the sharper /geo/map50.json
+      // countries in soft colours, coast + borders, US states, and names (countries, seas, states, cities) that appear as you zoom in
+      let MAP = null;   // window.GEO_MAP (geo_map.js, in the page) or the sharper /geo/map50.json on the live site
+      const PAL = ['#E9DDB4', '#D5E2AE', '#EFCFA6', '#CBDFC4', '#E6CFC2'];
       function hiRes() {
         if (!/^https?:$/.test(location.protocol) || hiRes.done) return; hiRes.done = 1;
-        fetch('/geo/map50.json').then((r) => (r.ok ? r.json() : null)).then((j) => { if (j && j.land) { LAND = j.land; BORD = j.borders; if (G) drawMap(); } }).catch(() => {});
+        fetch('/geo/map50.json').then((r) => (r.ok ? r.json() : null)).then((j) => { if (j && j.countries) { MAP = prep(j); if (G) drawMap(); } }).catch(() => {});
+      }
+      function prep(m) { m.byCol = PAL.map((_, c) => m.countries.filter((x) => x[1] === c).map((x) => x[0]).join('')); return m; }
+      function mapData() { if (!MAP && window.GEO_MAP) MAP = prep(window.GEO_MAP); return MAP || { byCol: [], land: '', borders: '', states: '', labels: [], slabels: [] }; }
+      const vi = () => typeof LANG !== 'undefined' && LANG.code === 'vi';
+      function labelsSVG(v, ppd) {
+        const M = mapData(), items = [], x0 = v[0], x1 = v[0] + v[2], y0 = v[1], y1 = v[1] + v[3];
+        const cname = (n) => (vi() && window.GEO_VI && GEO_VI[n]) || (window.GEO_SHORT && GEO_SHORT[n]) || n;
+        // countries: bigger ones first, a name only when the country is big enough on screen
+        M.labels.forEach(([n, x, y, size]) => { if (size * ppd < 34) return; const px = Math.max(9, Math.min(15, 8 + (size * ppd) / 36));
+          items.push({ t: cname(n).toUpperCase(), x, y, px, cls: 'c', pri: 1000 + size }); });
+        (window.GEO_SEAS || []).forEach(([en, vn, lat, lon, tier]) => { if (ppd < [0, 2.4, 5][tier]) return; items.push({ t: vi() ? vn : en, x: lon + 180, y: 90 - lat, px: tier ? 11 : 13, cls: 's', pri: 900 - tier * 10 }); });
+        if (ppd >= 6) M.slabels.forEach(([n, x, y, ab, size]) => { const full = size * ppd >= 46; if (!full && !(ab && ppd >= 12)) return; items.push({ t: full ? n : ab, x, y, px: 10, cls: 'st', pri: 500 + size }); });
+        (window.GEO_CITIES || []).forEach(([n, lat, lon, tier]) => { if (ppd < [0, 2.6, 6.5, 15][tier]) return; items.push({ t: n, x: lon + 180, y: 90 - lat, px: tier === 1 ? 11 : 10, cls: 'ct', pri: 800 - tier * 100, dot: 1 }); });
+        items.sort((a, b) => b.pri - a.pri);
+        const placed = [], out = [];
+        for (const it of items) {
+          for (const sh of [0, 360, -360]) {
+            const x = it.x + sh; if (x < x0 - 2 || x > x1 + 2 || it.y < y0 - 1 || it.y > y1 + 1) continue;
+            const w = (it.t.length * it.px * (it.cls === 'c' ? 0.68 : 0.56) + (it.dot ? 6 : 0)) / ppd, h = (it.px + 2) / ppd;
+            const bx = it.dot ? x - 3 / ppd : x - w / 2, by = it.y - h / 2;
+            if (placed.some((p) => bx < p[0] + p[2] && bx + w > p[0] && by < p[1] + p[3] && by + h > p[1])) continue;
+            placed.push([bx, by, w, h]);
+            const fs = it.px / ppd, sw = 3 / ppd;
+            if (it.dot) out.push(`<circle cx="${x}" cy="${it.y}" r="${2.4 / ppd}" fill="#050E18" stroke="#F7F4EC" stroke-width="${1 / ppd}"/><text class="gl ct" x="${x + 4.5 / ppd}" y="${it.y + fs * 0.35}" font-size="${fs}" stroke-width="${sw}">${esc(it.t)}</text>`);
+            else out.push(`<text class="gl ${it.cls}" x="${x}" y="${it.y + fs * 0.35}" font-size="${fs}" stroke-width="${sw}" text-anchor="middle"${it.cls === 'c' ? ` letter-spacing="${0.8 / ppd}"` : ''}>${esc(it.t)}</text>`);
+          }
+        }
+        return out.join('');
       }
       function drawMap() {
         const svg = $('geo-map'); if (!svg || !G) return;
-        if (!LAND) { LAND = window.GEO_LAND || ''; BORD = window.GEO_BORDERS || ''; }
-        const v = G.view, k = v[2] / 360;   // pins keep their size on screen whatever the zoom
+        const M = mapData(), v = G.view, k = v[2] / 360, ppd = (svg.clientWidth || 600) / v[2];
         const pinG = (x, y, col, label, big) => `<g transform="translate(${x},${y}) scale(${k * (big ? 1.25 : 1)})"><path d="M0,0 L-3.2,-6 A3.6,3.6 0 1 1 3.2,-6 Z" fill="${col}" stroke="#050E18" stroke-width="1.1"/><circle cx="0" cy="-8.4" r="1.6" fill="#050E18"/>${label ? `<text x="0" y="-12.6" text-anchor="middle" font-size="5" font-family="Outfit" font-weight="800" fill="#F7F4EC" stroke="#050E18" stroke-width="1.2" paint-order="stroke">${esc(label)}</text>` : ''}</g>`;
         let marks = '';
         if (G.reveal) {
@@ -111,8 +140,12 @@
         for (let x = 0; x <= 360; x += 30) grid.push(`M${x},0V180`);
         for (let y = 0; y <= 180; y += 30) grid.push(`M0,${y}H360`);
         svg.setAttribute('viewBox', v.join(' '));
-        svg.innerHTML = `<rect x="-360" y="-90" width="1080" height="360" fill="#1D5C8C"/><path d="${grid.join('')}" stroke="#2C6EA0" stroke-width="${0.35 * k}" fill="none"/>
-          <path d="${LAND}" fill="#E8DCB5" stroke="#050E18" stroke-width="${0.45 * k}" stroke-linejoin="round"/><path d="${BORD}" fill="none" stroke="#9C8A5E" stroke-width="${0.3 * k}"/>${marks}`;
+        const lw = (px) => px / ppd;   // a line px wide on screen, whatever the zoom
+        svg.innerHTML = `<rect x="-360" y="-90" width="1080" height="360" fill="#1D5C8C"/><path d="${grid.join('')}" stroke="#2C6EA0" stroke-width="${lw(0.8)}" fill="none"/>
+          ${M.byCol.map((d, c) => `<path d="${d}" fill="${PAL[c]}"/>`).join('')}
+          ${ppd >= 4 ? `<path d="${M.states}" fill="none" stroke="#A8936A" stroke-width="${lw(0.9)}" stroke-dasharray="${lw(3)} ${lw(2)}"/>` : ''}
+          <path d="${M.borders}" fill="none" stroke="#7A6A48" stroke-width="${lw(1.1)}" stroke-linejoin="round"/><path d="${M.land}" fill="none" stroke="#050E18" stroke-width="${lw(1.3)}" stroke-linejoin="round"/>
+          <g class="geo-labels">${labelsSVG(v, ppd)}</g>${marks}`;
       }
       function fit(v) {   // keep the view on the map and not smaller than ~a city
         v[2] = Math.max(3, Math.min(370, v[2])); v[3] = v[2] * G.aspect;     // the whole world always fits across (tall boxes get sea above / below)

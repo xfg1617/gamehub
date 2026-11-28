@@ -30,3 +30,10 @@
       body.in-game[data-game="geo"] .geo-mapbox { aspect-ratio: auto; height: min(52vh, calc(var(--av, 100vh) - 260px)); }
     }
     @media (max-width: 900px) { .geo-wrap { grid-template-columns: 1fr; } .geo-mapbox { aspect-ratio: 4 / 3; } }
+    /* map names (countries, seas, states, cities): a pale outline keeps them readable on any colour */
+    .geo-labels { pointer-events: none; }
+    .gl { font-family: 'Outfit', sans-serif; font-weight: 700; paint-order: stroke; stroke: #F7F1DD; stroke-linejoin: round; fill: #3A2A14; }
+    .gl.c { font-weight: 900; fill: #5A4526; }
+    .gl.s { font-style: italic; font-weight: 600; fill: #D7ECFF; stroke: #1D5C8C; }
+    .gl.st { font-style: italic; font-weight: 600; fill: #6B5A38; }
+    .gl.ct { fill: #050E18; }

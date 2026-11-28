@@ -36,8 +36,11 @@
       const vi = (sel) => sel.lang === 'vi';
       // the questions this game can use (shared dice: every screen gets the same list, the same answer order)
       function pool(sel) {
-        const all = (window.TRIVIA_Q || []).filter((q) => (sel.cat === 'mix' || !sel.cat || q[0] === sel.cat) && (sel.diff === 'easy' ? q[1] === 1 : sel.diff === 'hard' ? q[1] >= 2 : true));
-        return all.length >= 5 ? all : (window.TRIVIA_Q || []);
+        // Easy / Medium / Hard each use only their own level (Hard = only the really hard ones). Questions about English words
+        // have no Vietnamese text and are left out of Vietnamese games.
+        const lv = { easy: 1, medium: 2, hard: 3 }[sel.diff], usable = (q) => !vi(sel) || !!q[4];
+        const all = (window.TRIVIA_Q || []).filter((q) => usable(q) && (sel.cat === 'mix' || !sel.cat || q[0] === sel.cat) && (!lv || q[1] === lv));
+        return all.length >= 5 ? all : (window.TRIVIA_Q || []).filter((q) => usable(q) && (!lv || q[1] === lv));
       }
       function build(sel, rng, n) {
         const p = rng.shuffle(pool(sel)).slice(0, n), L = vi(sel);
@@ -60,7 +63,7 @@
           { key: 'cat', label: 'CATEGORY', def: 'mix', choices: [['mix', 'All mixed']].concat(Object.entries(CATS).map(([id, c]) => [id, c[0]])) },
           { key: 'qn', label: 'QUESTIONS', def: 15, choices: [[10, '10'], [15, '15'], [20, '20']] },
           { key: 'secs', label: 'TIME TO ANSWER', def: 15, choices: [[10, '10 sec'], [15, '15 sec'], [20, '20 sec']] },
-          { key: 'diff', label: 'DIFFICULTY', def: 'mix', choices: [['mix', 'Mixed'], ['easy', 'Easy'], ['hard', 'Hard']] },
+          { key: 'diff', label: 'DIFFICULTY', def: 'mix', choices: [['mix', 'Mixed'], ['easy', 'Easy'], ['medium', 'Medium'], ['hard', 'Hard']] },
           { key: 'n', label: 'PLAYERS', def: 4, choices: [[1, 'Just me'], [2, '2'], [3, '3'], [4, '4'], [6, '6'], [8, '8']] },
           { key: 'lvl', label: 'COMPUTER LEVEL', def: 2, local: true, choices: [[1, 'Easy'], [2, 'Smart'], [3, 'Genius']] },
         ], (sel) => {

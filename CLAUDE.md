@@ -1391,3 +1391,18 @@ folder that was handed over, so they do not exist here.)
 * **Case types** (Nov 28 2026, Inna): the setup asks CASE TYPE (`cat`: quick / standard / big, only types that have cases;
   each case has `cat`) and then THE CASE of that type by name (`c_<type>` keys; `caseFor(sel)`). Numbers (#001) are no
   longer shown anywhere. No-repeat keeps `seen[id]` (this round) and `last[id]` (never twice in a row).
+
+## 5ar. Trivia Rush clean-up + Where Am I? map (Nov 28 2026, Inna)
+
+* **Trivia difficulty**: Easy = level 1 only, Medium (new) = level 2 only, **Hard = level 3 only** (it used to include level 2).
+  All 1,091 questions were re-read: ~110 too-easy "hard" ones moved down, `trivia_q9.js` adds 33 new hard ones, so every
+  category has 20+ hard questions in both languages (`t_trivia.py` checks). ~120 Vietnamese lines rewritten to sound natural
+  (no answer given away in the question). Questions about English words (baby animal names, group names, "tittle"...) have
+  an empty Vietnamese text and are left out of Vietnamese games (`pool()` in trivia.js). Question files are now one JSON
+  array per line (rewritten by a script).
+* **Where Am I? map** (`tools/geo/make_map.js`, world-atlas 2.0.2 + us-atlas 3.0.1 + topojson-client 3.1.0): one filled shape per
+  country in 5 soft colours (neighbours differ), coast + borders, US state lines (dashed, when zoomed in), and names placed by
+  `labelsSVG` in geo.js: countries (shown when big enough on screen), seas (`GEO_SEAS`), US states (full name or postal code),
+  cities (`src/games/geo_cities.js`, `GEO_CITIES` tiers 1-3, Vietnamese cities with accents), no overlaps (greedy by priority).
+  Vietnamese names for common countries / seas (`GEO_VI`). In-page map `geo_map.js` (1:110m, ~236 KB), live site `map50.json`
+  (1:50m, ~1.7 MB).

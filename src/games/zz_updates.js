@@ -5,6 +5,15 @@
        Written for players: what changed for them, no technical words.
        ========================================================================= */
     window.UPDATES = [
+      { date: '2026-11-28', id: '2026-11-28g',
+        en: ['Trivia Rush and Where Am I? improvements',
+          'Trivia Rush: Hard now gives only truly hard questions, and there is a new Medium level. 33 new hard questions.',
+          'Trivia Rush: about 200 Vietnamese questions rewritten to sound natural; questions about English words no longer appear in Vietnamese games.',
+          'Where Am I?: a new map with a colour for each country, and names of countries, seas, US states and cities that appear as you zoom in.'],
+        vi: ['Cải tiến Đố Vui Nhanh và Tôi Ở Đâu?',
+          'Đố Vui Nhanh: chế độ Khó giờ chỉ có câu hỏi thật sự khó, và có thêm mức Vừa. Thêm 33 câu hỏi khó mới.',
+          'Đố Vui Nhanh: khoảng 200 câu hỏi tiếng Việt được viết lại cho tự nhiên; câu hỏi về từ tiếng Anh không còn xuất hiện khi chơi bằng tiếng Việt.',
+          'Tôi Ở Đâu?: bản đồ mới có màu riêng cho từng nước, tên các nước, biển, bang của Mỹ và thành phố hiện ra khi phóng to.'] },
       { date: '2026-11-28', id: '2026-11-28f',
         en: ['Case Files: Case #002, The Night Gallery',
           'A famous painting was swapped for a fake during a museum gala. Find out when, who, how and why.',

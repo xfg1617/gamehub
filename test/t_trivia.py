@@ -9,7 +9,7 @@ with sync_playwright() as p:
     br = launch(p); pg = open_page(br)
     r = pg.evaluate("""(() => { const Q = window.TRIVIA_Q, bad = [], cats = {}, seen = new Set(), dup = [];
       Q.forEach((q, i) => { cats[q[0]] = (cats[q[0]] || 0) + 1;
-        if (q.length !== 6 || ![1, 2, 3].includes(q[1]) || q[3].split('|').length !== 4 || (q[5] && q[5].split('|').length !== 4) || !q[2] || !q[4]) bad.push(i + ': ' + q[2]);
+        if (q.length !== 6 || ![1, 2, 3].includes(q[1]) || q[3].split('|').length !== 4 || (q[5] && q[5].split('|').length !== 4) || !q[2] || (!q[4] && q[5])) bad.push(i + ': ' + q[2]);
         if (new Set(q[3].split('|')).size !== 4) bad.push('same answer twice: ' + q[2]);
         if (seen.has(q[2])) dup.push(q[2]); seen.add(q[2]); });
       return { n: Q.length, bad, dup, cats }; })()""")
@@ -17,6 +17,12 @@ with sync_playwright() as p:
     check(not r['bad'], 'every question has 4 different answers in both languages ' + str(r['bad'][:3]))
     check(not r['dup'], 'no question twice ' + str(r['dup'][:3]))
     check(len(r['cats']) == 12 and min(r['cats'].values()) >= 20, '12 categories, at least 20 questions each')
+    h = pg.evaluate("""(() => { const out = {}; Object.keys(window.TRIVIA_Q.reduce((a, q) => (a[q[0]] = 1, a), {})).forEach((c) => ['en', 'vi'].forEach((L) => {
+        const n = window.TRIVIA_Q.filter((q) => q[0] === c && q[1] === 3 && (L === 'en' || q[4])).length; out[c + '/' + L] = n; })); return out; })()""")
+    check(min(h.values()) >= 20, f'Hard: 20+ really hard questions in every category, both languages (fewest: {min(h, key=h.get)} {min(h.values())})')
+    ok = pg.evaluate("""(() => { const r = GAME_MODS.trivia.engine; if (!r || !r.pool) return 'no pool'; const p = r.pool({ cat: 'mix', diff: 'hard', lang: 'vi' });
+        return p.every((q) => q[1] === 3 && q[4]) ? 'ok' : 'mixed'; })()""")
+    check(ok == 'ok', f'Hard mode only ever deals level-3 questions, and Vietnamese games skip English-word questions ({ok})')
     pg.evaluate("openGame('trivia')"); pg.wait_for_timeout(300)
     for k, v in (('lang', 'en'), ('qn', '10'), ('n', '4')): pg.click(f'[data-k="{k}"][data-v="{v}"]')
     pg.click('#su-go'); pg.wait_for_timeout(500)

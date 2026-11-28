@@ -157,9 +157,11 @@
       }
       function start(body, sel, S) {
         const base = cases().find((c) => c.id === sel.case) || cases()[0];
-        const C = base.make ? base.make(sel.ver === 'classic' ? { v: 0, off: 0, code: '4417' } : { v: S.rng.rnd(base.variants), off: S.rng.rnd(3), code: String(1000 + S.rng.rnd(9000)) }) : base;
+        // a shuffled case waits until every player has said which versions they already played, then picks one none of them has had
+        const shuffled = !!base.make && sel.ver !== 'classic';
+        const C = !base.make ? base : shuffled ? null : base.make({ v: 0, off: 0, code: '4417' });
         const solo = S.n === 1;
-        G = { S, C, solo, me: S.online ? S.me : 0, view: 'A', tab: 'brief', room: Object.keys(C.ROOMS)[0], open: null, sus: C.SUSPECTS[0],
+        G = { S, C, base, hist: {}, solo, me: S.online ? S.me : 0, view: 'A', tab: 'brief', room: C ? Object.keys(C.ROOMS)[0] : null, open: null, sus: C ? C.SUSPECTS[0] : null,
           found: {}, looked: {}, marks: {}, notes: {}, tool: 'hand', bag: [], labRes: {}, tl: [], btab: 'board', ctab: 'cams', cam: { m: 0, big: null, play: false }, ph: null, zoom: false, before: false, labSel: null, drawer: -1, doc: null, item: null, log: {}, pins: [], strings: [], asked: {}, feed: [], hints: 0, tries: 0, acc: { who: null, how: null, why: null, ev: [] }, prop: null, solved: false, selPin: null, noteN: 0, over: false, tok: ++GT.cur, t0: Date.now() };
         G.role = solo ? 'both' : G.me === 0 ? 'A' : 'B';
         if (G.role === 'B') G.view = 'B';
@@ -170,6 +172,24 @@
         bind(body);
         npBar('');
         render();
+        if (shuffled) { act({ t: 'hist', seen: seenList(base.id) }); if (S.isHost !== false) gTimeout(() => { if (G && !G.C) act({ t: 'go' }); }, 5000); }
+      }
+      // which versions of a case this player already had (saved with the profile, so it follows an account to other devices)
+      const seenList = (id) => ((gstat('casefiles').seen || {})[id] || []).slice();
+      function remember(id, v, n) {
+        const st = gstat('casefiles'); st.seen = st.seen || {}; let l = (st.seen[id] || []).filter((x) => x !== v); l.push(v);
+        if (l.length >= n) l = [v];   // seen them all: start a new round, but never the same one twice in a row
+        st.seen[id] = l; try { saveProfileToStorage(); } catch (e) {}
+      }
+      function buildCase() {
+        const b = G.base, all = Array.from({ length: b.variants }, (_, i) => i), seen = new Set();
+        Object.values(G.hist).forEach((l) => (l || []).forEach((v) => seen.add(v)));
+        let pool = all.filter((v) => !seen.has(v));
+        if (!pool.length) { const last = new Set(Object.values(G.hist).map((l) => l && l[l.length - 1])); pool = all.filter((v) => !last.has(v)); if (!pool.length) pool = all; }
+        const v = pool[G.S.rng.rnd(pool.length)];
+        G.C = b.make({ v, off: G.S.rng.rnd(3), code: String(1000 + G.S.rng.rnd(9000)) });
+        G.room = Object.keys(G.C.ROOMS)[0]; G.sus = G.C.SUSPECTS[0]; G.version = v;
+        remember(b.id, v, b.variants);
       }
       const partner = () => (G.solo ? null : G.S.name(1 - G.me));
       const myName = (s) => (s === G.me ? T('You', 'Bạn') : G.S.name(s));
@@ -179,6 +199,8 @@
       // ---------- every change, in the same order on both screens ----------
       function apply(a) {
         if (!G) return 0;
+        if (a.t === 'hist' || a.t === 'go') { if (!G.C) { if (a.t === 'hist') G.hist[a.s] = a.seen || []; if (a.t === 'go' || Object.keys(G.hist).length >= G.S.n) buildCase(); render(); } return 0; }
+        if (!G.C) return 0;
         const C = G.C, title = (id) => (card(id) ? card(id).title : T('a note', 'một ghi chú'));
         if ((a.t === 'pin' || a.t === 'mark') && a.s === G.me) delete G.notes[a.id];
         if (a.t === 'find') { if (!G.found[a.id]) { G.found[a.id] = 1; if (a.s !== G.me) feed(a.s, `${T('found', 'tìm thấy')} <b>${esc(title(a.id))}</b>`); } }
@@ -368,6 +390,7 @@
       // ---------- views ----------
       function render() {
         if (!G || !$('#cf-view')) return;
+        if (!G.C) { $('#cf-view').innerHTML = `<div class="cf-panel"><div class="cf-pb"><p class="cf-scene">${T('Opening the case file... (picking a version none of you has played)', 'Đang mở hồ sơ vụ án... (chọn phiên bản chưa ai chơi)')}</p></div></div>`; return; }
         const C = G.C;
         const who = G.role === 'both'
           ? `<div class="cf-who"><button class="a ${G.view === 'A' ? 'on' : ''}" data-view="A">${T('Scene', 'Hiện trường')}</button><button class="b ${G.view === 'B' ? 'on' : ''}" data-view="B">${C.desk === 'control' ? T('Control room', 'Phòng điều khiển') : T('Records', 'Hồ sơ')}</button></div>`
@@ -386,8 +409,8 @@
         const C = G.C;
         return `<div class="cf-brief"><div class="cf-paper"><span class="cf-stamp">CASE #${C.num}</span><h3>${esc(C.title)}</h3>${C.brief}
             <ul class="cf-qs">${C.questions.map((q) => `<li>${q}</li>`).join('')}</ul></div>
-          <div class="cf-roles"><div class="cf-role a"><b>${T('Detective A · the scene', 'Thám tử A · hiện trường')}</b><p>${T('Walks the hotel, searches rooms and talks to the suspects. Sees what is physically there.', 'Đi khắp khách sạn, lục soát các phòng và thẩm vấn nghi phạm. Thấy những gì có thật ở hiện trường.')}</p></div>
-            <div class="cf-role b"><b>${T('Detective B · the records', 'Thám tử B · hồ sơ')}</b><p>${T('Has the paperwork: door logs, receipts, the power company, phone records, written statements.', 'Giữ giấy tờ: nhật ký cửa, hóa đơn, công ty điện, dữ liệu điện thoại, lời khai.')}</p></div>
+          <div class="cf-roles"><div class="cf-role a"><b>${T('Detective A · the scene', 'Thám tử A · hiện trường')}</b><p>${C.TOOLS ? T('Searches the rooms with a tool belt (flashlight, UV light, magnifier, evidence bags) and talks to the suspects.', 'Lục soát các phòng với thắt lưng dụng cụ (đèn pin, đèn UV, kính lúp, túi chứng cứ) và thẩm vấn nghi phạm.') : T('Walks the hotel, searches rooms and talks to the suspects. Sees what is physically there.', 'Đi khắp khách sạn, lục soát các phòng và thẩm vấn nghi phạm. Thấy những gì có thật ở hiện trường.')}</p></div>
+            <div class="cf-role b"><b>${C.desk === 'control' ? T('Detective B · the control room', 'Thám tử B · phòng điều khiển') : T('Detective B · the records', 'Thám tử B · hồ sơ')}</b><p>${C.desk === 'control' ? T('Watches the security cameras, digs through the party photos, runs lab tests on what A sends, and reads the files.', 'Xem camera an ninh, lục ảnh buổi tiệc, làm xét nghiệm những gì A gửi, và đọc hồ sơ.') : T('Has the paperwork: door logs, receipts, the power company, phone records, written statements.', 'Giữ giấy tờ: nhật ký cửa, hóa đơn, công ty điện, dữ liệu điện thoại, lời khai.')}</p></div>
             <div class="cf-panel"><div class="cf-ph">${T('HOW TO PLAY', 'CÁCH CHƠI')}</div><div class="cf-pb cf-how">
               1. ${T('Each detective digs through their own half.', 'Mỗi thám tử điều tra nửa của mình.')}<br>2. ${T('<b>Pin</b> anything useful to the shared evidence board, so your partner sees it.', '<b>Ghim</b> manh mối hữu ích lên bảng chứng cứ chung để cộng sự thấy.')}<br>3. ${T('Talk it through: a record can prove someone is lying.', 'Bàn bạc: một hồ sơ có thể chứng minh ai đó nói dối.')}<br>4. ${T('Use the board\'s clues to <b>confront</b> suspects.', 'Dùng manh mối trên bảng để <b>chất vấn</b> nghi phạm.')}<br>5. ${T('Accuse: who, how and why, with your 3 best pieces of evidence. Your partner has to agree.', 'Buộc tội: ai, bằng cách nào, vì sao, kèm 3 bằng chứng tốt nhất. Cộng sự phải đồng ý.')}<br><br>
               ${T('Stuck?', 'Bí?')} <button class="btn-game btn-amber py-1 px-3 text-xs" data-hint ${G.hints >= G.C.HINTS.length ? 'disabled' : ''}>${T('Get a hint', 'Xem gợi ý')}</button> <span class="text-muted">${T('(each hint costs a star)', '(mỗi gợi ý trừ một sao)')}</span>
@@ -526,7 +549,7 @@
           const c = C.CLUES[G.doc], pin = G.pins.find((p) => p.id === G.doc), marks = G.marks[G.doc] || (pin && pin.rows) || [];
           desk = `${paperHTML(G.doc, c, marks)}<div class="cf-deskbar"><p class="cf-tip">${T('Tap a line to highlight it (tap again to clear).', 'Chạm vào một dòng để tô sáng (chạm lần nữa để bỏ).')}</p>${pinBar(G.doc, docChanged(G.doc))}</div>`;
         }
-        return `<div class="cf-inv cf-recs"><div class="cf-panel"><div class="cf-ph">${T('RECORDS CABINET', 'TỦ HỒ SƠ')}</div><div class="cf-pb">${cab}</div></div>
+        return `<div class="cf-inv cf-recs ${G.doc ? 'has-doc' : ''}"><div class="cf-panel"><div class="cf-ph">${T('RECORDS CABINET', 'TỦ HỒ SƠ')}</div><div class="cf-pb">${cab}</div></div>
           <div class="cf-panel"><div class="cf-ph">${T('ON THE DESK', 'TRÊN BÀN')}</div><div class="cf-pb cf-desk">${desk}</div></div></div>`;
       }
       function susHTML() {

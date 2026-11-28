@@ -288,3 +288,16 @@
     .cf-camsbig .cf-cam.big .cf-frame { max-height: calc(100vh - 470px); min-height: 200px; margin: 0 auto; }
     .cf-camgrid .cf-frame { max-height: calc((100vh - 440px) / 2); min-height: 120px; margin: 0 auto; }
     .cf-rbtn small { font-weight: 600; opacity: .75; }
+    /* phones: the top of the case is one line each (swipe sideways), so the room picture / cameras start high up */
+    @media (max-width: 640px) {
+      .cf-top .cf-note { display: none; }
+      .cf-rooms, .cf-belt, .cf-ctabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+      .cf-rooms::-webkit-scrollbar, .cf-belt::-webkit-scrollbar, .cf-ctabs::-webkit-scrollbar { display: none; }
+      .cf-rbtn, .cf-tool, .cf-ctab { flex: none; white-space: nowrap; } .cf-tab { padding: 5px 8px; font-size: 13px; }
+      .cf-rooms { margin-bottom: 8px; } .cf-belt { margin-bottom: 8px; padding: 6px; } .cf-belt > .pix { display: none; }
+      .cf-beforebtn { margin-left: 0; }
+      .cf-recs.has-doc > .cf-panel:last-child { order: -1; }
+      .cf-paper .cf-stamp { position: static; display: inline-block; transform: rotate(-4deg); margin-bottom: 6px; }
+      .cf-ph small { display: none; }
+    }
+    @media (max-width: 900px) { .cf-recs.has-doc > .cf-panel:last-child { order: -1; } }

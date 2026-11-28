@@ -1381,3 +1381,10 @@ folder that was handed over, so they do not exist here.)
 * `engine.fair(C)` checks one version; `test/t_case2_fair.py` runs it on every culprit x 3 time nudges x 3 codes (no
   solutions printed). `test/t_case2.py` (solo, every tool, accuse), `test/t_np_case2.py` (two partners, same version).
 * `.cf-wrap` has 84 px bottom padding so CHAT / emote never cover the accuse button.
+* **No repeats** (Inna: "make sure someone never plays the same case again"): a shuffled case starts with "Opening the case
+  file..."; every player sends `hist` (the versions they already had, `gstat('casefiles').seen[caseId]`, saved with the
+  profile so it follows an account); when all have answered (or the host's `go` after 5 s) `buildCase()` picks, with the
+  shared dice, a version none of them has had; once a player has seen all, their list restarts but never repeats the last
+  one. Rejoin replays the same `hist` actions, so it rebuilds the same version. `test/t_case2_repeat.py`.
+* Phones: room buttons, tool belt and control-room tabs are one swipeable row; the partner note is hidden; an open
+  document shows above the cabinet. `test/shot_case2_sizes.py` checks 7 screen sizes x 13 views (no sideways scroll).

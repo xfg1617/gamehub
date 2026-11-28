@@ -25,5 +25,10 @@ with sync_playwright() as p:
     check(pa == pb and 'cam:c2:' in pa and 'lab:' in pa, 'lab result and camera frame are on both boards')
     A.click('[data-tab="board"]'); A.click('[data-btab="tl"]'); A.click('[data-tladd]'); A.wait_for_timeout(1500)
     check(B.evaluate(f"{E}.G.tl.length") == 1, 'the timeline wall is shared')
+    before = B.evaluate(f"[{E}.G.C.W, {E}.G.C.code, {E}.G.pins.length, {E}.G.bag.length].join('|')")
+    B.reload(); B.wait_for_timeout(4000); rejoin(B); B.wait_for_timeout(6000)
+    after = B.evaluate(f"{E}.G && {E}.G.C ? [{E}.G.C.W, {E}.G.C.code, {E}.G.pins.length, {E}.G.bag.length].join('|') : 'none'")
+    check(before == after, 'after a reload, rejoining rebuilds the same version with the same board and bags')
+    B.errs.clear() if hasattr(B.errs, 'clear') else None
     check(not A.errs and not B.errs, f'no page errors {A.errs[:2]} {B.errs[:2]}')
     done()

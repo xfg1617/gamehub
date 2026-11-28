@@ -3,6 +3,11 @@
        VI_MORE5 = exact lines, VI_PAT5 = lines with numbers or names in them.
        ========================================================================= */
     window.VI_MORE5 = {
+      // Case Files (Nov 2026)
+      'THE CASE': 'VỤ ÁN', 'More cases are coming. Each one takes about 20-30 minutes.': 'Sắp có thêm vụ án. Mỗi vụ mất khoảng 20-30 phút.',
+      'A co-op detective case for two. One of you has the crime scene, the other has the records. Work it out together!': 'Vụ án hợp tác cho hai người. Một người giữ hiện trường, người kia giữ hồ sơ. Cùng nhau phá án!',
+      'A co-op detective case: one of you has the crime scene, the other has the records. Pin the evidence and catch the culprit together.': 'Vụ án hợp tác: một người giữ hiện trường, người kia giữ hồ sơ. Ghim bằng chứng và cùng bắt thủ phạm.',
+      'CASES SOLVED': 'VỤ ĐÃ PHÁ', 'BEST STARS': 'SAO CAO NHẤT',
       // Where Am I? (Nov 2026)
       'WHERE IN THE WORLD': 'Ở ĐÂU TRÊN THẾ GIỚI', 'Which part of the world the photos come from. The whole world is hardest!': 'Ảnh được lấy từ vùng nào trên thế giới. Cả thế giới là khó nhất!',
       '🌍 Whole world': '🌍 Cả thế giới', '🇺🇸 USA': '🇺🇸 Mỹ', '🇻🇳 Vietnam': '🇻🇳 Việt Nam', '🌏 Asia': '🌏 Châu Á', '🏰 Europe': '🏰 Châu Âu',

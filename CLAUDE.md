@@ -1329,3 +1329,17 @@ folder that was handed over, so they do not exist here.)
   those npm packages): 1:110m in `src/games/geo_map.js` (in the page) and 1:50m in `assets/site/geo/map50.json`, which the
   live site loads (sharper when zoomed). Rings that cross the date line are unwrapped and drawn twice (a straight cut
   made a streak across the map).
+
+## 5ap. Case Files on the site (Nov 28 2026, Inna: "go back to the detective game")
+
+* `src/games/casefiles.js` + `src/css/39-casefiles.css` (Vietnamese name "Hồ Sơ Vụ Án"), from the round 9 prototype. Cases
+  are data: `src/games/case_001.js` pushes a function onto `window.CASE_DEFS` (gets the pixel-portrait maker `face`, returns
+  PEOPLE / SUSPECTS / CLUES / ROOMS / TALK / HINTS / KEY / STRONG / HOW / WHY + brief, timeline, red herrings, wrong-guess
+  messages). New case = new case_NNN.js; the setup's THE CASE list picks it up.
+* Solo (SOLO_MODE) = one player holds both halves (Scene / Records switch). Online = 2 people (`bots: false`): seat 0 is
+  Detective A (scene + asks the interview questions), seat 1 is B (records; sees the interview answers read-only). Every
+  change is a table action through `apply` (find, pin, unpin, move on drop, tie, ask, hint, propose / answer / cancel), so
+  both boards stay the same and a rejoin rebuilds them. An accusation needs the partner's "Agree" (solo: instant); wrong
+  = −1 star with a reason; −1 per hint, −1 for weak evidence. If the partner leaves, you get both halves.
+* Case text is English for now (UI, guide and What's new are in Vietnamese too). No how-to video (Inna: none needed).
+  `test/t_casefiles.py` (solo, full case), `test/t_np_casefiles.py` (two partners, shared board, agree/not yet).

@@ -1,0 +1,55 @@
+"""Case Files solo (Nov 2026): one player holds both halves, finds clues on the scene and in the records, pins them,
+confronts a suspect (only after the right clue is pinned), ties strings, makes a wrong then a right accusation."""
+import sys; sys.path.insert(0, 'test')
+from tlib import *
+fails = []
+def check(ok, what): print('PASS' if ok else 'FAIL', what); fails.append(what) if not ok else None
+E = 'GAME_MODS.casefiles.engine'
+with sync_playwright() as p:
+    br = launch(p); pg = open_page(br, 1440, 900)
+    pg.evaluate("openGame('casefiles')"); pg.wait_for_timeout(500)
+    if pg.query_selector('[data-mode="solo"]'): pg.click('[data-mode="solo"]')
+    pg.evaluate("(() => { const b = [...document.querySelectorAll('#gs-body button')].find(x => /^\\s*(start|play)/i.test(x.textContent)); b && b.click(); })()")
+    pg.wait_for_timeout(800)
+    check('The Harbor Pearl' in pg.inner_text('#cf-view'), 'the briefing opens')
+    pg.screenshot(path='test/shots/cf_brief.png')
+    pg.click('[data-tab="inv"]')
+    for room in ['library', 'garden', 'bar', 'floor2', 'basement']:
+        pg.click(f'[data-room="{room}"]')
+        for sid in pg.eval_on_selector_all('[data-search]', 'els => els.map(e => e.dataset.search)'):
+            pg.click(f'[data-search="{sid}"]'); pg.wait_for_timeout(40)
+            if room in ('library', 'garden', 'floor2') and pg.query_selector(f'[data-pin="{sid}"]'): pg.click(f'[data-pin="{sid}"]')
+    pg.screenshot(path='test/shots/cf_scene.png')
+    pg.click('[data-view="B"]'); pg.click('[data-tab="inv"]')
+    for k in ['b_doors', 'b_power', 'b_gen', 'b_bar', 'b_house', 'b_porter', 'b_phone', 'b_bell']:
+        pg.click(f'[data-search="{k}"]')
+        if k in ('b_doors', 'b_house', 'b_phone') and pg.query_selector(f'[data-pin="{k}"]'): pg.click(f'[data-pin="{k}"]')
+    pg.screenshot(path='test/shots/cf_records.png')
+    check(pg.evaluate(f"{E}.G.pins.length") == 11, f'11 clues pinned ({pg.evaluate(f"{E}.G.pins.length")})')
+    pg.click('[data-view="A"]'); pg.click('[data-tab="sus"]'); pg.click('[data-sus="marcus"]')
+    check(pg.evaluate("!document.querySelector('[data-ask=\"6\"]').disabled") and pg.evaluate("document.querySelector('[data-ask=\"3\"]').disabled") is False, 'confront questions unlock once their clue is pinned')
+    for i in range(7): pg.click(f'[data-ask="{i}"]')
+    check('stepped out for some air' in pg.inner_text('#cf-view'), 'confronting Marcus with the door log gets a new answer')
+    pg.click('[data-tab="board"]')
+    def tap(id): pg.click(f'.cf-pin[data-p="{id}"]', position={'x': 60, 'y': 34})
+    tap('b_doors'); tap('a_shoes'); tap('b_phone'); tap('a_card')
+    check(pg.evaluate(f"{E}.G.strings.length") == 2, 'tapping two cards ties them with string')
+    pg.fill('#cf-notetxt', 'Marcus lied: out 9:18, back 9:43'); pg.click('[data-addnote]')
+    check(pg.evaluate(f"{E}.G.pins.length") == 12, 'a sticky note goes on the board')
+    pg.screenshot(path='test/shots/cf_board.png')
+    pg.click('[data-tab="acc"]')
+    pg.click('[data-acc="who"][data-v="ethan"]'); pg.click('[data-acc="how"][data-v="spare"]'); pg.click('[data-acc="why"][data-v="debt"]')
+    for k in ['b_doors', 'a_shoes', 'b_phone']: pg.click(f'[data-ev="{k}"]')
+    pg.click('[data-propose]'); pg.wait_for_timeout(300)
+    check(pg.evaluate(f"{E}.G.tries") == 1 and 'alibi' in pg.inner_text('#cf-toast'), 'a wrong accusation costs a star and says why')
+    pg.click('[data-acc="who"][data-v="marcus"]'); pg.click('[data-propose]'); pg.wait_for_timeout(500)
+    check(pg.evaluate(f"{E}.G.solved") and 'SOLVED' in pg.inner_text('#cf-view'), 'the right accusation closes the case')
+    check('★★★★' in pg.inner_text('.cf-stars'), '4 stars after one wrong guess')
+    pg.screenshot(path='test/shots/cf_solved.png', full_page=True)
+    check(pg.evaluate("gstat('casefiles').cases") == 1, 'the solved case is counted on the profile')
+    check(not pg.errs, 'no page errors ' + str(pg.errs[:2]))
+    m = open_page(br, 390, 844, mobile=True); m.evaluate("openGame('casefiles')"); m.wait_for_timeout(500)
+    m.evaluate("(() => { const b = [...document.querySelectorAll('#gs-body button')].find(x => /^\\s*(start|play)/i.test(x.textContent)); b && b.click(); })()"); m.wait_for_timeout(600)
+    m.click('[data-tab="inv"]'); m.click('[data-room="floor2"]'); m.click('[data-search="a_cart"]')
+    w = m.evaluate("document.documentElement.scrollWidth"); check(w <= 392, f'phone: no sideways scrolling ({w}px)'); m.screenshot(path='test/shots/cf_phone.png', full_page=True)
+print('ALL PASS' if not fails else f'FAILED: {fails}')

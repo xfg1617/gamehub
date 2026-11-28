@@ -5,6 +5,15 @@
        Written for players: what changed for them, no technical words.
        ========================================================================= */
     window.UPDATES = [
+      { date: '2026-11-28', id: '2026-11-28e',
+        en: ['New game: Case Files',
+          'A detective case for two: one of you searches the crime scene and questions the suspects, the other digs through the records. You each see only your half!',
+          'Pin clues to a shared evidence board, tie them with red string, catch the liars, then agree on who did it, how and why.',
+          'Case #001: The Harbor Pearl. Play with a friend in a private room (voice chat helps!) or alone.'],
+        vi: ['Trò mới: Hồ Sơ Vụ Án',
+          'Vụ án cho hai người: một người lục soát hiện trường và thẩm vấn nghi phạm, người kia lật hồ sơ. Mỗi người chỉ thấy nửa của mình!',
+          'Ghim manh mối lên bảng chứng cứ chung, nối bằng dây đỏ, vạch trần kẻ nói dối, rồi cùng thống nhất ai đã làm, bằng cách nào và vì sao.',
+          'Vụ #001: Viên Ngọc Bến Cảng. Chơi với bạn trong phòng riêng (trò chuyện thoại rất hữu ích!) hoặc một mình.'] },
       { date: '2026-11-28', id: '2026-11-28d',
         en: ['New game: Where Am I?',
           'A real photo from somewhere on Earth: drop a pin on the world map where you think it was taken. The closer you are, the more points!',

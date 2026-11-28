@@ -655,7 +655,7 @@
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
     }
     // Solo play stays for games you can play alone (Inna): which options a Solo game keeps narrowed to
-    const SOLO_MODE = { geo: {}, trivia: {}, wordconnect: {}, blackjack: {}, bowling: { mode: ['solo'] } };
+    const SOLO_MODE = { casefiles: {}, geo: {}, trivia: {}, wordconnect: {}, blackjack: {}, bowling: { mode: ['solo'] } };
     const PASS_PLAY = /pass\s*&\s*play/i;
     // which setup option is the computer players' level, and which one is the table size, per game
     const BOT_LEVEL = { geo: 'lvl', bumpoff: 'lvl', trivia: 'lvl', caro: 'lvl', thirteen: 'lvl', hedge: 'lvl', checkers: 'lvl', c4: 'lvl', pool: 'lvl', tictactoe: 'lvl', wordduel: 'lvl', dominoes: 'lvl', isles: 'lvl', manor: 'lvl', poker: 'style', bowling: 'mode', chess: 'lvl', navalnet: 'ai' };
@@ -1161,11 +1161,11 @@
       { id: 'dominoes', name: 'Dominoes', icon: 'dominoes', sub: '2–4 PLAYERS', open: "showToast('Dominoes is coming soon!')", live: false },
     ];
     const SHELVES = [
-      { title: 'NEW & HOT', color: '#F5B041', ids: ['geo', 'bumpoff', 'werewolf', 'caro', 'thirteen', 'trivia', 'funny', 'guild', 'tunnel', 'fibber', 'hedge', 'isles', 'manor', 'dominoes', 'bowling', 'chess', 'poker', 'naval', 'daily'] },
+      { title: 'NEW & HOT', color: '#F5B041', ids: ['casefiles', 'geo', 'bumpoff', 'werewolf', 'caro', 'thirteen', 'trivia', 'funny', 'guild', 'tunnel', 'fibber', 'hedge', 'isles', 'manor', 'dominoes', 'bowling', 'chess', 'poker', 'naval', 'daily'] },
       { title: 'BOARD GAMES', color: '#2DD4BF', ids: ['chess', 'checkers', 'caro', 'tycoon', 'isles', 'manor', 'naval', 'c4', 'dominoes', 'tictactoe', 'hedge', 'guild'] },
       { title: 'CARD GAMES', color: '#FB7185', ids: ['thirteen', 'fibber', 'tunnel', 'guild', 'poker', 'blackjack', 'kittens', 'colorclash'] },
-      { title: 'WORD & PUZZLE', color: '#34D399', ids: ['daily', 'wordduel', 'wordconnect', 'impostor', 'trivia', 'geo'] },
-      { title: 'PARTY GAMES', color: '#F5B041', ids: ['geo', 'bumpoff', 'werewolf', 'funny', 'trivia', 'tunnel', 'fibber', 'impostor', 'manor', 'doodle', 'kittens', 'colorclash'] },
+      { title: 'WORD & PUZZLE', color: '#34D399', ids: ['daily', 'wordduel', 'wordconnect', 'impostor', 'trivia', 'geo', 'casefiles'] },
+      { title: 'PARTY GAMES', color: '#F5B041', ids: ['casefiles', 'geo', 'bumpoff', 'werewolf', 'funny', 'trivia', 'tunnel', 'fibber', 'impostor', 'manor', 'doodle', 'kittens', 'colorclash'] },
       { title: 'SPORTS & ARCADE', color: '#2DD4BF', ids: ['pool', 'bowling', 'bumpoff'] },
     ];
 

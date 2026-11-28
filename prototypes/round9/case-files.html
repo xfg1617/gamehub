@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Case Files prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Jersey+15&display=swap" rel="stylesheet">
+<style>
+:root { --ink:#050E18; --bone:#F7F4EC; --muted:#9DB4CC; --amber:#F5B041; --teal:#2DD4BF; --coral:#FB7185; --emerald:#34D399; --card:#12304C; --well:#0F2338; --paper:#F1E7CF; --paper2:#E4D6B3; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #0B1B2B; color: var(--bone); font-family: Outfit, sans-serif; }
+body { background-image: linear-gradient(#0F2338 2px, transparent 2px), linear-gradient(90deg, #0F2338 2px, transparent 2px); background-size: 48px 48px; min-height: 100vh; }
+button { font-family: inherit; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 14px 16px 40px; }
+.top { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+.chip { font-family: 'Jersey 15', monospace; font-size: 24px; background: var(--amber); color: var(--ink); border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); padding: 0 14px 2px; }
+.note { color: var(--muted); font-size: 14px; flex: 1; min-width: 240px; line-height: 1.4; }
+.note b { color: var(--bone); }
+.btn { font-weight: 800; font-size: 15px; border: 3px solid var(--ink); box-shadow: 0 5px 0 var(--ink); padding: 8px 14px; cursor: pointer; background: var(--card); color: var(--bone); }
+.btn:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--ink); }
+.btn.amber { background: var(--amber); color: var(--ink); } .btn.teal { background: var(--teal); color: var(--ink); } .btn.coral { background: var(--coral); color: var(--ink); }
+.btn.sm { font-size: 13px; padding: 5px 10px; box-shadow: 0 3px 0 var(--ink); }
+.btn[disabled] { opacity: .45; cursor: default; }
+.pix { font-family: 'Jersey 15', monospace; letter-spacing: .5px; }
+
+/* who am I */
+.who { display: flex; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); }
+.who button { border: 0; padding: 8px 12px; font-weight: 800; cursor: pointer; background: var(--well); color: var(--muted); font-size: 14px; display: flex; align-items: center; gap: 8px; }
+.who button.on.a { background: var(--teal); color: var(--ink); } .who button.on.b { background: var(--coral); color: var(--ink); }
+.who i { width: 12px; height: 12px; border: 2px solid var(--ink); display: inline-block; }
+
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 4px 0 14px; }
+.tab { border: 3px solid var(--ink); background: var(--well); color: var(--muted); padding: 7px 14px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 0 var(--ink); font-size: 15px; }
+.tab.on { background: var(--bone); color: var(--ink); }
+.tab .n { display: inline-block; min-width: 20px; padding: 0 5px; margin-left: 6px; background: var(--amber); color: var(--ink); border: 2px solid var(--ink); font-size: 12px; }
+
+.panel { background: var(--well); border: 4px solid var(--ink); box-shadow: 0 8px 0 var(--ink); }
+.ph { background: var(--ink); color: var(--amber); padding: 4px 12px 6px; font-family: 'Jersey 15', monospace; font-size: 22px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.ph small { font-family: Outfit; font-size: 13px; color: var(--muted); font-weight: 600; }
+.pb { padding: 14px; }
+
+/* briefing */
+.brief { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 16px; }
+.paperdoc { background: var(--paper); color: #2A2116; border: 3px solid var(--ink); box-shadow: 0 6px 0 var(--ink); padding: 16px 18px; line-height: 1.55; font-size: 15px; position: relative; }
+.paperdoc h3 { margin: 0 0 6px; font-family: 'Jersey 15', monospace; font-size: 26px; font-weight: 400; color: #7A2E22; }
+.paperdoc .stamp { position: absolute; right: 14px; top: 12px; border: 3px solid #B0362A; color: #B0362A; font-family: 'Jersey 15'; font-size: 20px; padding: 0 8px; transform: rotate(6deg); }
+.paperdoc p { margin: 8px 0; }
+.qs { margin: 10px 0 0; padding-left: 18px; } .qs li { margin: 4px 0; font-weight: 700; }
+.roles { display: grid; gap: 10px; }
+.role { border: 3px solid var(--ink); padding: 12px; box-shadow: 0 5px 0 var(--ink); }
+.role.a { background: #0E3B3A; } .role.b { background: #43202A; }
+.role b { font-size: 16px; } .role p { margin: 6px 0 0; font-size: 14px; color: #C9D8E8; line-height: 1.45; }
+
+/* investigate: map */
+.inv { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 16px; align-items: start; }
+.map { width: 100%; height: auto; display: block; background: #0B2236; border: 3px solid var(--ink); }
+.room { cursor: pointer; }
+.room rect.r { stroke: #050E18; stroke-width: 3; }
+.room:hover rect.r { filter: brightness(1.15); }
+.room.sel rect.r { stroke: #F5B041; stroke-width: 5; }
+.room text { font-family: 'Jersey 15', monospace; font-size: 18px; fill: #F7F4EC; pointer-events: none; }
+.room .cnt { font-family: Outfit; font-weight: 800; font-size: 12px; }
+.spot { display: flex; gap: 10px; align-items: center; background: var(--card); border: 3px solid var(--ink); padding: 8px 10px; margin-top: 8px; cursor: pointer; box-shadow: 0 4px 0 var(--ink); }
+.spot:hover { background: #18406A; } .spot.done { background: #0E2A3E; }
+.spot .ic { width: 30px; height: 30px; flex: none; }
+.spot b { font-size: 14px; } .spot small { display: block; color: var(--muted); font-size: 12px; }
+.spot .ok { margin-left: auto; color: var(--emerald); font-weight: 800; font-size: 12px; }
+.scene { color: #C9D8E8; font-size: 14px; line-height: 1.5; margin: 0 0 6px; }
+
+/* clue card */
+.clue { background: var(--paper); color: #2A2116; border: 3px solid var(--ink); box-shadow: 0 5px 0 var(--ink); padding: 12px 14px; margin-top: 12px; font-size: 14px; line-height: 1.5; position: relative; }
+.clue h4 { margin: 0 0 4px; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+.clue h4 .ic { width: 26px; height: 26px; }
+.clue .by { position: absolute; right: 8px; top: 8px; font-size: 11px; font-weight: 800; padding: 1px 6px; border: 2px solid var(--ink); }
+.by.a { background: var(--teal); } .by.b { background: var(--coral); }
+.clue .acts { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+.tbl { width: 100%; border-collapse: collapse; margin: 6px 0; font-size: 13px; font-family: 'Courier New', monospace; }
+.tbl td { border-bottom: 1px dashed #9C8C6A; padding: 3px 4px; vertical-align: top; } .tbl td:first-child { white-space: nowrap; }
+.tbl tr.hl td { background: #F6D88A; }
+.sms { background: #FFFFFF; border: 2px solid #2A2116; padding: 6px 8px; margin: 6px 0; font-size: 13px; }
+.sms.out { background: #D8F3EC; margin-left: 30px; } .sms.in { margin-right: 30px; }
+.sms small { display: block; color: #6B5D45; font-size: 11px; }
+
+/* records drawer (B) */
+.drawer { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+.folder { background: #E9C46A; color: #2A2116; border: 3px solid var(--ink); box-shadow: 0 5px 0 var(--ink); padding: 18px 12px 10px; cursor: pointer; position: relative; min-height: 92px; }
+.folder::before { content: ''; position: absolute; left: -3px; top: -14px; width: 70px; height: 14px; background: #E9C46A; border: 3px solid var(--ink); border-bottom: 0; }
+.folder:hover { background: #F0D184; } .folder.read { background: #CDB27A; } .folder.read::before { background: #CDB27A; }
+.folder b { font-size: 14px; display: block; } .folder small { font-size: 12px; color: #5B4A2C; }
+.folder .ic { position: absolute; right: 8px; top: 8px; width: 26px; height: 26px; }
+
+/* suspects */
+.sus { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.sc { background: var(--card); border: 3px solid var(--ink); box-shadow: 0 5px 0 var(--ink); padding: 10px; cursor: pointer; display: flex; gap: 10px; align-items: center; }
+.sc:hover { background: #18406A; } .sc.sel { outline: 3px solid var(--amber); outline-offset: -3px; }
+.sc svg { width: 56px; height: 56px; border: 3px solid var(--ink); flex: none; background: #1D4A70; }
+.sc b { font-size: 15px; } .sc small { display: block; color: var(--muted); font-size: 12px; line-height: 1.3; }
+.talk { margin-top: 14px; display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 14px; }
+.talk .big svg { width: 150px; height: 150px; border: 4px solid var(--ink); background: #1D4A70; display: block; }
+.talk .big b { display: block; margin-top: 6px; } .talk .big small { color: var(--muted); }
+.qbtn { display: block; width: 100%; text-align: left; margin-top: 8px; background: var(--card); border: 3px solid var(--ink); color: var(--bone); padding: 8px 10px; font-weight: 700; cursor: pointer; box-shadow: 0 3px 0 var(--ink); font-size: 14px; }
+.qbtn:hover { background: #18406A; } .qbtn.asked { color: var(--muted); }
+.qbtn.conf { border-color: var(--ink); background: #4A2A12; } .qbtn.conf:hover { background: #5E3718; }
+.qbtn[disabled] { opacity: .45; cursor: default; }
+.ans { background: var(--bone); color: var(--ink); border: 3px solid var(--ink); padding: 10px 12px; margin-top: 10px; font-size: 15px; line-height: 1.45; box-shadow: 0 4px 0 var(--ink); }
+.ans .q { font-size: 12px; color: #5B6B7C; font-weight: 700; display: block; margin-bottom: 2px; }
+.ans.hot { background: #FDE3B0; }
+
+/* board */
+.boardwrap { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 16px; align-items: start; }
+.cork { position: relative; height: 620px; background-color: #B5835A; background-image: radial-gradient(#8E6240 1.4px, transparent 1.6px), radial-gradient(#C99A70 1.2px, transparent 1.4px); background-size: 14px 14px, 22px 22px; background-position: 0 0, 7px 9px; border: 6px solid #5A3B22; box-shadow: inset 0 0 0 3px var(--ink), 0 8px 0 var(--ink); overflow: hidden; touch-action: none; }
+.cork svg.strings { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.pin { position: absolute; width: 168px; background: var(--paper); color: #2A2116; border: 3px solid var(--ink); box-shadow: 3px 4px 0 rgba(5,14,24,.55); padding: 14px 8px 8px; font-size: 12px; line-height: 1.35; cursor: grab; user-select: none; }
+.pin::before { content: ''; position: absolute; left: 50%; top: -7px; width: 14px; height: 14px; margin-left: -7px; background: #D2382C; border: 3px solid var(--ink); border-radius: 50%; }
+.pin.a { border-top: 7px solid var(--teal); } .pin.b { border-top: 7px solid var(--coral); }
+.pin b { font-size: 13px; display: block; margin-bottom: 2px; }
+.pin.sel { outline: 4px solid var(--amber); }
+.pin.note { background: #FFF2A6; transform: rotate(-2deg); }
+.pin .x { position: absolute; right: 2px; top: 1px; font-weight: 900; font-size: 13px; cursor: pointer; color: #7A2E22; }
+.boardside .how { font-size: 13px; color: #C9D8E8; line-height: 1.5; }
+.boardside textarea { width: 100%; height: 70px; background: var(--bone); color: var(--ink); border: 3px solid var(--ink); font-family: Outfit; font-size: 14px; padding: 6px; resize: vertical; }
+.legend { display: flex; gap: 10px; font-size: 12px; color: var(--muted); margin: 6px 0; flex-wrap: wrap; }
+.legend span { display: inline-flex; gap: 5px; align-items: center; } .legend i { width: 14px; height: 10px; border: 2px solid var(--ink); }
+.feed { font-size: 12px; color: var(--muted); max-height: 150px; overflow: auto; border-top: 2px solid #1D3954; margin-top: 10px; padding-top: 6px; }
+.feed div { margin: 3px 0; } .feed b.a { color: var(--teal); } .feed b.b { color: var(--coral); }
+
+/* accuse */
+.acc { display: grid; gap: 14px; }
+.accq { background: var(--card); border: 3px solid var(--ink); padding: 12px; box-shadow: 0 5px 0 var(--ink); }
+.accq > b { font-family: 'Jersey 15', monospace; font-size: 22px; font-weight: 400; color: var(--amber); display: block; margin-bottom: 6px; }
+.opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.opt { background: var(--well); color: var(--bone); border: 3px solid var(--ink); padding: 7px 10px; font-weight: 700; cursor: pointer; font-size: 14px; text-align: left; display: flex; gap: 8px; align-items: center; }
+.opt svg { width: 30px; height: 30px; border: 2px solid var(--ink); background: #1D4A70; }
+.opt.on { background: var(--amber); color: var(--ink); }
+.stars { font-size: 28px; letter-spacing: 3px; color: var(--amber); } .stars i { color: #2B4562; font-style: normal; }
+
+/* reveal */
+.reveal { display: none; }
+.reveal.on { display: block; }
+.tl { border-left: 4px solid var(--amber); margin: 10px 0 0 8px; padding-left: 16px; }
+.tl div { position: relative; margin: 0 0 12px; font-size: 14px; line-height: 1.45; color: #C9D8E8; }
+.tl div::before { content: ''; position: absolute; left: -25px; top: 3px; width: 12px; height: 12px; background: var(--amber); border: 3px solid var(--ink); }
+.tl b { color: var(--bone); font-family: 'Jersey 15', monospace; font-weight: 400; font-size: 19px; margin-right: 6px; }
+.verdict { font-family: 'Jersey 15', monospace; font-size: 46px; line-height: 1; }
+.found { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; font-size: 13px; }
+.found div { background: var(--card); border: 3px solid var(--ink); padding: 8px 10px; }
+.found .got { color: var(--emerald); } .found .miss { color: var(--coral); }
+
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--bone); color: var(--ink); border: 3px solid var(--ink); box-shadow: 0 5px 0 var(--ink); padding: 8px 16px; font-weight: 800; z-index: 50; display: none; max-width: 90vw; }
+.toast.on { display: block; }
+.hintbox { background: #2A1F0B; border: 3px solid var(--amber); padding: 10px 12px; margin-top: 10px; font-size: 14px; line-height: 1.45; color: #FBE3AE; }
+
+@media (max-width: 900px) {
+  .brief, .inv, .boardwrap, .talk { grid-template-columns: 1fr; }
+  .talk .big svg { width: 110px; height: 110px; }
+  .cork { height: 560px; }
+  .found { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) { .pin { width: 140px; font-size: 11px; } .tab { padding: 6px 9px; font-size: 13px; } .chip { font-size: 20px; } }
+</style></head>
+<body><div class="wrap">
+  <div class="top">
+    <span class="chip">CASE FILES · PROTOTYPE</span>
+    <div class="who" id="who">
+      <button class="a on" data-me="A"><i style="background:var(--teal)"></i>Detective A · Scene</button>
+      <button class="b" data-me="B"><i style="background:var(--coral)"></i>Detective B · Records</button>
+    </div>
+    <span class="note">Two partners, each with <b>different evidence</b>. In the real game you each see only your own side on your own screen; here you can switch to try both. The <b>evidence board</b> is shared.</span>
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div id="view"></div>
+  <div class="toast" id="toast"></div>
+</div>
+<script>
+// ======================= pixel art (our own drawings) =======================
+const PAL = { k: '#050E18', w: '#F7F4EC', s: '#E8B48C', S: '#C68A62', d: '#8D5A3B', r: '#B0362A', y: '#F5B041', g: '#6B7A8C', b: '#2B6FA8', t: '#2DD4BF', c: '#FB7185', n: '#4B2E1E', h: '#2A2A2A', o: '#D9A441', p: '#7A4FA0', e: '#1B1B1B', m: '#9DB4CC', l: '#3A7D44', z: '#C0C7D0' };
+function pixSVG(rows, extraPal) {
+  const P = Object.assign({}, PAL, extraPal || {}); let out = '';
+  rows.forEach((row, y) => [...row].forEach((ch, x) => { if (ch !== '.') out += `<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${P[ch] || ch}"/>`; }));
+  return `<svg viewBox="0 0 ${rows[0].length} ${rows.length}" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">${out}</svg>`;
+}
+// portraits: 16x16, H = hair, F = skin, C = clothes
+function face(hair, skin, cloth, style) {
+  const H = { short: ['....HHHHHHHH....', '...HHHHHHHHHH...', '...HHFFFFFFHH...'],
+              long:  ['....HHHHHHHH....', '...HHHHHHHHHH...', '..HHHFFFFFFHHH..'],
+              bald:  ['................', '.....FFFFFF.....', '....FFFFFFFF....'],
+              bun:   ['......HHHH......', '....HHHHHHHH....', '...HHFFFFFFHH...'],
+              hood:  ['...CCCCCCCCCC...', '..CCCCCCCCCCCC..', '..CCHFFFFFFHCC..'] }[style];
+  const side = style === 'long' ? 'HH' : style === 'hood' ? 'CC' : '..';
+  const rows = [
+    '................',
+    H[0], H[1], H[2],
+    `..${side[0]}FFFFFFFFFF${side[1]}..`.slice(0, 16),
+    '...FFkFFFFkFF...',
+    '...FFFFFFFFFF...',
+    '...FFFFSSFFFF...',
+    '....FFFFFFFF....',
+    '....FFrrrrFF....',
+    '.....FFFFFF.....',
+    '......FFFF......',
+    '...CCCCCCCCCC...',
+    '..CCCCCCCCCCCC..',
+    '.CCCCCCCCCCCCCC.',
+    '.CCCCCCCCCCCCCC.',
+  ];
+  return pixSVG(rows.map((r) => r.padEnd(16, '.').slice(0, 16)), { H: hair, F: skin, C: cloth });
+}
+const ICON = {
+  key: ['......kkkk..', '.....kyyyyk.', '.....ky..yk.', '.....kyyyyk.', '......kyk...', '......kyk...', '......kyyk..', '......kyk...', '......kyyk..', '......kkk...', '............', '............'],
+  shoe: ['............', '...kk.......', '..kddk......', '..kddk......', '..kdddk.....', '..kddddkkk..', '..kddddddk..', '..kkkkkkkk..', '..k.k.k.k...', '............', '............', '............'],
+  card: ['............', 'kkkkkkkkkkk.', 'kwwwwwwwwwk.', 'kwrrrwwwwwk.', 'kwwwwwwwwwk.', 'kwgggggggwk.', 'kwgggggwwwk.', 'kwwwwwwwwwk.', 'kkkkkkkkkkk.', '............', '............', '............'],
+  log: ['.kkkkkkkkk..', '.kwwwwwwwk..', '.kwgggggwk..', '.kwwwwwwwk..', '.kwgggggwk..', '.kwwwwwwwk..', '.kwyyyyywk..', '.kwwwwwwwk..', '.kwgggggwk..', '.kwwwwwwwk..', '.kkkkkkkkk..', '............'],
+  phone: ['...kkkkkk...', '...kmmmmk...', '...kmttmk...', '...kmmmmk...', '...kmccmk...', '...kmmmmk...', '...kmttmk...', '...kmmmmk...', '...kkwwkk...', '...kkkkkk...', '............', '............'],
+  bolt: ['......kkk...', '.....kyyk...', '....kyyk....', '...kyyyyyk..', '....kkyyk...', '.....kyk....', '....kyk.....', '....kk......', '............', '............', '............', '............'],
+  glass: ['............', '..kkkkkkkk..', '..kzzzzzzk..', '..kz....zk..', '..kz....zk..', '..kz....zk..', '..kzzzzzzk..', '..kddddddk..', '..kkkkkkkk..', '............', '............', '............'],
+  door: ['..kkkkkkk...', '..knnnnnk...', '..kndddnk...', '..kndddnk...', '..knnnnyk...', '..kndddnk...', '..kndddnk...', '..knnnnnk...', '..kkkkkkk...', '............', '............', '............'],
+  cart: ['............', '.kkkkkkkk...', '.kwwwwwwk...', '.kmmmmmmk.k.', '.kwwwwwwkkk.', '.kmmmmmmk...', '.kkkkkkkk...', '..k....k....', '.kkk..kkk...', '............', '............', '............'],
+  glassdrink: ['............', '..kkkkkk....', '..koooook...', '..kooooook..', '...kooook...', '....kook....', '.....kk.....', '.....kk.....', '...kkkkkk...', '............', '............', '............'],
+  heel: ['............', '.....kk.....', '....kcck....', '...kccck....', '..kccck.....', '..kcck......', '..kkkk..kk..', '........kk..', '............', '............', '............', '............'],
+  gen: ['............', '.kkkkkkkkkk.', '.kggggggggk.', '.kgkkgggggk.', '.kgkkggyygk.', '.kggggggggk.', '.kggggggggk.', '.kkkkkkkkkk.', '..kk....kk..', '............', '............', '............'],
+  pen: ['............', '.kkkkkkkkk..', '.kwwwwwwwk..', '.kwggggwwk..', '.kwwwwwwwk..', '.kwggwwwwk..', '.kwwwwwwkr..', '.kwwwwwkry..', '.kkkkkkkk...', '............', '............', '............'],
+  clock: ['...kkkkk....', '..kwwwwwk...', '.kwwwkwwwk..', '.kwwwkwwwk..', '.kwwwkkkwk..', '.kwwwwwwwk..', '..kwwwwwk...', '...kkkkk....', '............', '............', '............', '............'],
+};
+const icon = (n) => pixSVG(ICON[n].map((r) => r.padEnd(12, '.')));
+
+// ======================= the case =======================
+const PEOPLE = {
+  marcus: { name: 'Marcus Bell', role: "Owner's grandson, 27", tall: true, art: face('#3B2A1A', '#E8B48C', '#2F4858', 'short') },
+  victor: { name: 'Victor Hale', role: 'Hotel manager, 58', art: face('#C9CED6', '#E3A988', '#1C2C44', 'bald') },
+  daisy:  { name: 'Daisy Moreau', role: 'Singer at the dinner, 30', art: face('#B0362A', '#F1C6A0', '#7A4FA0', 'long') },
+  ethan:  { name: 'Ethan Cross', role: 'Guest, antiques collector, 45', tall: true, art: face('#1B1B1B', '#C68A62', '#5A4632', 'short') },
+  lily:   { name: 'Lily Tran', role: 'Housekeeper, 24', art: face('#1B1B1B', '#EBC59B', '#2DD4BF', 'bun') },
+  bao:    { name: 'Chef Bao Nguyen', role: 'Witness · head chef', witness: true, art: face('#2A2A2A', '#D9A77F', '#F7F4EC', 'short') },
+  rosa:   { name: 'Rosa Diaz', role: 'Witness · bartender', witness: true, art: face('#4B2E1E', '#C68A62', '#1B1B1B', 'long') },
+};
+const SUSPECTS = ['marcus', 'victor', 'daisy', 'ethan', 'lily'];
+
+// every clue: who holds it (A = scene + interviews, B = records)
+const CLUES = {
+  // ---- Detective A: the scene ----
+  a_case:  { who: 'A', icon: 'glass', title: 'The display case', short: 'Opened with a key. No damage.', text: 'The glass case is open and empty. No scratches, no broken glass: <b>someone opened it with its small brass key</b>. A sticker on the back: "Alarm: runs on main power."' },
+  a_prints:{ who: 'A', icon: 'shoe', title: 'Wet sneaker prints', short: "Men's size 11, zigzag sole, garden door ↔ case.", text: "Wet, muddy sneaker prints on the carpet, about <b>men's size 11</b>, with a <b>zigzag sole</b>. They come in from the garden door, go straight to the display case, and go back out the same way." },
+  a_door:  { who: 'A', icon: 'door', title: 'Library garden door', short: 'Sticks, never fully shuts. Rain inside.', text: 'The door from the library to the garden terrace <b>sticks and doesn\'t shut properly</b>. There is rainwater on the floor just inside it.' },
+  a_path:  { who: 'A', icon: 'shoe', title: 'Prints on the garden path', short: 'Same zigzag prints → back staircase.', text: 'Fresh zigzag sneaker prints in the mud lead from the library door along the path to the <b>back staircase</b>, which goes up to the guest rooms on floor 2. They also come back down the same way.' },
+  a_heels: { who: 'A', icon: 'heel', title: 'Heel prints by the bench', short: 'Small pointed heels. Someone stood here.', text: 'Small, <b>pointed high-heel prints</b> by the bench outside the dining hall, under the awning. Someone stood here for a while. They don\'t go near the library.' },
+  a_cart:  { who: 'A', icon: 'cart', title: 'Housekeeping cart', short: 'Outside room 204. Spare key LIB-C missing.', text: 'Lily\'s cart is parked in the floor 2 hallway <b>right outside room 204</b>, at the quiet end next to the back staircase. A ring of labelled spare keys hangs on it. The hook marked <b>LIB-C (library case)</b> is empty.' },
+  a_shoes: { who: 'A', icon: 'shoe', title: 'Sneakers in room 204', short: 'Size 11, zigzag, wet and muddy.', text: "In Marcus's closet: a pair of men's sneakers, <b>size 11, zigzag soles, still wet and muddy</b>. A damp hooded jacket hangs above them." },
+  a_card:  { who: 'A', icon: 'card', title: 'Pawn shop card', short: '"Sat 9:00 AM · brooch · bring it"', text: 'On the desk in room 204: a business card for <b>JADE DRAGON PAWN & LOAN</b>. Handwritten on the back: <i>"Sat 9:00 AM. Brooch. Bring it."</i>' },
+  a_bar:   { who: 'A', icon: 'glassdrink', title: "Ethan's seat at the bar", short: 'Napkin with jewelry doodles.', text: "Three empty glasses and a napkin covered in <b>doodles of brooches and rings</b> at Ethan Cross's seat." },
+  a_gen:   { who: 'A', icon: 'gen', title: 'The generator', short: 'Fresh handprints on the start lever.', text: 'Fresh greasy handprints on the generator\'s start lever. A flashlight with "V. HALE" written on it lies on top.' },
+  // ---- Detective B: the records ----
+  b_doors: { who: 'B', icon: 'log', title: 'Floor 2 door log', short: 'Room 204: out 9:18 pm, in 9:43 pm.', html: () => `<p>The smart locks on floor 2 record every time a door opens.</p><table class="tbl">
+      <tr><td>8:44 pm</td><td>Room 204</td><td>opened with guest card · M. Bell</td></tr>
+      <tr><td>9:05 pm</td><td>Room 206</td><td>opened with guest card · E. Cross</td></tr>
+      <tr class="hl"><td>9:18 pm</td><td>Room 204</td><td>opened from INSIDE</td></tr>
+      <tr class="hl"><td>9:43 pm</td><td>Room 204</td><td>opened with guest card · M. Bell</td></tr>
+      <tr><td>9:52 pm</td><td>Room 206</td><td>opened with guest card · E. Cross</td></tr></table>
+      <p>(The locks run on batteries, so they kept working during the power cut.)</p>` },
+  b_power: { who: 'B', icon: 'bolt', title: 'Power company notice', short: 'Storm cut the power 9:20 pm.', text: 'Seabright Power: storm outage on Harbor Road from <b>9:20 pm</b> to 9:47 pm. (The hotel\'s own generator can bring the lights back sooner.)' },
+  b_gen:   { who: 'B', icon: 'log', title: 'Generator log', short: 'Started by hand at 9:34 pm, signed V.H.', html: () => `<table class="tbl"><tr><td>9:20 pm</td><td>Main power lost</td></tr><tr class="hl"><td>9:34 pm</td><td>Manual start · signed <b>V.H.</b></td></tr><tr><td>9:47 pm</td><td>Main power back · generator off</td></tr></table>` },
+  b_bar:   { who: 'B', icon: 'glassdrink', title: 'Bar receipts', short: "Ethan's card: 9:15, 9:28, 9:41 pm.", html: () => `<p>Card ending 4471 (E. Cross):</p><table class="tbl"><tr><td>9:15 pm</td><td>Whisky, neat</td></tr><tr class="hl"><td>9:28 pm</td><td>Whisky, neat (paid during the power cut, battery card reader)</td></tr><tr><td>9:41 pm</td><td>Tab closed</td></tr></table>` },
+  b_house: { who: 'B', icon: 'pen', title: 'Housekeeping log', short: 'Cart left by 204 at 9:10. Key gone at 9:50.', html: () => `<p>Written by Lily Tran:</p><table class="tbl"><tr class="hl"><td>9:10 pm</td><td>Left cart on floor 2 outside 204, went down to laundry</td></tr><tr><td>9:48 pm</td><td>Back to cart</td></tr><tr class="hl"><td>9:50 pm</td><td>SPARE KEY LIB-C MISSING!! Told Mr. Hale</td></tr></table>` },
+  b_porter:{ who: 'B', icon: 'log', title: "Night porter's log", short: 'Sam + Lily in the laundry 9:12–9:47.', html: () => `<p>Night porter Sam Okafor:</p><table class="tbl"><tr class="hl"><td>9:12–9:47 pm</td><td>Basement laundry with L. Tran, folding linen by flashlight</td></tr></table>` },
+  b_phone: { who: 'B', icon: 'phone', title: "Marcus's phone records", short: '"12k by Monday" · "You\'ll have it tomorrow."', html: () => `<p>From the phone company (with permission). Contact saved as <b>RICKY $$</b>:</p>
+      <div class="sms in"><small>8:47 pm · from RICKY $$</small>12k by Monday. Last warning.</div>
+      <div class="sms out"><small>9:44 pm · to RICKY $$</small>Relax. You'll have it tomorrow.</div>` },
+  b_bell:  { who: 'B', icon: 'pen', title: "Mrs. Bell's statement", short: "Ethan offered $20k. Marcus begged for money.", text: 'Eleanor Bell, owner: "Mr. Cross offered me $20,000 for the Harbor Pearl last month. I told him never. And my grandson Marcus has been asking me for money again. <b>I said no. He was very upset.</b>"' },
+};
+// the map (Detective A)
+const ROOMS = {
+  library: { name: 'Library', x: 20, y: 20, w: 220, h: 150, col: '#3C5A3A', scene: 'Rows of old books. The empty glass case stands in the middle. Rain taps on the garden door.', spots: [['The display case', 'a_case'], ['The carpet', 'a_prints'], ['The garden door', 'a_door']] },
+  garden: { name: 'Garden terrace', x: 250, y: 20, w: 250, h: 150, col: '#2F6A3C', scene: 'A muddy path runs from the library door, past a bench, to the back staircase.', spots: [['The muddy path', 'a_path'], ['The bench under the awning', 'a_heels']] },
+  dining: { name: 'Dining hall', x: 20, y: 180, w: 220, h: 120, col: '#6A3E2A', scene: "The anniversary dinner. A small stage where Daisy sang. Nothing here was touched.", spots: [] },
+  bar: { name: 'Bar', x: 250, y: 180, w: 120, h: 120, col: '#5A2E46', scene: 'A long wooden counter. Rosa the bartender is cleaning glasses.', spots: [["Ethan's seat", 'a_bar']] },
+  kitchen: { name: 'Kitchen', x: 380, y: 180, w: 120, h: 120, col: '#4A5560', scene: 'Pots everywhere. Chef Bao says the cooker went off with the lights.', spots: [] },
+  floor2: { name: 'Floor 2 · room 204', x: 510, y: 20, w: 170, h: 150, col: '#2B4C7A', scene: "Guest rooms. At the quiet end, by the back stairs: Lily's cart, and room 204 (Marcus Bell). Marcus let you look around his room.", spots: [['The housekeeping cart', 'a_cart'], ['Room 204 closet', 'a_shoes'], ['Room 204 desk', 'a_card']] },
+  basement: { name: 'Basement', x: 510, y: 180, w: 170, h: 120, col: '#3A3A44', scene: 'The laundry room and the generator.', spots: [['The generator', 'a_gen']] },
+};
+// interviews (Detective A asks; "confront" needs that clue on the shared board)
+const TALK = {
+  marcus: [
+    ['Where were you during dinner?', "I had a headache. I went up to my room before nine and slept until Grandma screamed. I didn't leave my room all evening."],
+    ['Did you hear anything?', 'Thunder. Lots of thunder. That\'s it.'],
+    ['How do you get on with your grandmother?', 'Fine. She\'s... careful with money. That\'s all.'],
+    { need: 'b_doors', q: 'Show him the door log (out 9:18, back 9:43)', a: '...Okay, I stepped out for some air. It was stuffy. That\'s not a crime.', hot: true },
+    { need: 'a_shoes', q: 'Ask why his sneakers are soaking wet', a: 'I... went for a walk in the garden. In the rain. People do that.', hot: true },
+    { need: 'b_phone', q: 'Show him the messages from "RICKY $$"', a: 'Where did you get that? ...That\'s private. I want to talk to my grandmother.', hot: true },
+    { need: 'a_card', q: 'Show him the pawn shop card', a: '(He stares at the card and says nothing.)', hot: true },
+  ],
+  victor: [
+    ['Where were you when the lights went out?', 'In the kitchen with Chef Bao, calming him down. Then I took my flashlight down to the basement and got the generator going.'],
+    ['Who has a key to the display case?', 'I have one, on my belt. It never left me. And there\'s a spare on the housekeeping key ring, so the girls can clean the glass.'],
+    ['Is the library garden door locked at night?', 'It should be. It sticks; it never really shuts. I\'ve asked Mrs. Bell to fix it for a year.'],
+    { need: 'b_house', q: 'Ask about the missing spare key', a: 'Lily told me at ten to ten. I was on my way to check the library when Mrs. Bell found the case open.' },
+  ],
+  daisy: [
+    ['Where were you?', 'I sang until the power went at 9:20. Then I went out to the terrace for some air, under the awning by the bench.'],
+    ['Did you see anyone?', '<b>Someone tall in a hooded jacket</b>, with a phone light, walking along the garden path toward the library. Around 9:25. I thought it was staff. A few minutes later the same light went back toward the stairs.', true],
+    { need: 'a_heels', q: 'Show her the heel prints by the bench', a: 'Yes, those are mine. I stood right there the whole time. My shoes are ruined.' },
+  ],
+  ethan: [
+    ['Where were you?', 'At the bar. All night. Ask the bartender.'],
+    ['What do you think of the Harbor Pearl?', 'Exquisite. I offered Eleanor a fair price for it. She is very sentimental.'],
+    { need: 'a_bar', q: 'Show him the napkin doodles', a: 'I sketch jewelry. It\'s my job. Sketching isn\'t stealing.' },
+    { need: 'b_bar', q: 'Ask about the 9:28 pm receipt', a: 'Exactly. Paid for a drink in the middle of the blackout. At the bar.' },
+  ],
+  lily: [
+    ['Where were you?', 'At ten past nine I left my cart outside room 204 and went down to the laundry with Sam. When I came back up, the LIB-C key was gone.'],
+    ['Who could reach your cart?', 'It\'s at the quiet end, by the back stairs. Only Mr. Marcus\'s room is down there. His light was off.'],
+    ['Did you take the key?', 'No! I would lose my job. Sam was with me the whole time.'],
+  ],
+  bao: [['Where was Victor during the blackout?', 'With me, from when the lights went out until about half past nine. Then he grabbed his flashlight and went down to the basement. The lights came back a few minutes later.']],
+  rosa: [['Did Ethan Cross leave the bar?', 'Not once, from nine until about quarter to ten. He complained about the dark the whole time and kept ordering whisky.']],
+};
+const HINTS = [
+  'Start with WHEN: the alarm needs main power. When was it off? (Detective B has the power records.)',
+  'HOW: the case wasn\'t forced, so someone had a key. Victor\'s never left his belt... where was the other one? (Detective A: check floor 2.)',
+  'WHO: check every alibi against a record. Whose story does a record prove false?',
+];
+const KEY = { who: 'marcus', how: 'spare', why: 'debt' };
+const STRONG = ['b_doors', 'a_shoes', 'a_prints', 'a_cart', 'b_house', 'a_card', 'b_phone', 'a_path'];
+
+// ======================= state =======================
+const ST = { me: 'A', tab: 'brief', room: 'library', open: null, sus: 'marcus', found: {}, pins: [], strings: [], asked: {}, feed: [], hints: 0, tries: 0, acc: { who: null, how: null, why: null, ev: [] }, solved: false, selPin: null, noteN: 0 };
+const $ = (s) => document.querySelector(s);
+function toast(t) { const el = $('#toast'); el.innerHTML = t; el.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('on'), 2400); }
+const visible = (id) => CLUES[id].who === ST.me;
+const feed = (txt) => { ST.feed.unshift({ by: ST.me, txt }); };
+
+// ======================= views =======================
+function tabs() {
+  const myN = Object.keys(ST.found).filter((k) => CLUES[k] && CLUES[k].who === ST.me).length;
+  const list = [['brief', 'Briefing'], ['inv', ST.me === 'A' ? 'Crime scene' : 'Records', myN], ['sus', ST.me === 'A' ? 'Interviews' : 'Suspects'], ['board', 'Evidence board', ST.pins.length], ['acc', 'Accuse']];
+  $('#tabs').innerHTML = list.map(([k, l, n]) => `<button class="tab ${ST.tab === k ? 'on' : ''}" data-tab="${k}">${l}${n ? `<span class="n">${n}</span>` : ''}</button>`).join('');
+}
+function render() {
+  tabs();
+  document.querySelectorAll('#who button').forEach((b) => b.classList.toggle('on', b.dataset.me === ST.me));
+  const v = $('#view');
+  if (ST.tab === 'brief') v.innerHTML = briefHTML();
+  if (ST.tab === 'inv') v.innerHTML = ST.me === 'A' ? sceneHTML() : recordsHTML();
+  if (ST.tab === 'sus') v.innerHTML = susHTML();
+  if (ST.tab === 'board') { v.innerHTML = boardHTML(); drawStrings(); }
+  if (ST.tab === 'acc') v.innerHTML = accHTML();
+}
+function briefHTML() {
+  return `<div class="brief">
+    <div class="paperdoc"><span class="stamp">CASE #001</span>
+      <h3>The Harbor Pearl</h3>
+      <p><b>Grand Harbor Hotel, Seabright. A stormy Friday night.</b></p>
+      <p>Mrs. Eleanor Bell, 70, is celebrating fifty years of her family's hotel. Her most precious thing, a pearl and gold brooch called <b>the Harbor Pearl</b>, sits in a locked glass case in the library for guests to admire.</p>
+      <p>At 9:20 pm a storm knocks out the power. The hotel goes dark. At <b>9:58 pm</b>, Mrs. Bell walks into the library and finds the case open and empty.</p>
+      <p>Nobody has left the hotel since: the road is flooded. The thief is still here.</p>
+      <ul class="qs"><li>Who took the Harbor Pearl?</li><li>How did they open the case?</li><li>Why did they do it?</li></ul>
+    </div>
+    <div class="roles">
+      <div class="role a"><b>Detective A · the scene</b><p>Walks the hotel, searches rooms and talks to the suspects. Sees what is physically there.</p></div>
+      <div class="role b"><b>Detective B · the records</b><p>Has the paperwork: door logs, receipts, the power company, phone records, written statements.</p></div>
+      <div class="panel"><div class="ph">HOW TO PLAY</div><div class="pb" style="font-size:14px;line-height:1.55;color:#C9D8E8">
+        1. Each detective digs through their own side.<br>2. <b style="color:var(--bone)">Pin</b> anything useful to the shared evidence board, so your partner sees it.<br>3. Talk it through: a record can prove someone is lying.<br>4. Use the board's clues to <b style="color:var(--bone)">confront</b> suspects.<br>5. Accuse: who, how and why, with your 3 best pieces of evidence.<br><br>
+        Stuck? <button class="btn sm amber" data-hint>Get a hint</button> <span style="color:var(--muted)">(each hint costs a star)</span>
+        ${ST.hints ? HINTS.slice(0, ST.hints).map((h, i) => `<div class="hintbox"><b>Hint ${i + 1}:</b> ${h}</div>`).join('') : ''}
+      </div></div>
+    </div></div>`;
+}
+function clueCard(id) {
+  const c = CLUES[id], pinned = ST.pins.some((p) => p.id === id);
+  return `<div class="clue"><span class="by ${c.who.toLowerCase()}">${c.who === 'A' ? 'SCENE' : 'RECORD'}</span>
+    <h4><span class="ic">${icon(c.icon)}</span>${c.title}</h4>${c.html ? c.html() : `<div>${c.text}</div>`}
+    <div class="acts">${pinned ? '<span style="font-weight:800;color:#2F6A3C">📌 On the board</span>' : `<button class="btn sm teal" data-pin="${id}">📌 Pin to the board</button>`}</div></div>`;
+}
+function sceneHTML() {
+  const r = ROOMS[ST.room];
+  const map = `<svg class="map" viewBox="0 0 700 320">${Object.entries(ROOMS).map(([k, o]) => {
+    const n = o.spots.length, got = o.spots.filter(([, id]) => ST.found[id]).length;
+    return `<g class="room ${ST.room === k ? 'sel' : ''}" data-room="${k}"><rect class="r" x="${o.x}" y="${o.y}" width="${o.w}" height="${o.h}" fill="${o.col}"/>
+      <text x="${o.x + 10}" y="${o.y + 26}">${o.name.toUpperCase()}</text>${n ? `<text class="cnt" x="${o.x + 10}" y="${o.y + o.h - 12}" fill="${got === n ? '#34D399' : '#F5B041'}">${got}/${n} searched</text>` : `<text class="cnt" x="${o.x + 10}" y="${o.y + o.h - 12}" fill="#9DB4CC">nothing to search</text>`}</g>`;
+  }).join('')}
+    <g pointer-events="none"><rect x="225" y="80" width="30" height="28" fill="#8A5A2B" stroke="#050E18" stroke-width="3"/><text x="214" y="124" font-size="11" fill="#F7F4EC" font-family="Outfit" font-weight="700">garden door</text>
+    <rect x="490" y="120" width="30" height="40" fill="#555" stroke="#050E18" stroke-width="3"/><text x="452" y="175" font-size="11" fill="#F7F4EC" font-family="Outfit" font-weight="700">back stairs</text></g></svg>`;
+  const open = ST.open && CLUES[ST.open] && CLUES[ST.open].who === 'A' ? clueCard(ST.open) : '';
+  return `<div class="inv"><div class="panel"><div class="ph">GRAND HARBOR HOTEL <small>tap a room</small></div><div class="pb">${map}</div></div>
+    <div class="panel"><div class="ph">${r.name.toUpperCase()}</div><div class="pb"><p class="scene">${r.scene}</p>
+      ${r.spots.map(([n, id]) => `<div class="spot ${ST.found[id] ? 'done' : ''}" data-search="${id}"><span class="ic">${icon(CLUES[id].icon)}</span><span><b>${ST.found[id] ? CLUES[id].title : n}</b><small>${ST.found[id] ? CLUES[id].short : 'Search here'}</small></span>${ST.found[id] ? '<span class="ok">FOUND</span>' : ''}</div>`).join('') || '<p class="scene">Nothing useful here.</p>'}
+      ${open}</div></div></div>`;
+}
+function recordsHTML() {
+  const ids = Object.keys(CLUES).filter((k) => CLUES[k].who === 'B');
+  const open = ST.open && CLUES[ST.open] && CLUES[ST.open].who === 'B' ? clueCard(ST.open) : '<p class="scene" style="margin-top:12px">Open a folder to read it.</p>';
+  return `<div class="inv"><div class="panel"><div class="ph">RECORDS DRAWER <small>${ids.filter((k) => ST.found[k]).length}/${ids.length} read</small></div><div class="pb"><div class="drawer">${ids.map((k) => `<div class="folder ${ST.found[k] ? 'read' : ''}" data-search="${k}"><span class="ic">${icon(CLUES[k].icon)}</span><b>${CLUES[k].title}</b><small>${ST.found[k] ? CLUES[k].short : 'Not read yet'}</small></div>`).join('')}</div></div></div>
+    <div class="panel"><div class="ph">READING</div><div class="pb">${open}</div></div></div>`;
+}
+function susHTML() {
+  const list = SUSPECTS.concat(['bao', 'rosa']);
+  const p = PEOPLE[ST.sus], qs = TALK[ST.sus] || [];
+  let talk;
+  if (ST.me === 'B') talk = `<div class="ans" style="margin-top:14px"><span class="q">DETECTIVE B</span>Only Detective A does the interviews (they're at the hotel). Your job: find records that prove someone is lying, and pin them to the board so A can confront them.</div>`;
+  else talk = `<div class="talk"><div class="big">${p.art}<b>${p.name}</b><small>${p.role}</small></div><div>
+    ${qs.map((q, i) => {
+      const k = ST.sus + i, conf = !Array.isArray(q), need = conf && q.need, has = !need || ST.pins.some((x) => x.id === need);
+      const qq = conf ? q.q : q[0];
+      // the answer shows right under its question
+      return `<button class="qbtn ${conf ? 'conf' : ''} ${ST.asked[k] ? 'asked' : ''}" data-ask="${i}" ${has ? '' : 'disabled'}>${conf ? '🔎 ' : '💬 '}${qq}${!has ? ` <span style="color:var(--muted);font-weight:600">· pin "${CLUES[need].title}" to the board first</span>` : ''}</button>`
+        + (ST.asked[k] ? `<div class="ans ${conf && q.hot ? 'hot' : ''}">${conf ? q.a : q[1]}</div>` : '');
+    }).join('')}
+  </div></div>`;
+  return `<div class="panel"><div class="ph">${ST.me === 'A' ? 'INTERVIEWS' : 'SUSPECTS'} <small>5 suspects · 2 witnesses</small></div><div class="pb">
+    <div class="sus">${list.map((k) => `<div class="sc ${ST.sus === k ? 'sel' : ''}" data-sus="${k}">${PEOPLE[k].art}<span><b>${PEOPLE[k].name}</b><small>${PEOPLE[k].role}${PEOPLE[k].tall ? ' · tall' : ''}</small></span></div>`).join('')}</div>${talk}</div></div>`;
+}
+function boardHTML() {
+  return `<div class="boardwrap"><div class="cork" id="cork"><svg class="strings" id="strings"></svg>
+    ${ST.pins.map((p) => { const c = CLUES[p.id]; return c ? `<div class="pin ${c.who.toLowerCase()} ${ST.selPin === p.id ? 'sel' : ''}" data-p="${p.id}" style="left:${p.x}px;top:${p.y}px"><span class="x" data-unpin="${p.id}">✕</span><b>${c.title}</b>${c.short}</div>`
+      : `<div class="pin note ${ST.selPin === p.id ? 'sel' : ''}" data-p="${p.id}" style="left:${p.x}px;top:${p.y}px"><span class="x" data-unpin="${p.id}">✕</span>${p.text}</div>`; }).join('')}
+    ${ST.pins.length ? '' : '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;font-weight:800;color:#3A2414;font-size:18px">Nothing pinned yet.<br>Find clues and press 📌 Pin to the board.</div>'}
+  </div>
+  <div class="panel boardside"><div class="ph">SHARED BOARD</div><div class="pb">
+    <div class="legend"><span><i style="background:var(--teal)"></i>found by A</span><span><i style="background:var(--coral)"></i>found by B</span><span><i style="background:#FFF2A6"></i>note</span></div>
+    <p class="how"><b>Drag</b> cards around. <b>Tap one card, then another</b> to tie them with red string (tap a string's card twice to untie). Your partner sees every change live.</p>
+    <textarea id="notetxt" placeholder="Write a sticky note: 'Marcus said he never left his room...'"></textarea>
+    <button class="btn sm amber" data-addnote style="margin-top:6px">Add sticky note</button>
+    <div class="feed">${ST.feed.slice(0, 14).map((f) => `<div><b class="${f.by.toLowerCase()}">Detective ${f.by}</b> ${f.txt}</div>`).join('') || 'Board activity shows here.'}</div>
+  </div></div></div>`;
+}
+function drawStrings() {
+  const svg = $('#strings'), cork = $('#cork'); if (!svg || !cork) return;
+  const cr = cork.getBoundingClientRect();
+  const at = (id) => { const el = cork.querySelector(`[data-p="${id}"]`); if (!el) return null; const r = el.getBoundingClientRect(); return [r.left - cr.left + r.width / 2, r.top - cr.top + 4]; };
+  svg.innerHTML = ST.strings.map(([a, b]) => { const p = at(a), q = at(b); if (!p || !q) return ''; const mx = (p[0] + q[0]) / 2, my = Math.max(p[1], q[1]) + 30;
+    return `<path d="M${p[0]},${p[1]} Q${mx},${my} ${q[0]},${q[1]}" stroke="#050E18" stroke-width="5" fill="none"/><path d="M${p[0]},${p[1]} Q${mx},${my} ${q[0]},${q[1]}" stroke="#D2382C" stroke-width="3" fill="none"/>`; }).join('');
+}
+const HOW = [['master', "Used Victor's own key while he was busy"], ['spare', 'Took the spare key from the housekeeping cart and came in through the garden door during the blackout'], ['smash', 'Forced the case open'], ['early', 'Swapped it for a fake before dinner']];
+const WHY = [['collect', 'Wanted it for a collection'], ['debt', 'Needed money fast to pay a debt'], ['revenge', 'Revenge on Mrs. Bell'], ['job', 'To get someone else fired']];
+function accHTML() {
+  const a = ST.acc, pinnedClues = ST.pins.filter((p) => CLUES[p.id]);
+  if (ST.solved) return revealHTML();
+  return `<div class="acc">
+    <div class="accq"><b>1 · WHO TOOK IT?</b><div class="opts">${SUSPECTS.map((k) => `<button class="opt ${a.who === k ? 'on' : ''}" data-acc="who" data-v="${k}">${PEOPLE[k].art}${PEOPLE[k].name}</button>`).join('')}</div></div>
+    <div class="accq"><b>2 · HOW?</b><div class="opts">${HOW.map(([k, t]) => `<button class="opt ${a.how === k ? 'on' : ''}" data-acc="how" data-v="${k}">${t}</button>`).join('')}</div></div>
+    <div class="accq"><b>3 · WHY?</b><div class="opts">${WHY.map(([k, t]) => `<button class="opt ${a.why === k ? 'on' : ''}" data-acc="why" data-v="${k}">${t}</button>`).join('')}</div></div>
+    <div class="accq"><b>4 · YOUR 3 BEST PIECES OF EVIDENCE</b><p style="margin:0 0 8px;font-size:13px;color:var(--muted)">Picked from what's on the board (${a.ev.length}/3).</p>
+      <div class="opts">${pinnedClues.length ? pinnedClues.map((p) => `<button class="opt ${a.ev.includes(p.id) ? 'on' : ''}" data-ev="${p.id}"><span style="width:22px;height:22px;display:inline-block">${icon(CLUES[p.id].icon)}</span>${CLUES[p.id].title}</button>`).join('') : '<span style="color:var(--muted)">Pin clues to the board first.</span>'}</div></div>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><button class="btn coral" data-accuse ${a.who && a.how && a.why && a.ev.length === 3 ? '' : 'disabled'}>⚖ Make the accusation</button>
+      <span style="color:var(--muted);font-size:14px">Both detectives must agree. A wrong accusation costs a star.${ST.tries ? ` Wrong so far: ${ST.tries}.` : ''}</span></div>
+  </div>`;
+}
+function stars() { const s = Math.max(1, 5 - ST.hints - ST.tries - (ST.evMiss || 0)); return s; }
+function revealHTML() {
+  const s = stars(), all = Object.keys(CLUES);
+  const got = all.filter((k) => ST.found[k]), miss = all.filter((k) => !ST.found[k]);
+  return `<div class="panel"><div class="ph">CASE CLOSED <small>Case #001 · The Harbor Pearl</small></div><div class="pb">
+    <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><div style="width:110px">${PEOPLE.marcus.art}</div><div>
+      <div class="verdict" style="color:var(--emerald)">SOLVED!</div>
+      <div style="font-size:18px;font-weight:800;margin-top:4px">Marcus Bell took the Harbor Pearl.</div>
+      <div class="stars">${'★'.repeat(s)}<i>${'★'.repeat(5 - s)}</i></div>
+      <div style="color:var(--muted);font-size:13px">${ST.hints} hint${ST.hints === 1 ? '' : 's'} · ${ST.tries} wrong accusation${ST.tries === 1 ? '' : 's'}${ST.evMiss ? ' · weaker evidence picked' : ''}</div></div></div>
+    <p style="font-size:15px;line-height:1.55;color:#C9D8E8;margin-top:14px">The police find the Harbor Pearl sewn into the lining of Marcus's hooded jacket. He owed $12,000 to a man called Ricky and had booked a pawn shop for Saturday morning. His grandmother had refused to lend him the money that week.</p>
+    <b class="pix" style="font-size:22px;color:var(--amber)">WHAT REALLY HAPPENED</b>
+    <div class="tl">
+      <div><b>8:44 pm</b>Marcus goes up to room 204 "with a headache".</div>
+      <div><b>8:47 pm</b>Ricky texts: "12k by Monday. Last warning."</div>
+      <div><b>9:10 pm</b>Lily parks her cart outside 204 and goes down to the laundry with Sam. Marcus sees the spare keys hanging on it.</div>
+      <div><b>9:18 pm</b>Marcus slips out of 204 and takes the LIB-C spare key from the cart.</div>
+      <div><b>9:20 pm</b>The storm cuts the power. The case alarm goes dead.</div>
+      <div><b>9:25 pm</b>Hooded, using his phone light, he goes down the back stairs, along the garden path and in through the library door that never shuts. Daisy sees a tall figure on the path.</div>
+      <div><b>~9:27 pm</b>He opens the case with the key, takes the Harbor Pearl and goes back the same way, leaving zigzag prints.</div>
+      <div><b>9:34 pm</b>Victor gets the generator running. The lights come back.</div>
+      <div><b>9:43 pm</b>Marcus's card opens room 204. <b>9:44 pm</b> he texts Ricky: "You'll have it tomorrow."</div>
+      <div><b>9:50 pm</b>Lily notices the key is gone. <b>9:58 pm</b> Mrs. Bell finds the empty case.</div>
+    </div>
+    <b class="pix" style="font-size:22px;color:var(--amber)">THE RED HERRINGS</b>
+    <p style="font-size:14px;line-height:1.55;color:#C9D8E8">
+      <b style="color:var(--bone)">Ethan</b> wanted the brooch, but his card paid at the bar at 9:28, in the middle of the blackout, and Rosa says he never left.<br>
+      <b style="color:var(--bone)">Victor</b> has a key, but Chef Bao was with him until 9:30 and he signed the generator log at 9:34 in the basement.<br>
+      <b style="color:var(--bone)">Daisy</b> was outside, but her prints are small heels by the bench, not size 11 sneakers. She's the witness.<br>
+      <b style="color:var(--bone)">Lily</b> had the key on her cart, but Sam's log puts her in the laundry from 9:12 to 9:47.</p>
+    <div class="found"><div><b class="got">Found ${got.length} of ${all.length} clues</b><br>${got.map((k) => CLUES[k].title).join(' · ') || '-'}</div><div><b class="miss">Missed</b><br>${miss.map((k) => CLUES[k].title).join(' · ') || 'Nothing. Perfect detective work!'}</div></div>
+    <div style="margin-top:14px"><button class="btn amber" data-restart>Play the case again</button></div>
+  </div></div>`;
+}
+
+// ======================= actions =======================
+function pin(id) {
+  if (ST.pins.some((p) => p.id === id)) return;
+  const n = ST.pins.length, cork = 640;
+  ST.pins.push({ id, x: 16 + (n % 4) * 182 + (Math.random() * 14 | 0), y: 18 + Math.floor(n / 4) * 120 + (Math.random() * 14 | 0) });
+  feed(`pinned <b>${CLUES[id] ? CLUES[id].title : 'a note'}</b>`);
+  toast(`📌 Pinned "${CLUES[id].title}" · your partner can see it now`);
+}
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-tab],[data-me],[data-room],[data-search],[data-pin],[data-sus],[data-ask],[data-unpin],[data-addnote],[data-acc],[data-ev],[data-accuse],[data-hint],[data-restart]');
+  if (!t) return;
+  if (t.dataset.tab) { ST.tab = t.dataset.tab; ST.selPin = null; }
+  else if (t.dataset.me) { ST.me = t.dataset.me; ST.open = null; toast(`You are now Detective ${ST.me} · ${ST.me === 'A' ? 'the scene' : 'the records'}`); }
+  else if (t.dataset.room) { ST.room = t.dataset.room; ST.open = null; }
+  else if (t.dataset.search) { const id = t.dataset.search; if (!ST.found[id]) { ST.found[id] = 1; feed(`found <b>${CLUES[id].title}</b>`); } ST.open = id; }
+  else if (t.dataset.pin) pin(t.dataset.pin);
+  else if (t.dataset.unpin) { const id = t.dataset.unpin; ST.pins = ST.pins.filter((p) => p.id !== id); ST.strings = ST.strings.filter((s) => !s.includes(id)); ST.acc.ev = ST.acc.ev.filter((x) => x !== id); feed('took a card off the board'); e.stopPropagation(); }
+  else if (t.dataset.sus) ST.sus = t.dataset.sus;
+  else if (t.dataset.ask !== undefined) { const k = ST.sus + t.dataset.ask; if (!ST.asked[k]) { ST.asked[k] = 1; const q = TALK[ST.sus][+t.dataset.ask]; if (!Array.isArray(q)) feed(`confronted <b>${PEOPLE[ST.sus].name}</b>`); } }
+  else if (t.dataset.addnote !== undefined) { const v = ($('#notetxt').value || '').trim(); if (!v) return; const id = 'note' + (++ST.noteN); const n = ST.pins.length; ST.pins.push({ id, text: v.replace(/</g, '&lt;'), x: 30 + (n % 4) * 170, y: 30 + Math.floor(n / 4) * 120 }); feed('added a sticky note'); }
+  else if (t.dataset.acc) ST.acc[t.dataset.acc] = t.dataset.v;
+  else if (t.dataset.ev) { const id = t.dataset.ev, ev = ST.acc.ev; if (ev.includes(id)) ST.acc.ev = ev.filter((x) => x !== id); else if (ev.length < 3) ev.push(id); }
+  else if (t.dataset.hint !== undefined) { if (ST.hints < HINTS.length) { ST.hints++; toast('Hint unlocked (−1 star)'); } }
+  else if (t.dataset.accuse !== undefined) {
+    const a = ST.acc;
+    if (a.who === KEY.who && a.how === KEY.how && a.why === KEY.why) { ST.evMiss = a.ev.filter((x) => STRONG.includes(x)).length < 3 ? 1 : 0; ST.solved = true; }
+    else { ST.tries++; const wrong = a.who !== KEY.who ? `${PEOPLE[a.who].name} has an alibi that holds up. Check the records again.` : a.how !== KEY.how ? 'Right person, but that is not how it was done. Look at the case and the keys again.' : 'Right person and method, but think about the motive again.'; toast('❌ ' + wrong); }
+  }
+  else if (t.dataset.restart !== undefined) { location.reload(); return; }
+  render();
+});
+// dragging + tying cards on the board
+let drag = null;
+document.addEventListener('pointerdown', (e) => {
+  const el = e.target.closest('.pin'); if (!el || e.target.closest('.x')) return;
+  const id = el.dataset.p, p = ST.pins.find((x) => x.id === id), cr = $('#cork').getBoundingClientRect();
+  drag = { id, p, el, dx: e.clientX - cr.left - p.x, dy: e.clientY - cr.top - p.y, moved: false, sx: e.clientX, sy: e.clientY };
+  el.setPointerCapture(e.pointerId);
+});
+document.addEventListener('pointermove', (e) => {
+  if (!drag) return; if (Math.abs(e.clientX - drag.sx) + Math.abs(e.clientY - drag.sy) > 5) drag.moved = true;
+  if (!drag.moved) return;
+  const cr = $('#cork').getBoundingClientRect();
+  drag.p.x = Math.max(0, Math.min(cr.width - drag.el.offsetWidth, e.clientX - cr.left - drag.dx)); drag.p.y = Math.max(8, Math.min(cr.height - drag.el.offsetHeight, e.clientY - cr.top - drag.dy));
+  drag.el.style.left = drag.p.x + 'px'; drag.el.style.top = drag.p.y + 'px'; drawStrings();
+});
+document.addEventListener('pointerup', () => {
+  if (!drag) return; const { id, moved } = drag; drag = null; if (moved) return;
+  if (!ST.selPin) ST.selPin = id;
+  else if (ST.selPin === id) ST.selPin = null;
+  else { const a = ST.selPin, i = ST.strings.findIndex((s) => s.includes(a) && s.includes(id));
+    if (i >= 0) { ST.strings.splice(i, 1); feed('untied a string'); } else { ST.strings.push([a, id]); feed(`tied <b>${(CLUES[a] || { title: 'a note' }).title}</b> to <b>${(CLUES[id] || { title: 'a note' }).title}</b>`); }
+    ST.selPin = null; }
+  render();
+});
+window.addEventListener('resize', drawStrings);
+render();
+window.CASE = { ST, CLUES, render, pin };
+</script></body></html>

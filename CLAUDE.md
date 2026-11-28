@@ -1406,3 +1406,19 @@ folder that was handed over, so they do not exist here.)
   cities (`src/games/geo_cities.js`, `GEO_CITIES` tiers 1-3, Vietnamese cities with accents), no overlaps (greedy by priority).
   Vietnamese names for common countries / seas (`GEO_VI`). In-page map `geo_map.js` (1:110m, ~236 KB), live site `map50.json`
   (1:50m, ~1.7 MB).
+
+## 5as. NEXT: Mapillary street views for Where Am I? (Nov 28 2026, Inna chose Mapillary over Google Street View)
+
+* Inna made a Mapillary app and saved the **Client Token** (MLY|...) in two places (never ask for it in chat, never put it
+  in a file): Cloudflare Pages secret **MAPILLARY_TOKEN** (for the live site) and this environment's network secret for
+  **graph.mapillary.com** (Bearer token; if Mapillary refuses Bearer, Inna switches it to header `Authorization: OAuth MLY|...`).
+  Only sessions started after Nov 28 2026 have the network secret.
+* Plan (agreed with Inna): a Cloudflare Pages Function (`functions/api/mly.js`, like `functions/api/turn.js`) that calls
+  graph.mapillary.com with the secret, so the token is never in the page; the game asks it for image URLs at run time
+  (Mapillary image links expire). Street rounds = a view you drag to look around (360° panos) + arrows to step along the
+  sequence; a new setting PHOTOS: Street views / Landmark photos (the current Wikimedia set stays). Hand-checked spots
+  (a few hundred: world, USA, Vietnam), chosen with a tool in tools/geo using the network secret (filter by is_pano and
+  quality). Credit line "© Mapillary contributors" (CC BY-SA) on every view. Image CDN hosts (fbcdn) are probably not
+  reachable from the cloud environment, so test the viewer with stand-in images.
+* Also pending: 74 new landmark places are in tools/geo/places.py; candidates were found (/tmp/geo/cands.json + sheets in
+  /tmp/geo, lost when the container resets: re-run tools/geo/find.py), picks not yet made (pick.json), make_geo.py not run.
